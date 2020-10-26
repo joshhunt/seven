@@ -25,6 +25,9 @@ async function main() {
   console.log("Site has changed, extracting source");
   await unpackFromHtml(bungieHtml);
 
+  console.log("Writing index.html");
+  await fs.writeFile(localHtmlFilePath, bungieHtml);
+
   console.log("Extracting routes");
   const routes = await extractRoutes();
 
