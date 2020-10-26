@@ -1,8 +1,10 @@
 name: Scheduled checks
 
 on:
+  push:
   schedule:
     - cron: "*/5 * * * *"
+  workflow_dispatch:
 
 jobs:
   check-run-commit:
