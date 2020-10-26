@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@Areas/*": [
+        "./bungie-website-output/site-source/Areas/*"
+      ],
+      "@Global/*": [
+        "./bungie-website-output/site-source/Global/*"
+      ],
+      "@Platform/*": [
+        "./bungie-website-output/site-source/Platform/*"
+      ],
+      "@UI/*": [
+        "./bungie-website-output/site-source/UI/*"
+      ],
+      "@Utilities/*": [
+        "./bungie-website-output/site-source/Utilities/*"
+      ],
+      "@modules/*": [
+        "./bungie-website-output/site-source/modules/*"
+      ],
+      "@node_modules/*": [
+        "./bungie-website-output/site-source/node_modules/*"
+      ],
+      "@rich-text-types/*": [
+        "./bungie-website-output/site-source/rich-text-types/*"
+      ],
+      "@src/*": [
+        "./bungie-website-output/site-source/src/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}
