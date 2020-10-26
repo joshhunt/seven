@@ -30,9 +30,9 @@ async function notify(_currentRoutes) {
     }
   });
 
-  // await fs.writeJSON("./bungie-website-output/routes.json", currentRoutes, {
-  //   spaces: 2,
-  // });
+  await fs.writeJSON("./bungie-website-output/routes.json", currentRoutes, {
+    spaces: 2,
+  });
 
   const addedMessage = pathsDiff.added.map((v) => ` - ${v}`).join("\n");
   const removedMessage = pathsDiff.removed.map((v) => ` - ${v}`).join("\n");

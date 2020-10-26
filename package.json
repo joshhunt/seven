@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "check": "node ./run.js"
+    "check": "node ./index.js"
   },
   "dependencies": {
     "@babel/generator": "^7.12.1",

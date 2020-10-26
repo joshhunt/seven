@@ -23,7 +23,7 @@ async function main() {
   }
 
   console.log("Site has changed, extracting source");
-  // await unpackFromHtml(bungieHtml);
+  await unpackFromHtml(bungieHtml);
 
   console.log("Extracting routes");
   const routes = await extractRoutes();

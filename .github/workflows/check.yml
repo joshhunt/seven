@@ -1,0 +1,53 @@
+name: Scheduled checks
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  check-run-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - run: yarn install
+
+      - name: Check Bungie website
+        run: yarn run check
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Check if there were changes
+        id: changes-check
+        run: echo ::set-output name=dirty::"$(git status --porcelain)"
+
+      - name: Commit everything
+        if: steps.changes-check.outputs.dirty
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -am "Site changed from automated check"
+
+      - name: Push changes
+        if: steps.changes-check.outputs.dirty
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Discord notification
+        if: steps.changes-check.outputs.dirty
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: "The Bungie website was updated :)"
