@@ -346,7 +346,7 @@ class BeyondLightOverhaul extends React.Component<
         </section>
 
         <section
-          className={styles.textWithButton}
+          className={styles.textWithScreenShots}
           style={{ backgroundColor: homepage.bgHex5 ?? "rgb(33, 40, 51)" }}
         >
           <div
@@ -362,6 +362,15 @@ class BeyondLightOverhaul extends React.Component<
               <span className={styles.shortBorder} />
               <p>{homepage.sectionSevenBody}</p>
             </div>
+            {phaseFour.exploreButton && (
+              <Button
+                caps
+                buttonType={"white"}
+                url={RouteHelper.BeyondLightPhases("story")}
+              >
+                {phaseFour.exploreButton}
+              </Button>
+            )}
           </div>
         </section>
         <section

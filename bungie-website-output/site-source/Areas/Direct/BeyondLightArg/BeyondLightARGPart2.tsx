@@ -6,8 +6,8 @@ import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Img } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import React, { useEffect, useState } from "react";
 import moment from "moment";
+import React, { useEffect, useState } from "react";
 import styles from "./BeyondLightARG.module.scss";
 
 const pad = (str: string | number) => String(str).padStart(2, "0");
@@ -48,7 +48,12 @@ export const BeyondLightARGPart2: React.FC<Part2Props> = ({ data }) => {
     );
   }
 
-  const imagePath = Img(`destiny/bgs/bl_arg/${data.Image}.gif`);
+  const pathTemplate = ConfigUtils.GetParameter(
+    "DestinyArg",
+    "ArgImageUrlTemplate",
+    "[[REPLACE_ME]]"
+  );
+  const imagePath = pathTemplate.replace("[[REPLACE_ME]]", data.Image);
 
   return (
     <div className={styles.part2wrapper}>

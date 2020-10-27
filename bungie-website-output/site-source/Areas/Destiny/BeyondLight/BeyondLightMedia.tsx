@@ -2,6 +2,10 @@
 // Copyright Bungie, Inc.
 
 import {
+  BeyondLightPhaseFourDataStore,
+  BeyondLightPhaseFourDataStorePayload,
+} from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseFourDataStore";
+import {
   BeyondLightPhaseThreeDataStore,
   BeyondLightPhaseThreeDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseThreeDataStore";
@@ -14,6 +18,7 @@ import {
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
 import { DestroyCallback } from "@Global/DataStore";
+import { Spinner } from "@UIKit/Controls/Spinner";
 import * as React from "react";
 import styles from "./BeyondLightMedia.module.scss";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -36,6 +41,7 @@ interface IBeyondLightMediaState {
   BeyondLightUpdateData: BeyondLightUpdateDataStorePayload;
   BeyondLightPhaseTwoData: BeyondLightPhaseTwoDataStorePayload;
   BeyondLightPhaseThreeData: BeyondLightPhaseThreeDataStorePayload;
+  BeyondLightPhaseFourData: BeyondLightPhaseFourDataStorePayload;
 }
 
 /**
@@ -63,6 +69,11 @@ export default class BeyondLightMedia extends React.Component<
     Localizer.CurrentCultureName,
     ""
   );
+  private readonly vidocVideoId = ConfigUtils.GetParameter(
+    SystemNames.BeyondLightVidocYoutube,
+    Localizer.CurrentCultureName,
+    ""
+  );
 
   constructor(props: IBeyondLightMediaProps) {
     super(props);
@@ -71,6 +82,7 @@ export default class BeyondLightMedia extends React.Component<
       BeyondLightUpdateData: BeyondLightUpdateDataStore.state,
       BeyondLightPhaseTwoData: BeyondLightPhaseTwoDataStore.state,
       BeyondLightPhaseThreeData: BeyondLightPhaseThreeDataStore.state,
+      BeyondLightPhaseFourData: BeyondLightPhaseFourDataStore.state,
     };
   }
 
@@ -88,6 +100,9 @@ export default class BeyondLightMedia extends React.Component<
       ),
       BeyondLightPhaseThreeDataStore.observe((BeyondLightPhaseThreeData) =>
         this.setState({ BeyondLightPhaseThreeData })
+      ),
+      BeyondLightPhaseFourDataStore.observe((BeyondLightPhaseFourData) =>
+        this.setState({ BeyondLightPhaseFourData })
       )
     );
   }
@@ -103,6 +118,12 @@ export default class BeyondLightMedia extends React.Component<
     const { phaseTwo } = this.state.BeyondLightPhaseTwoData;
 
     const { phaseThree } = this.state.BeyondLightPhaseThreeData;
+
+    const { phaseFour } = this.state.BeyondLightPhaseFourData;
+
+    if (!this.state.BeyondLightUpdateData.loaded) {
+      return <Spinner />;
+    }
 
     return (
       <React.Fragment>
@@ -171,6 +192,22 @@ export default class BeyondLightMedia extends React.Component<
                 ),
                 detail: phaseThree.heroVideo,
                 title: Localizer.Beyondlight.Submenu_Gear,
+              },
+              {
+                isVideo: true,
+                thumbnail: Img(
+                  "destiny/products/beyondlight/media_trailer_story_thumbnail.jpg"
+                ),
+                detail: phaseFour.heroTrailerButtonVideoId,
+                title: Localizer.Beyondlight.Submenu_Story,
+              },
+              {
+                isVideo: true,
+                thumbnail: Img(
+                  "destiny/products/beyondlight/media_trailer_vidoc_thumbnail.jpg"
+                ),
+                detail: this.vidocVideoId,
+                title: Localizer.Beyondlight.viDocForgedStorm,
               },
             ]}
             wallpapers={[
