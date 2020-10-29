@@ -209,6 +209,14 @@ export default class BeyondLightMedia extends React.Component<
                 detail: this.vidocVideoId,
                 title: Localizer.Beyondlight.viDocForgedStorm,
               },
+              {
+                isVideo: true,
+                thumbnail: Img(
+                  "destiny/products/beyondlight/media_trailer_launch_thumbnail.jpg"
+                ),
+                detail: homepage.releaseTrailer,
+                title: Localizer.Beyondlight.releaseTrailer,
+              },
             ]}
             wallpapers={[
               {
