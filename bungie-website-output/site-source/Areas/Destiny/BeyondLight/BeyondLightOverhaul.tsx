@@ -156,13 +156,7 @@ class BeyondLightOverhaul extends React.Component<
           }.png`}
           videoPlayButtonText={homepage.videoPlayButtonText}
           videoPlayButtonType={"white"}
-          youTubeVideoId={
-            (!mobile && homepage.releaseTrailer) ||
-            phaseFour.heroTrailerButtonVideoId
-          }
-          buttonOneLink={RouteHelper.BeyondLightPhases("story")}
-          buttonOneText={phaseFour?.exploreButton}
-          buttonOneType={"white"}
+          youTubeVideoId={phaseFour.heroTrailerButtonVideoId}
           buttonTwoLink={RouteHelper.DestinyBuyDetail({
             productFamilyTag: "beyondlight",
           })}

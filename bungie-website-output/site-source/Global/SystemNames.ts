@@ -46,6 +46,7 @@ export const SystemNames = {
   Blizzard: "Blizzard",
   SteamIdAuth: "SteamIdAuth",
   StadiaIdAuth: "StadiaIdAuth",
+  StrangerEditionForSale: "StrangerEditionForSale",
   PrePCMigration: "PrePCMigration",
   PCMigrationLoginInterrupt: "PCMigrationLoginInterrupt",
   Season11Page: "Season11Page",

@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DestinyBuyDetailItem } from "@Areas/Destiny/Buy/Shared/DestinyBuyDetailItem";
+import { DetailedError } from "@CustomErrors";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import * as React from "react";
 import styles from "./BeyondLightProducts.module.scss";
@@ -47,7 +48,7 @@ export type BeyondLightProductsProps = IBeyondLightProductsProps & DefaultProps;
 
 interface IBeyondLightProductsState {
   title: string;
-  productFamilies: IDestinyProductFamilyDefinition[];
+  beyondLightProductFamily: IDestinyProductFamilyDefinition;
   skuItems: IDestinyProductDefinition[];
   skuConfig: IDestinySkuConfig;
   loading: boolean;
@@ -78,7 +79,7 @@ export class BeyondLightProducts extends React.Component<
 
     this.state = {
       title: "",
-      productFamilies: [],
+      beyondLightProductFamily: null,
       skuItems: [],
       skuConfig: DestinySkuConfigDataStore.state,
       loading: true,
@@ -120,32 +121,27 @@ export class BeyondLightProducts extends React.Component<
       const skuSection = this.state.skuConfig.sections.find(
         (a) => a.key === "DestinySkus"
       );
-      const familySection = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinyProductFamilies"
-      );
 
       // Load the Firehose content item for the specified tags
-      this.loadProductFamilyContent(familySection.firehoseContentSetTag);
+      this.loadBeyondLightProductFamilyContent();
       this.loadSkuContent(skuSection.firehoseContentSetTag);
     }
   };
 
-  private loadProductFamilyContent(firehoseContentSetTag: string) {
+  private loadBeyondLightProductFamilyContent() {
     Platform.ContentService.GetContentByTagAndType(
-      firehoseContentSetTag,
-      "ContentSet",
+      "product-family-beyondlight",
+      "DestinyProductFamily",
       Localizer.CurrentCultureName,
       false
-    ).then((contentSet) => {
-      const allItems: Content.ContentItemPublicContract[] =
-        contentSet.properties["ContentItems"];
-      const productFamilies = allItems.map((contentItem) =>
-        DestinySkuUtils.productFamilyDefinitionFromContent(contentItem)
+    ).then((productFamily) => {
+      const beyondLightProductFamily = DestinySkuUtils.productFamilyDefinitionFromContent(
+        productFamily
       );
 
-      if (productFamilies) {
+      if (beyondLightProductFamily) {
         this.setState({
-          productFamilies,
+          beyondLightProductFamily,
         });
       }
     });
@@ -195,21 +191,22 @@ export class BeyondLightProducts extends React.Component<
   public render() {
     const beyondlightLoc = Localizer.Beyondlight;
 
-    if (this.state.productFamilies.length === 0) {
+    if (!this.state.beyondLightProductFamily) {
       return (
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );
     }
-    const { productFamilies, skuItems, strangerEdition } = this.state;
 
-    const beyondLight = productFamilies[1];
-    const beyondLightSkus = skuItems.filter((value) =>
-      beyondLight.skuList.find((v) => value.skuTag === v.SkuTag)
+    const { beyondLightProductFamily, skuItems, strangerEdition } = this.state;
+    const beyondLightComparisonSkus = skuItems?.filter((value) =>
+      beyondLightProductFamily?.comparisonSection.find(
+        (v) => value.skuTag === v.SkuTag
+      )
     );
 
     return (
       <div className={styles.content}>
-        {!this.isMedium() && (
+        {beyondLightProductFamily && !this.isMedium() && (
           <div className={styles.buttons}>
             <Button
               buttonType={"white"}
@@ -244,8 +241,8 @@ export class BeyondLightProducts extends React.Component<
             </Button>
           </div>
         )}
-        {beyondLightSkus
-          .reverse()
+        {beyondLightComparisonSkus
+          ?.reverse()
           .map((value, index) => this.renderEdition(value, index))}
 
         {this.renderCollectorsEdition(
@@ -318,8 +315,7 @@ export class BeyondLightProducts extends React.Component<
 
   private renderCollectorsEdition(productDef: IDestinyProductDefinition) {
     if (productDef) {
-      const buttonType =
-        productDef.skuTag === this.collectorsEditionSku ? "disabled" : "blue";
+      const buttonType = productDef.buyButtonDisabled ? "disabled" : "blue";
 
       return (
         <div className={styles.collectorsEdition}>
@@ -350,7 +346,7 @@ export class BeyondLightProducts extends React.Component<
               dangerouslySetInnerHTML={{ __html: productDef.blurb }}
             />
             <Button buttonType={buttonType} url={productDef.relatedPage}>
-              {productDef.buttonLabel}
+              {productDef.soldOutButtonLabel || productDef.buttonLabel}
             </Button>
           </div>
           {!this.isMedium() && (

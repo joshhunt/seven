@@ -71,6 +71,8 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
           <img
             className={styles.tricorn2}
             src={"7/ca/destiny/logos/tricorn_2_icon.svg"}
+            alt={""}
+            role={"presentation"}
           />
           <div className={styles.titles}>
             <div className={styles.subtitle}>{props.subtitle}</div>
@@ -95,15 +97,22 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
                   className={classNames(styles.expansionLine, {
                     [styles.selected]: sku.skuTag === selectedSkuTag,
                   })}
+                  role="button"
                   onClick={() => {
                     setSelectedSkuTag(sku.skuTag);
                     DestinyBuyDataStore.update({ selectedSkuIndex: i });
                   }}
                 >
-                  <img src={sku.imagePath} />
+                  <img src={sku.imagePath} alt="" role="presentation" />
                   <div className={styles.expansionLineContent}>
                     {productIsOnSale && (
-                      <div className={styles.saleTag}>{discountString}</div>
+                      <div
+                        className={classNames(styles.saleTag, {
+                          [styles.selectedSale]: sku.skuTag === selectedSkuTag,
+                        })}
+                      >
+                        {discountString}
+                      </div>
                     )}
                     <div className={styles.subtitle}>
                       {sku.edition || sku.subtitle}

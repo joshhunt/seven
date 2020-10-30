@@ -46,6 +46,7 @@ export interface IDestinyBuyProductDetailProps
 interface IDestinyBuyProductDetailState {
   destinyProductFamily: IDestinyProductFamilyDefinition;
   skuItems: IDestinyProductDefinition[];
+  editionSelectorItems: IDestinyProductDefinition[];
   skuConfig: IDestinySkuConfig;
   selectedSkuIndex: number;
   loading: boolean;
@@ -74,6 +75,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
     this.state = {
       destinyProductFamily: null,
       skuItems: [],
+      editionSelectorItems: [],
       skuConfig: DestinySkuConfigDataStore.state,
       loading: true,
       noContentItem: false,
@@ -185,7 +187,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
             skuItems,
           });
 
-          /* Here we are gettings the query param containing the SKU */
+          /* Here we are getting the query param containing the SKU */
           const params = new URLSearchParams(location.search);
           const skuFromQuery = params.get("productSku");
 
@@ -193,14 +195,16 @@ class DestinyBuyProductDetailInternal extends React.Component<
 					  -- defaulting to 0 in case of oddities */
           if (skuFromQuery && skuItems && this.state.destinyProductFamily) {
             const {
-              allSkus,
+              editionSelectorSkus,
             } = DestinySkuUtils.getSkuItemsForProductFamilySkuTagLists(
               this.state.destinyProductFamily,
               skuItems
             );
 
             const indexOfQueryParamSku =
-              allSkus?.findIndex((sku) => sku.skuTag === skuFromQuery) ?? 0;
+              editionSelectorSkus?.findIndex(
+                (sku) => sku.skuTag === skuFromQuery
+              ) ?? 0;
             DestinyBuyDataStore.update({
               selectedSkuIndex: indexOfQueryParamSku,
             });
@@ -273,7 +277,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
         );
 
       const {
-        allSkus,
+        editionSelectorSkus,
         comparisonSkus,
         collectorsEdition,
       } = DestinySkuUtils.getSkuItemsForProductFamilySkuTagLists(
@@ -283,16 +287,17 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
       /* When the page loads, if there is no selected sku set, we want to make sure a valid sku is selected, so we update the datastore with the first element in the edition selector */
       const selectedSkuName =
-        allSkus[0] &&
+        editionSelectorSkus[0] &&
         skuItems[0] &&
-        skuItems.find((sku) => sku.skuTag === allSkus[selectedSkuIndex].skuTag)
-          ?.edition;
+        skuItems.find(
+          (sku) => sku.skuTag === editionSelectorSkus[selectedSkuIndex].skuTag
+        )?.edition;
 
       const icon = "keyboard_arrow_up";
 
       return (
         <SystemDisabledHandler systems={["BuyFlow"]}>
-          <SpinnerContainer loading={destinyProductFamily === null}>
+          <SpinnerContainer loading={!destinyProductFamily}>
             <div>
               <BungieHelmet
                 title={destinyProductFamily.pageTitle}
@@ -341,9 +346,9 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       }}
                     />
                     <DestinyBuyEditionSelector
-                      skus={allSkus}
+                      skus={editionSelectorSkus}
                       title={destinyProductFamily.coverTitle}
-                      subtitle={Localizer.Destiny.Destiny2}
+                      subtitle={destinyProductFamily.smallCoverTitle}
                       buttonLabel={
                         destinyProductFamily.expansionSelectorButtonLabel
                       }
@@ -371,10 +376,11 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       }}
                     />
                     <div className={styles.rightNavContent}>
-                      {allSkus.length > 1 && (
+                      {editionSelectorSkus.length > 1 && (
                         <div
                           className={styles.toTopClickable}
                           onClick={this.scrollToTop}
+                          role={"button"}
                         >
                           <div className={styles.scrollToTop}>
                             <Icon iconType={"material"} iconName={icon} />
@@ -395,7 +401,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         size={BasicSize.Medium}
                         onClick={() =>
                           DestinySkuUtils.showStoreModal(
-                            allSkus[selectedSkuIndex].skuTag
+                            editionSelectorSkus[selectedSkuIndex].skuTag
                           )
                         }
                       >

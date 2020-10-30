@@ -1,32 +1,32 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import styles from "./CodesRedemptionForm.module.scss";
-import { Button, ButtonTypes } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
-import { Platform, GroupsV2, Contracts } from "@Platform";
-import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
-import * as Globals from "@Enum";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { PlatformError } from "@CustomErrors";
-import classNames from "classnames";
-import { SubmitButton } from "@UI/UIKit/Forms/SubmitButton";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
+import * as Globals from "@Enum";
+import { DataStore, DestroyCallback } from "@Global/DataStore";
 import {
-  withGlobalState,
   GlobalStateComponentProps,
+  withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
-import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { CodesDataStore, ICodesState } from "../CodesDataStore";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { Localizer } from "@Global/Localizer";
+import { Contracts, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { UrlUtils } from "@Utilities/UrlUtils";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
+import { Button, ButtonTypes } from "@UI/UIKit/Controls/Button/Button";
+import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
+import { SubmitButton } from "@UI/UIKit/Forms/SubmitButton";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import classNames from "classnames";
+import * as React from "react";
+import { CodesDataStore, ICodesState } from "../CodesDataStore";
+import styles from "./CodesRedemptionForm.module.scss";
 
 interface ICodesRedemptionFormProps
   extends GlobalStateComponentProps<
@@ -39,6 +39,7 @@ interface ICodesRedemptionFormState {
   codesDataStorePayload: ICodesState;
   loaded: boolean;
   cursorPosition: number;
+  modalShowing: boolean;
 }
 
 /**
@@ -55,6 +56,7 @@ class CodesRedemptionForm extends React.Component<
     HTMLInputElement
   > = React.createRef();
   private readonly subs: DestroyCallback[] = [];
+  private readonly codeValidate = /^([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})(?:-?([ACDFGHJKLMNPRTVXY34679]{5}))?$/;
 
   constructor(props) {
     super(props);
@@ -65,28 +67,35 @@ class CodesRedemptionForm extends React.Component<
       codesDataStorePayload: CodesDataStore.state,
       loaded: false,
       cursorPosition: 0,
+      modalShowing: false,
     };
   }
 
   private readonly showErrorModal = (e) => {
+    this.setState({ modalShowing: true });
+    const errorModal = (
+      <div>
+        <h3 className={styles.errorTitle}>{e.name.toUpperCase()}</h3>
+        <div
+          className={styles.errorContent}
+          dangerouslySetInnerHTML={{ __html: e.message }}
+        />
+      </div>
+    );
+
     ConfirmationModal.show({
-      children: (
-        <div>
-          <h3 style={{ color: "rgb(244, 67, 54)", lineHeight: "22px" }}>
-            {e.name.toUpperCase()}
-          </h3>
-          <div
-            style={{ lineHeight: "22px" }}
-            dangerouslySetInnerHTML={{ __html: e.message }}
-          />
-        </div>
-      ),
+      children: errorModal,
       type: "warning",
       cancelButtonProps: {
         disable: true,
       },
       confirmButtonProps: {
         labelOverride: Localizer.Coderedemption.ErrorAcknowledge,
+        onClick: () => {
+          this.setState({ modalShowing: false });
+
+          return true;
+        },
       },
     });
   };
@@ -107,9 +116,9 @@ class CodesRedemptionForm extends React.Component<
     );
 
     // This is useful if we want to pass a code through the url as a query string. Use "?token=[code]"
-    const token = UrlUtils.QueryToObject().token;
-    typeof token === "string" &&
-      this.setState({ inputValue: this._addDashes(token) });
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    token?.length && this.setState({ inputValue: this._addDashes(token) });
   }
 
   public componentDidUpdate(prevState) {
@@ -132,13 +141,19 @@ class CodesRedemptionForm extends React.Component<
       redeemedOffer: null,
     });
 
-    CodesDataStore.update({ selectedPlatform: 0 });
+    CodesDataStore.update({
+      selectedMembership: Globals.BungieMembershipType.None,
+    });
   };
 
   private readonly handleChange = (e) => {
     e.preventDefault();
+
     const cursorPosition = e.target.selectionStart;
-    this.setState({ cursorPosition, inputValue: e.target.value.toUpperCase() });
+    const stringWithoutWhitespace = e.target.value
+      .toUpperCase()
+      .replace(/\s/g, "");
+    this.setState({ cursorPosition, inputValue: stringWithoutWhitespace });
   };
 
   private readonly _addDashes = (code) => {
@@ -173,24 +188,19 @@ class CodesRedemptionForm extends React.Component<
     return codeWithDashes;
   };
 
-  private readonly _removeDashes = (code) => {
+  private readonly _removeDashes = (code: string) => {
     return code.replace(/[^\w\s]/gi, "");
   };
 
-  private readonly selectMembership = (mt) => {
-    const temp = this.state.codesDataStorePayload;
-    temp.selectedPlatform = mt;
-
-    CodesDataStore.update(temp);
-  };
-
-  private readonly handleSubmit = (event) => {
+  private readonly handleSubmit = (event, codeValid) => {
     event.preventDefault();
 
     this.state.inputValue !== "" &&
+      codeValid &&
+      !this.state.modalShowing &&
       Platform.TokensService.ClaimAndApplyOnToken(
         this.state.inputValue,
-        this.state.codesDataStorePayload.selectedPlatform
+        this.state.codesDataStorePayload.selectedMembership
       )
         .then((data) => this.setState({ redeemedOffer: data }))
         .catch(ConvertToPlatformError)
@@ -203,7 +213,7 @@ class CodesRedemptionForm extends React.Component<
     event.preventDefault();
 
     Platform.TokensService.ApplyOfferToCurrentDestinyMembership(
-      this.state.codesDataStorePayload.selectedPlatform,
+      this.state.codesDataStorePayload.selectedMembership,
       this.state.redeemedOffer.OfferKey
     )
       .then(
@@ -226,28 +236,29 @@ class CodesRedemptionForm extends React.Component<
       });
   };
 
+  private readonly selectMembership = (
+    membership: Globals.BungieMembershipType
+  ) => {
+    CodesDataStore.updateSelectedMembership(membership);
+  };
+
   public render() {
     const platformSelected =
-      this.state.codesDataStorePayload.selectedPlatform !==
+      this.state.codesDataStorePayload.selectedMembership !==
       Globals.BungieMembershipType.None;
     const codeRedeemed = this.state.redeemedOffer !== null;
     const redeemedOfferIsConsumable =
       codeRedeemed &&
       this.state.redeemedOffer.RedeemType ===
         Globals.OfferRedeemMode.Consumable;
-    const codeValidate = /^([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})(?:-?([ACDFGHJKLMNPRTVXY34679]{5}))?$/;
-    const codeValid = codeValidate.test(
+    const codeValid = this.codeValidate.test(
       this._removeDashes(this.state.inputValue)
     );
-    const {
-      userPlatforms,
-      selectedPlatform,
-    } = this.state.codesDataStorePayload;
+    const { userMemberships } = this.state.codesDataStorePayload;
 
     const hasDestinyAccount =
-      userPlatforms &&
-      userPlatforms.length > 0 &&
-      userPlatforms[0] !== Globals.BungieMembershipType.None;
+      userMemberships?.length > 0 &&
+      userMemberships?.[0] !== Globals.BungieMembershipType.None;
 
     const noDestinyAccountsErrorMessage = Localizer.FormatReact(
       Localizer.Coderedemption.LinkedDestinyAccountRequired,
@@ -258,8 +269,7 @@ class CodesRedemptionForm extends React.Component<
             className={styles.link}
             sameTab={false}
           >
-            {" "}
-            {Localizer.Coderedemption.settingsLinkLabel}{" "}
+            {Localizer.Coderedemption.settingsLinkLabel}
           </Anchor>
         ),
         codeHistory: (
@@ -268,12 +278,12 @@ class CodesRedemptionForm extends React.Component<
             className={styles.link}
             sameTab={false}
           >
-            {" "}
-            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}{" "}
+            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
           </Anchor>
         ),
       }
     );
+
     const helpErrorMessage = Localizer.FormatReact(
       Localizer.Coderedemption.HelpForumsMessage,
       {
@@ -283,17 +293,17 @@ class CodesRedemptionForm extends React.Component<
             className={styles.link}
             sameTab={false}
           >
-            {" "}
-            {Localizer.Coderedemption.helpLinkLabel}{" "}
+            {Localizer.Coderedemption.helpLinkLabel}
           </Anchor>
         ),
       }
     );
+
     const platformPickupMessage =
       platformSelected &&
       Localizer.Format(Localizer.Coderedemption.AppliedPlatform, {
         platform: LocalizerUtils.getPlatformNameFromMembershipType(
-          this.state.codesDataStorePayload.selectedPlatform
+          this.state.codesDataStorePayload.selectedMembership
         ),
       });
 
@@ -305,23 +315,19 @@ class CodesRedemptionForm extends React.Component<
 
     return (
       <SystemDisabledHandler systems={["BungieTokens"]}>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={(e) => this.handleSubmit(e, codeValid)}>
           <SpinnerContainer loading={!this.state.loaded}>
             {
               <div className={styles.container}>
-                <React.Fragment>
+                <>
                   <p>{Localizer.Coderedemption.SignedInAs}</p>
                   <div className={styles.box}>
-                    {loggedInUser && (
-                      <p className={styles.id}>
-                        {loggedInUser.user.displayName}
-                      </p>
-                    )}
-                    {loggedInUser && (
-                      <p className={styles.unique_name}>
-                        {loggedInUser.user.uniqueName}
-                      </p>
-                    )}
+                    <p className={styles.id}>
+                      {loggedInUser?.user.displayName}
+                    </p>
+                    <p className={styles.unique_name}>
+                      {loggedInUser?.user.uniqueName}
+                    </p>
                   </div>
 
                   <AuthTrigger isSignOut={true} className={styles.signout}>
@@ -330,7 +336,7 @@ class CodesRedemptionForm extends React.Component<
 
                   {!codeRedeemed ? (
                     // if we are in the initial state, show code input box
-                    <React.Fragment>
+                    <>
                       <p>{Localizer.Coderedemption.RedeemCode}</p>
                       <div className={classNames(styles.input_box, lineColor)}>
                         <input
@@ -349,15 +355,15 @@ class CodesRedemptionForm extends React.Component<
                         buttonType={buttonColor}
                         className={styles.button}
                         size={BasicSize.Medium}
-                        onClick={this.handleSubmit}
+                        onClick={(e) => this.handleSubmit(e, codeValid)}
                         disabled={!codeValid}
                       >
                         {Localizer.Coderedemption.ClickRedeem}
                       </Button>
-                    </React.Fragment>
+                    </>
                   ) : (
                     // if user has just redeemed a code, show success message
-                    <React.Fragment>
+                    <>
                       <div className={classNames(styles.box, styles.mbottom2)}>
                         <p>
                           <span className={styles.success}>
@@ -369,8 +375,8 @@ class CodesRedemptionForm extends React.Component<
                       </div>
 
                       {
-                        /* if it is a consumable, show the platform selector (with error message if no destiny account found), 
-											  if it's not a consumable, show "redeem another" button */
+                        /* if it is a consumable, show the platform selector (with error message if no destiny account found)*/
+
                         redeemedOfferIsConsumable ? (
                           <div className={styles.platformSection}>
                             {hasDestinyAccount ? (
@@ -380,16 +386,16 @@ class CodesRedemptionForm extends React.Component<
                                   {Localizer.Coderedemption.WhichPlatform}{" "}
                                 </h2>
                                 <div className={styles.platformItems}>
-                                  {userPlatforms.map((p) => (
+                                  {userMemberships.map((membership, i) => (
                                     <UserPlatform
-                                      key={p}
+                                      key={membership}
                                       selectedMembershipType={
                                         this.state.codesDataStorePayload
-                                          .selectedPlatform
+                                          .selectedMembership
                                       }
-                                      membershipType={p}
-                                      onClick={(mt) =>
-                                        this.selectMembership(mt)
+                                      membershipType={membership}
+                                      onClick={() =>
+                                        this.selectMembership(membership)
                                       }
                                     />
                                   ))}
@@ -398,7 +404,7 @@ class CodesRedemptionForm extends React.Component<
                                 <h3 className={styles.pickUp}>
                                   {platformPickupMessage}
                                 </h3>
-                                <SubmitButton
+                                <Button
                                   buttonType={buttonColor}
                                   className={styles.button}
                                   size={BasicSize.Medium}
@@ -406,10 +412,10 @@ class CodesRedemptionForm extends React.Component<
                                   disabled={!platformSelected}
                                 >
                                   {Localizer.Coderedemption.ApplyOffer}
-                                </SubmitButton>
+                                </Button>
                               </div>
                             ) : (
-                              // error if no Destiny Account found
+                              /* error if no Destiny Account found */
                               <div>
                                 <h1 className={styles.noDestinyTitle}>
                                   {
@@ -427,6 +433,7 @@ class CodesRedemptionForm extends React.Component<
                             )}
                           </div>
                         ) : (
+                          /*  if it's not a consumable, show "redeem another" button */
                           <Button
                             buttonType={"gold"}
                             className={styles.button}
@@ -437,9 +444,9 @@ class CodesRedemptionForm extends React.Component<
                           </Button>
                         )
                       }
-                    </React.Fragment>
+                    </>
                   )}
-                </React.Fragment>
+                </>
               </div>
             }
           </SpinnerContainer>
@@ -464,7 +471,11 @@ const UserPlatform = (props: IUserPlatform) => {
 
   return (
     <div onClick={() => onClick(membershipType)} className={classes}>
-      {Localizer.Shortplatforms[Globals.BungieMembershipType[membershipType]]}
+      {
+        Localizer.Shortplatforms[
+          EnumUtils.getStringValue(membershipType, Globals.BungieMembershipType)
+        ]
+      }
     </div>
   );
 };

@@ -1,7 +1,6 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { DestinyGameVersions } from "@Enum";
 import { DestroyCallback } from "@Global/DataStore";
 import { Localizer } from "@Global/Localizer";
 import { Content, Platform, Renderer } from "@Platform";
@@ -19,6 +18,7 @@ import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
+import { StringUtils } from "@Utilities/StringUtils";
 import * as React from "react";
 import { IDestinyProductFamilyDefinition } from "../../../UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import styles from "./DestinyBuyIndex.module.scss";
@@ -178,11 +178,14 @@ export default class DestinyBuyInternal extends React.Component<
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );
     }
-    const { productFamilies, skuConfig, carouselItem } = this.state;
+    const { productFamilies, skuConfig, carouselItem, skuItems } = this.state;
 
-    const newLight = productFamilies[0];
-    const expansions = productFamilies.slice(1);
-
+    const newLight = productFamilies?.find(
+      (v) => v.productFamilyTag === "playforfree"
+    );
+    const expansions = productFamilies?.filter(
+      (product) => product.productFamilyTag !== "playforfree"
+    );
     const metaImage = productFamilies.length > 0 ? newLight.imagePath : null;
 
     return (
@@ -254,22 +257,27 @@ export default class DestinyBuyInternal extends React.Component<
           </div>
 
           <div className={styles.coverCards}>
-            {expansions.map((productFamily, i) => (
-              <GridCol cols={3} mobile={6} key={i}>
-                <DestinyBuyCoverCard
-                  productFamily={productFamily}
-                  key={i}
-                  onSale={productFamily.skuList.some((st) =>
-                    DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
-                  )}
-                >
-                  <ProductFamilyTitles
-                    subtitle={Localizer.Destiny.Destiny2}
-                    title={productFamily.coverTitle}
-                  />
-                </DestinyBuyCoverCard>
-              </GridCol>
-            ))}
+            {expansions.map((productFamily, i) => {
+              const productIsOnSale =
+                skuConfig &&
+                productFamily?.skuList.some((st) =>
+                  DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
+                );
+              const { saleInformation } = productFamily;
+
+              return (
+                <GridCol cols={3} mobile={6} key={i}>
+                  <DestinyBuyCoverCard productFamily={productFamily}>
+                    <ProductFamilyTitles
+                      onSale={productIsOnSale}
+                      subtitle={Localizer.Destiny.Destiny2}
+                      title={productFamily.coverTitle}
+                      saleDetails={saleInformation}
+                    />
+                  </DestinyBuyCoverCard>
+                </GridCol>
+              );
+            })}
           </div>
         </Grid>
       </SystemDisabledHandler>
@@ -280,13 +288,18 @@ export default class DestinyBuyInternal extends React.Component<
 interface IProductFamilyTitlesProps {
   title: string;
   subtitle: string;
+  saleDetails?: string;
+  onSale?: boolean;
 }
 
 const ProductFamilyTitles = (props: IProductFamilyTitlesProps) => {
-  const { title, subtitle } = props;
+  const { title, subtitle, saleDetails, onSale } = props;
 
   return (
     <div className={styles.titles}>
+      {onSale && !StringUtils.isNullOrWhiteSpace(saleDetails) && (
+        <p className={styles.discountString}>{saleDetails}</p>
+      )}
       <div className={styles.subtitle}>{subtitle}</div>
       <div className={styles.title}>{title}</div>
     </div>

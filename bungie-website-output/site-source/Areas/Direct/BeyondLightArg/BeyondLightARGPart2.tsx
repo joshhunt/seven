@@ -6,6 +6,7 @@ import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Img } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import classNames from "classnames";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import styles from "./BeyondLightARG.module.scss";
@@ -17,6 +18,7 @@ interface Part2Props {
 }
 
 export const BeyondLightARGPart2: React.FC<Part2Props> = ({ data }) => {
+  const [showing, setShowing] = useState(false);
   const timerDateString = ConfigUtils.GetParameter(
     "DestinyArg",
     "PuzzleGateDate",
@@ -58,13 +60,67 @@ export const BeyondLightARGPart2: React.FC<Part2Props> = ({ data }) => {
   return (
     <div className={styles.part2wrapper}>
       <div>
-        <BeyondLightArgSelfTyper delayAtStart={2000}>
-          ANALYZE // User {loggedInUser.user.membershipId} access granted.
-          Analysis complete.
+        <BeyondLightArgSelfTyper delayAtStart={1000}>
+          Remote archive database classified search initiated.
         </BeyondLightArgSelfTyper>
-      </div>
-      <div className={styles.image}>
-        <img src={imagePath} alt={data.Image} />
+        <BeyondLightArgSelfTyper delayAtStart={3000}>
+          Welcome, User $nullStringRef.
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={5000}>
+          Analyzing…
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={7000}>
+          Analyzing…
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={9000}>
+          Files found are corrupted or heavily encrypted.
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={11000}>
+          Would you like to attempt decryption process?
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={13000}>
+          //input received/"yes"
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={15000}>
+          Initiating…
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={17000}>
+          Decrypting…
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={19000}>
+          Sequence data fragment found.
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={21000}>
+          Display fragment?
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={23000}>
+          //input received/"yes"
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper
+          delayAtStart={25000}
+          onComplete={() => setShowing(true)}
+        >
+          Displaying…
+        </BeyondLightArgSelfTyper>
+        <div className={classNames(styles.image, { [styles.show]: showing })}>
+          <img src={imagePath} alt={data.Image} />
+        </div>
+        <BeyondLightArgSelfTyper delayAtStart={27000}>
+          ALERT: There may be additional SEQ data at other locations.
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={29000}>
+          Attempt further analysis?
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={31000}>
+          //input received/"yes"
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={33000}>
+          ERROR: Access denied. Data stream corrupted. Observer locked out.
+        </BeyondLightArgSelfTyper>
+        <BeyondLightArgSelfTyper delayAtStart={35000}>
+          ALERT: OBSERVER VIOLATION DETECTED. 24 HOUR LOCK-OUT INITIATED. NEW
+          ACCESS ID REQUIRED.
+        </BeyondLightArgSelfTyper>
       </div>
     </div>
   );

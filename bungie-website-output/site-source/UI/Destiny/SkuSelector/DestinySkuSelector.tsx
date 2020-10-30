@@ -97,6 +97,8 @@ export default class DestinySkuSelector extends React.Component<
           <img
             className={styles.tricorn2}
             src={"7/ca/destiny/logos/tricorn_2_icon.svg"}
+            alt={""}
+            role={"presentation"}
           />
           <div className={styles.modalTitle}>
             <div className={styles.title}>{def.title}</div>

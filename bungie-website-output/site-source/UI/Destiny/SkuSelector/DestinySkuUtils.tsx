@@ -1,6 +1,7 @@
 import {
   IDestinyProductDefinition,
   IDestinyProductFamilyDefinition,
+  SkuTagKeyValuePair,
 } from "./DestinyProductDefinitions";
 import { Content, Platform } from "@Platform";
 import {
@@ -60,6 +61,8 @@ export class DestinySkuUtils {
       relatedPage: contentItem.properties["LearnMoreUrl"],
       modalHeaderImage: contentItem.properties["ModalHeaderImage"],
       skuTag: sku,
+      soldOutButtonLabel: contentItem.properties["soldOutButtonLabel"],
+      buyButtonDisabled: contentItem.properties["buyButtonDisabled"],
     };
   }
 
@@ -72,11 +75,13 @@ export class DestinySkuUtils {
 			 that final part of the url FROM that tag */
       productFamilyTag: contentItem?.tags[0]?.substring(15),
       pageTitle: contentItem.properties["PageTitle"],
+      smallCoverTitle: contentItem.properties["SmallCoverTitle"],
       coverTitle: contentItem.properties["CoverTitle"],
       coverTopText: contentItem.properties["CoverTopText"],
       tagline: contentItem.properties["Tagline"],
       imagePath: contentItem.properties["Image"],
       skuList: contentItem.properties["SkuList"],
+      editionSelectorSkus: contentItem.properties["EditionSelectorSkus"],
       heroLogo: contentItem.properties["HeroLogo"],
       heroBackgroundMobile: contentItem.properties["HeroBackgroundMobile"],
       herobackgroundVideo: contentItem.properties["HeroBackgroundVideo"],
@@ -97,6 +102,7 @@ export class DestinySkuUtils {
         contentItem.properties["CollectorsEditionSectionTitle"],
       collectorsEditionSkuTag:
         contentItem.properties["CollectorsEditionSkuTag"],
+      saleInformation: contentItem.properties["saleInformation"],
     };
   }
 
@@ -287,25 +293,31 @@ export class DestinySkuUtils {
       }
     };
 
-    /* Sometimes there won't be a comparison section, but we still need skus for the edition selector */
-    const allSkus = productFamily.skuList
-      .map((x) => x.SkuTag)
-      .map((st) => tryCache(st));
+    /* Get skus for the edition selector */
+    const editionSelectorSkus: IDestinyProductDefinition[] = Array.isArray(
+      productFamily.editionSelectorSkus
+    )
+      ? productFamily.editionSelectorSkus
+          .map((x) => x.SkuTag)
+          .map((st) => tryCache(st))
+      : [];
 
     /* Create an array that only includes the skus we want to compare on this page in the order the product family has them */
-    const comparisonSkus = Array.isArray(productFamily.comparisonSection)
+    const comparisonSkus: IDestinyProductDefinition[] = Array.isArray(
+      productFamily.comparisonSection
+    )
       ? productFamily.comparisonSection
           .map((x) => x.SkuTag)
           .map((st) => tryCache(st))
       : [];
 
     /* See if this product family has a collector's edition to show */
-    const collectorsEdition = skuItems.find(
+    const collectorsEdition: IDestinyProductDefinition = skuItems.find(
       (sku) => sku.skuTag === productFamily.collectorsEditionSkuTag
     );
 
     return {
-      allSkus,
+      editionSelectorSkus,
       comparisonSkus,
       collectorsEdition,
     };

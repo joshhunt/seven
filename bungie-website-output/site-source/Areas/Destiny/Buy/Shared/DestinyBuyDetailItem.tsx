@@ -89,7 +89,7 @@ export class DestinyBuyDetailItem extends React.Component<
           buttonLabel={
             item
               ? item.buttonLabel
-              : (collectorsEdition || strangerEdition) && skuItem.buttonLabel
+              : skuItem?.soldOutButtonLabel || skuItem.buttonLabel
           }
           buttonSku={item ? item.buttonSku : null}
           buttonUrl={
@@ -97,7 +97,7 @@ export class DestinyBuyDetailItem extends React.Component<
               ? item.buttonLink
               : (collectorsEdition || strangerEdition) && skuItem.relatedPage
           }
-          buttonType={collectorsEdition ? "disabled" : "gold"}
+          buttonType={skuItem?.buyButtonDisabled ? "disabled" : "gold"}
           orientation={orientation}
         />
       </div>

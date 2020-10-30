@@ -71,7 +71,6 @@ class CodesHistory extends React.Component<
 
         <RequiresAuth>
           <CodesHistoryForm
-            crossSaveStatus={this.props.globalState.crossSavePairingStatus}
             membershipId={this.props.match.params.membershipId}
           />
         </RequiresAuth>

@@ -1,16 +1,16 @@
 import { DataStore } from "@Global/DataStore";
-import { BungieMembershipType, BungieCredentialType } from "@Enum";
+import { BungieMembershipType } from "@Enum";
 import { Platform } from "@Platform";
 
 export interface ICodesState {
-  userPlatforms: BungieMembershipType[];
-  selectedPlatform: BungieMembershipType;
+  userMemberships: BungieMembershipType[];
+  selectedMembership: BungieMembershipType;
 }
 
 class CodesDataStoreInternal extends DataStore<ICodesState> {
   public static Instance = new CodesDataStoreInternal({
-    userPlatforms: [],
-    selectedPlatform: BungieMembershipType.None,
+    userMemberships: [],
+    selectedMembership: BungieMembershipType.None,
   });
 
   /**
@@ -20,18 +20,22 @@ class CodesDataStoreInternal extends DataStore<ICodesState> {
     Platform.UserService.GetMembershipDataForCurrentUser()
       .then((data) => {
         if (data.destinyMemberships.length > 0) {
-          const userPlatforms = userIsCrossSaved
+          const userMemberships = userIsCrossSaved
             ? data.destinyMemberships[0].applicableMembershipTypes
             : data.destinyMemberships.map((dm) => dm.membershipType);
 
           this.update({
-            userPlatforms,
+            userMemberships,
           });
         }
       })
       .catch((e: Error) => {
         throw new Error(e.message);
       });
+  }
+
+  public updateSelectedMembership(membership: BungieMembershipType) {
+    this.update({ selectedMembership: membership });
   }
 }
 

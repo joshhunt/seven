@@ -1,8 +1,12 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import * as Globals from "@Enum";
+import { Img } from "@Helpers";
+import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as React from "react";
 import { Localizer } from "@Global/Localizer";
+import { SquareButton } from "@UI/UIKit/Controls/Button/SquareButton";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Dropdown, IDropdownOption } from "@UI/UIKit/Forms/Dropdown";
 import DestinySkuStoreButton from "./DestinySkuStoreButton";
@@ -109,7 +113,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     e: React.MouseEvent<HTMLElement>,
     selectedStore: IDestinySkuStore
   ) => {
-    const buttonUrl = (e.target as HTMLAnchorElement).href;
+    const buttonUrl = (e.currentTarget as HTMLAnchorElement).href;
     if (buttonUrl) {
       DestinySkuUtils.triggerConversion(
         this.props.definition.skuTag,
@@ -166,7 +170,6 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     const disabledPSNSkusRegex = new RegExp(regexString, "gi");
     const isPlaystation = (store) => store.stringKey === "StorePlaystation";
     const isDisabled = (skuTag) => disabledPSNSkusRegex.test(skuTag);
-
     const outerClasses = classNames(styles.options, className);
 
     return (
@@ -204,28 +207,38 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                   return (
                     <div
                       key={store.key}
-                      className={classNames(styles.buttonContainer, {
+                      className={classNames(styles.buttonWrapper, {
                         [styles.activeSale]: activeSale,
                       })}
                     >
-                      {activeSale && (
-                        <div className={styles.saleInfo}>
-                          <p className={styles.endDate}>{activeSaleString}</p>
-                          <div className={styles.saleTag}>
-                            {activeSale.discountString}
-                          </div>
-                        </div>
-                      )}
-                      <Button
-                        buttonType={"gold"}
-                        className={styles.storeButton}
+                      <SquareButton
+                        buttonStyles={styles.platformTriggerButton}
                         url={url}
                         sameTab={false}
                         onClick={(e) => this.onStoreSelected(e, store)}
                         analyticsId={`${store}|${def.skuTag}`}
                       >
-                        {Localizer.SkuDestinations[store.stringKey]}
-                      </Button>
+                        {activeSale && (
+                          <div className={styles.saleTag}>
+                            {activeSale.discountString}
+                          </div>
+                        )}
+
+                        <img
+                          className={styles.icon}
+                          src={`${Img(
+                            `bungie/icons/logos/${store.key.toLowerCase()}/${store.key.toLowerCase()}_icon_small.png`
+                          )}`}
+                          alt={store.key}
+                        />
+                        {store.key}
+                      </SquareButton>
+
+                      <div className={styles.saleInfo}>
+                        <p className={styles.endDate}>
+                          {activeSaleString}&nbsp;
+                        </p>
+                      </div>
                     </div>
                   );
                 }
@@ -250,6 +263,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
               onClick={() => {
                 this.setState({ selectedStore: null });
               }}
+              role={"button"}
             >
               {Localizer.Buyflow.change}
             </span>

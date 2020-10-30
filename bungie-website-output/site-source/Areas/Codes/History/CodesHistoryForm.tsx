@@ -1,69 +1,44 @@
-// Created by a-larobinson, 2019
+// Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import { Platform, Contracts, CrossSave } from "@Platform";
-import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
-import { Localizer } from "@Global/Localizer";
-import moment from "moment/moment";
-import styles from "./CodesHistoryForm.module.scss";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { OfferRedeemMode, BungieMembershipType, AclEnum } from "@Enum";
-import CodesPlatformSelectModal from "./CodesPlatformSelectModal";
-import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
-import { ICodesState, CodesDataStore } from "../CodesDataStore";
-import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { CodesDataStore } from "@Areas/Codes/CodesDataStore";
+import styles from "@Areas/Codes/History/CodesHistoryForm.module.scss";
+import { CodesPlatformSelector } from "@Areas/Codes/History/CodesPlatformSelector";
 import { PlatformError } from "@CustomErrors";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Anchor } from "@UI/Navigation/Anchor";
+import { AclEnum, BungieMembershipType, OfferRedeemMode } from "@Enum";
+import { useDataStore } from "@Global/DataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { PermissionsGate } from "@UI/User/PermissionGate";
-import {
-  GlobalStateComponentProps,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
+import { Button } from "@UIKit/Controls/Button/Button";
+import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { BasicSize } from "@UIKit/UIKitUtils";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
 
-interface ICodesHistoryFormProps
-  extends GlobalStateComponentProps<"loggedInUser"> {
-  crossSaveStatus: CrossSave.CrossSavePairingStatus;
+interface CodesHistoryFormProps {
   membershipId?: string;
 }
 
-interface ICodesHistoryFormState {
-  offers: Contracts.OfferHistoryResponse[];
-  CodesDataStorePayload: ICodesState;
-  loggedInUserCanReadHistory: boolean;
-}
+export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
+  const initialOffers: Contracts.OfferHistoryResponse[] = null;
 
-/**
- * CodesHistoryForm - Replace this description
- *  *
- * @param {ICodesHistoryFormProps} props
- * @returns
- */
-export class CodesHistoryFormInner extends React.Component<
-  ICodesHistoryFormProps,
-  ICodesHistoryFormState
-> {
-  private readonly subs: DestroyCallback[] = [];
+  const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
+    false
+  );
+  const [offers, setOffers] = useState(initialOffers);
+  const codesDataStorePayload = useDataStore(CodesDataStore);
+  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
 
-  constructor(props: ICodesHistoryFormProps) {
-    super(props);
-
-    this.state = {
-      offers: null,
-      CodesDataStorePayload: CodesDataStore.state,
-      loggedInUserCanReadHistory: false,
-    };
-  }
-
-  public componentDidMount() {
+  useEffect(() => {
     // If there is a membership id at the end of the url, it will get passed down through props
-    const { membershipId } = this.props;
-    const { loggedInUser } = this.props.globalState;
 
     /* There are four situations we need to handle before we make this platform call:
      * admin user looking at another user's history - membershipId exists and hasPrivateDataReadPermissions
@@ -72,87 +47,38 @@ export class CodesHistoryFormInner extends React.Component<
      * user looking at another person's history - membershipId and !canViewHistory
      */
     const canViewHistory =
-      (membershipId && membershipId === loggedInUser.user.membershipId) ||
-      loggedInUser.userAcls.includes(AclEnum.BNextPrivateUserDataReader);
-    const hasPrivateDataReadPermissions = loggedInUser.userAcls.includes(
+      (props.membershipId &&
+        props.membershipId === globalState.loggedInUser.user.membershipId) ||
+      globalState.loggedInUser.userAcls.includes(
+        AclEnum.BNextPrivateUserDataReader
+      );
+    const hasPrivateDataReadPermissions = globalState.loggedInUser.userAcls.includes(
       AclEnum.BNextPrivateUserDataReader
     );
 
-    if (canViewHistory || !membershipId) {
-      this.setState({ loggedInUserCanReadHistory: true });
-      hasPrivateDataReadPermissions && membershipId
-        ? Platform.TokensService.GetUserOfferHistory(membershipId)
-            .then((offers) => {
-              this.setState({
-                offers,
-              });
+    if (canViewHistory || !props.membershipId) {
+      setLoggedInUserCanReadHistory(true);
+
+      hasPrivateDataReadPermissions && props.membershipId
+        ? Platform.TokensService.GetUserOfferHistory(props.membershipId)
+            .then((response) => {
+              setOffers(response);
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e))
         : Platform.TokensService.GetCurrentUserOfferHistory()
-            .then((offers) => {
-              this.setState({
-                offers,
-              });
+            .then((response) => {
+              setOffers(response);
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e));
     }
+  }, []);
 
-    this.subs.push(
-      CodesDataStore.observe(
-        (data) => {
-          data &&
-            this.setState({
-              CodesDataStorePayload: data,
-            });
-        },
-        null,
-        true
-      )
-    );
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.subs);
-  }
-
-  public makeDateString(date) {
-    const d = moment.utc(date);
-    const dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
-      month: d.format("MMM"),
-      day: d.format("DD"),
-      year: d.format("YYYY"),
-    });
-
-    return dateString;
-  }
-
-  public offerOrRedeem(offer: Contracts.OfferHistoryResponse) {
-    if (
-      offer.ConsumableQuantity > 0 &&
-      (offer.RedeemType === OfferRedeemMode.Unlock ||
-        offer.RedeemType === OfferRedeemMode.Consumable)
-    ) {
-      return "redeem";
-    } else if (offer.RedeemType === OfferRedeemMode.Off) {
-      return "pending";
-    } else {
-      return "date";
-    }
-  }
-
-  private readonly showRedeemModal = (
-    offer: Contracts.OfferHistoryResponse
-  ) => {
-    const {
-      selectedPlatform,
-      userPlatforms,
-    } = this.state.CodesDataStorePayload;
+  const _showRedeemModal = (offer: Contracts.OfferHistoryResponse) => {
     const hasDestinyAccount =
-      userPlatforms &&
-      userPlatforms.length > 0 &&
-      userPlatforms[0] !== BungieMembershipType.None;
+      codesDataStorePayload.userMemberships?.length > 0 &&
+      codesDataStorePayload.userMemberships?.[0] !== BungieMembershipType.None;
     const noDestinyAccountsErrorMessage = Localizer.FormatReact(
       Localizer.Coderedemption.LinkedDestinyAccountRequiredHistory,
       {
@@ -162,8 +88,7 @@ export class CodesHistoryFormInner extends React.Component<
             className={styles.link}
             sameTab={false}
           >
-            {" "}
-            {Localizer.Coderedemption.settingsLinkLabel}{" "}
+            {Localizer.Coderedemption.settingsLinkLabel}
           </Anchor>
         ),
         codeHistory: (
@@ -172,8 +97,7 @@ export class CodesHistoryFormInner extends React.Component<
             className={styles.link}
             sameTab={false}
           >
-            {" "}
-            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}{" "}
+            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
           </Anchor>
         ),
       }
@@ -197,12 +121,7 @@ export class CodesHistoryFormInner extends React.Component<
       <TwoLineItem
         itemTitle={offer.OfferDisplayName}
         itemSubtitle={offer.OfferDisplayDetail}
-        icon={
-          <img
-            src={offer.OfferImagePath}
-            style={{ width: "2.5rem", height: "2.5rem" }}
-          />
-        }
+        icon={<img className={styles.offerIcon} src={offer.OfferImagePath} />}
       />
     );
 
@@ -211,17 +130,16 @@ export class CodesHistoryFormInner extends React.Component<
           type: "none",
           children:
             offer.RedeemType === OfferRedeemMode.Consumable ? (
-              <CodesPlatformSelectModal
-                twoLineItem={twoLineItem}
-                crossSaveStatus={this.props.crossSaveStatus}
-              />
+              <CodesPlatformSelector twoLineItem={twoLineItem} />
             ) : (
-              <div>{Localizer.CodeRedemption.NonconsumablePickupSuccess}</div>
+              Localizer.CodeRedemption.NonconsumablePickupSuccess
             ),
           confirmButtonProps: {
             onClick: () => {
+              // This should not need to be updated so in such a ham-handed way, however, without it, it passes through "0" for selected membership the first time a platform is selected...
+              const mem = CodesDataStore.state.selectedMembership;
               Platform.TokensService.ApplyOfferToCurrentDestinyMembership(
-                selectedPlatform,
+                mem,
                 offer.OfferKey
               )
                 .then((data) => {
@@ -258,32 +176,32 @@ export class CodesHistoryFormInner extends React.Component<
         });
   };
 
-  public render() {
-    return (
-      <SystemDisabledHandler systems={["BungieTokens"]}>
-        {this.state.loggedInUserCanReadHistory ? (
-          <div>
-            {this.state.offers && this.state.offers.length > 0 ? (
-              // For each offer, decide whether to show the date, a "redeem" button or "pending" as the flair
-              this.state.offers.map((o, i) => {
+  return (
+    <SystemDisabledHandler systems={["BungieTokens"]}>
+      {loggedInUserCanReadHistory ? (
+        <>
+          {
+            // For each offer, decide whether to show the date, a "redeem" button or "pending" as the flair
+            offers?.length > 0 ? (
+              offers.map((o, i) => {
                 let flair = null;
 
-                switch (this.offerOrRedeem(o)) {
+                switch (_offerOrRedeem(o)) {
                   case "date":
                     flair = (
-                      <div style={{ minWidth: "26%" }}>
-                        {this.makeDateString(o.OfferPurchaseDate)}
+                      <div className={styles.date}>
+                        {_makeDateString(o.OfferPurchaseDate)}
                       </div>
                     );
                     break;
                   case "pending":
-                    flair = <div>{Localizer.Coderedemption.pending}</div>;
+                    flair = Localizer.Coderedemption.pending;
                     break;
                   case "redeem":
                     flair = (
                       <Button
                         size={BasicSize.Small}
-                        onClick={() => this.showRedeemModal(o)}
+                        onClick={() => _showRedeemModal(o)}
                       >
                         {Localizer.Coderedemption.ClickRedeem}
                       </Button>
@@ -291,13 +209,10 @@ export class CodesHistoryFormInner extends React.Component<
                     break;
                   default:
                     flair = (
-                      <div style={{ minWidth: "26%" }}>
-                        {this.makeDateString(o.OfferPurchaseDate)}
+                      <div className={styles.date}>
+                        {_makeDateString(o.OfferPurchaseDate)}
                       </div>
                     );
-                }
-                {
-                  // Show offer in a two line item with the correct flair
                 }
 
                 return (
@@ -308,7 +223,7 @@ export class CodesHistoryFormInner extends React.Component<
                       icon={
                         <img
                           src={o.OfferImagePath}
-                          style={{ width: "2.5rem", height: "2.5rem" }}
+                          className={styles.offerIcon}
                         />
                       }
                       flair={flair}
@@ -326,21 +241,39 @@ export class CodesHistoryFormInner extends React.Component<
               <p className={styles.noResponse}>
                 {Localizer.Coderedemption.NoResults}
               </p>
-            )}
-          </div>
-        ) : (
-          // if this isn't your membershipId in the url or you're not an admin, you don't get to see the history!
-          <div>
-            <p className={styles.noResponse}>
-              {Localizer.Coderedemption.NotYourAccount}
-            </p>
-          </div>
-        )}
-      </SystemDisabledHandler>
-    );
-  }
-}
+            )
+          }
+        </>
+      ) : (
+        // if this isn't your membershipId in the url or you're not an admin, you don't get to see the history!
+        <p className={styles.noResponse}>
+          {Localizer.Coderedemption.NotYourAccount}
+        </p>
+      )}
+    </SystemDisabledHandler>
+  );
+};
 
-export const CodesHistoryForm = withGlobalState(CodesHistoryFormInner, [
-  "loggedInUser",
-]);
+const _makeDateString = (date) => {
+  const d = moment.utc(date);
+  const dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
+    month: d.format("MMM"),
+    day: d.format("DD"),
+    year: d.format("YYYY"),
+  });
+
+  return dateString;
+};
+const _offerOrRedeem = (offer: Contracts.OfferHistoryResponse) => {
+  if (
+    offer.ConsumableQuantity > 0 &&
+    (offer.RedeemType === OfferRedeemMode.Unlock ||
+      offer.RedeemType === OfferRedeemMode.Consumable)
+  ) {
+    return "redeem";
+  } else if (offer.RedeemType === OfferRedeemMode.Off) {
+    return "pending";
+  } else {
+    return "date";
+  }
+};

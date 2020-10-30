@@ -5,12 +5,14 @@ interface Props {
   children: string[] | string;
   speedInMs?: number;
   delayAtStart?: number;
+  onComplete?: () => void;
 }
 
 export const BeyondLightArgSelfTyper: React.FC<Props> = ({
   children,
   speedInMs,
   delayAtStart,
+  onComplete,
 }) => {
   const normalizedChildren =
     typeof children === "string" ? [children] : (children as string[]);
@@ -26,6 +28,8 @@ export const BeyondLightArgSelfTyper: React.FC<Props> = ({
     if (typed.length < joinedChildren.length) {
       const delay = typed.length === 0 ? speedInMs + delayAtStart : speedInMs;
       setTimeout(typeNext, delay);
+    } else {
+      onComplete?.();
     }
   }, [typed]);
 
