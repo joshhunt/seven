@@ -15,7 +15,7 @@ import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { Img } from "@Helpers";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, RefObject } from "react";
 import classNames from "classnames";
 
 export type AuthTemporaryGlobalState = GlobalState<
@@ -44,9 +44,32 @@ interface DefaultProps {
   mode: "inline" | "modal" | "standalone";
   /** If true AND if mode == "modal", we will automatically open a modal. You may want to set this to false if you are creating your own modal. */
   autoOpenModal: boolean;
+  /**
+   * If true, the user will be able to close the auth modal
+   */
+  preventModalClose: boolean;
 }
 
 type Props = IAuthProps & Partial<DefaultProps>;
+
+export const ShowAuthModal = (
+  authProps: Props = {},
+  existingModalRef?: RefObject<Modal>
+) => {
+  const modalRef = existingModalRef ?? React.createRef<Modal>();
+
+  Modal.open(
+    <AuthInternal {...authProps} />,
+    {
+      isFrameless: true,
+      preventUserClose: authProps.preventModalClose,
+      className: styles.authModal,
+    },
+    modalRef
+  );
+
+  return modalRef;
+};
 
 /**
  * Will wrap the AuthInternal component in various ways depending on the mode
@@ -73,15 +96,7 @@ const AuthWrapper: React.FC<Props> = (props) => {
       if (props.autoOpenModal) {
         setShouldRender(false);
 
-        Modal.open(
-          <AuthInternal {...rest} onSignIn={onSignIn} />,
-          {
-            isFrameless: true,
-            preventUserClose: true,
-            className: styles.authModal,
-          },
-          modalRef
-        );
+        ShowAuthModal({ ...rest, onSignIn }, modalRef);
       } else {
         setShouldRender(true);
       }
@@ -94,6 +109,7 @@ const AuthWrapper: React.FC<Props> = (props) => {
 AuthWrapper.defaultProps = {
   mode: "modal",
   autoOpenModal: true,
+  preventModalClose: true,
 };
 
 /**
@@ -122,6 +138,7 @@ class AuthInternal extends React.Component<Props, IAuthState> {
     },
     mode: "modal",
     autoOpenModal: true,
+    preventModalClose: true,
   };
 
   public componentDidMount() {

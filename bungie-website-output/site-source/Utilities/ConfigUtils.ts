@@ -99,7 +99,7 @@ export class ConfigUtils {
         output = Number(input);
         break;
       case "string":
-        output = input;
+        output = String(input);
         break;
       default:
         throw new TypeError(

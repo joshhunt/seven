@@ -89,7 +89,8 @@ export class DestinyBuyDetailItem extends React.Component<
           buttonLabel={
             item
               ? item.buttonLabel
-              : skuItem?.soldOutButtonLabel || skuItem.buttonLabel
+              : skuItem?.soldOutButtonLabel ||
+                (item?.buttonLink && skuItem?.buttonLabel)
           }
           buttonSku={item ? item.buttonSku : null}
           buttonUrl={

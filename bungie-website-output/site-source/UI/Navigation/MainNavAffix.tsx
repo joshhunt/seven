@@ -50,10 +50,6 @@ export class MainNavAffix extends React.Component<Props, IMainNavAffixState> {
     hideNavOnLock: false,
   };
 
-  public componentDidMount() {
-    this.mainNav = document.getElementById("main-navigation");
-  }
-
   public componentDidUpdate() {
     document.documentElement.classList.toggle(
       "nav-hidden",
@@ -89,6 +85,8 @@ export class MainNavAffix extends React.Component<Props, IMainNavAffixState> {
           !this.state.scrollingUp
       ),
     };
+
+    this.mainNav = document.getElementById("main-navigation");
 
     return (
       <Affix

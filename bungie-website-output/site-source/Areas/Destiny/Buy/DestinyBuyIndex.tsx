@@ -18,6 +18,7 @@ import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import * as React from "react";
 import { IDestinyProductFamilyDefinition } from "../../../UI/Destiny/SkuSelector/DestinyProductDefinitions";
@@ -180,13 +181,30 @@ export default class DestinyBuyInternal extends React.Component<
     }
     const { productFamilies, skuConfig, carouselItem, skuItems } = this.state;
 
-    const newLight = productFamilies?.find(
-      (v) => v.productFamilyTag === "playforfree"
+    const GetStartedItem1ProductFamily = ConfigUtils.GetParameter(
+      "BuyFlowGetStartedContent",
+      "Item1",
+      ""
     );
-    const expansions = productFamilies?.filter(
-      (product) => product.productFamilyTag !== "playforfree"
+    const GetStartedItem2ProductFamily = ConfigUtils.GetParameter(
+      "BuyFlowGetStartedContent",
+      "Item2",
+      ""
     );
-    const metaImage = productFamilies.length > 0 ? newLight.imagePath : null;
+
+    const item1 = productFamilies?.find(
+      (v) => v.productFamilyTag === GetStartedItem1ProductFamily
+    );
+    const item2 = productFamilies?.find(
+      (v) => v.productFamilyTag === GetStartedItem2ProductFamily
+    );
+
+    const otherProducts = productFamilies?.filter(
+      (product) =>
+        product.productFamilyTag !== GetStartedItem1ProductFamily &&
+        product.productFamilyTag !== GetStartedItem2ProductFamily
+    );
+    const metaImage = productFamilies.length > 0 ? item1?.imagePath : null;
 
     return (
       <SystemDisabledHandler systems={["BuyFlow"]}>
@@ -235,20 +253,48 @@ export default class DestinyBuyInternal extends React.Component<
             </div>
           </div>
 
-          <Anchor
-            className={styles.banner}
-            style={{ backgroundImage: `url(${newLight.imagePath})` }}
-            url={RouteHelper.DestinyBuyDetail({
-              productFamilyTag: newLight.productFamilyTag,
-            })}
-          >
-            <div className={styles.floatOverGradient}>
-              <ProductFamilyTitles
-                subtitle={Localizer.Destiny.Destiny2}
-                title={newLight.coverTitle}
-              />
-            </div>
-          </Anchor>
+          <div className={styles.banner}>
+            {item1 && (
+              <Anchor
+                className={classNames(styles.bannerItem, {
+                  [styles.twoItems]: item1 && item2,
+                })}
+                style={{
+                  backgroundImage: `url(${item1.imagePath})`,
+                }}
+                url={RouteHelper.DestinyBuyDetail({
+                  productFamilyTag: item1.productFamilyTag,
+                })}
+              >
+                <div className={styles.floatOverGradient}>
+                  <ProductFamilyTitles
+                    subtitle={item1.smallCoverTitle}
+                    title={item1.coverTitle}
+                  />
+                </div>
+              </Anchor>
+            )}
+            {item2 && (
+              <Anchor
+                className={classNames(styles.bannerItem, {
+                  [styles.twoItems]: item1 && item2,
+                })}
+                style={{
+                  backgroundImage: `url(${item2.imagePath})`,
+                }}
+                url={RouteHelper.DestinyBuyDetail({
+                  productFamilyTag: item2.productFamilyTag,
+                })}
+              >
+                <div className={styles.floatOverGradient}>
+                  <ProductFamilyTitles
+                    subtitle={item2.smallCoverTitle}
+                    title={item2.coverTitle}
+                  />
+                </div>
+              </Anchor>
+            )}
+          </div>
 
           <div className={styles.borderTop}>
             <div className={styles.sectionTitle}>
@@ -257,7 +303,7 @@ export default class DestinyBuyInternal extends React.Component<
           </div>
 
           <div className={styles.coverCards}>
-            {expansions.map((productFamily, i) => {
+            {otherProducts.map((productFamily, i) => {
               const productIsOnSale =
                 skuConfig &&
                 productFamily?.skuList.some((st) =>
@@ -270,7 +316,7 @@ export default class DestinyBuyInternal extends React.Component<
                   <DestinyBuyCoverCard productFamily={productFamily}>
                     <ProductFamilyTitles
                       onSale={productIsOnSale}
-                      subtitle={Localizer.Destiny.Destiny2}
+                      subtitle={productFamily.smallCoverTitle}
                       title={productFamily.coverTitle}
                       saleDetails={saleInformation}
                     />

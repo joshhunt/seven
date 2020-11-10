@@ -613,8 +613,6 @@ export declare namespace Applications {
   }
 
   export interface Application {
-    applicationType: Globals.OAuthApplicationType;
-
     /**
 		Unique ID assigned to the application
 		*/
@@ -744,11 +742,6 @@ export declare namespace Applications {
   }
 
   export interface ApiUsage {
-    /**
-		The date range for the data being reported.
-		*/
-    range: Dates.DateRange;
-
     /**
 		Counts for on API calls made for the time range.
 		*/
@@ -4969,6 +4962,20 @@ export declare namespace Models {
 
     metricsRootNode: number;
 
+    activeTriumphsRootNodeHash: number;
+
+    activeSealsRootNodeHash: number;
+
+    legacyTriumphsRootNodeHash: number;
+
+    legacySealsRootNodeHash: number;
+
+    medalsRootNodeHash: number;
+
+    exoticCatalystsRootNodeHash: number;
+
+    loreRootNodeHash: number;
+
     currentRankProgressionHashes: number[];
 
     undiscoveredCollectibleImage: string;
@@ -8509,6 +8516,21 @@ export declare namespace Definitions {
 		If this item has a collectible related to it, this is the hash identifier of that collectible entry.
 		*/
     collectibleHash?: number;
+
+    /**
+		If available, this is the original 'active' release watermark overlay for the icon.
+		If the item has different versions, this can be overridden by the 'display version watermark icon' from the 'quality' block.
+		Alternatively, if there is no watermark for the version, and the item version has a power cap below the current season power cap,
+		this can be overridden by the iconWatermarkShelved property.
+		*/
+    iconWatermark: string;
+
+    /**
+		If available, this is the 'shelved' release watermark overlay for the icon.
+		If the item version has a power cap below the current season power cap, it can be treated as 'shelved',
+		and should be shown with this 'shelved' watermark overlay.
+		*/
+    iconWatermarkShelved: string;
 
     /**
 		A secondary icon associated with the item.  Currently this is used in very context specific
@@ -14329,6 +14351,11 @@ export declare namespace Presentation {
 		The value at which the presentation node is considered to be completed.
 		*/
     completionValue: number;
+
+    /**
+		If available, this is the current score for the record category that this node represents.
+		*/
+    recordCategoryScore?: number;
   }
 
   /**
@@ -14428,6 +14455,8 @@ export declare namespace Presentation {
 		*/
     disableChildSubscreenNavigation: boolean;
 
+    maxCategoryRecordScore: number;
+
     presentationNodeType: Globals.DestinyPresentationNodeType;
 
     traitIds: string[];
@@ -14479,9 +14508,24 @@ export declare namespace Presentation {
 export declare namespace Records {
   export interface DestinyProfileRecordsComponent {
     /**
-		Your "Triumphs" score.
+		Your 'active' Triumphs score, maintained for backwards compatibility.
 		*/
     score: number;
+
+    /**
+		Your 'active' Triumphs score.
+		*/
+    activeScore: number;
+
+    /**
+		Your 'legacy' Triumphs score.
+		*/
+    legacyScore: number;
+
+    /**
+		Your 'lifetime' Triumphs score.
+		*/
+    lifetimeScore: number;
 
     /**
 		If this profile is tracking a record, this is the hash identifier of the record it is tracking.

@@ -41,6 +41,7 @@ export interface INavigationLinkItem {
   Enabled: boolean;
   Id: string;
   StringKey: string;
+  SecondaryStringKey: string;
   Url: string;
   External: boolean;
   IsDivider: boolean;
@@ -66,24 +67,7 @@ export interface INavigationTopLink extends INavigationLinkOverride {
   NavLinks: INavigationLinkItem[];
 }
 
-export enum CollapsePoints {
-  max,
-  gridmax,
-  large,
-  medium,
-}
-
-export interface INavigationCollapse {
-  CollapsePoint: CollapsePoints;
-  Enabled: boolean;
-  NavLinks: INavigationLinkItem[];
-  Order: number;
-  Requires?: NavigationConfigRequirements;
-  StayCollapsedInMobile: boolean;
-  StringKey: string;
-}
-
-export type IMenuParentItem = INavigationTopLink | INavigationCollapse;
+export type IMenuParentItem = INavigationTopLink;
 
 export type INavigationConfig = IMenuParentItem[];
 

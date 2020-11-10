@@ -82,7 +82,11 @@ export class VideoSlider extends React.Component<
             role={"button"}
             style={{
               background: pipColor,
-              width: `${this.validChildren.length > 4 ? "4rem" : "6.875rem"}`,
+              width: `${
+                this.validChildren.length > 4
+                  ? `calc(100%/${this.validChildren.length})`
+                  : "6.875rem"
+              }`,
             }}
             className={styles.pip}
             onClick={this.selectSlide(index)}

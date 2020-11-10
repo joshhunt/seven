@@ -2,14 +2,14 @@ import { IFlairCoinProps } from "@UIKit/Companion/Coins/FlairCoin";
 import { IIconCoinProps } from "@UIKit/Companion/Coins/IconCoin";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React, { ReactNode } from "react";
 import styles from "./TwoLineItem.module.scss";
 
 interface ITwoLineItemProps extends React.HTMLProps<HTMLDivElement> {
   /** Item title */
-  itemTitle: string;
+  itemTitle: ReactNode;
   /** Item subtitle */
-  itemSubtitle: string;
+  itemSubtitle: ReactNode;
   /** Set to true if this should have a hover state */
   clickable?: boolean;
   /** Item size */

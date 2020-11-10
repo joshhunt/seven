@@ -46,7 +46,7 @@ export interface IDestinyBuyProductDetailProps
 interface IDestinyBuyProductDetailState {
   destinyProductFamily: IDestinyProductFamilyDefinition;
   skuItems: IDestinyProductDefinition[];
-  editionSelectorItems: IDestinyProductDefinition[];
+  editionSelectorSkus: IDestinyProductDefinition[];
   skuConfig: IDestinySkuConfig;
   selectedSkuIndex: number;
   loading: boolean;
@@ -75,12 +75,12 @@ class DestinyBuyProductDetailInternal extends React.Component<
     this.state = {
       destinyProductFamily: null,
       skuItems: [],
-      editionSelectorItems: [],
+      editionSelectorSkus: [],
       skuConfig: DestinySkuConfigDataStore.state,
       loading: true,
       noContentItem: false,
       menuLocked: false,
-      selectedSkuIndex: DestinyBuyDataStore.state.selectedSkuIndex,
+      selectedSkuIndex: DestinyBuyDataStore.state.selectedSkuIndex || 0,
       showStickyNav: false,
       strangerEdition: null,
     };
@@ -422,11 +422,19 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       }}
                     />
                   )}
-                  <div className={styles.platforms}>
+                  {mobileSize && (
                     <p className={styles.platformText}>
                       {Localizer.Buyflow.AvailableOn}
                     </p>
-                    <div className={styles.xbox} />
+                  )}
+                  <div className={styles.platforms}>
+                    {!mobileSize && (
+                      <p className={styles.platformText}>
+                        {Localizer.Buyflow.AvailableOn}
+                      </p>
+                    )}
+                    <div className={styles.xboxSeriesX} />
+                    <div className={styles.xboxOne} />
                     <div className={styles.playstation} />
                     <div className={styles.steam} />
                     <div className={styles.stadia} />

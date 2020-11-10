@@ -1,7 +1,7 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
+import React, { CSSProperties } from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
 import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
@@ -60,12 +60,14 @@ export class SeasonPassRewardStep extends React.Component<
   }
 
   private readonly onMouseOver = (
-    title: string,
-    desc: string,
-    className: string
+    itemDef: DestinyDefinitions.DestinyInventoryItemLiteDefinition
   ) => {
     //this.setState({ tooltipRewardIndex: rewardIndex });
-    this.props.onMouseOver(title, desc, className);
+    this.props.onMouseOver(
+      itemDef.displayProperties.name,
+      itemDef.displayProperties.description,
+      itemDef.inventory.tierTypeName
+    );
   };
   private readonly onMouseLeave = () => {
     this.props.onMouseLeave();
@@ -233,6 +235,7 @@ export class SeasonPassRewardStep extends React.Component<
         {typeof itemDef !== "undefined" &&
           typeof itemDef.displayProperties !== "undefined" && (
             <div
+              className={styles.iconWrapper}
               onClick={() =>
                 this.props.handleClick(
                   item.itemHash,
@@ -241,17 +244,16 @@ export class SeasonPassRewardStep extends React.Component<
                 )
               }
             >
-              <img
-                src={itemDef.displayProperties.icon}
-                alt={itemDef.displayProperties.name}
-                width="75"
-                onMouseEnter={() =>
-                  this.onMouseOver(
-                    itemDef.displayProperties.name,
-                    itemDef.displayProperties.description,
-                    itemDef.inventory.tierTypeName
-                  )
-                }
+              <div
+                className={styles.icon}
+                style={{
+                  backgroundImage: `${
+                    itemDef?.iconWatermark?.length > 0
+                      ? `url(${itemDef.iconWatermark}), `
+                      : ``
+                  }url(${itemDef.displayProperties.icon})`,
+                }}
+                onMouseEnter={() => this.onMouseOver(itemDef)}
                 onMouseLeave={this.onMouseLeave}
               />
             </div>

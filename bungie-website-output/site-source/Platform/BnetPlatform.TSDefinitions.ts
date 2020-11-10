@@ -228,6 +228,7 @@ export declare namespace DestinyDefinitions {
     LegArmor = 29,
     ClassArmor = 30,
     Bow = 31,
+    DummyRepeatableBounty = 32,
   }
 
   enum DestinyUnlockState {
@@ -270,6 +271,7 @@ export declare namespace DestinyDefinitions {
     Thermal = 3,
     Void = 4,
     Raid = 5,
+    Stasis = 6,
   }
 
   enum BucketScope {
@@ -542,6 +544,7 @@ export declare namespace DestinyDefinitions {
     Clan = 3,
     Item = 4,
     CharacterClass = 5,
+    None = 6,
   }
 
   enum VendorDisplayCategorySortOrder {
@@ -613,6 +616,8 @@ export declare namespace DestinyDefinitions {
     Intrinsic = 4,
     EnergyMeter = 5,
     LargePerk = 6,
+    Abilities = 7,
+    Supers = 8,
   }
 
   enum SocketTypeActionType {
@@ -1383,6 +1388,10 @@ export declare namespace DestinyDefinitions {
     tooltipNotifications: DestinyItemTooltipNotification[];
 
     collectibleHash?: number;
+
+    iconWatermark: string;
+
+    iconWatermarkShelved: string;
 
     secondaryIcon: string;
 
@@ -3908,6 +3917,8 @@ export declare namespace DestinyDefinitions {
 
     unlocks: DestinyItemUnlockBlockDefinition;
 
+    iconWatermark: string;
+
     animations: DestinyAnimationReference[];
 
     allowActions: boolean;
@@ -4857,6 +4868,10 @@ export declare namespace DestinyDefinitions {
     visibilityExpression: DestinyUnlockExpressionDefinition;
 
     obscuredExpression: DestinyUnlockExpressionDefinition;
+
+    categoryScoreUnlockValueHash: number;
+
+    maxCategoryRecordScore: number;
 
     presentationNodeType: DestinyPresentationNodeType;
 

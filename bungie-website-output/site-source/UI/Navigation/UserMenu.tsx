@@ -185,6 +185,7 @@ class SignInTriggers extends React.Component<{
       Id: "sign-in",
       Legacy: NavigationConfigLegacy.Legacy,
       StringKey: useAltVersion ? "myaccount" : "signin",
+      SecondaryStringKey: null,
       Url: null,
       NavLinks: null,
       Environment: "live",

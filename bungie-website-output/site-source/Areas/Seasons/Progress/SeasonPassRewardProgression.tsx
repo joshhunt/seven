@@ -133,7 +133,14 @@ class SeasonPassRewardProgression extends React.Component<
         ? this.getCharacterClass(characterClassHash)
         : CharacterClass.Hunter;
 
-    const steps = rewardsDef.steps.map((value, i) => {
+    const slidesPer = globalState.responsive.mobile ? 4 : 10;
+
+    //remove the unwanted
+    const adjustedSteps = rewardsDef.steps.filter((value, index) => {
+      return index < 100;
+    });
+
+    const steps = adjustedSteps.map((value, i) => {
       const completeState = hasCharacterProgression
         ? i < characterSeasonPassRewardProgression.level
           ? "Complete"
@@ -167,7 +174,6 @@ class SeasonPassRewardProgression extends React.Component<
       );
     });
 
-    const slidesPer = globalState.responsive.mobile ? 4 : 10;
     const chunked = this.chunk(steps, slidesPer);
 
     const slides = chunked.map((a, i) => (

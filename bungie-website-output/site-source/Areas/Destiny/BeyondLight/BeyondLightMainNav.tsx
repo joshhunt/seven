@@ -230,7 +230,6 @@ export class BeyondLightMainNav extends React.Component<
                   }
                 >
                   {Localizer.Beyondlight.Submenu_Story}
-                  <span>{Localizer.Registration.new}</span>
                 </Anchor>
               )}
               <Anchor

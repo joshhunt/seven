@@ -1061,6 +1061,7 @@ export enum PlatformErrorCodes {
   DestinyClaimsRequiredLevelNotMet = 1685,
   DestinyClaimsInvalidState = 1686,
   DestinyNotEnoughRoomForMultipleRewards = 1687,
+  DestinyDirectBabelClientTimeout = 1688,
   FbInvalidRequest = 1800,
   FbRedirectMismatch = 1801,
   FbAccessDenied = 1802,
@@ -2032,6 +2033,7 @@ export enum DamageType {
   Thermal = 3,
   Void = 4,
   Raid = 5,
+  Stasis = 6,
 }
 
 /**
@@ -2529,6 +2531,7 @@ export enum DestinyItemSubType {
   LegArmor = 29,
   ClassArmor = 30,
   Bow = 31,
+  DummyRepeatableBounty = 32,
 }
 
 /**
@@ -2828,6 +2831,8 @@ export enum DestinySocketCategoryStyle {
   Intrinsic = 4,
   EnergyMeter = 5,
   LargePerk = 6,
+  Abilities = 7,
+  Supers = 8,
 }
 
 /**

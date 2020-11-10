@@ -41,19 +41,27 @@ const ScreenShotBlock = ({
   return (
     <div className={styles.thumbnails}>
       {youTubeId ? (
-        <Button
+        <div
+          role={"button"}
           className={classNames(styles.thumbnail, styles[hasVideoId])}
           onClick={() => showVideo(youTubeId)}
         >
-          <img src={Img(`${thumbnailPath}`)} alt="" role="presentation" />
-        </Button>
+          <div
+            className={styles.backgroundImage}
+            style={{ backgroundImage: `url(${Img(`${thumbnailPath}`)})` }}
+          />
+        </div>
       ) : (
-        <Button
+        <div
+          role={"button"}
           className={styles.thumbnail}
           onClick={() => showImage(screenshotPath)}
         >
-          <img src={Img(`${thumbnailPath}`)} alt="" role="presentation" />
-        </Button>
+          <div
+            className={styles.backgroundImage}
+            style={{ backgroundImage: `url(${Img(`${thumbnailPath}`)})` }}
+          />
+        </div>
       )}
     </div>
   );

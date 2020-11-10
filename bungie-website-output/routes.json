@@ -268,6 +268,14 @@
     "path": "/7/en/Direct/Video/:videoContentId"
   },
   {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "WorldsFirst",
+    "params": {},
+    "path": "/7/en/Direct/WorldsFirst"
+  },
+  {
     "areaName": "GameHistory",
     "areaObjectName": "GameHistory",
     "componentImportPath": "@Areas/GameHistory/GameHistoryArea",
@@ -404,8 +412,10 @@
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "News",
-    "params": {},
-    "path": "/7/en/Seasons/News"
+    "params": {
+      "path": ":slug"
+    },
+    "path": "/7/en/Seasons/News/:slug"
   },
   {
     "areaName": "Seasons",

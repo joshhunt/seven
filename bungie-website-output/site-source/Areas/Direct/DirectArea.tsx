@@ -1,8 +1,7 @@
 import { AsyncRoute } from "@Routes/AsyncRoute";
-import { RouteComponentProps, Route, withRouter } from "react-router-dom";
-import React from "react";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
+import React from "react";
 
 interface IDirectRouterProps {}
 
@@ -15,9 +14,15 @@ class DirectArea extends React.Component<IDirectRouterProps> {
             path={RouteDefs.Areas.Direct.getAction("Video").path}
             component={() => import("./DirectVideo")}
           />
+
           <AsyncRoute
             path={RouteDefs.Areas.Direct.getAction("Analyze").path}
             component={() => import("./BeyondLightArg/BeyondLightARG")}
+          />
+
+          <AsyncRoute
+            path={RouteDefs.Areas.Direct.getAction("WorldsFirst").path}
+            component={() => import("./WorldsFirst/WorldsFirst")}
           />
         </AnimatedRouter>
       </React.Fragment>

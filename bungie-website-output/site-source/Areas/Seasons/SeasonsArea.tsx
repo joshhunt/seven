@@ -1,3 +1,5 @@
+import { SeasonsIndex } from "@Areas/Seasons/SeasonsIndex";
+import { ContentfulNewsPage } from "@UI/Content/ContentfulNewsPage";
 import { RouteComponentProps, Route, Redirect } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
@@ -78,12 +80,17 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
             component={ContentfulEventPage}
           />
         )}
+        {!ConfigUtils.EnvironmentIsProduction && (
+          <Route
+            path={RouteDefs.Areas.Seasons.getAction("News").path}
+            component={ContentfulNewsPage}
+          />
+        )}
         <Route
           exact={true}
           path={RouteDefs.Areas.Seasons.getAction("Index").path}
-        >
-          <Redirect push={false} to={currentSeasonAction.resolve().url} />
-        </Route>
+          component={SeasonsIndex}
+        />
       </SwitchWithErrors>
     );
   }

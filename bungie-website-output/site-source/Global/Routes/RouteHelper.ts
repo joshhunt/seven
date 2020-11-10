@@ -31,6 +31,15 @@ const LegacyPath = (path: string): IMultiSiteLink => {
   };
 };
 
+const DirectLegacyPath = (path: string): IMultiSiteLink => {
+  const url = path;
+
+  return {
+    url,
+    legacy: true,
+  };
+};
+
 const LegacyPathWithQuery = (path: string) => (
   params?: object
 ): IMultiSiteLink => {
@@ -243,6 +252,7 @@ export class RouteHelper {
   public static Season11 = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfArrivals")
   );
+  public static Season12 = DirectLegacyPath("/SeasonOfTheHunt");
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")

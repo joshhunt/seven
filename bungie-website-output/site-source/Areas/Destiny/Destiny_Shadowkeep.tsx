@@ -1,38 +1,40 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DataStore, DestroyCallback } from "@Global/DataStore";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { SystemNames } from "@Global/SystemNames";
+import { Img } from "@Helpers";
+import { Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
+import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
+import { MarketingContentBlock } from "@UIKit/Layout/MarketingContentBlock";
+import { BasicSize } from "@UIKit/UIKitUtils";
+import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
+import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
 import React from "react";
-import { Responsive, IResponsiveState, ResponsiveSize } from "@Boot/Responsive";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
 import styles from "./DestinyShadowkeep.module.scss";
 import { ShadowkeepLockingMenu } from "./Shadowkeep/ShadowkeepLockingMenu";
-import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
-import { SystemNames } from "@Global/SystemNames";
-import { Respond } from "@Boot/Respond";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
-import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
-import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import {
   DestinyNewsAndMedia,
   IDestinyNewsMedia,
 } from "./Shared/DestinyNewsAndMedia";
-import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
-import { StringUtils } from "@Utilities/StringUtils";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { Img } from "@Helpers";
-import { Platform } from "@Platform";
-import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
-import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 
 interface IDestinyShadowkeepProps
   extends GlobalStateComponentProps<"responsive"> {}
@@ -40,8 +42,6 @@ interface IDestinyShadowkeepProps
 interface IDestinyShadowkeepState {
   responsive: IResponsiveState;
   menuLocked: boolean;
-  modsScroll: IScrollViewportData;
-  powerParallaxScroll: IScrollViewportData;
   raidScroll: IScrollViewportData;
   supportsWebp: boolean;
   isStandardEditionShowing: boolean;
@@ -57,11 +57,12 @@ class DestinyShadowkeepInner extends React.Component<
   private readonly destroys: DestroyCallback[] = [];
   private readonly idToElementsMapping: { [key: string]: HTMLDivElement } = {};
   private readonly heroRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly modsRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly powerParallaxRef: React.RefObject<
-    HTMLDivElement
-  > = React.createRef();
   private readonly raidRef: React.RefObject<HTMLDivElement> = React.createRef();
+  private readonly titanSuperVideoId = Localizer.Destiny.ForsakenTitanVideoID;
+  private readonly warlockSuperVideoId =
+    Localizer.Destiny.ForsakenWarlockVideoID;
+  private readonly hunterSuperVideoId = Localizer.Destiny.ForsakenHunterVideoID;
+  private readonly storyVideoId = Localizer.Destiny.ForsakenStoryVideoID;
 
   constructor(props: IDestinyShadowkeepProps) {
     super(props);
@@ -70,14 +71,6 @@ class DestinyShadowkeepInner extends React.Component<
       responsive: Responsive.state,
       menuLocked: false,
       supportsWebp: false,
-      modsScroll: {
-        isVisible: false,
-        percent: 0,
-      },
-      powerParallaxScroll: {
-        isVisible: false,
-        percent: 0,
-      },
       raidScroll: {
         isVisible: false,
         percent: 0,
@@ -137,18 +130,10 @@ class DestinyShadowkeepInner extends React.Component<
       return;
     }
 
-    const modsPosition = this.modsRef.current.getBoundingClientRect();
-    const powerPosition = this.powerParallaxRef.current.getBoundingClientRect();
     const raidPosition = this.raidRef.current.getBoundingClientRect();
-    const modsScrollData = BrowserUtils.viewportElementScrollData(modsPosition);
-    const powerParallaxScrollData = BrowserUtils.viewportElementScrollData(
-      powerPosition
-    );
     const raidScrollData = BrowserUtils.viewportElementScrollData(raidPosition);
 
     this.setState({
-      modsScroll: modsScrollData,
-      powerParallaxScroll: powerParallaxScrollData,
       raidScroll: raidScrollData,
     });
   };
@@ -173,7 +158,7 @@ class DestinyShadowkeepInner extends React.Component<
   private showImage(imageName: string) {
     Modal.open(
       <img
-        src={Img(`destiny/bgs/shadowkeep/${imageName}`)}
+        src={Img(`destiny/products/shadowkeep/${imageName}`)}
         className={styles.largeImage}
       />,
       {
@@ -181,10 +166,6 @@ class DestinyShadowkeepInner extends React.Component<
       }
     );
   }
-
-  private readonly openInNewTab = (imageName: string) => {
-    window.open(Img(`destiny/bgs/shadowkeep/${imageName}`), "_blank'");
-  };
 
   private readonly showStandard = () => {
     if (!this.state.isStandardEditionShowing) {
@@ -210,6 +191,24 @@ class DestinyShadowkeepInner extends React.Component<
 
   public render() {
     const videos: IDestinyNewsMedia[] = [];
+
+    const shadowKeepRevealTrailerVideoId = ConfigUtils.GetParameter(
+      SystemNames.shadowKeepRevealTrailerVideo,
+      Localizer.CurrentCultureName,
+      ""
+    );
+    const revealTrailerVideoEnabled =
+      !StringUtils.isNullOrWhiteSpace(shadowKeepRevealTrailerVideoId) &&
+      ConfigUtils.SystemStatus(SystemNames.shadowKeepRevealTrailerVideo);
+    if (revealTrailerVideoEnabled) {
+      videos.push({
+        isVideo: true,
+        thumbnail: Img(
+          "destiny/products/shadowkeep/media_video_thumbnail_reveal.jpg"
+        ),
+        detail: shadowKeepRevealTrailerVideoId,
+      });
+    }
 
     const gamescomVideoId = ConfigUtils.GetParameter(
       SystemNames.GamescomVideo,
@@ -243,54 +242,11 @@ class DestinyShadowkeepInner extends React.Component<
       });
     }
 
-    const seasonUndyingVideoId = ConfigUtils.GetParameter(
-      SystemNames.SeasonUndyingVideo,
-      Localizer.CurrentCultureName,
-      ""
-    );
-    const seasonUndyingVideoEnabled =
-      !StringUtils.isNullOrWhiteSpace(seasonUndyingVideoId) &&
-      ConfigUtils.SystemStatus(SystemNames.SeasonUndyingVideo);
-    if (seasonUndyingVideoEnabled) {
-      videos.push({
-        isVideo: true,
-        thumbnail: Img("destiny/bgs/shadowkeep/season_thumbnail_2_tall.jpg"),
-        detail: seasonUndyingVideoId,
-      });
-    }
-
-    const modRowKeys = [...Array(7).keys()];
-    const modRows = modRowKeys.map((i) => {
-      const rowNum = i + 1;
-      const reverseRowNum = modRowKeys.length - rowNum;
-      const transformAmount =
-        reverseRowNum *
-        reverseRowNum *
-        5 *
-        (this.state.modsScroll.percent * 2 - 0.75);
-
-      const transform = false
-        ? "translateY(0)"
-        : `translateY(-${transformAmount}px)`;
-
-      return (
-        <div
-          key={rowNum}
-          className={classNames(styles.modRow, styles[`modRow${rowNum}`])}
-          style={{
-            transform,
-          }}
-        />
-      );
-    });
-
     const storyClasses = classNames(styles.sectionStory, {
       [styles.lockedNavPlaceholder]: this.state.menuLocked,
     });
 
-    const psd = this.state.powerParallaxScroll;
-
-    const { isStandardEditionShowing, seasonsSection } = this.state;
+    const { isStandardEditionShowing } = this.state;
 
     const buttonSkuTag = isStandardEditionShowing
       ? DestinySkuTags.ShadowkeepStandard
@@ -311,21 +267,15 @@ class DestinyShadowkeepInner extends React.Component<
         </BungieHelmet>
         <div>
           <div className={styles.hero} ref={this.heroRef}>
-            <button
-              className={styles.playButton}
-              onClick={() => this.showVideo(gamescomVideoId)}
-            >
-              <div className={styles.playIcon} />
-            </button>
+            <p className={styles.heroEyebrow}>
+              {Localizer.Shadowkeep.ExpansionYear}
+            </p>
             <div
               className={styles.heroLogo}
               style={{
                 backgroundImage: `url(/7/ca/destiny/bgs/shadowkeep/shadowkeep_logo_${Localizer.CurrentCultureName}.png)`,
               }}
             />
-            <div className={styles.date}>
-              {Localizer.Shadowkeep.AvailableDate}
-            </div>
           </div>
 
           <ShadowkeepLockingMenu
@@ -400,155 +350,15 @@ class DestinyShadowkeepInner extends React.Component<
         </div>
 
         {
-          // POWER
-        }
-        <div
-          id={"power"}
-          ref={(el) => (this.idToElementsMapping["power"] = el)}
-        >
-          <Section className={styles.sectionPower}>
-            <div className={styles.powerParallax} ref={this.powerParallaxRef}>
-              <Respond
-                at={ResponsiveSize.mobile}
-                hide={true}
-                responsive={this.props.globalState.responsive}
-              >
-                <div
-                  className={styles.moonBg}
-                  style={{
-                    transform: `translateY(${
-                      psd.percent * -window.innerHeight * 1.25
-                    }px)`,
-                  }}
-                />
-                <div
-                  className={styles.rock}
-                  style={{ transform: `translateY(${psd.percent * -500}px)` }}
-                />
-                <div
-                  className={styles.hunter}
-                  style={{ transform: `translateY(${psd.percent * -400}px)` }}
-                />
-                <div
-                  className={styles.titan}
-                  style={{ transform: `translateY(${psd.percent * -300}px)` }}
-                />
-                <div
-                  className={styles.warlock}
-                  style={{ transform: `translateY(${psd.percent * -200}px)` }}
-                />
-                <div
-                  className={styles.number}
-                  style={{
-                    transform: `translateY(${
-                      psd.percent * -(window.innerHeight / 2)
-                    }px)`,
-                  }}
-                />
-              </Respond>
-            </div>
-            <TextContainer>
-              <SmallTitle>{Localizer.Shadowkeep.PowerSmallTitle}</SmallTitle>
-              <SectionTitle>
-                {Localizer.Shadowkeep.PowerTitleLarge}
-              </SectionTitle>
-              <p className={styles.mediumBlurb}>
-                {Localizer.Shadowkeep.PowerBlurb}
-              </p>
-            </TextContainer>
-          </Section>
-          <Section
-            className={styles.sectionFinishers}
-            bgs={
-              <Respond
-                at={ResponsiveSize.mobile}
-                hide={true}
-                responsive={this.props.globalState.responsive}
-              >
-                <video autoPlay={true} muted={true} loop={true}>
-                  <source
-                    src={Img("destiny/videos/shadowkeep_finishers.webm")}
-                    type="video/webm"
-                  />
-                  <source
-                    src={Img("destiny/videos/shadowkeep_finishers.mp4")}
-                    type="video/mp4"
-                  />
-                </video>
-              </Respond>
-            }
-          >
-            <TextContainer>
-              <SmallTitle>{Localizer.Shadowkeep.PowerSmallTitle}</SmallTitle>
-              <SectionTitle>
-                {Localizer.Shadowkeep.PowerFinishersTitleLarge}
-              </SectionTitle>
-              <div className={styles.armorSubtitle}>
-                {Localizer.Shadowkeep.ArmorSubtitle}
-              </div>
-            </TextContainer>
-          </Section>
-          <div className={styles.boxes}>
-            {/* This is in a different order to visually balance out the amount of text per design direction*/}
-            <PowerBox
-              title={Localizer.Shadowkeep.PowerFinishersBox2Title}
-              blurb={Localizer.Shadowkeep.PowerFinishersBox2Content}
-            />
-            <PowerBox
-              title={Localizer.Shadowkeep.PowerFinishersBox1Title}
-              blurb={Localizer.Shadowkeep.PowerFinishersBox1Content}
-            />
-            <PowerBox
-              title={Localizer.Shadowkeep.PowerFinishersBox3Title}
-              blurb={Localizer.Shadowkeep.PowerFinishersBox3Content}
-            />
-          </div>
-        </div>
-
-        {
           // GEAR
         }
         <div
           id={"newgear"}
           ref={(el) => (this.idToElementsMapping["newgear"] = el)}
         >
-          <Section className={styles.sectionArmor}>
+          <div className={styles.sectionGear}>
             <TextContainer>
-              <SmallTitle>{Localizer.Shadowkeep.ArmorTitleSmall}</SmallTitle>
-              <SectionTitle>{Localizer.Shadowkeep.GearTitleLarge}</SectionTitle>
-              <div className={styles.armorSubtitle}>
-                {Localizer.Shadowkeep.ArmorSubtitle}
-              </div>
-            </TextContainer>
-            <div className={styles.boxes}>
-              <PowerBox
-                title={Localizer.Shadowkeep.GearBox1Title}
-                blurb={Localizer.Shadowkeep.GearBox1Content}
-              />
-              <PowerBox
-                title={Localizer.Shadowkeep.GearBox2Title}
-                blurb={Localizer.Shadowkeep.GearBox2Content}
-              />
-              <PowerBox
-                title={Localizer.Shadowkeep.GearBox3Title}
-                blurb={Localizer.Shadowkeep.GearBox3Content}
-              />
-            </div>
-          </Section>
-          <GraySection>
-            <div className={styles.mods} ref={this.modsRef}>
-              <Respond
-                at={ResponsiveSize.mobile}
-                hide={true}
-                responsive={this.props.globalState.responsive}
-              >
-                {modRows}
-              </Respond>
-            </div>
-          </GraySection>
-          <Section className={styles.sectionGear}>
-            <TextContainer>
-              <SmallTitle>{Localizer.Shadowkeep.GearTitleSmall}</SmallTitle>
+              <SmallTitle>{Localizer.Shadowkeep.NewGearTitleSmall}</SmallTitle>
               <SectionTitle>
                 {Localizer.Shadowkeep.GearGridTitleLarge}
               </SectionTitle>
@@ -556,6 +366,184 @@ class DestinyShadowkeepInner extends React.Component<
                 {Localizer.Shadowkeep.GearBlurb}
               </p>
             </TextContainer>
+          </div>
+        </div>
+
+        {
+          // SUPERS -- Beyond Light Release Update
+        }
+        <div
+          className={classNames(styles.supersBlock, styles.forsakenSection)}
+          id={"supers"}
+          ref={(el) => (this.idToElementsMapping["supers"] = el)}
+        >
+          <MarketingContentBlock
+            smallTitle={Localizer.Shadowkeep.SupersSmallTitle}
+            sectionTitle={Localizer.Shadowkeep.SupersTitleLarge}
+            alignment={
+              this.props.globalState.responsive.mobile ? "left" : "center"
+            }
+            bgs={
+              <div
+                style={{
+                  backgroundImage: `url(${Img(
+                    "destiny/products/shadowkeep/supers_bg_desktop.jpg"
+                  )}`,
+                }}
+              />
+            }
+            mobileBg={
+              <div
+                style={{
+                  backgroundImage: `url(${Img(
+                    "destiny/products/forsaken/v2/mobile/supers_bg_mobile.jpg"
+                  )}`,
+                  backgroundSize: "contain",
+                }}
+              />
+            }
+            bgColor={"#0f1a26"}
+            margin={
+              this.props.globalState.responsive.mobile
+                ? "29rem auto 2rem"
+                : "41rem auto 2rem"
+            }
+            blurb={Localizer.FormatReact(
+              Localizer.Shadowkeep.SupersBlurbPartOne,
+              {
+                linkToForsaken: (
+                  <Anchor
+                    className={styles.linkToShadowkeep}
+                    url={RouteHelper.Forsaken()}
+                  >
+                    {Localizer.Shadowkeep.SupersBlurbPartTwo}
+                  </Anchor>
+                ),
+              }
+            )}
+          >
+            <div className={styles.imageContainer}>
+              <div className={styles.supersThumbnail}>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showVideo(this.titanSuperVideoId)}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/forsaken/v2/desktop/forsaken_supers_1_thumb.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                  <div className={styles.playButton} />
+                </Button>
+                <div className={classNames(styles.supersSub, styles.titanSub)}>
+                  {Localizer.Destiny.TitanSub}
+                </div>
+              </div>
+              <div className={styles.supersThumbnail}>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showVideo(this.warlockSuperVideoId)}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/forsaken/v2/desktop/forsaken_supers_2_thumb.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                  <div className={styles.playButton} />
+                </Button>
+                <div
+                  className={classNames(styles.supersSub, styles.warlockSub)}
+                >
+                  {Localizer.Destiny.WarlockSub}
+                </div>
+              </div>
+              <div className={styles.supersThumbnail}>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showVideo(this.hunterSuperVideoId)}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/forsaken/v2/desktop/forsaken_supers_3_thumb.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                  <div className={styles.playButton} />
+                </Button>
+                <div className={classNames(styles.supersSub, styles.hunterSub)}>
+                  {Localizer.Destiny.HunterSub}
+                </div>
+              </div>
+            </div>
+          </MarketingContentBlock>
+        </div>
+
+        {
+          // DUNGEON -- Beyond Light Release Update
+        }
+        <div
+          id={"dungeon"}
+          ref={(el) => (this.idToElementsMapping["dungeon"] = el)}
+        >
+          <Section
+            className={classNames(styles.sectionRaid, styles.sectionDungeon)}
+          >
+            <div className={styles.innerRaid} ref={this.raidRef}>
+              <TextContainer>
+                <SmallTitle>
+                  {Localizer.Shadowkeep.DungeonTitleSmall}
+                </SmallTitle>
+                <SectionTitle>
+                  {Localizer.Shadowkeep.DungeonTitleLarge}
+                </SectionTitle>
+                <p className={styles.mediumBlurb}>
+                  {Localizer.Shadowkeep.DungeonBlurb}
+                </p>
+              </TextContainer>
+              <div className={styles.imageContainer}>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("dungeon_screenshot_1.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_1.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("dungeon_screenshot_2.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_2.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("dungeon_screenshot_3.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_3.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+              </div>
+            </div>
           </Section>
         </div>
 
@@ -564,7 +552,7 @@ class DestinyShadowkeepInner extends React.Component<
         }
         <div id={"raid"} ref={(el) => (this.idToElementsMapping["raid"] = el)}>
           <Section className={styles.sectionRaid}>
-            <div ref={this.raidRef}>
+            <div className={styles.innerRaid} ref={this.raidRef}>
               <TextContainer>
                 <SmallTitle>{Localizer.Shadowkeep.RaidTitleSmall}</SmallTitle>
                 <SectionTitle>
@@ -574,42 +562,47 @@ class DestinyShadowkeepInner extends React.Component<
                   {Localizer.Shadowkeep.RaidBlurb}
                 </p>
               </TextContainer>
+              <div className={styles.imageContainer}>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("raid_screenshot_1.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/raid_screenshot_thumbnail_1.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("raid_screenshot_2.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/raid_screenshot_thumbnail_2.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+                <Button
+                  className={styles.thumbnail}
+                  onClick={() => this.showImage("raid_screenshot_3.jpg")}
+                >
+                  <img
+                    src={Img(
+                      "destiny/products/shadowkeep/raid_screenshot_thumbnail_3.jpg"
+                    )}
+                    alt={""}
+                    role={"presentation"}
+                  />
+                </Button>
+              </div>
             </div>
           </Section>
         </div>
-
-        {
-          // SEASONS
-        }
-        {seasonsSection && (
-          <div
-            id={"seasons"}
-            ref={(el) => (this.idToElementsMapping["seasons"] = el)}
-          >
-            <Section
-              className={styles.sectionSeasons}
-              style={{
-                backgroundImage: `url(${
-                  this.props.globalState.responsive.mobile
-                    ? seasonsSection.imageThumbnail
-                    : seasonsSection.largeImage
-                })`,
-              }}
-            >
-              <TextContainer>
-                <SmallTitle>{seasonsSection.subtitle}</SmallTitle>
-                <SectionTitle>{seasonsSection.title}</SectionTitle>
-                <p className={styles.italicCallout}>
-                  {Localizer.Shadowkeep.DawnShadowkeepSubtitle}
-                </p>
-                <div
-                  className={styles.mediumBlurb}
-                  dangerouslySetInnerHTML={{ __html: seasonsSection.textBlock }}
-                />
-              </TextContainer>
-            </Section>
-          </div>
-        )}
 
         <Section className={styles.sectionGettingStarted}>
           <TextContainer>
@@ -653,7 +646,7 @@ class DestinyShadowkeepInner extends React.Component<
                 {Localizer.Destiny.StandardEdition}
               </a>
               <a className={styles.deluxeTab} onClick={this.showUpgradeEdition}>
-                {Localizer.Destiny.UpgradeEdition}
+                {Localizer.Destiny.buyFlowLegendaryEditionTitle}
               </a>
             </div>
             <div className={styles.shadowkeepBuyContainer}>
@@ -665,10 +658,17 @@ class DestinyShadowkeepInner extends React.Component<
                   )}
                   style={{
                     backgroundImage: isStandardEditionShowing
-                      ? `url("7/ca/destiny/products/shadowkeep/bnet_sku_shadowkeep_${Localizer.CurrentCultureName}.jpg")`
-                      : `url("7/ca/destiny/products/shadowkeep/bnet_sku_upgrade_edition_${Localizer.CurrentCultureName}.jpg")`,
+                      ? `url("7/ca/destiny/products/shadowkeep/shadowkeep_buy_cover_${Localizer.CurrentCultureName}.jpg")`
+                      : `url("7/ca/destiny/products/shadowkeep/legendaryEdition_buy_cover_${Localizer.CurrentCultureName}.jpg")`,
                   }}
                 />
+                <div className={styles.disclaimerGrid}>
+                  <ul>
+                    <li>{Localizer.Destiny.shadowkeepPurchaseLegalDetail}</li>
+                    <li>{Localizer.Destiny.shadowkeepLegalDetail}</li>
+                    <li>{Localizer.Destiny.imagesLegalDetail}</li>
+                  </ul>
+                </div>
               </div>
               <div className={styles.shadowkeepBuyDescription}>
                 <p className={styles.editionTitle}>
@@ -678,33 +678,29 @@ class DestinyShadowkeepInner extends React.Component<
                   <span>
                     {isStandardEditionShowing
                       ? Localizer.Shadowkeep.ShadowkeepBuyTitle
-                      : Localizer.Shadowkeep.UpgradeEdition}
+                      : Localizer.Destiny.buyFlowLegendaryEditionTitle}
                   </span>
                 </p>
                 <div className={styles.thickTopBorder} />
-                <BuyButton
-                  className={styles.preorderButton}
-                  onClick={() => this.onClickStoreItem(buttonSkuTag)}
-                  buttonType={"gold"}
-                  sheen={0.35}
-                  analyticsId={buttonSkuTag}
-                >
-                  {Localizer.Shadowkeep.CTAButtonLabel}
-                </BuyButton>
-                <div>
-                  <p className={styles.platformType}>
-                    {" "}
-                    {Localizer.Shadowkeep.PlatformShortXbox}{" "}
-                  </p>
-                  <p className={styles.platformType}>
-                    {" "}
-                    {Localizer.Shadowkeep.PlatformShortPs4}{" "}
-                  </p>
-                  <p className={styles.platformType}>
-                    {" "}
-                    {Localizer.Shadowkeep.PlatformShortSteam}{" "}
-                  </p>
-                </div>
+                {!ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
+                  !isStandardEditionShowing && (
+                    <Button size={BasicSize.Medium} buttonType={"disabled"}>
+                      {Localizer.bungierewards.ComingSoon_NAME}
+                    </Button>
+                  )}
+                {((ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
+                  !isStandardEditionShowing) ||
+                  isStandardEditionShowing) && (
+                  <BuyButton
+                    className={styles.preorderButton}
+                    onClick={() => this.onClickStoreItem(buttonSkuTag)}
+                    buttonType={"gold"}
+                    sheen={0.35}
+                    analyticsId={buttonSkuTag}
+                  >
+                    {Localizer.Shadowkeep.CTAButtonLabel}
+                  </BuyButton>
+                )}
                 {isStandardEditionShowing ? (
                   <div className={styles.buyMainContent}>
                     <div
@@ -724,18 +720,13 @@ class DestinyShadowkeepInner extends React.Component<
                   <div className={styles.buyMainContent}>
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.BuyUpgradeDesc1,
+                        __html: Localizer.Destiny.legendaryEditionDesc1,
                       }}
                     />
                     <div className={styles.descBottom}>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: Localizer.Destiny.BuyUpgradeDesc2,
-                        }}
-                      />
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: Localizer.Destiny.BuyUpgradeDesc3,
+                          __html: Localizer.Destiny.legendaryEditionDesc2,
                         }}
                       />
                     </div>
@@ -744,10 +735,15 @@ class DestinyShadowkeepInner extends React.Component<
               </div>
             </div>
           </Section>
+        </div>
 
-          {
-            // NEWS & MEDIA
-          }
+        {
+          // NEWS & MEDIA
+        }
+        <div
+          id={"media"}
+          ref={(el) => (this.idToElementsMapping["media"] = el)}
+        >
           <DestinyNewsAndMedia
             videos={videos}
             wallpapers={[
@@ -764,13 +760,6 @@ class DestinyShadowkeepInner extends React.Component<
                   "destiny/bgs/shadowkeep/media_wallpapers_thumbnail_2.jpg"
                 ),
                 detail: Img("destiny/bgs/shadowkeep/media_wallpapers_2.png"),
-              },
-              {
-                isVideo: false,
-                thumbnail: Img(
-                  "destiny/bgs/shadowkeep/media_wallpapers_thumbnail_3.jpg"
-                ),
-                detail: Img("destiny/bgs/shadowkeep/media_wallpapers_3.png"),
               },
               {
                 isVideo: false,
@@ -826,16 +815,56 @@ class DestinyShadowkeepInner extends React.Component<
               {
                 isVideo: false,
                 thumbnail: Img(
-                  "destiny/bgs/shadowkeep/media_screenshot_thumbnail_7.jpg"
+                  "destiny/products/shadowkeep/raid_screenshot_thumbnail_1.jpg"
                 ),
-                detail: Img("destiny/bgs/shadowkeep/media_screenshot_7.png"),
+                detail: Img(
+                  "destiny/products/shadowkeep/raid_screenshot_1.jpg"
+                ),
               },
               {
                 isVideo: false,
                 thumbnail: Img(
-                  "destiny/bgs/shadowkeep/media_screenshot_thumbnail_8.jpg"
+                  "destiny/products/shadowkeep/raid_screenshot_thumbnail_2.jpg"
                 ),
-                detail: Img("destiny/bgs/shadowkeep/media_screenshot_8.png"),
+                detail: Img(
+                  "destiny/products/shadowkeep/raid_screenshot_2.jpg"
+                ),
+              },
+              {
+                isVideo: false,
+                thumbnail: Img(
+                  "destiny/products/shadowkeep/raid_screenshot_thumbnail_3.jpg"
+                ),
+                detail: Img(
+                  "destiny/products/shadowkeep/raid_screenshot_3.jpg"
+                ),
+              },
+              {
+                isVideo: false,
+                thumbnail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_1.jpg"
+                ),
+                detail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_1.jpg"
+                ),
+              },
+              {
+                isVideo: false,
+                thumbnail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_2.jpg"
+                ),
+                detail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_2.jpg"
+                ),
+              },
+              {
+                isVideo: false,
+                thumbnail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_thumbnail_3.jpg"
+                ),
+                detail: Img(
+                  "destiny/products/shadowkeep/dungeon_screenshot_3.jpg"
+                ),
               },
             ]}
           />

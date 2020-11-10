@@ -13,8 +13,6 @@ import {
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
-import { MarketingOptIn } from "@UI/User/MarketingOptIn";
-import { OptInType } from "@UI/User/OptInUtils";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";

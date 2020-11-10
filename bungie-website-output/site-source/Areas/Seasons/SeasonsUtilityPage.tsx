@@ -1,31 +1,33 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import styles from "./SeasonsUtilityPage.module.scss";
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { PlatformError } from "@CustomErrors";
+import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { User, Responses, Platform, Actions } from "@Platform";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
+import { Localizer } from "@Global/Localizer";
+import { Actions, Platform, Responses, User } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
 import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";
+import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import { RequiresAuth } from "@UI/User/RequiresAuth";
+import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
+import SeasonCalendar from "./Progress/SeasonCalendar";
 import SeasonHeader from "./Progress/SeasonHeader";
 import SeasonPassRewardProgression from "./Progress/SeasonPassRewardProgression";
-import RedeemSeasonRewards from "./Redeem/RedeemSeasonRewards";
-import { Localizer } from "@Global/Localizer";
 import SeasonsPageNav from "./Progress/SeasonsPageNav";
-import SeasonCalendar from "./Progress/SeasonCalendar";
-import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
-import { UserUtils } from "@Utilities/UserUtils";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
-import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { RouteHelper } from "@Routes/RouteHelper";
+import RedeemSeasonRewards from "./Redeem/RedeemSeasonRewards";
+import styles from "./SeasonsUtilityPage.module.scss";
 
 export interface IClaimedReward {
   rewardIndex: number;
@@ -131,7 +133,9 @@ class SeasonsUtilityPage extends React.Component<
     const isAnonymous = !UserUtils.isAuthenticated(this.props.globalState);
 
     if (this.state.isLoading) {
-      return null;
+      return (
+        <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
+      );
     }
 
     const charactersLoaded =
@@ -301,21 +305,24 @@ class SeasonsUtilityPage extends React.Component<
       memberships = await Platform.UserService.GetMembershipDataForCurrentUser();
     }
 
-    const membership =
+    const isCrossSaved =
       typeof this.props.globalState.crossSavePairingStatus !== "undefined" &&
       typeof this.props.globalState.crossSavePairingStatus
-        .primaryMembershipType !== "undefined"
-        ? memberships.destinyMemberships.find(
-            (a) =>
-              a.membershipType ===
-              this.props.globalState.crossSavePairingStatus
-                .primaryMembershipType
-          )
-        : this.state.currentMembershipType
-        ? memberships.destinyMemberships.find(
-            (a) => a.membershipType === this.state.currentMembershipType
-          )
-        : memberships.destinyMemberships[0];
+        .primaryMembershipType !== "undefined";
+
+    let membership = memberships.destinyMemberships[0];
+
+    if (isCrossSaved) {
+      membership = memberships.destinyMemberships.find(
+        (a) =>
+          a.membershipType ===
+          this.props.globalState.crossSavePairingStatus.primaryMembershipType
+      );
+    } else if (this.state.currentMembershipType) {
+      membership = memberships.destinyMemberships.find(
+        (a) => a.membershipType === this.state.currentMembershipType
+      );
+    }
 
     let profileResponse: Responses.DestinyProfileResponse = null;
     let targetCharacterId = "";
@@ -374,19 +381,30 @@ class SeasonsUtilityPage extends React.Component<
   }
 
   private async updatePlatform(platform: string) {
-    if (platform !== this.state.currentMembershipType.toString()) {
+    if (
+      platform !==
+      EnumUtils.getStringValue(
+        this.state.currentMembershipType,
+        BungieMembershipType
+      )
+    ) {
       this.setState({
         isLoading: true,
       });
 
-      const membershipType = this.state.memberships.destinyMemberships.find(
-        (value) => value.membershipType.toString() === platform
-      ).membershipType;
+      const matchingAccount = this.state.memberships.destinyMemberships.find(
+        (value) =>
+          EnumUtils.looseEquals(
+            value.membershipType,
+            platform,
+            BungieMembershipType
+          )
+      );
 
       //set the new membership, and clear out the outdated profileResponse so that it will update
       this.setState(
         {
-          currentMembershipType: membershipType,
+          currentMembershipType: matchingAccount.membershipType,
           characterId: "",
         },
         () => this.loadUserData()

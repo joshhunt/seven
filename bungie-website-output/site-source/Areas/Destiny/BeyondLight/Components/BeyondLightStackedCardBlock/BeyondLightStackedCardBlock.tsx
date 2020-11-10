@@ -1,8 +1,24 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
+import classNames from "classnames";
 import * as React from "react";
 import styles from "./BeyondLightStackedCardBlock.module.scss";
+
+// class props
+interface IStackedCardClasses {
+  wrapperStyles?: string;
+  // text content section
+  upperCardStyles?: string;
+  // uppercard heading
+  headingStyles?: string;
+  // logo
+  logoStyles?: string;
+  // uppercard body copy
+  subheadingStyles?: string;
+  // card image
+  imageStyles?: string;
+}
 
 // Required props
 interface IStackedCardBlockProps {
@@ -11,6 +27,7 @@ interface IStackedCardBlockProps {
   heading: string;
   subheading: string;
   videoLoop?: string;
+  classes?: IStackedCardClasses;
 }
 
 // Default props - these will have values set in Component.defaultProps
@@ -30,18 +47,32 @@ const StackedCardBlock = ({
   heading,
   subheading,
   videoLoop,
+  classes,
 }: IStackedCardBlockProps) => {
+  const wrapperStyles = classNames(styles.cardWrapper, classes?.wrapperStyles);
+  const upperCardStyles = classNames(
+    styles.upperCard,
+    classes?.upperCardStyles
+  );
+  const logoStyles = classNames(styles.logo, classes?.logoStyles);
+  const headingStyles = classNames(styles.heading, classes?.headingStyles);
+  const subheadingStyles = classNames(
+    styles.subheading,
+    classes?.subheadingStyles
+  );
+  const imageStyles = classNames(styles.cardImage, classes?.imageStyles);
+
   return (
-    <div className={styles.cardWrapper}>
-      <div className={styles.upperCard}>
+    <div className={wrapperStyles}>
+      <div className={upperCardStyles}>
         <img
-          className={styles.logo}
+          className={logoStyles}
           src={logoImage}
           alt=""
           role="presentation"
         />
-        <h3 className={styles.heading}>{heading}</h3>
-        <p className={styles.subheading}>{subheading}</p>
+        <h3 className={headingStyles}>{heading}</h3>
+        <p className={subheadingStyles}>{subheading}</p>
       </div>
       {videoLoop && (
         <video
@@ -56,7 +87,7 @@ const StackedCardBlock = ({
       )}
       {cardImage && !videoLoop && (
         <img
-          className={styles.cardImage}
+          className={imageStyles}
           src={cardImage}
           alt=""
           role="presentation"

@@ -33,6 +33,7 @@ export const SystemNames = {
   Localizer: "Localizer",
   LocalizerDebug: "LocalizerDebug",
   LunaVideo: "LunaVideo",
+  shadowKeepRevealTrailerVideo: "shadowKeepRevealTrailerVideo",
   Messages: "Messages",
   Notifications: "Notifications",
   PartnerOfferClaims: "PartnerOfferClaims",
@@ -68,4 +69,7 @@ export const SystemNames = {
   WebRendererCore: "WebRendererCore",
   RegistrationUpsellContentVersion2: "RegistrationUpsellContentVersion2",
   DestinyArg: "DestinyArg",
+  BuyFlowGetStartedContent: "BuyFlowGetStartedContent",
+  DirectWorldsFirst: "DirectWorldsFirst",
+  LegendaryEditionEnabled: "LegendaryEditionEnabled",
 } as const;

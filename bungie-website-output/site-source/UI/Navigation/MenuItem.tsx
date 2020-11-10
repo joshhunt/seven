@@ -3,7 +3,6 @@ import {
   INavigationTopLink,
   NavigationConfigLegacy,
   IMenuParentItem,
-  INavigationCollapse,
 } from "@UI/Navigation/MainNavigation";
 import classNames from "classnames";
 import * as React from "react";
@@ -57,10 +56,6 @@ interface INavBucketProps extends IMainParentProps {
   link: INavigationLinkItem | INavigationTopLink;
 }
 
-interface ICollapseBucketProps extends IMainParentProps {
-  link: INavigationCollapse;
-}
-
 interface IMenuItemState {
   navBucketOpen: boolean;
   isTouched: boolean;
@@ -92,7 +87,7 @@ export class MenuItem extends React.Component<IMenuItemProps, IMenuItemState> {
         isAuthTrigger={isAuthTrigger}
         isTouched={this.state.isTouched}
         toggleIfAuth={this.toggleIfAuthOrMobile}
-        link={link as INavigationTopLink}
+        link={link}
         navBucketOpen={this.state.navBucketOpen}
         onExpandToggle={this.onExpandToggle}
         onChildSelected={this.onChildSelected}
@@ -204,6 +199,9 @@ const MenuLink = (props: ILinkProps) => {
 
   const urlString = String(link.Url);
   const label = Localizer.Nav[link.StringKey];
+  const secondaryLabel = link.SecondaryStringKey
+    ? Localizer.Nav[link.SecondaryStringKey]
+    : null;
   const url = urlString.replace("{locale}", LocalizerUtils.currentCultureName);
 
   if (link.Url === null) {
@@ -304,7 +302,12 @@ const MenuLink = (props: ILinkProps) => {
 
   return (
     <Anchor className={classes} url={url} onClick={onClick} legacy={isLegacy}>
-      <div className={styles.linkLabel}>{label}</div>
+      <div className={styles.linkLabel}>
+        {secondaryLabel && (
+          <div className={styles.secondaryLabel}>{secondaryLabel}</div>
+        )}
+        <div>{label}</div>
+      </div>
       {expandIcon}
     </Anchor>
   );

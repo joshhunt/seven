@@ -116,6 +116,7 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Video", { path: ":videoContentId" }),
         (area) => new ActionRoute(area, "Analyze"),
+        (area) => new ActionRoute(area, "WorldsFirst"),
       ],
     }),
     GameHistory: new Area({
@@ -166,7 +167,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),
         (area) => new ActionRoute(area, "Event", { path: ":slug" }),
-        (area) => new ActionRoute(area, "News"),
+        (area) => new ActionRoute(area, "News", { path: ":slug" }),
       ],
       webmasterSystem: SystemNames.CoreAreaSeasons,
     }),

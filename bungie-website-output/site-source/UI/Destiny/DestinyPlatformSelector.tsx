@@ -40,7 +40,10 @@ export class DestinyPlatformSelector extends React.Component<
     super(props);
 
     this.state = {
-      selectedValue: this.props.defaultValue.toString(),
+      selectedValue: EnumUtils.getStringValue(
+        this.props.defaultValue,
+        BungieMembershipType
+      ),
     };
   }
 
@@ -69,23 +72,28 @@ export class DestinyPlatformSelector extends React.Component<
               iconPath: crossSavePlatform.iconPath,
               label: `${crossSavePlatform.displayName} : ${
                 Localizer.Platforms[
-                  BungieMembershipType[crossSavePlatform.membershipType]
+                  EnumUtils.getStringValue(
+                    crossSavePlatform.membershipType,
+                    BungieMembershipType
+                  )
                 ]
               }`,
-              value: crossSavePlatform.membershipType.toString(),
+              value: EnumUtils.getStringValue(
+                crossSavePlatform.membershipType,
+                BungieMembershipType
+              ),
             },
           ]
         : this.props.userMembershipData.destinyMemberships.map((value) => {
-            const bMembershipTypeString =
-              BungieMembershipType[value.membershipType];
+            const bMembershipTypeString = EnumUtils.getStringValue(
+              value.membershipType,
+              BungieMembershipType
+            );
 
             return {
               iconPath: value.iconPath,
               label: `${value.displayName} : ${Localizer.Platforms[bMembershipTypeString]}`,
-              value: EnumUtils.getStringValue(
-                value.membershipType,
-                BungieMembershipType
-              ),
+              value: bMembershipTypeString,
             };
           });
 

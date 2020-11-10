@@ -1,6 +1,8 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
+import { BasicSize } from "@UIKit/UIKitUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styles from "./Forsaken.module.scss";
@@ -126,7 +128,12 @@ class ForsakenPageInternal extends React.Component<
 
   private showImage(imageName: string) {
     Modal.open(
-      <img src={Img(`/${imageName}`)} className={styles.largeImage} />,
+      <img
+        src={Img(`/${imageName}`)}
+        alt=""
+        role="presentation"
+        className={styles.largeImage}
+      />,
       {
         isFrameless: true,
       }
@@ -155,42 +162,21 @@ class ForsakenPageInternal extends React.Component<
         >
           <body className={SpecialBodyClasses(BodyClasses.HideServiceAlert)} />
         </BungieHelmet>
+        {
+          // hero
+        }
         <div className={styles.hero} ref={this.heroRef}>
+          <p className={styles.heroEyebrow}>
+            {Localizer.Destiny.ForsakenExpansionYear}
+          </p>
           <div
             className={styles.heroLogo}
             style={{ backgroundImage: `url(${this.forsakenLogo})` }}
           />
-          <Button
-            buttonType={"white"}
-            className={styles.trailerButton}
-            onClick={() =>
-              this.showVideo(Localizer.Destiny.ForsakenLaunchTrailerID)
-            }
-          >
-            {Localizer.Destiny.WatchTheTrailer}
-          </Button>
-          <div className={styles.video_container}>
-            <video
-              playsInline={true}
-              autoPlay={true}
-              muted={true}
-              loop={true}
-              poster={
-                "/7/ca/destiny/products/forsaken/forsaken_hero_poster_bg.jpg"
-              }
-            >
-              <source
-                src={Localizer.Destiny.ForsakenHeroVideoSource}
-                type="video/webm"
-              />
-              <source
-                src={Localizer.Destiny.ForsakenHeroVideoSource}
-                type="video/mp4"
-              />
-            </video>
-          </div>
         </div>
-
+        {
+          // subnav
+        }
         <MarketingSubNav
           onChange={this.onMenuLock}
           idToElementsMapping={this.idToElementsMapping}
@@ -215,7 +201,7 @@ class ForsakenPageInternal extends React.Component<
           ref={(el) => (this.idToElementsMapping["forsaken_story"] = el)}
         >
           <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Submenu_forsaken_story}
+            smallTitle={`${Localizer.Destiny.ForsakenTitle} // ${Localizer.Destiny.Submenu_forsaken_story}`}
             sectionTitle={Localizer.Destiny.ForsakenCampaignTitle}
             alignment={
               this.props.globalState.responsive.mobile ? "left" : "center"
@@ -257,6 +243,8 @@ class ForsakenPageInternal extends React.Component<
                   src={Img(
                     "destiny/products/forsaken/v2/desktop/forsaken_story_1_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
                 <div className={styles.playButton} />
               </Button>
@@ -272,6 +260,8 @@ class ForsakenPageInternal extends React.Component<
                   src={Img(
                     "destiny/products/forsaken/v2/desktop/forsaken_story_2_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
               </Button>
               <Button
@@ -286,6 +276,8 @@ class ForsakenPageInternal extends React.Component<
                   src={Img(
                     "destiny/products/forsaken/v2/desktop/forsaken_story_3_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
               </Button>
             </div>
@@ -301,7 +293,7 @@ class ForsakenPageInternal extends React.Component<
           ref={(el) => (this.idToElementsMapping["forsaken_exotics"] = el)}
         >
           <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Submenu_forsaken_exotics}
+            smallTitle={`${Localizer.Destiny.ForsakenTitle} // ${Localizer.Destiny.Submenu_forsaken_exotics}`}
             sectionTitle={Localizer.Destiny.ForsakenExoticsTitle}
             alignment={
               this.props.globalState.responsive.mobile ? "left" : "center"
@@ -347,20 +339,24 @@ class ForsakenPageInternal extends React.Component<
                   src={Img(
                     "destiny/products/forsaken/v2/desktop/forsaken_exotics_1_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
               </Button>
               <Button
                 className={styles.thumbnail}
                 onClick={() =>
                   this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_exotics_2_16x9.jpg"
+                    "destiny/products/forsaken/forsaken_exotics_2.jpg"
                   )
                 }
               >
                 <img
                   src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_exotics_2_thumb.jpg"
+                    "destiny/products/forsaken/forsaken_exotics_2_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
               </Button>
               <Button
@@ -375,257 +371,14 @@ class ForsakenPageInternal extends React.Component<
                   src={Img(
                     "destiny/products/forsaken/v2/desktop/forsaken_exotics_3_thumb.jpg"
                   )}
+                  alt={""}
+                  role={"presentation"}
                 />
               </Button>
             </div>
           </MarketingContentBlock>
         </div>
 
-        {
-          //raids
-        }
-        <div
-          className={styles.forsakenSection}
-          id={"forsaken_raids"}
-          ref={(el) => (this.idToElementsMapping["forsaken_raids"] = el)}
-        >
-          <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Submenu_forsaken_raids}
-            sectionTitle={Localizer.Destiny.ForsakenLastWishTitle}
-            alignment={
-              this.props.globalState.responsive.mobile ? "left" : "center"
-            }
-            bgs={
-              <div
-                style={{
-                  backgroundPosition: `center top`,
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/raids_lastwish_bg.jpg"
-                  )}`,
-                }}
-              />
-            }
-            mobileBg={
-              <div
-                style={{
-                  backgroundSize: `contain`,
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/mobile/raids_lastwish_bg_mobile.jpg"
-                  )}`,
-                }}
-              />
-            }
-            bgColor={"#01050e"}
-            margin={
-              this.props.globalState.responsive.mobile
-                ? "20rem auto 2rem"
-                : "42rem auto 2rem"
-            }
-            blurb={raidsBlurb}
-          >
-            <div className={styles.imageContainer}>
-              <Button
-                className={classNames(styles.thumbnail, styles.playButton)}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_1_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_1_thumb.jpg"
-                  )}
-                />
-              </Button>
-              <Button
-                className={styles.thumbnail}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_2_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_2_thumb.jpg"
-                  )}
-                />
-              </Button>
-              <Button
-                className={styles.thumbnail}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_3_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_3_thumb.jpg"
-                  )}
-                />
-              </Button>
-            </div>
-          </MarketingContentBlock>
-        </div>
-        <div className={styles.splitScreen}>
-          <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Raid}
-            sectionTitle={Localizer.Destiny.ForsakenRaidsTitle2}
-            alignment={"center"}
-            bgs={
-              <div
-                style={{
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/raids_scourge_bg.jpg"
-                  )})`,
-                }}
-              />
-            }
-            mobileBg={
-              <div
-                style={{
-                  backgroundPosition: `center top`,
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/raids_scourge_bg.jpg"
-                  )})`,
-                }}
-              />
-            }
-            bgColor={"#0F1311"}
-            margin={
-              this.props.globalState.responsive.mobile
-                ? "13rem 0 0"
-                : "33rem auto 2rem"
-            }
-            blurb={Localizer.Destiny.ForsakenRaidsDetails2}
-            splitScreen={true}
-          >
-            <div />
-          </MarketingContentBlock>
-          <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Raid}
-            sectionTitle={Localizer.Destiny.ForsakenRaidsTitle3}
-            alignment={"center"}
-            bgs={
-              <div
-                style={{
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/raids_crown_bg.jpg"
-                  )})`,
-                }}
-              />
-            }
-            mobileBg={
-              <div
-                style={{
-                  backgroundPosition: `center top`,
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/raids_crown_bg.jpg"
-                  )})`,
-                }}
-              />
-            }
-            bgColor={"#0F1311"}
-            margin={
-              this.props.globalState.responsive.mobile
-                ? "13rem 0 0"
-                : "33rem auto 2rem"
-            }
-            blurb={Localizer.Destiny.ForsakenRaidsDetails3}
-            splitScreen={true}
-          >
-            <div />
-          </MarketingContentBlock>
-        </div>
-        {
-          //dungeon - shattered throne
-        }
-        <div
-          className={styles.forsakenSection}
-          id={"forsaken_dungeon"}
-          ref={(el) => (this.idToElementsMapping["forsaken_dungeon"] = el)}
-        >
-          <MarketingContentBlock
-            smallTitle={Localizer.Destiny.Submenu_forsaken_dungeon}
-            sectionTitle={Localizer.Destiny.ForsakenDungeonTitle}
-            alignment={
-              this.props.globalState.responsive.mobile ? "left" : "center"
-            }
-            bgs={
-              <div
-                style={{
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/desktop/dungeon_bg.jpg"
-                  )}`,
-                }}
-              />
-            }
-            mobileBg={
-              <div
-                style={{
-                  backgroundImage: `url(${Img(
-                    "destiny/products/forsaken/v2/mobile/dungeon_bg_mobile.jpg"
-                  )}`,
-                  backgroundSize: "contain",
-                }}
-              />
-            }
-            bgColor={"#05090c"}
-            margin={
-              this.props.globalState.responsive.mobile
-                ? "30rem auto 2rem"
-                : "41rem auto 2rem"
-            }
-            blurb={Localizer.Destiny.ForsakenDungeonDetail}
-          >
-            <div className={styles.imageContainer}>
-              <Button
-                className={styles.thumbnail}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_1_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_1_thumb.jpg"
-                  )}
-                />
-              </Button>
-              <Button
-                className={styles.thumbnail}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_2_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_2_thumb.jpg"
-                  )}
-                />
-              </Button>
-              <Button
-                className={styles.thumbnail}
-                onClick={() =>
-                  this.showImage(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_3_16x9.jpg"
-                  )
-                }
-              >
-                <img
-                  src={Img(
-                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_3_thumb.jpg"
-                  )}
-                />
-              </Button>
-            </div>
-          </MarketingContentBlock>
-        </div>
         {
           //supers
         }
@@ -677,6 +430,8 @@ class ForsakenPageInternal extends React.Component<
                     src={Img(
                       "destiny/products/forsaken/v2/desktop/forsaken_supers_1_thumb.jpg"
                     )}
+                    alt={""}
+                    role={"presentation"}
                   />
                   <div className={styles.playButton} />
                 </Button>
@@ -693,6 +448,8 @@ class ForsakenPageInternal extends React.Component<
                     src={Img(
                       "destiny/products/forsaken/v2/desktop/forsaken_supers_2_thumb.jpg"
                     )}
+                    alt={""}
+                    role={"presentation"}
                   />
                   <div className={styles.playButton} />
                 </Button>
@@ -711,6 +468,8 @@ class ForsakenPageInternal extends React.Component<
                     src={Img(
                       "destiny/products/forsaken/v2/desktop/forsaken_supers_3_thumb.jpg"
                     )}
+                    alt={""}
+                    role={"presentation"}
                   />
                   <div className={styles.playButton} />
                 </Button>
@@ -721,6 +480,196 @@ class ForsakenPageInternal extends React.Component<
             </div>
           </MarketingContentBlock>
         </div>
+
+        {
+          //dungeon - shattered throne
+        }
+        <div
+          className={styles.forsakenSection}
+          id={"forsaken_dungeon"}
+          ref={(el) => (this.idToElementsMapping["forsaken_dungeon"] = el)}
+        >
+          <MarketingContentBlock
+            smallTitle={Localizer.Destiny.forsaken_yearTwo_dungeon}
+            sectionTitle={Localizer.Destiny.ForsakenDungeonTitle}
+            alignment={
+              this.props.globalState.responsive.mobile ? "left" : "center"
+            }
+            bgs={
+              <div
+                style={{
+                  backgroundImage: `url(${Img(
+                    "destiny/products/forsaken/v2/desktop/dungeon_bg.jpg"
+                  )}`,
+                }}
+              />
+            }
+            mobileBg={
+              <div
+                style={{
+                  backgroundImage: `url(${Img(
+                    "destiny/products/forsaken/v2/mobile/dungeon_bg_mobile.jpg"
+                  )}`,
+                  backgroundSize: "contain",
+                }}
+              />
+            }
+            bgColor={"#05090c"}
+            margin={
+              this.props.globalState.responsive.mobile
+                ? "30rem auto 2rem"
+                : "41rem auto 2rem"
+            }
+            blurb={Localizer.Destiny.ForsakenDungeonDetail}
+          >
+            <div className={styles.imageContainer}>
+              <Button
+                className={styles.thumbnail}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_1_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_1_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+              <Button
+                className={styles.thumbnail}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_2_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_2_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+              <Button
+                className={styles.thumbnail}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_3_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_dungeon_3_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+            </div>
+          </MarketingContentBlock>
+        </div>
+
+        {
+          //raids
+        }
+        <div
+          className={styles.forsakenSection}
+          id={"forsaken_raids"}
+          ref={(el) => (this.idToElementsMapping["forsaken_raids"] = el)}
+        >
+          <MarketingContentBlock
+            smallTitle={Localizer.Destiny.forsaken_yearTwo_raids}
+            sectionTitle={Localizer.Destiny.ForsakenLastWishTitle}
+            alignment={
+              this.props.globalState.responsive.mobile ? "left" : "center"
+            }
+            bgs={
+              <div
+                style={{
+                  backgroundPosition: `center top`,
+                  backgroundImage: `url(${Img(
+                    "destiny/products/forsaken/v2/desktop/raids_lastwish_bg.jpg"
+                  )}`,
+                }}
+              />
+            }
+            mobileBg={
+              <div
+                style={{
+                  backgroundSize: `contain`,
+                  backgroundImage: `url(${Img(
+                    "destiny/products/forsaken/v2/mobile/raids_lastwish_bg_mobile.jpg"
+                  )}`,
+                }}
+              />
+            }
+            bgColor={"#01050e"}
+            margin={
+              this.props.globalState.responsive.mobile
+                ? "20rem auto 2rem"
+                : "42rem auto 2rem"
+            }
+            blurb={raidsBlurb}
+          >
+            <div className={styles.imageContainer}>
+              <Button
+                className={classNames(styles.thumbnail, styles.playButton)}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_1_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_1_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+              <Button
+                className={styles.thumbnail}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_2_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_2_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+              <Button
+                className={styles.thumbnail}
+                onClick={() =>
+                  this.showImage(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_3_16x9.jpg"
+                  )
+                }
+              >
+                <img
+                  src={Img(
+                    "destiny/products/forsaken/v2/desktop/forsaken_raids_lastwish_3_thumb.jpg"
+                  )}
+                  alt={""}
+                  role={"presentation"}
+                />
+              </Button>
+            </div>
+          </MarketingContentBlock>
+        </div>
+
         {
           //buy
         }
@@ -735,15 +684,20 @@ class ForsakenPageInternal extends React.Component<
               this.state.forsakenIsShowing ? styles.std : styles.ue
             )}
           >
-            <a className={styles.standardTab} onClick={this.showForsaken}>
+            <div
+              role={"button"}
+              className={styles.standardTab}
+              onClick={this.showForsaken}
+            >
               {Localizer.Destiny.ForsakenTitle}
-            </a>
-            <a
+            </div>
+            <div
+              role={"button"}
               className={styles.collectionTab}
               onClick={this.showUpgradeEdition}
             >
-              {Localizer.Destiny.UpgradeEdition}
-            </a>
+              {Localizer.Destiny.buyFlowLegendaryEditionTitle}
+            </div>
           </div>
           <div className={styles.shadowkeepBuyContainer}>
             <div className={styles.shadowkeepBuy}>
@@ -754,10 +708,17 @@ class ForsakenPageInternal extends React.Component<
                 )}
                 style={{
                   backgroundImage: this.state.forsakenIsShowing
-                    ? `url("7/ca/destiny/products/forsaken/bnet_sku_forsaken_${Localizer.CurrentCultureName}.jpg")`
-                    : `url("7/ca/destiny/products/shadowkeep/bnet_sku_upgrade_edition_${Localizer.CurrentCultureName}.jpg")`,
+                    ? `url("7/ca/destiny/products/forsaken/forsaken_buy_cover_${Localizer.CurrentCultureName}.jpg")`
+                    : `url("7/ca/destiny/products/shadowkeep/legendaryEdition_buy_cover_${Localizer.CurrentCultureName}.jpg")`,
                 }}
               />
+              <div className={styles.disclaimerGrid}>
+                <ul>
+                  <li>{Localizer.Destiny.shadowkeepPurchaseLegalDetail}</li>
+                  <li>{Localizer.Destiny.shadowkeepLegalDetail}</li>
+                  <li>{Localizer.Destiny.imagesLegalDetail}</li>
+                </ul>
+              </div>
             </div>
             <div className={styles.shadowkeepBuyDescription}>
               <h1 className={styles.editionTitle}>
@@ -767,33 +728,29 @@ class ForsakenPageInternal extends React.Component<
                 <span>
                   {this.state.forsakenIsShowing
                     ? Localizer.Destiny.ForsakenTitle
-                    : Localizer.Shadowkeep.UpgradeEdition}
+                    : Localizer.Destiny.buyFlowLegendaryEditionTitle}
                 </span>
               </h1>
               <div className={styles.thickTopBorder} />
-              <BuyButton
-                className={styles.preorderButton}
-                onClick={() => this.onClickStoreItem(buttonSkuTag)}
-                buttonType={"gold"}
-                sheen={0.35}
-                analyticsId={buttonSkuTag}
-              >
-                {Localizer.Shadowkeep.CTAButtonLabel}
-              </BuyButton>
-              <div>
-                <p className={styles.platformType}>
-                  {" "}
-                  {Localizer.Shadowkeep.PlatformShortXbox}{" "}
-                </p>
-                <p className={styles.platformType}>
-                  {" "}
-                  {Localizer.Shadowkeep.PlatformShortPs4}{" "}
-                </p>
-                <p className={styles.platformType}>
-                  {" "}
-                  {Localizer.Shadowkeep.PlatformShortSteam}{" "}
-                </p>
-              </div>
+              {!ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
+                !this.state.forsakenIsShowing && (
+                  <Button size={BasicSize.Medium} buttonType={"disabled"}>
+                    {Localizer.bungierewards.ComingSoon_NAME}
+                  </Button>
+                )}
+              {((ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
+                !this.state.forsakenIsShowing) ||
+                this.state.forsakenIsShowing) && (
+                <BuyButton
+                  className={styles.preorderButton}
+                  onClick={() => this.onClickStoreItem(buttonSkuTag)}
+                  buttonType={"gold"}
+                  sheen={0.35}
+                  analyticsId={buttonSkuTag}
+                >
+                  {Localizer.Shadowkeep.CTAButtonLabel}
+                </BuyButton>
+              )}
               {this.state.forsakenIsShowing ? (
                 <div className={styles.buyMainContent}>
                   <div
@@ -813,18 +770,13 @@ class ForsakenPageInternal extends React.Component<
                 <div className={styles.buyMainContent}>
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: Localizer.Destiny.BuyUpgradeDesc1,
+                      __html: Localizer.Destiny.legendaryEditionDesc1,
                     }}
                   />
                   <div className={styles.descBottom}>
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.BuyUpgradeDesc3,
-                      }}
-                    />
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.BuyUpgradeDesc2,
+                        __html: Localizer.Destiny.legendaryEditionDesc2,
                       }}
                     />
                   </div>
