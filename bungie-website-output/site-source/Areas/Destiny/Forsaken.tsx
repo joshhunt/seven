@@ -150,7 +150,7 @@ class ForsakenPageInternal extends React.Component<
 
     const buttonSkuTag = this.state.forsakenIsShowing
       ? DestinySkuTags.ForsakenDetail
-      : DestinySkuTags.ShadowkeepForsakenUpgradeEdition;
+      : DestinySkuTags.LegendaryEdition;
 
     return (
       <React.Fragment>

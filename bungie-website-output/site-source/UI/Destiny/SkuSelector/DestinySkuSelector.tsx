@@ -85,8 +85,6 @@ export default class DestinySkuSelector extends React.Component<
       this.props.skuTag,
       skuConfig
     );
-    const showDisclaimer =
-      def.disclaimer !== null && def.disclaimer !== "" && productIsOnSale;
 
     return (
       <div className={styles.buyModalContent}>
@@ -112,8 +110,10 @@ export default class DestinySkuSelector extends React.Component<
             skuConfig={skuConfig}
             className={styles.selectorOptions}
           />
-          {showDisclaimer && (
-            <div className={styles.disclaimer}>{`*${def.disclaimer}`}</div>
+          {productIsOnSale && (
+            <div className={styles.disclaimer}>
+              {`*${Localizer.skuDestinations.BuyFlowDisclaimer}`}
+            </div>
           )}
         </div>
       </div>

@@ -250,7 +250,7 @@ class DestinyShadowkeepInner extends React.Component<
 
     const buttonSkuTag = isStandardEditionShowing
       ? DestinySkuTags.ShadowkeepStandard
-      : DestinySkuTags.ShadowkeepForsakenUpgradeEdition;
+      : DestinySkuTags.LegendaryEdition;
 
     return (
       <React.Fragment>

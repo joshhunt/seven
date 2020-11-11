@@ -5,6 +5,7 @@ export class DestinySkuTags {
   public static ShadowkeepForsakenUpgradeEdition =
     "shadowkeepforsakenupgradeedition";
   public static ForsakenDetail = "forsaken";
+  public static LegendaryEdition = "legendaryedition";
 }
 
 export class DestinySkuContentSets {
