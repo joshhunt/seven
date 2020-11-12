@@ -682,7 +682,7 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
           titleIsSmall={true}
           news={
             <Anchor
-              url={RouteHelper.NewsArticle(49652)}
+              url={RouteHelper.HelpArticle(49652)}
               className={styles.newsButton}
             >
               {Localizer.Season12.Destiny2SeasonOfTheHunt}
