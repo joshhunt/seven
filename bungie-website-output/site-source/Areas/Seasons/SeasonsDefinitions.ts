@@ -119,15 +119,15 @@ class Season12 extends SeasonDefinition {
     return Localizer.Seasons.SeasonOfTheHunt;
   }
 
-  public image = "/7/ca/destiny/bgs/season12/hero_bg_desktop.jpg";
+  public image = "/7/ca/destiny/bgs/season12/ArticleBanner_01.jpg";
   public progressPageImage =
     "/7/ca/destiny/bgs/season12/season_progress_bg.jpg";
-  public productPageLink = RouteHelper.Season12;
+  public productPageLink = RouteHelper.Season12();
   public calendarContentItem;
   public calendarBackgroundImage =
-    "/7/ca/destiny/bgs/season11/S11_Calendar_bg.png";
+    "/7/ca/destiny/bgs/season12/calendar_bg_desktop.png";
   public seasonNumber = 12;
-  public actionRouteString = "SeasonOfArrivals";
+  public actionRouteString = "SeasonOfTheHunt";
 
   public get toastSubtitle(): string {
     return Localizer.Seasons.LearnMoreSeason12;

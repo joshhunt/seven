@@ -252,7 +252,9 @@ export class RouteHelper {
   public static Season11 = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfArrivals")
   );
-  public static Season12 = DirectLegacyPath("/SeasonOfTheHunt");
+  public static Season12 = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheHunt")
+  );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")

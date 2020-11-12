@@ -71,5 +71,7 @@ export const SystemNames = {
   DestinyArg: "DestinyArg",
   BuyFlowGetStartedContent: "BuyFlowGetStartedContent",
   DirectWorldsFirst: "DirectWorldsFirst",
+  SeasonHuntYoutube: "SeasonHuntYoutube",
+  SeasonHuntSeasonPassYoutube: "SeasonHuntSeasonPassYoutube",
   LegendaryEditionEnabled: "LegendaryEditionEnabled",
 } as const;

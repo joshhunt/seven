@@ -453,6 +453,14 @@
     "areaName": "Seasons",
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheHunt",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheHunt"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "SeasonOfTheUndying",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheUndying"
