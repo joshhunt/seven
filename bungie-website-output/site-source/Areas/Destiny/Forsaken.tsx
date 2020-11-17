@@ -48,7 +48,7 @@ class ForsakenPageInternal extends React.Component<
   private readonly heroRef: React.RefObject<HTMLDivElement> = React.createRef();
   private readonly idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
-  private readonly forsakenLogo = `/7/ca/destiny/products/forsaken/v2/desktop/${Localizer.Destiny.ForsakenLogo}.svg`;
+  private readonly forsakenLogo = `/7/ca/destiny/products/forsaken/v2/desktop/${Localizer.Destiny.ForsakenLogo}.png`;
 
   private readonly storyVideoId = Localizer.Destiny.ForsakenStoryVideoID;
   private readonly titanSuperVideoId = Localizer.Destiny.ForsakenTitanVideoID;

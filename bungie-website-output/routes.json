@@ -261,19 +261,19 @@
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
-    "action": "Video",
-    "params": {
-      "path": ":videoContentId"
-    },
-    "path": "/7/en/Direct/Video/:videoContentId"
+    "action": "RaidRace",
+    "params": {},
+    "path": "/7/en/Direct/RaidRace"
   },
   {
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
-    "action": "WorldsFirst",
-    "params": {},
-    "path": "/7/en/Direct/WorldsFirst"
+    "action": "Video",
+    "params": {
+      "path": ":videoContentId"
+    },
+    "path": "/7/en/Direct/Video/:videoContentId"
   },
   {
     "areaName": "GameHistory",

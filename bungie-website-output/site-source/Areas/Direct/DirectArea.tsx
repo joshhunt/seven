@@ -21,8 +21,8 @@ class DirectArea extends React.Component<IDirectRouterProps> {
           />
 
           <AsyncRoute
-            path={RouteDefs.Areas.Direct.getAction("WorldsFirst").path}
-            component={() => import("./WorldsFirst/WorldsFirst")}
+            path={RouteDefs.Areas.Direct.getAction("RaidRace").path}
+            component={() => import("./WorldsFirst/RaidRace")}
           />
         </AnimatedRouter>
       </React.Fragment>

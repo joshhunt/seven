@@ -14,9 +14,19 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 
-interface MarketingOptInButtonProps {}
+interface MarketingOptInButtonProps {
+  /**
+   * The label shown on the button if the user has yet to sign up for email updates
+   */
+  notSignedUpLabel?: ReactNode;
+
+  /**
+   * The label shown on the button if the user has already signed up for email updates
+   */
+  alreadySignedUplabel?: ReactNode;
+}
 
 const aggregateEmailSetting =
   OptInFlags.Newsletter |
@@ -59,6 +69,8 @@ const updateEmailSettings = (membershipId: string, onSuccess: () => void) => {
 export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
   props
 ) => {
+  const { children, alreadySignedUplabel, notSignedUpLabel } = props;
+
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [settingsUpdating, setSettingsUpdating] = useState(false);
   const modalRef = useRef<Modal>();
@@ -134,8 +146,8 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
   };
 
   const label = userAlreadySignedUpUpdates
-    ? Localizer.Destinyreveal.AlreadySignedUpForEmail
-    : Localizer.Destinyreveal.SignUpForEmailUpdates;
+    ? alreadySignedUplabel || Localizer.Destinyreveal.AlreadySignedUpForEmail
+    : notSignedUpLabel || Localizer.Destinyreveal.SignUpForEmailUpdates;
 
   return (
     <Button

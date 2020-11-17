@@ -473,19 +473,19 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
             <ThreeItemGrid
               item1={imageMediaAsset(
                 Img("destiny/bgs/season12/rewards_screenshot_1_thumbnail.jpg"),
-                "destiny/bgs/season12/rewards_screenshot_1.jpg",
+                "rewards_screenshot_1.jpg",
                 Localizer.Season12.QualityExoticShotgun
               )}
               icon1={Img("destiny/bgs/season12/s12_icon.svg")}
               item2={imageMediaAsset(
                 Img("destiny/bgs/season12/rewards_screenshot_2_thumbnail.jpg"),
-                "destiny/bgs/season12/rewards_screenshot_2.jpg",
+                "rewards_screenshot_2.jpg",
                 Localizer.Season12.FreeSeasonalArmor
               )}
               icon2={Img("destiny/bgs/season12/s12_icon.svg")}
               item3={imageMediaAsset(
                 Img("destiny/bgs/season12/rewards_screenshot_3_thumbnail.jpg"),
-                "destiny/bgs/season12/rewards_screenshot_3.jpg",
+                "rewards_screenshot_3.jpg",
                 Localizer.Season12.ProgressionBoostsExotic
               )}
               icon3={Img("destiny/bgs/season12/s12_icon.svg")}

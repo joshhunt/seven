@@ -116,7 +116,7 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Video", { path: ":videoContentId" }),
         (area) => new ActionRoute(area, "Analyze"),
-        (area) => new ActionRoute(area, "WorldsFirst"),
+        (area) => new ActionRoute(area, "RaidRace"),
       ],
     }),
     GameHistory: new Area({
