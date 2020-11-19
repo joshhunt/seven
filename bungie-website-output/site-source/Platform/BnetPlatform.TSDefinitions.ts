@@ -345,6 +345,8 @@ export declare namespace DestinyDefinitions {
     Arc = 1,
     Thermal = 2,
     Void = 3,
+    Ghost = 4,
+    Subclass = 5,
   }
 
   enum SocketPlugSources {
@@ -1632,6 +1634,10 @@ export declare namespace DestinyDefinitions {
     setType: string;
 
     questLineName: string;
+
+    questLineDescription: string;
+
+    questStepSummary: string;
   }
 
   export interface DestinyItemSetBlockEntryDefinition {
@@ -3826,6 +3832,8 @@ export declare namespace DestinyDefinitions {
     energyCapacity: DestinyEnergyCapacityEntry;
 
     energyCost: DestinyEnergyCostEntry;
+
+    applyStatsToSocketOwnerItem: boolean;
   }
 
   export interface DestinyPlugRuleDefinition {

@@ -1,4 +1,5 @@
 import ReactGA from "react-ga";
+import BungieAnalytics from "@bungie/analytics";
 import { Localizer } from "@Global/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import moment from "moment/moment";
@@ -33,6 +34,15 @@ export class AnalyticsUtils {
         debug: reactGaTestMode,
         useExistingGa: true,
       } as any); // todo $jlauer - remove "as any" once react-ga supports useExistingGa in its types
+      if (ConfigUtils.SystemStatus(SystemNames.BungieAnalytics)) {
+        ReactGA.ga((tracker) => {
+          const clientId = tracker.get("clientId");
+          window["BungieAnalytics"] = new BungieAnalytics(
+            "net_bungie_www",
+            clientId
+          );
+        });
+      }
 
       AnalyticsUtils.initSuccess = true;
     }

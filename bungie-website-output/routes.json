@@ -474,6 +474,14 @@
     "path": "/7/en/Seasons/SeasonOfTheWorthy"
   },
   {
+    "areaName": "Sms",
+    "areaObjectName": "Sms",
+    "componentImportPath": "@Areas/Sms/SmsArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Sms"
+  },
+  {
     "areaName": "User",
     "areaObjectName": "User",
     "componentImportPath": "@Areas/User/UserArea",

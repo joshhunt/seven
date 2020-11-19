@@ -37,7 +37,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
 ) => {
   const subs: DestroyCallback[] = [];
   const [selectedSkuTag, setSelectedSkuTag] = React.useState(
-    props.skus[DestinyBuyDataStore.state.selectedSkuIndex].skuTag
+    props.skus[DestinyBuyDataStore.state.selectedSkuIndex || 0].skuTag
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
 

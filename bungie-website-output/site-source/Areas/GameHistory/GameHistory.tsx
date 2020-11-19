@@ -37,7 +37,7 @@ interface GameHistoryProps
 /**
  * GameHistory - Component that shows filterable game history data
  *  *
- * @param {IGameHistoryProps} props
+ * @param {GameHistoryProps} props
  * @returns
  */
 const GameHistory: React.FC<GameHistoryProps> = (props) => {

@@ -24,6 +24,7 @@ export class RouteDefs {
     Registration: "Registration",
     BeyondLight: "BeyondLight",
     User: "User",
+    Sms: "Sms",
   };
 
   public static Areas = {
@@ -171,6 +172,14 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "News", { path: ":slug" }),
       ],
       webmasterSystem: SystemNames.CoreAreaSeasons,
+    }),
+    Sms: new Area({
+      name: RouteDefs.AreaNames.Sms,
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/Sms/SmsArea" /* webpackChunkName: "Sms" */)
+      ),
+      routes: [(area) => new ActionRoute(area, "index")],
+      webmasterSystem: SystemNames.SmsVerification,
     }),
     UserResearch: new Area({
       name: RouteDefs.AreaNames.UserResearch,

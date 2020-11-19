@@ -258,6 +258,21 @@ export declare namespace User {
     CrossSaveOverriddenMembershipId?: string;
   }
 
+  export interface UserPhoneResponse {
+    /**
+		This is the phase of the SMS verification flow that a user is in
+		*/
+    phoneStatus: Globals.PhoneValidationStatusEnum;
+
+    /**
+		These are the last two digits of the phone number a user has requested a code be sent to
+		 In order to link that number to their account
+		
+		 Or the last two digits of the phone number that is connected to their account
+		*/
+    lastDigits: string;
+  }
+
   /**
 	Very basic info about a user as returned by the Account server.
 	*/
@@ -9157,6 +9172,16 @@ export declare namespace Definitions {
 		The name of the quest line that this quest step is a part of.
 		*/
     questLineName: string;
+
+    /**
+		The description of the quest line that this quest step is a part of.
+		*/
+    questLineDescription: string;
+
+    /**
+		An additional summary of this step in the quest line.
+		*/
+    questStepSummary: string;
   }
 
   /**
@@ -19938,6 +19963,105 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "GetMembershipFromHardLinkedCredential",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Adds a given phone number to the user database
+   * @param phoneNumber Phone number, unformatted, including country code (without plus sign).
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static AddPhoneNumber = (
+    phoneNumber: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserPhoneResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/AddPhoneNumber/${e(phoneNumber)}`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "AddPhoneNumber",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Inititates the sending of a one time code by SMS to a given phone number for verification purposes.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SendPhoneVerificationMessage = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserPhoneResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/SendPhoneVerificationMessage/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "SendPhoneVerificationMessage",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Inititates the process of validating a phone number and linking it to a bungie.net account.
+   * @param oneTimeCode 6-digit numeric code sent to phone.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static CheckPhoneValidation = (
+    oneTimeCode: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserPhoneResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/CheckPhoneValidation/${e(oneTimeCode)}`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "CheckPhoneValidation",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Removes a connected phone number from a bungie.net id
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RemovePhoneNumber = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/User/RemovePhoneNumber/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "RemovePhoneNumber",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns SMS validation status for a given account
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetSmsValidationStatus = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserPhoneResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/User/GetSmsValidationStatus/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetSmsValidationStatus",
       undefined,
       clientState
     );

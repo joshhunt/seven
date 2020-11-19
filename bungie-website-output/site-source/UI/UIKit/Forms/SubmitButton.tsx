@@ -16,14 +16,8 @@ interface ISubmitButtonProps extends ButtonProps {
   style?: React.CSSProperties;
   /** Additional className */
   className?: string;
-  /** If not null, Button will be treated as an internal link (note: cannot specify an external link here) */
-  url?: string | IMultiSiteLink;
-  /** If true, the 'to' prop will be treated as a legacy link */
-  legacy?: boolean;
-  /** Only relevant if url is populated. If false, opens in a new tab. */
-  sameTab?: boolean;
   /** Button type */
-  buttonType: ButtonTypes;
+  buttonType?: ButtonTypes;
   /** If true, shows a loading spinner */
   loading?: boolean;
   /** If true, won't be clickable */
@@ -32,14 +26,14 @@ interface ISubmitButtonProps extends ButtonProps {
   size?: BasicSize;
   /* If true, text will be capitalized */
   caps?: boolean;
-  /* Pass onClick function to Button component */
-  onClick: any;
+  /* By default, if this is omitted, clicking on this button should proc the onSubmit function of the form it is in */
+  onClick?: (event) => void;
 }
 
 interface ISubmitButtonState {}
 
 /**
- * SubmitButton - Replace this description
+ * SubmitButton - Use within a form so that clicking enter when the form is focused will submit the form
  *  *
  * @param {ISubmitButtonProps} props
  * @returns
@@ -62,8 +56,12 @@ export class SubmitButton extends React.Component<
       children,
       disabled,
       onClick,
-      ...rest
     } = this.props;
+
+    const adjustedOnClick = (e) => {
+      e.preventDefault();
+      onClick(e);
+    };
 
     return (
       <Button
@@ -77,7 +75,7 @@ export class SubmitButton extends React.Component<
         size={size}
         caps={caps}
         disabled={disabled}
-        onClick={onClick}
+        onClick={adjustedOnClick}
       >
         <button type="submit" className={styles.textOnly}>
           {children}

@@ -45,7 +45,6 @@ import {
   IFirehoseDebuggerItemData,
 } from "Platform/FirehoseDebuggerDataStore";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
-import { VaultingGlobalAlertsBar } from "@UI/GlobalAlerts/VaultingGlobalAlertsBar";
 import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
@@ -350,7 +349,6 @@ class AppLayout extends React.Component<
           )}
 
           <EmailValidationGlobalAlertsBar />
-          <VaultingGlobalAlertsBar />
           <MainNavigation
             history={this.props.history}
             currentPath={this.state.currentPath}

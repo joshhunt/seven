@@ -1276,6 +1276,19 @@ export enum PlatformErrorCodes {
   PCMigrationCannotStompClanFounder = 3414,
   UnsupportedBrowser = 3500,
   StadiaAccountRequired = 3600,
+  ErrorPhoneValidationTooManyUses = 3702,
+  ErrorPhoneValidationNoAssociatedPhone = 3703,
+  ErrorPhoneValidationCodeInvalid = 3705,
+  ErrorPhoneValidationBanned = 3706,
+}
+
+export enum PhoneValidationStatusEnum {
+  None = 0,
+  NumberReceived = 1,
+  CodeSent = 2,
+  Validated = 3,
+  Invalidated = 4,
+  Banned = 5,
 }
 
 export enum TemplateFormat {
@@ -2083,14 +2096,15 @@ export enum DestinyBreakerType {
 }
 
 /**
-	Represents an Energy Type for systems that require payment of energy of certain types, such as
-	with Armor 2.0.
+	Represents the socket energy types for Armor 2.0, Ghosts 2.0, and Stasis subclasses.
 	*/
 export enum DestinyEnergyType {
   Any = 0,
   Arc = 1,
   Thermal = 2,
   Void = 3,
+  Ghost = 4,
+  Subclass = 5,
 }
 
 export enum DestinyTalentNodeState {

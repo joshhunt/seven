@@ -26,6 +26,11 @@ interface MarketingOptInButtonProps {
    * The label shown on the button if the user has already signed up for email updates
    */
   alreadySignedUplabel?: ReactNode;
+
+  /**
+   * By default, this button has the analytics ID "marketing-opt-in", but you can replace it if you like.
+   */
+  analyticsIdOverride?: string;
 }
 
 const aggregateEmailSetting =
@@ -151,6 +156,7 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
 
   return (
     <Button
+      analyticsId={props.analyticsIdOverride ?? "marketing-opt-in"}
       buttonType={"gold"}
       onClick={setEmailSettings}
       loading={settingsUpdating}
