@@ -76,4 +76,5 @@ export const SystemNames = {
   SeasonHuntYoutube: "SeasonHuntYoutube",
   SeasonHuntSeasonPassYoutube: "SeasonHuntSeasonPassYoutube",
   LegendaryEditionEnabled: "LegendaryEditionEnabled",
+  PCMigrationSunsetPhase1: "PCMigrationSunsetPhase1",
 } as const;

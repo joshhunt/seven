@@ -185,7 +185,11 @@ class PCMigrationPage extends React.Component<
   }
 
   public render() {
+    const battlenetDisabled = !ConfigUtils.SystemStatus("Blizzard");
     const pcMoveDisabled = !ConfigUtils.SystemStatus("PCMigration");
+    const sunsettingPhase1Enabled = ConfigUtils.SystemStatus(
+      "PCMigrationSunsetPhase1"
+    );
 
     const isLinked =
       this.props.globalState.loggedInUser &&
@@ -210,7 +214,9 @@ class PCMigrationPage extends React.Component<
     const subTitleLabelUnavailable =
       Localizer.Pcmigration.TransferCurrentlyNotAvailable;
 
-    const subTitleLabel = pcMoveDisabled
+    const subTitleLabel = battlenetDisabled
+      ? Localizer.Pcmigration.AsOfDecember12020AtHh
+      : pcMoveDisabled
       ? subTitleLabelUnavailable
       : isLinked
       ? this.state.isTransferring
@@ -274,7 +280,7 @@ class PCMigrationPage extends React.Component<
           backgroundOffset={0}
         >
           <React.Fragment>
-            {videoEnabled && (
+            {videoEnabled && !sunsettingPhase1Enabled && !battlenetDisabled && (
               <YouTube
                 containerClassName={styles.videoContainer}
                 videoId={videoId}
@@ -294,7 +300,9 @@ class PCMigrationPage extends React.Component<
 
             <div className={styles.buttonContainer}>
               <Button
-                buttonType={pcMoveDisabled ? "disabled" : "gold"}
+                buttonType={
+                  pcMoveDisabled || battlenetDisabled ? "disabled" : "gold"
+                }
                 className={styles.section_button}
                 onClick={() => this.openModal(this.props.globalState)}
               >
@@ -306,10 +314,13 @@ class PCMigrationPage extends React.Component<
 
         <Grid isTextContainer={true} className={styles.buyDetail}>
           <GridCol cols={12}>
-            <div className={styles.FAQHeader}>
-              <h2>{Localizer.Pcmigration.FAQtitle}</h2>
-              <p className={styles.FAQdescription}>{faqDescription}</p>
-            </div>
+            {!sunsettingPhase1Enabled && !battlenetDisabled && (
+              <div className={styles.FAQHeader}>
+                <h2>{Localizer.Pcmigration.FAQtitle}</h2>
+                <p className={styles.FAQdescription}>{faqDescription}</p>
+              </div>
+            )}
+
             <div className={styles.questions}>
               <InfoBlock
                 articleId={Number(faqArticleId)}

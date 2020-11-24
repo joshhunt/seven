@@ -169,17 +169,6 @@ class BeyondLightOverhaul extends React.Component<
           bgColor={homepage.bgHexHero ?? homepage.bgHexHero}
           overlayImage={homepage.heroOverlayImage}
         />
-        <div className={styles.preorderBonusWrapper}>
-          <div className={styles.preorderBonus}>
-            <div className={styles.preorderBonusContent}>
-              <div className={styles.preorderBonusText}>
-                <p>{preorderBonus}</p>
-                <p>{beyondlightLoc.DigitalDeluxeOwnersAlso}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <section
           className={styles.goBeyond}
           style={{ backgroundColor: "#080f1f" }}

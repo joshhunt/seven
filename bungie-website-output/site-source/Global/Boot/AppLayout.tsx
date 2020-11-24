@@ -347,7 +347,9 @@ class AppLayout extends React.Component<
               loadingLabel={Localizer.Destiny.LoadingDestinyData}
             />
           )}
-
+          {ConfigUtils.SystemStatus("PCMigrationSunsetPhase1") && (
+            <PCMigrationGlobalAlertBar />
+          )}
           <EmailValidationGlobalAlertsBar />
           <MainNavigation
             history={this.props.history}

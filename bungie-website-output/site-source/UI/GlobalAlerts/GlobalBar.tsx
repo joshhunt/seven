@@ -71,7 +71,7 @@ export class GlobalBar extends React.Component<Props, IGlobalBarState> {
             )}
             url={this.props.url}
           >
-            <Grid isTextContainer={true} className={styles.pcMigrationBar}>
+            <Grid className={styles.pcMigrationBar}>
               <GridCol cols={12}>
                 {this.props.showWarningIcon && (
                   <i className="fa fa-warning" aria-hidden="true" />
