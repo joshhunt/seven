@@ -2129,6 +2129,7 @@ export enum DestinyTalentNodeState {
 	*/
 export enum DestinyVendorFilter {
   None = 0,
+  ApiPurchasable = 1,
 }
 
 export enum VendorItemStatus {

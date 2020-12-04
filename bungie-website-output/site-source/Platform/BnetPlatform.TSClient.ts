@@ -13234,6 +13234,8 @@ export declare namespace Vendors {
     costs: World.DestinyItemQuantity[];
 
     overrideNextRefreshDate?: string;
+
+    apiPurchasable?: boolean;
   }
 
   /**
@@ -13267,6 +13269,8 @@ export declare namespace Vendors {
     costs: World.DestinyItemQuantity[];
 
     overrideNextRefreshDate?: string;
+
+    apiPurchasable?: boolean;
   }
 
   /**
