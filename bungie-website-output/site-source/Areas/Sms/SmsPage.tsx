@@ -9,6 +9,7 @@ import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localizer";
 import { Platform } from "@Platform";
+import { InfoBlock } from "@UI/Content/InfoBlock";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -76,15 +77,20 @@ export const SmsPage: React.FC<SmsPageProps> = (props) => {
         />
         <h1 className={styles.title}>{Localizer.sms.VerifyYourSms}</h1>
         <div className={styles.subtitle}>{Localizer.sms.subtitle}</div>
+        {!userLoggedIn ? (
+          <div className={styles.signInButton}>
+            <SmsSignInButton steam={steamRedirect} />
+          </div>
+        ) : (
+          <div className={styles.heroSpacer} />
+        )}
       </div>
       <Grid isTextContainer={true} className={styles.contentContainer}>
         <GridCol cols={12}>
           <SystemDisabledHandler systems={["SmsVerification"]}>
             <SpinnerContainer loading={loading}>
-              <div className={styles.content}>
-                {!userLoggedIn ? (
-                  <SmsSignInButton steam={steamRedirect} />
-                ) : (
+              {userLoggedIn && (
+                <div className={styles.content}>
                   <>
                     <SmsAccountLine />
                     {
@@ -95,15 +101,16 @@ export const SmsPage: React.FC<SmsPageProps> = (props) => {
                       }[smsDataStorePayload.verificationPhase]
                     }
                   </>
-                )}
+                </div>
+              )}
+              <div className={styles.infoBlock}>
+                <InfoBlock
+                  tagAndType={{
+                    tag: "smsfaq",
+                    type: "InformationBlock",
+                  }}
+                />
               </div>
-              {/*	
-							<InfoBlock
-								tagAndType={{
-									tag: "sms-faq",
-									type: "InformationBlock"
-								}}
-							/>*/}
             </SpinnerContainer>
           </SystemDisabledHandler>
         </GridCol>

@@ -1,4 +1,8 @@
 import {
+  NextGenBuyFlowModule,
+  NextGenModule,
+} from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
+import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
@@ -519,6 +523,14 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     )}
                   </>
                 )}
+                <div className={styles.borderTop}>
+                  <div className={styles.sectionTitle}>
+                    {Localizer.BeyondLight.NextGen}
+                  </div>
+                </div>
+
+                {this.state.destinyProductFamily.productFamilyTag ===
+                  "beyondlight" && <NextGenBuyFlowModule />}
 
                 {collectorsEdition && (
                   <>

@@ -1983,6 +1983,8 @@ export declare namespace DestinyDefinitions {
 
     alternateWeight: number;
 
+    currentlyCanRoll: boolean;
+
     plugItemHash: number;
 
     unlockExpression: DestinyUnlockExpressionDefinition;

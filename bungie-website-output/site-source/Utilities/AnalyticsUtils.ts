@@ -1,5 +1,7 @@
 import ReactGA from "react-ga";
 import BungieAnalytics from "@bungie/analytics";
+import { DestroyCallback } from "@Global/DataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import moment from "moment/moment";
@@ -14,7 +16,11 @@ interface ISession {
 }
 
 export class AnalyticsUtils {
+  private static destroyLoggedInUserObserver: DestroyCallback;
+
   private static initSuccess = false;
+
+  private static userId = undefined;
 
   private static initOnce() {
     if (AnalyticsUtils.initSuccess) {
@@ -41,11 +47,38 @@ export class AnalyticsUtils {
             "net_bungie_www",
             clientId
           );
+          window["BungieAnalytics"].setUserId(AnalyticsUtils.userId);
+          ReactGA.set({ userId: AnalyticsUtils.userId });
         });
       }
 
+      AnalyticsUtils.destroyLoggedInUserObserver = GlobalStateDataStore.observe(
+        (data) => {
+          const userId = data?.loggedInUser?.user?.membershipId;
+          if (userId && userId !== AnalyticsUtils.userId) {
+            AnalyticsUtils.onUserLoggedIn(userId);
+          }
+          if (!userId && AnalyticsUtils.userId) {
+            AnalyticsUtils.onUserLoggedOut();
+          }
+        },
+        ["loggedInUser"]
+      );
+
       AnalyticsUtils.initSuccess = true;
     }
+  }
+
+  private static onUserLoggedIn(userId: string) {
+    AnalyticsUtils.userId = userId;
+    ReactGA.set({ userId: userId });
+    window["BungieAnalytics"]?.setUserId(userId);
+  }
+
+  private static onUserLoggedOut() {
+    AnalyticsUtils.userId = undefined;
+    ReactGA.set({ userId: undefined });
+    window["BungieAnalytics"]?.setUserId(undefined);
   }
 
   /** Tracks the current page to Google Analytics */

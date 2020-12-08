@@ -59,8 +59,26 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
 
   const [heroRef, setHeroRef] = useState<HTMLDivElement>(null);
 
+  const seasonHuntVideoId = ConfigUtils.GetParameter(
+    "SeasonHuntYoutube",
+    Localizer.CurrentCultureName,
+    "en"
+  );
   const showSeasonPassVideo = ConfigUtils.SystemStatus(
     "SeasonHuntSeasonPassYoutube"
+  );
+  const seasonPassVideoId = ConfigUtils.GetParameter(
+    "SeasonHuntSeasonPassYoutube",
+    Localizer.CurrentCultureName,
+    "en"
+  );
+  const hawkmoonTrailerVideo = ConfigUtils.SystemStatus(
+    "SeasonHuntHawkmoonTrailer"
+  );
+  const hawkmoonTrailerId = ConfigUtils.GetParameter(
+    "SeasonHuntHawkmoonTrailer",
+    Localizer.CurrentCultureName,
+    "en"
   );
 
   useEffect(() => {
@@ -110,6 +128,40 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
   const showVideo = (videoId: string) => {
     YoutubeModal.show({ videoId });
   };
+
+  const videoCheck = (canShowVideo: boolean, videoId: string) => {
+    if (canShowVideo) {
+      showVideo(videoId);
+    }
+  };
+
+  const videos = [
+    {
+      isVideo: true,
+      thumbnail: Img("destiny/bgs/season12/media_trailer_hunt_thumbnail.jpg"),
+      detail: seasonHuntVideoId,
+    },
+  ];
+
+  if (showSeasonPassVideo) {
+    videos.push({
+      isVideo: true,
+      thumbnail: Img(
+        "destiny/bgs/season12/media_trailer_season_pass_thumbnail.jpg"
+      ),
+      detail: seasonPassVideoId,
+    });
+  }
+
+  if (hawkmoonTrailerVideo) {
+    videos.push({
+      isVideo: true,
+      thumbnail: Img(
+        "destiny/bgs/season12/media_trailer_hawkmoon_thumbnail.jpg"
+      ),
+      detail: hawkmoonTrailerId,
+    });
+  }
 
   // Get FAQ content id from Webmaster
   const faq = ConfigUtils.GetParameter("CoreAreaSeasons", "D2SeasonsFAQ", 0);
@@ -207,15 +259,7 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
           <div className={styles.heroButtons}>
             <Button
               buttonType={"white"}
-              onClick={() =>
-                showVideo(
-                  ConfigUtils.GetParameter(
-                    "SeasonHuntYoutube",
-                    Localizer.CurrentCultureName,
-                    "en"
-                  )
-                )
-              }
+              onClick={() => showVideo(seasonHuntVideoId)}
             >
               {Localizer.season12.watchthetrailer}
             </Button>
@@ -372,15 +416,26 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
             />
           </GridCol>
           <GridCol cols={3} mobile={12}>
-            <div className={classNames(styles.exoticBlock, styles.exotic1)}>
-              <img
-                className={styles.exoticImage}
-                src={Img(
-                  "/destiny/bgs/season12/exotics_hawkmoon_thumbnail.jpg"
-                )}
-                role={"presentation"}
-                alt=""
-              />
+            <div
+              className={classNames(
+                styles.exoticBlock,
+                styles.exotic1,
+                hawkmoonTrailerVideo ? styles.clickable : null
+              )}
+              onClick={() =>
+                videoCheck(hawkmoonTrailerVideo, hawkmoonTrailerId)
+              }
+            >
+              <div className={styles.clickableVideoButton}>
+                <img
+                  className={styles.exoticImage}
+                  src={Img(
+                    "/destiny/bgs/season12/exotics_hawkmoon_thumbnail.jpg"
+                  )}
+                  role={"presentation"}
+                  alt=""
+                />
+              </div>
               <div className={styles.smallTitle}>
                 {Localizer.Season12.exoticQuest}
               </div>
@@ -502,15 +557,7 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
                   )})`,
                 }}
                 role={"presentation"}
-                onClick={() =>
-                  showVideo(
-                    ConfigUtils.GetParameter(
-                      "SeasonHuntSeasonPassYoutube",
-                      Localizer.CurrentCultureName,
-                      "en"
-                    )
-                  )
-                }
+                onClick={() => showVideo(seasonPassVideoId)}
               >
                 <div className={styles.thumbnailPlayButton} role={"button"} />
               </div>
@@ -688,8 +735,9 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
               {Localizer.Season12.Destiny2SeasonOfTheHunt}
             </Anchor>
           }
-          defaultTab={"screenshots"}
+          defaultTab={"videos"}
           lore={null}
+          videos={videos}
           wallpapers={[
             {
               isVideo: false,

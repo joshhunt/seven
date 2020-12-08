@@ -303,6 +303,14 @@
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "IntellectualPropertyTrademarks",
+    "params": {},
+    "path": "/7/en/Legal/IntellectualPropertyTrademarks"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
     "action": "Licenses",
     "params": {},
     "path": "/7/en/Legal/Licenses"

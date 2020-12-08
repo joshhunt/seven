@@ -1,26 +1,26 @@
-// Created by jlauer, 2019
+// Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import * as React from "react";
+import React from "react";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { Localizer } from "@Global/Localizer";
 
 /**
- * LegalCookiePolicy - Replace this description
+ * LegalTrademarks - Legal info around Bungie intellectual property and trademarks
  *  *
  * @returns
  */
-export const LegalCookiePolicy: React.FC = (props) => {
+export const LegalTrademarks: React.FC = (props) => {
   return (
     <React.Fragment>
       <BungieHelmet
-        title={Localizer.Pagetitles.CookiePolicy}
+        title={Localizer.UserPages.LegalTrademarksTitle}
         image={BungieHelmet.DefaultBoringMetaImage}
       />
       <InfoBlock
         tagAndType={{
-          tag: "bungie cookiepolicy page",
+          tag: "bungie trademarks page 3",
           type: "InformationBlock",
         }}
       />

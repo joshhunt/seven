@@ -21,6 +21,8 @@ interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
   mobileDropdownDisabled?: boolean;
   /** Choose the breakpoint for it to switch to dropdown view */
   mobileDropdownBreakpoint?: ResponsiveSize;
+  /** SubNav will show vertically and on the left side if larger than mobileDropdownBreakpoint */
+  vertical?: boolean;
 }
 
 export interface ISubNavLink {
@@ -73,25 +75,29 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
       renderAsSpans,
       links,
       mobileDropdownBreakpoint,
-      ...rest
+      mobileDropdownDisabled,
+      vertical,
     } = this.props;
 
-    const linksRendered = this.props.links.map((link, i) => {
-      return this.props.renderAsSpans
+    const linksRendered = links.map((link, i) => {
+      return renderAsSpans
         ? this.renderSpan(link, i)
         : this.renderLink(link, i);
     });
 
     const breakpoint = mobileDropdownBreakpoint || ResponsiveSize.medium;
     const classes = classNames(styles.subNav, {
-      [styles.useMobileDropdown]: !this.props.mobileDropdownDisabled,
+      [styles.useMobileDropdown]: !mobileDropdownDisabled,
+    });
+    const linkClasses = classNames(styles.subNavItems, {
+      [styles.vertical]: vertical,
     });
 
     return (
-      <div {...rest} className={classes}>
+      <div className={classes}>
         <Respond at={breakpoint} hide={true} responsive={null}>
           <div className={styles.subNavWrapper}>
-            <div className={styles.subNavItems}>{linksRendered}</div>
+            <div className={linkClasses}>{linksRendered}</div>
           </div>
         </Respond>
         <Respond at={breakpoint} responsive={null}>

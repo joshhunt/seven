@@ -14,7 +14,7 @@ export const LegalPaymentServicesAct: React.FC<LegalPaymentServicesActProps> = (
   return (
     <React.Fragment>
       <BungieHelmet
-        title={Localizer.Pagetitles.paymentServicesAct}
+        title={Localizer.PageTitles.paymentServicesAct}
         image={BungieHelmet.DefaultBoringMetaImage}
       />
       <InfoBlock

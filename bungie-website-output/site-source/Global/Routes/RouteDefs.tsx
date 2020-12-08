@@ -139,6 +139,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SLA"),
         (area) => new ActionRoute(area, "CodeOfConduct"),
         (area) => new ActionRoute(area, "CookiePolicy"),
+        (area) => new ActionRoute(area, "IntellectualPropertyTrademarks"),
         (area) => new ActionRoute(area, "PaymentServicesAct"),
       ],
     }),

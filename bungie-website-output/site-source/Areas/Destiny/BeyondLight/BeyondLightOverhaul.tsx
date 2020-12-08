@@ -1,6 +1,7 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
+import { NextGenModule } from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
 import {
   BeyondLightPhaseFourDataStore,
   BeyondLightPhaseFourDataStorePayload,
@@ -15,7 +16,9 @@ import {
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseTwoDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/DataStore";
+import { Img } from "@Helpers";
 import { Spinner } from "@UIKit/Controls/Spinner";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
 import * as React from "react";
 import styles from "./BeyondLightOverhaul.module.scss";
 import {
@@ -169,6 +172,20 @@ class BeyondLightOverhaul extends React.Component<
           bgColor={homepage.bgHexHero ?? homepage.bgHexHero}
           overlayImage={homepage.heroOverlayImage}
         />
+        <div className={styles.nextGenBanner}>
+          <div className={styles.nextGenHeader}>{beyondlightLoc.NextGen}</div>
+          <div className={styles.nextGenDesc}>
+            {beyondlightLoc.ExperienceDestiny2Upgrades}
+          </div>
+          <Button
+            className={styles.nextGenLearnMore}
+            buttonType={"clear"}
+            onClick={() => this.scrollToNextGen()}
+          >
+            {beyondlightLoc.LearnMore}
+          </Button>
+        </div>
+
         <section
           className={styles.goBeyond}
           style={{ backgroundColor: "#080f1f" }}
@@ -197,7 +214,6 @@ class BeyondLightOverhaul extends React.Component<
             </div>
           </div>
         </section>
-
         <section
           className={styles.textWithButton}
           style={{ backgroundColor: homepage.bgHex3 ?? "rgb(33, 40, 51)" }}
@@ -373,7 +389,7 @@ class BeyondLightOverhaul extends React.Component<
             <p>{beyondlightLoc.deepStoneCryptDesc}</p>
           </div>
         </section>
-
+        <NextGenModule />
         <div id={"editions"} className={styles.preorder}>
           {this.contentBlock(beyondlightLoc.Editions, "", blockType.centered)}
           <BeyondLightProducts globalState={this.props.globalState} />
@@ -393,6 +409,13 @@ class BeyondLightOverhaul extends React.Component<
         <p>{desc}</p>
       </div>
     );
+  }
+
+  private scrollToNextGen() {
+    const el = document.getElementById("nextGen");
+    const top = el.getBoundingClientRect().top + window.scrollY;
+
+    BrowserUtils.animatedScrollTo(top, 1000);
   }
 }
 

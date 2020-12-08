@@ -10591,6 +10591,12 @@ export declare namespace Definitions {
   }
 
   export interface DestinyItemSocketEntryPlugItemRandomizedDefinition {
+    /**
+		Indicates if the plug can be rolled on the current version of the item.
+		For example, older versions of weapons may have plug rolls that are no longer possible on the current versions.
+		*/
+    currentlyCanRoll: boolean;
+
     plugItemHash: number;
   }
 
@@ -18848,6 +18854,16 @@ export declare namespace Platforms {
   }
 }
 
+export declare namespace Recaptcha {
+  export interface RecaptchaResponse {
+    Success: boolean;
+  }
+
+  export interface RecaptchaRequest {
+    Token: string;
+  }
+}
+
 class JsonpServiceInternal {
   /**
    * Gets the signed-in user.
@@ -27044,6 +27060,28 @@ class CrosssaveServiceInternal {
     );
 }
 
+class RecaptchaServiceInternal {
+  /**
+   * Uses secret key and token to validate captcha response
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static Verify = (
+    input: Recaptcha.RecaptchaRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Recaptcha.RecaptchaResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/Recaptcha/Verify/`,
+      [],
+      optionalQueryAppend,
+      "Recaptcha",
+      "Verify",
+      input,
+      clientState
+    );
+}
+
 class CoreServiceInternal {
   /**
    * Smoketest function
@@ -27247,6 +27285,7 @@ export class Platform {
   public static RendererService = RendererServiceInternal;
   public static AlexaService = AlexaServiceInternal;
   public static CrosssaveService = CrosssaveServiceInternal;
+  public static RecaptchaService = RecaptchaServiceInternal;
   public static CoreService = CoreServiceInternal;
   platformSettings: any;
 }
