@@ -198,7 +198,7 @@ class EventPageInternal extends React.Component<
 
       return (
         <SpinnerContainer loading={this.state.contentRenderable === null}>
-          <div className={styles.body}>
+          <div>
             <BungieHelmet
               title={content.PageTitle}
               image={heroBackground || content.HeroBackgroundMobile}
