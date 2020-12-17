@@ -523,15 +523,18 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     )}
                   </>
                 )}
-                <div className={styles.borderTop}>
-                  <div className={styles.sectionTitle}>
-                    {Localizer.BeyondLight.NextGen}
-                  </div>
-                </div>
 
-                {this.state.destinyProductFamily.productFamilyTag ===
-                  "beyondlight" && <NextGenBuyFlowModule />}
-
+                {this.state.destinyProductFamily.productFamilyTag !==
+                  "silverbundle" && (
+                  <>
+                    <div className={styles.borderTop}>
+                      <div className={styles.sectionTitle}>
+                        {Localizer.BeyondLight.NextGen}
+                      </div>
+                    </div>
+                    <NextGenBuyFlowModule />
+                  </>
+                )}
                 {collectorsEdition && (
                   <>
                     <div className={styles.borderTop}>

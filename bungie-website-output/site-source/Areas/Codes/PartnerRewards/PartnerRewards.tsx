@@ -65,6 +65,20 @@ class PartnerRewards extends React.Component<
         0
       )
     ),
+    Number(
+      ConfigUtils.GetParameter(
+        SystemNames.PartnerOfferClaims,
+        "DonorDriveAppId",
+        0
+      )
+    ),
+    Number(
+      ConfigUtils.GetParameter(
+        SystemNames.PartnerOfferClaims,
+        "NeteaseUUBoosterAppId",
+        0
+      )
+    ),
   ];
 
   constructor(props: IPartnerRewardsProps) {
@@ -96,10 +110,7 @@ class PartnerRewards extends React.Component<
     const { loggedInUser } = this.props.globalState;
 
     if (ConfigUtils.SystemStatus("PartnerOfferClaims")) {
-      if (
-        UserUtils.isAuthenticated(this.props.globalState) &&
-        (this.appIds[0] !== 0 || this.appIds[1] !== 0)
-      ) {
+      if (UserUtils.isAuthenticated(this.props.globalState)) {
         const canViewHistory =
           (membershipId && membershipId === loggedInUser.user.membershipId) ||
           loggedInUser.userAcls.includes(AclEnum.BNextPrivateUserDataReader);
@@ -107,7 +118,7 @@ class PartnerRewards extends React.Component<
           AclEnum.BNextPrivateUserDataReader
         );
         // if there isn't a parameter in the url, provide history for the logged in user
-        // otherwise use the membershipId provided but only for people with permission to see that user's history
+        // otherwise use the membershipId provided but only for people with permission to see that user's history)
         if (canViewHistory || !membershipId) {
           this.setState({ loggedInUserCanReadHistory: true });
           const membershipIdUsedForHistory =
@@ -115,23 +126,26 @@ class PartnerRewards extends React.Component<
               ? membershipId
               : UserUtils.loggedInUserMembershipIdFromCookie;
 
-          this.appIds[0] &&
-            Platform.TokensService.GetPartnerOfferSkuHistory(
-              this.appIds[0],
-              membershipIdUsedForHistory
-            )
-              .then((data) => this.setState({ rewards: data }))
-              .catch(ConvertToPlatformError)
-              .catch((e: PlatformError) => Modal.error(e));
+          // Get history for all partner apps
+          const promises = this.appIds.map((id) => {
+            id !== 0 &&
+              Platform.TokensService.GetPartnerOfferSkuHistory(
+                id,
+                membershipIdUsedForHistory
+              )
+                // if it is the first data we have, set state equal to it, otherwise add the history array to the existing on on state.
+                .then((data) =>
+                  this.setState((prevState) => ({
+                    rewards: prevState.rewards
+                      ? prevState.rewards.concat(data)
+                      : data,
+                  }))
+                )
+                .catch(ConvertToPlatformError)
+                .catch((e: PlatformError) => Modal.error(e));
+          });
 
-          this.appIds[1] &&
-            Platform.TokensService.GetPartnerOfferSkuHistory(
-              this.appIds[1],
-              membershipIdUsedForHistory
-            )
-              .then((data) => this.setState({ rewards: data }))
-              .catch(ConvertToPlatformError)
-              .catch((e: PlatformError) => Modal.error(e));
+          return Promise.all(promises);
         }
       }
     }
@@ -151,32 +165,22 @@ class PartnerRewards extends React.Component<
   private readonly claimRewards = () => {
     let modalShown = false;
 
-    this.appIds[0] &&
-      Platform.TokensService.ApplyMissingPartnerOffersWithoutClaim(
-        this.appIds[0],
-        UserUtils.loggedInUserMembershipIdFromCookie
-      )
-        .then((rewardsWereClaimed) => {
-          rewardsWereClaimed &&
-            Modal.open(Localizer.PartnerOffers.ClaimSuccessMessage);
-          modalShown = true;
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => Modal.error(e));
-
-    this.appIds[1] &&
-      Platform.TokensService.ApplyMissingPartnerOffersWithoutClaim(
-        this.appIds[1],
-        UserUtils.loggedInUserMembershipIdFromCookie
-      )
-        .then(
-          (rewardsWereClaimed) =>
-            rewardsWereClaimed &&
-            !modalShown &&
-            Modal.open(Localizer.PartnerOffers.ClaimSuccessMessage)
+    this.appIds.forEach((id) => {
+      if (id !== 0) {
+        Platform.TokensService.ApplyMissingPartnerOffersWithoutClaim(
+          id,
+          UserUtils.loggedInUserMembershipIdFromCookie
         )
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => Modal.error(e));
+          .then((rewardsWereClaimed) => {
+            rewardsWereClaimed &&
+              !modalShown &&
+              Modal.open(Localizer.PartnerOffers.ClaimSuccessMessage);
+            modalShown = true;
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e: PlatformError) => Modal.error(e));
+      }
+    });
   };
 
   public render() {
