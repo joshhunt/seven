@@ -1,14 +1,13 @@
-import ReactGA from "react-ga";
 import BungieAnalytics from "@bungie/analytics";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import moment from "moment/moment";
+import ReactGA from "react-ga";
 import { ConfigUtils } from "./ConfigUtils";
-import { UserUtils } from "./UserUtils";
-import { StringUtils } from "./StringUtils";
 import { SessionStorageUtils } from "./StorageUtils";
+import { StringUtils } from "./StringUtils";
+import { UserUtils } from "./UserUtils";
 
 interface ISession {
   sessionId: string;

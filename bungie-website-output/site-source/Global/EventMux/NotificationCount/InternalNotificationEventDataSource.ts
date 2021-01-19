@@ -1,12 +1,13 @@
-import { EventMux } from "../EventMuxBase";
 import * as Globals from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { Notifications } from "@Platform";
+import { EventMux } from "../EventMuxBase";
 import {
-  InternalNotificationDistributor,
   BnetNotification,
+  InternalNotificationDistributor,
   NotificationTypes,
 } from "./InternalNotificationDistributor";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
 
 interface FriendCounts {
   Xuid: number;

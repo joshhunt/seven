@@ -7,10 +7,9 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import moment from "moment";
 import { Localizer } from "@Global/Localizer";
 import { SeasonsArray } from "../SeasonsDefinitions";
+import moment from "moment";
 
 // Required props
 interface ISeasonHeaderProps

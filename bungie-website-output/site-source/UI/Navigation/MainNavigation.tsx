@@ -13,7 +13,7 @@ import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Respond } from "@Boot/Respond";
 import * as H from "history";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import {
   GlobalState,

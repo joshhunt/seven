@@ -1,3 +1,4 @@
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import React, { ReactElement } from "react";
 import { PCMigrationLinkAccount } from "./PCMigrationLinkAccount";
 import { PCMigrationTransferAgreement } from "./PCMigrationTransferAgreement";
@@ -8,7 +9,7 @@ import { PCMigrationVerified } from "./PCMigrationVerified";
 import { PCMigrationTransferDetails } from "./PCMigrationTransferDetails";
 import { PCMigrationSuccess } from "./PCMigrationSuccess";
 import { EmailVerificationState } from "./PCMigrationModalStagePage";
-import { DataStore, DestroyCallback } from "@Global/DataStore";
+import { DataStore } from "@Global/DataStore";
 import * as Globals from "@Enum";
 import {
   IPCMigrationUserData,
@@ -23,6 +24,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface IPCMigrationModalProperties {
   transferComplete: boolean;
+
   closeModal(closeModal: boolean);
 }
 

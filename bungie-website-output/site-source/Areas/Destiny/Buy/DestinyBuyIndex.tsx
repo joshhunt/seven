@@ -1,37 +1,34 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Localizer } from "@Global/Localizer";
-import { Content, Platform, Renderer } from "@Platform";
-import {
-  IDestinyProductDefinition,
-  SkuSectionNames,
-} from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
+import { Content, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
 } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
+import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
 import * as React from "react";
 import { IDestinyProductFamilyDefinition } from "../../../UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import styles from "./DestinyBuyIndex.module.scss";
 import { DestinyBuyCoverCard } from "./Shared/DestinyBuyCoverCard";
-import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import classNames from "classnames";
-import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 
 interface IDestinyBuyIndexProps {}
 
@@ -309,7 +306,8 @@ export default class DestinyBuyInternal extends React.Component<
                 productFamily?.skuList.some((st) =>
                   DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
                 );
-              const { saleInformation } = productFamily;
+              const saleInformation =
+                Localizer.Sales[productFamily.productFamilyTag];
 
               return (
                 <GridCol cols={3} mobile={6} key={i}>

@@ -44,16 +44,4 @@ export class ContentUtils {
       buttonLabel: contentItem.properties["ButtonLabel"],
     };
   }
-
-  public static saleFromContent(
-    contentItem: Content.ContentItemPublicContract
-  ): IDestinySkuSale {
-    return {
-      productSkuTag: contentItem.properties["ProductSkuTag"],
-      store: contentItem.properties["Store"],
-      startDate: contentItem.properties["StartDate"].dateValue,
-      endDate: contentItem.properties["EndDate"].dateValue,
-      discountString: contentItem.properties["DiscountString"],
-    };
-  }
 }

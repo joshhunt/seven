@@ -7,7 +7,11 @@ import {
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -18,16 +22,11 @@ import {
   Accordion,
   Hero,
   InteractiveSection,
-  MediaSection,
   StackedCardBlock,
   TextBlock,
   VideoCarousel,
 } from "./Components/index";
 import styles from "./PhaseOne.module.scss";
-import {
-  GlobalStateComponentProps,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
 
 // Required props
 interface IPhaseOneProps extends GlobalStateComponentProps<"responsive"> {}

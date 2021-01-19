@@ -1,3 +1,4 @@
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import * as React from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { Route, RouteComponentProps, Redirect, Switch } from "react-router-dom";
@@ -18,7 +19,7 @@ import {
   ICrossSaveFlowState,
 } from "./Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { DataStore } from "@Global/DataStore";
 import {
   PoseDirection,
   PoseDirectionContext,

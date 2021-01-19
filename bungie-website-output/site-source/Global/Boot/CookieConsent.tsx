@@ -1,18 +1,18 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Localizer } from "@Global/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
-import styles from "./CookieConsent.module.scss";
-import { DestroyCallback } from "@Global/DataStore";
-import * as H from "history";
-import classNames from "classnames";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
 import inEU from "@segment/in-eu";
-import { UserUtils, CookieConsentValidity } from "@Utilities/UserUtils";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import { CookieConsentValidity, UserUtils } from "@Utilities/UserUtils";
+import classNames from "classnames";
+import * as H from "history";
+import * as React from "react";
+import styles from "./CookieConsent.module.scss";
 
 interface ICookieConsentProps {
   history: H.History;

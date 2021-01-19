@@ -1,30 +1,30 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@Global/Localizer";
-import { Spinner } from "@UIKit/Controls/Spinner";
-import classNames from "classnames";
-import styles from "./BeyondLightPhaseTwo.module.scss";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/DataStore";
-import {
-  GlobalStateComponentProps,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { BeyondLightProducts } from "./BeyondLightProducts";
-import React from "react";
 import {
   BeyondLightPhaseTwoDataStore,
   BeyondLightPhaseTwoDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseTwoDataStore";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import {
-  Hero,
-  TextBlock,
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Spinner } from "@UIKit/Controls/Spinner";
+import classNames from "classnames";
+import React from "react";
+import styles from "./BeyondLightPhaseTwo.module.scss";
+import { BeyondLightProducts } from "./BeyondLightProducts";
+import {
   BeyondLightMap,
-  VideoBlock,
+  Hero,
   PhaseTwoAccordion,
+  TextBlock,
+  VideoBlock,
 } from "./Components/index";
 
 interface PhaseTwoProps extends GlobalStateComponentProps<"responsive"> {}

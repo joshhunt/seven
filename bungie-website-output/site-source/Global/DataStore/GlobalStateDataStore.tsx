@@ -1,20 +1,20 @@
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
 import {
-  DataStore,
-  DataStoreObserver,
+  BroadcasterObserver,
   DestroyCallback,
-} from "@Global/DataStore";
-import { Contract, GroupsV2, Models, Platform, CrossSave } from "@Platform";
-import * as React from "react";
-import { Logger } from "@Global/Logger";
-import { Responsive, IResponsiveState } from "@Boot/Responsive";
+} from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import { EventMux } from "@Global/EventMux/EventMuxBase";
 import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
-import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
+import { Logger } from "@Global/Logger";
+import { Contract, CrossSave, GroupsV2, Models, Platform } from "@Platform";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { UserUtils } from "@Utilities/UserUtils";
-import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
+import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
-import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
 
 interface IGlobalState {
   coreSettings: Models.CoreSettingsConfiguration;
@@ -26,7 +26,7 @@ interface IGlobalState {
   loaded: boolean;
 }
 
-class GlobalStateDataStoreMonitor extends DataStoreObserver<
+class GlobalStateDataStoreMonitor extends BroadcasterObserver<
   IGlobalState,
   GlobalStateSubscriptionPartialKeys[]
 > {

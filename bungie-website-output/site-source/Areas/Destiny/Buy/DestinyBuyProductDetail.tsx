@@ -2,6 +2,11 @@ import {
   NextGenBuyFlowModule,
   NextGenModule,
 } from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import {
+  DestinyProductFamilies,
+  DestinySkuTags,
+} from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
@@ -26,7 +31,7 @@ import {
   IDestinyProductDefinition,
 } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import { DestinyBuyDetailItem } from "./Shared/DestinyBuyDetailItem";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { DataStore } from "@Global/DataStore";
 import { useParams, Redirect } from "react-router";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ContentUtils } from "@Utilities/ContentUtils";
@@ -267,6 +272,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
         strangerEdition,
       } = this.state;
       const mobileSize = this.props.globalState.responsive.mobile;
+      const tinySize = this.props.globalState.responsive.tiny;
 
       /* Convert content items stored in the Product Family firehose item into the types each component is expecting */
       const mediaDetailItem =
@@ -296,6 +302,15 @@ class DestinyBuyProductDetailInternal extends React.Component<
         skuItems.find(
           (sku) => sku.skuTag === editionSelectorSkus[selectedSkuIndex].skuTag
         )?.edition;
+
+      const backgroundGradient =
+        destinyProductFamily.productFamilyTag ===
+        DestinyProductFamilies.BeyondLight
+          ? "linear-gradient(rgba(17,36,59, 0.15), rgba(17,36,59, 0.15)),"
+          : "";
+      const backgroundImage = mobileSize
+        ? destinyProductFamily.heroBackgroundMobile
+        : destinyProductFamily.heroBackground;
 
       const icon = "keyboard_arrow_up";
 
@@ -335,11 +350,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   backgroundOffset={0}
                   className={styles.hero}
                   style={{
-                    backgroundImage: `url(${
-                      mobileSize
-                        ? destinyProductFamily.heroBackgroundMobile
-                        : destinyProductFamily.heroBackground
-                    })`,
+                    backgroundImage: `${backgroundGradient} url(${backgroundImage})`,
+                    paddingTop: mobileSize
+                      ? `calc(149px + (74px * ${editionSelectorSkus.length}))`
+                      : "unset",
                   }}
                 >
                   <div className={styles.heroContent}>

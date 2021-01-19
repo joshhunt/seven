@@ -2,7 +2,7 @@ import {
   GlobalStateDataStore,
   GlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as Globals from "@Enum";
 import { Localizer } from "@Global/Localizer";

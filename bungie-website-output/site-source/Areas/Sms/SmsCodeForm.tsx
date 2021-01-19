@@ -5,18 +5,16 @@ import styles from "@Areas/Sms/SmsPage.module.scss";
 import { PlatformError } from "@CustomErrors";
 import { PhoneValidationStatusEnum } from "@Enum";
 import { Localizer } from "@Global/Localizer";
-import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Recaptcha } from "@UI/Authentication/Recaptcha";
+import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { Spinner, SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { Spinner } from "@UIKit/Controls/Spinner";
 import { SubmitButton } from "@UIKit/Forms/SubmitButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { useDataStore } from "@Utilities/ReactUtils";
-import React, { useEffect, useRef, useState } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { useEffect, useState } from "react";
 
 interface SmsCodeFormProps {}
 
@@ -26,34 +24,8 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>(Localizer.Sms.EnterCode);
-  const siteKey = ConfigUtils.GetParameter(
-    "GoogleRecaptcha",
-    "RecaptchaSiteInvisible",
-    ""
-  );
-  const captchaEnabled =
-    ConfigUtils.SystemStatus("GoogleRecaptcha") &&
-    ConfigUtils.SystemStatus("SmsResendCodeRecaptcha");
-  const recaptchaRef = useRef<ReCAPTCHA>();
+  const captchaEnabled = ConfigUtils.SystemStatus("SmsResendCodeRecaptcha");
 
-  //Translate our loc names to google's
-  const recaptchaLocEquivalents = {
-    de: "de",
-    en: "en",
-    es: "es",
-    "es-mx": "es-419",
-    fr: "fr",
-    it: "it",
-    ja: "ja",
-    ko: "ko",
-    pl: "pl",
-    "pt-br": "pt-BR",
-    ru: "ru",
-    "zh-chs": "zh-CN",
-    "zh-cht": "zh-TW",
-  };
-
-  //ComponentDidMount equivalent
   useEffect(() => {
     //Check SMS validation status
     Platform.UserService.GetSmsValidationStatus()
@@ -72,7 +44,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
   //Handles change for input
   const handleChange = (event) => {
     event.preventDefault();
-    error !== "" && setError("");
+    setError("");
     setCode(event.target.value);
   };
 
@@ -99,58 +71,31 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
     SmsDataStore.updatePhase("PhoneEntry");
   };
 
-  const checkHuman = async () => {
-    setLoading(true);
-    setMessage(Localizer.sms.SendingCode);
-    setError("");
-    setCode("");
-
-    setTimeout(() => {
-      setMessage(Localizer.sms.timeout);
-      setLoading(false);
-    }, 15000);
-
-    let token = "";
-
-    try {
-      token = await recaptchaRef.current.executeAsync();
-    } catch (error) {
-      error.log();
-    }
-
-    Platform.RecaptchaService.Verify({ Token: token })
-      .then((response) => {
-        const human = response.Success;
-
-        if (human) {
-          resendCode();
-        } else {
-          setError(Localizer.Sms.FailedRecaptcha);
-          setLoading(false);
-        }
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        Logger.error(e.message);
-        setLoading(false);
-      });
+  const showFailedRecaptchaError = () => {
+    setError(Localizer.sms.FailedRecaptcha);
   };
 
   const resendCode = () => {
     Platform.UserService.SendPhoneVerificationMessage()
       .then((response) => {
         setMessage(Localizer.Sms.resentCode);
-        setLoading(false);
       })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
+        setMessage("");
         setError(e.message);
-        setLoading(false);
       });
+
+    setLoading(false);
   };
 
-  const resetCaptcha = () => {
-    recaptchaRef.current.reset();
+  const executeRecaptchaAsync = () => {
+    setLoading(true);
+    setMessage(Localizer.sms.SendingCode);
+    setError("");
+    setCode("");
+
+    RecaptchaBroadcaster.executeAsync();
   };
 
   const enableSubmit = code.length > 3;
@@ -158,11 +103,6 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
 
   return (
     <>
-      <BungieHelmet>
-        {captchaEnabled && (
-          <script src={"https://www.google.com/recaptcha/api.js"} async defer />
-        )}
-      </BungieHelmet>
       <form className={styles.form} onSubmit={onSubmit}>
         <div className={styles.spacer}>
           {loading && <Spinner inline={true} on={loading} />}
@@ -183,7 +123,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
           />
           <div
             className={styles.linkText}
-            onClick={captchaEnabled ? checkHuman : resendCode}
+            onClick={captchaEnabled ? executeRecaptchaAsync : resendCode}
             role={"button"}
           >
             {Localizer.Sms.ResendCode}
@@ -209,13 +149,9 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
           </SubmitButton>
         </div>
         {captchaEnabled && (
-          <ReCAPTCHA
-            sitekey={siteKey}
-            size={"invisible"}
-            ref={recaptchaRef}
-            theme={"dark"}
-            hl={recaptchaLocEquivalents[LocalizerUtils.currentCultureName]}
-            onExpired={resetCaptcha}
+          <Recaptcha
+            onSuccess={resendCode}
+            onFailure={showFailedRecaptchaError}
           />
         )}
       </form>

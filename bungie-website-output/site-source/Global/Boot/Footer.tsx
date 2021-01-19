@@ -102,6 +102,45 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
           </div>
           <div className={styles.column}>
             <ul>
+              {this.renderLink(RouteHelper.Help(), navLoc.help)}
+              {this.renderLink(RouteHelper.GuideDestiny(), navLoc.Guides)}
+              {this.renderLink(RouteHelper.Help(), navLoc.faq)}
+
+              {this.renderLink(RouteHelper.LegalTermsOfUse(), navLoc.Terms)}
+              {this.renderLink(
+                RouteHelper.LegalPrivacyPolicy(),
+                navLoc.Privacy
+              )}
+              {(Localizer.CurrentCultureName === "en" ||
+                Localizer.CurrentCultureName === "ja") &&
+                this.renderLink(
+                  RouteHelper.LegalPaymentServicesAct(),
+                  navLoc.paymentServicesAct
+                )}
+              {this.renderLink(
+                RouteHelper.HelpStep(48626),
+                navLoc.DoNotSellMyInfo
+              )}
+            </ul>
+          </div>
+          <div className={styles.column}>
+            <ul>
+              {this.renderLink(
+                RouteHelper.Careers().concat(
+                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
+                ),
+                navLoc.Bungie
+              )}
+              {this.renderLink(RouteHelper.Careers("careers"), navLoc.Careers)}
+              {this.renderLink(
+                RouteHelper.BungieNewsRoom,
+                navLoc.BungieNewsRoom
+              )}
+              {this.renderLink(RouteHelper.PressKits(), navLoc.PressKit)}
+            </ul>
+          </div>
+          <div className={styles.column}>
+            <ul>
               {this.renderLink(
                 RouteHelper.BungieStore().concat(
                   "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
@@ -131,43 +170,6 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(
                 RouteHelper.BungieStore("collections/last-chance"),
                 navLoc.LastChance
-              )}
-            </ul>
-          </div>
-          <div className={styles.column}>
-            <ul>
-              {this.renderLink(
-                RouteHelper.Careers().concat(
-                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
-                ),
-                navLoc.Careers
-              )}
-              {this.renderLink(
-                RouteHelper.Careers("careers"),
-                navLoc.OpenPositions
-              )}
-            </ul>
-          </div>
-          <div className={styles.column}>
-            <ul>
-              {this.renderLink(RouteHelper.Help(), navLoc.help)}
-              {this.renderLink(RouteHelper.GuideDestiny(), navLoc.Guides)}
-              {this.renderLink(RouteHelper.Help(), navLoc.faq)}
-              {this.renderLink(RouteHelper.PressKits(), navLoc.PressKit)}
-              {this.renderLink(RouteHelper.LegalTermsOfUse(), navLoc.Terms)}
-              {this.renderLink(
-                RouteHelper.LegalPrivacyPolicy(),
-                navLoc.Privacy
-              )}
-              {(Localizer.CurrentCultureName === "en" ||
-                Localizer.CurrentCultureName === "ja") &&
-                this.renderLink(
-                  RouteHelper.LegalPaymentServicesAct(),
-                  navLoc.paymentServicesAct
-                )}
-              {this.renderLink(
-                RouteHelper.HelpStep(48626),
-                navLoc.DoNotSellMyInfo
               )}
             </ul>
           </div>
@@ -253,7 +255,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
           {Localizer.Community.DownloadtheDestinyCompanionApp}
           <div>
             <a
-              href="http://itunes.apple.com/us/app/bungie-mobile/id441444902"
+              href="http://apps.apple.com/us/app/bungie-mobile/id441444902"
               className={styles.btnAppStore}
               style={{
                 backgroundImage: `url("/img/theme/bungienet/btns/app-store-badges/app-store-badge-${Localizer.CurrentCultureName}.svg")`,

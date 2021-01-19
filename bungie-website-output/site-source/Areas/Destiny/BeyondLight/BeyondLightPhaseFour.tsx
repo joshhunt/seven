@@ -4,11 +4,11 @@
 import styles from "@Areas/Destiny/BeyondLight/BeyondLightPhaseFour.module.scss";
 import { BeyondLightProducts } from "@Areas/Destiny/BeyondLight/BeyondLightProducts";
 import {
-  BeyondLightPhaseFourDataStorePayload,
   BeyondLightPhaseFourDataStore,
+  BeyondLightPhaseFourDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseFourDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import {
   GlobalStateComponentProps,
   withGlobalState,
@@ -20,8 +20,8 @@ import { Spinner } from "@UIKit/Controls/Spinner";
 import classNames from "classnames";
 import React from "react";
 import {
-  Hero,
   BeyondLightBackgroundParallax,
+  Hero,
   VideoBlock,
 } from "./Components/index";
 

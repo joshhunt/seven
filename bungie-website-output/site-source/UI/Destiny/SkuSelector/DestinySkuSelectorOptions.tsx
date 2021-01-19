@@ -128,10 +128,17 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     }
   };
 
-  private readonly getSaleDateString = (activeSale: IDestinySkuSale) => {
-    const ed = moment(activeSale.endDate).local(true);
+  private readonly getSaleDateString = (activeSale) => {
+    const ed = moment(
+      moment(activeSale.endDate).local(true),
+      "YYYY-MM-DD HH:mm"
+    );
     const saleDescription = Localizer.Buyflow.GenericSaleDescription;
-
+    const endDateTime = Localizer.Format(Localizer.Time.HourMinuteAmpm, {
+      hour12: ed.format("hh"),
+      minute: ed.format("mm"),
+      ampm: ed.format("A"),
+    });
     const endDateString = Localizer.Format(Localizer.Time.CompactMonthDayYear, {
       month: ed.format("MM"),
       day: ed.format("DD"),
@@ -172,6 +179,8 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     const isDisabled = (skuTag) => disabledPSNSkusRegex.test(skuTag);
     const outerClasses = classNames(styles.options, className);
 
+    const productFamilyTag = def.title.replace(/\s/g, "");
+
     return (
       <div className={outerClasses}>
         {!this.state.selectedStore ? (
@@ -194,13 +203,13 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                       store.key,
                       this.props.skuConfig
                     ) || null;
-                  let activeSaleString = "";
+                  let activeSaleEndDate = "";
 
                   if (activeSale) {
-                    activeSaleString = this.getSaleDateString(activeSale);
+                    activeSaleEndDate = this.getSaleDateString(activeSale);
 
                     if (def.disclaimer) {
-                      activeSaleString += "*";
+                      activeSaleEndDate += "*";
                     }
                   }
 
@@ -220,7 +229,8 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                       >
                         {activeSale && (
                           <div className={styles.saleTag}>
-                            {activeSale.discountString}
+                            {Localizer.Sales[def.skuTag] ??
+                              Localizer.Sales[productFamilyTag]}
                           </div>
                         )}
 
@@ -236,7 +246,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
 
                       <div className={styles.saleInfo}>
                         <p className={styles.endDate}>
-                          {activeSaleString}&nbsp;
+                          {activeSaleEndDate}&nbsp;
                         </p>
                       </div>
                     </div>

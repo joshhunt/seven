@@ -17,7 +17,7 @@ import {
   BeyondLightUpdateDataStore,
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import * as React from "react";
 import styles from "./BeyondLightMedia.module.scss";

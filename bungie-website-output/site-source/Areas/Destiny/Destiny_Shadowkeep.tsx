@@ -2,7 +2,8 @@
 // tslint:disable: max-file-line-count
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DataStore, DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
@@ -873,12 +874,15 @@ class DestinyShadowkeepInner extends React.Component<
     );
   }
 }
+
 interface IBasicDivProps extends React.HTMLProps<HTMLDivElement> {
   children: React.ReactNode;
 }
+
 interface ISectionTitleProps extends IBasicDivProps {
   isSmall?: boolean;
 }
+
 const SectionTitle = (props: ISectionTitleProps) => {
   const { children, isSmall, ...rest } = props;
 

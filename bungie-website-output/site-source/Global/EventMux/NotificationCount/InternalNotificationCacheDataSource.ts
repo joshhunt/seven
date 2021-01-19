@@ -1,10 +1,11 @@
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import {
+  BnetNotification,
   InternalNotificationDistributor,
   NotificationTypes,
-  BnetNotification,
 } from "./InternalNotificationDistributor";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
-import { LocalStorageUtils } from "@Utilities/StorageUtils";
 
 export class InternalNotificationCacheDataSource {
   private readonly distributor: InternalNotificationDistributor;

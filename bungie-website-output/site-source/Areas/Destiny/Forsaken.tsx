@@ -1,33 +1,34 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { Img } from "@Helpers";
+import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
+import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
+import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
+import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import classNames from "classnames";
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
 import styles from "./Forsaken.module.scss";
-import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
-import { Localizer } from "@Global/Localizer";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { Responsive, IResponsiveState } from "@Boot/Responsive";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
-import { DataStore, DestroyCallback } from "@Global/DataStore";
-import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
-import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
-import classNames from "classnames";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { DestinyNewsAndMedia } from "./Shared/DestinyNewsAndMedia";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
-import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { Img } from "@Helpers";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 
 interface IForsakenPageState {
   supportsWebp: boolean;
@@ -714,8 +715,8 @@ class ForsakenPageInternal extends React.Component<
               />
               <div className={styles.disclaimerGrid}>
                 <ul>
-                  <li>{Localizer.Destiny.shadowkeepPurchaseLegalDetail}</li>
-                  <li>{Localizer.Destiny.shadowkeepLegalDetail}</li>
+                  <li>{Localizer.Destiny.forsakenPurchaseLegalDetail}</li>
+                  <li>{Localizer.Destiny.forsakenLegalDetail}</li>
                   <li>{Localizer.Destiny.imagesLegalDetail}</li>
                 </ul>
               </div>

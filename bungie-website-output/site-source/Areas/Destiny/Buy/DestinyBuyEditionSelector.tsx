@@ -1,20 +1,22 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import styles from "./DestinyBuyEditionSelector.module.scss";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import { Localizer } from "@Global/Localizer";
 import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
-import classNames from "classnames";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
-import { DestinyBuyDataStore } from "./Shared/DestinyBuyDataStore";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
 } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
+import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./DestinyBuyEditionSelector.module.scss";
+import { DestinyBuyDataStore } from "./Shared/DestinyBuyDataStore";
 
 interface IDestinyBuyEditionSelectorProps {
   title: string;
@@ -40,6 +42,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
     props.skus[DestinyBuyDataStore.state.selectedSkuIndex || 0].skuTag
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
+  const productFamilyTag = props.title.replace(/\s/g, "");
 
   const strangerEditionSelected =
     props.strangerEdition?.skuTag === selectedSkuTag;
@@ -84,12 +87,6 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
               const productIsOnSale =
                 skuConfig &&
                 DestinySkuUtils.isProductOnSale(sku.skuTag, skuConfig);
-              const discountString =
-                skuConfig &&
-                DestinySkuUtils.getDiscountStringForProduct(
-                  sku.skuTag,
-                  skuConfig
-                );
 
               return (
                 <div
@@ -111,7 +108,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
                           [styles.selectedSale]: sku.skuTag === selectedSkuTag,
                         })}
                       >
-                        {discountString}
+                        {Localizer.Sales[sku.skuTag]}
                       </div>
                     )}
                     <div className={styles.subtitle}>
@@ -135,10 +132,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
                         styles.singleProduct
                       )}
                     >
-                      {DestinySkuUtils.getDiscountStringForProduct(
-                        props.skus[0].skuTag,
-                        skuConfig
-                      )}
+                      {Localizer.Sales[productFamilyTag]}
                     </div>
                   )}
               </>

@@ -14,30 +14,29 @@ import {
   BeyondLightPhaseTwoDataStore,
   BeyondLightPhaseTwoDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseTwoDataStore";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/DataStore";
-import { Img } from "@Helpers";
-import { Spinner } from "@UIKit/Controls/Spinner";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import * as React from "react";
-import styles from "./BeyondLightOverhaul.module.scss";
 import {
   BeyondLightUpdateDataStore,
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import classNames from "classnames";
 import { Localizer } from "@Global/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Spinner } from "@UIKit/Controls/Spinner";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./BeyondLightOverhaul.module.scss";
 import { BeyondLightProducts } from "./BeyondLightProducts";
 import {
-  TextBlock,
-  ScreenShotBlock,
   Hero,
+  ScreenShotBlock,
+  TextBlock,
   VideoBlock,
 } from "./Components/index";
 

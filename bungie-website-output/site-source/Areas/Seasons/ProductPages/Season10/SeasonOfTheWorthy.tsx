@@ -3,11 +3,12 @@
 // Created by a-larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import * as React from "react";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
 import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
 import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { DataStore } from "@Global/DataStore";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import styles from "./SeasonOfTheWorthy.module.scss";

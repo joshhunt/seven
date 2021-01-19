@@ -1,6 +1,7 @@
 import * as Globals from "@Enum";
+import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { User } from "@Platform";
-import { DataStore, DataStoreObserver } from "@Global/DataStore";
 
 export enum NotificationTypes {
   OnlineFriendCount,
@@ -27,14 +28,14 @@ export interface BnetNotification {
 export class InternalNotificationDistributor extends DataStore<
   BnetNotification,
   DistributorParams,
-  DataStoreObserver<BnetNotification>
+  BroadcasterObserver<BnetNotification>
 > {
   constructor() {
     super(null);
   }
 
   protected getObserversToUpdate(notification: Partial<BnetNotification>) {
-    const toUpdate: DataStoreObserver<BnetNotification>[] = [];
+    const toUpdate: BroadcasterObserver<BnetNotification>[] = [];
 
     this.allObservers.forEach((subscription) => {
       const matches: boolean =

@@ -1,8 +1,8 @@
 import {
-  DataStoreObserver,
-  DataStore,
+  BroadcasterObserver,
   DestroyCallback,
-} from "@Global/DataStore";
+} from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { User } from "@Platform";
 import * as Globals from "@Enum";
 import {
@@ -19,7 +19,9 @@ export interface NotificationCounts {
   acks: { [key: string]: User.AckState };
 }
 
-class NotificationCountMonitor extends DataStoreObserver<NotificationCounts> {}
+class NotificationCountMonitor extends BroadcasterObserver<
+  NotificationCounts
+> {}
 
 export class InternalNotificationViewModel extends DataStore<
   NotificationCounts,

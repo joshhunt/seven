@@ -23,7 +23,9 @@ export enum CookieConsentValidity {
 
 export class UserUtils {
   /** Returns true if the user is authenticated */
-  public static isAuthenticated(gs: GlobalState<"loggedInUser">) {
+  public static isAuthenticated(
+    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
+  ) {
     return gs.loggedInUser !== undefined;
   }
 
@@ -58,7 +60,9 @@ export class UserUtils {
   }
 
   /** Returns the logged in user's membership ID */
-  public static loggedInUserMembershipId(gs: GlobalState<"loggedInUser">) {
+  public static loggedInUserMembershipId(
+    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
+  ) {
     return gs.loggedInUser ? gs.loggedInUser.user.membershipId : null;
   }
 
@@ -68,12 +72,16 @@ export class UserUtils {
   }
 
   /** Returns the logged in user's display name */
-  public static loggedInUserDisplayName(gs: GlobalState<"loggedInUser">) {
+  public static loggedInUserDisplayName(
+    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
+  ) {
     return gs.loggedInUser ? gs.loggedInUser.user.displayName : null;
   }
 
   /** Returns the logged in user's email */
-  public static loggedInUserEmail(gs: GlobalState<"loggedInUser">) {
+  public static loggedInUserEmail(
+    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
+  ) {
     return gs.loggedInUser ? gs.loggedInUser.email : null;
   }
   /**

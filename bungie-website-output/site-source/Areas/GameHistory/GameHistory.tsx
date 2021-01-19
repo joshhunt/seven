@@ -59,24 +59,23 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
     DestinyActivityModeType.None;
 
   const [activityMode, setActivityMode] = useState(initialActivityMode);
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
   const [history, setHistory] = useState(initialHistory);
 
-  const hasHistory = history?.activities?.length >= 1;
+  const hasHistory = history?.activities?.length > 0;
   const showAllModeTypes = activityMode === 0;
 
-  // This runs twice, once when the connection is made to the datastore, there is no selectedCharacter yet so the onCharacterChange doesn't fire, and once when the data is loaded for the datastore
   useEffect(() => {
     UserUtils.isAuthenticated(globalState) &&
       destinyMembership.selectedCharacter &&
       onCharacterChange(destinyMembership.selectedCharacter.characterId);
-  }, [destinyMembership.initialDataLoaded]);
+  }, [history]);
 
   const onCharacterChange = (value: string) => {
     setLoaded(false);
 
     UserUtils.isAuthenticated(globalState) &&
-      destinyMembership.initialDataLoaded &&
+      destinyMembership.characters[value].characterId &&
       Platform.Destiny2Service.GetActivityHistory(
         destinyMembership.selectedMembership.membershipType,
         destinyMembership.selectedMembership.membershipId,
@@ -130,7 +129,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
                 </>
               )}
             </DestinyAccountWrapper>
-            <SpinnerContainer className={styles.historyTable} loading={!loaded}>
+            <div className={styles.historyTable}>
               {hasHistory ? (
                 showAllModeTypes ? (
                   history.activities.map((historyItem, i) => (
@@ -154,9 +153,9 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
                     ))
                 )
               ) : (
-                <div />
+                <div>{Localizer.Profile.NoGamesFound}</div>
               )}
-            </SpinnerContainer>
+            </div>
           </RequiresAuth>
         </GridCol>
       </Grid>

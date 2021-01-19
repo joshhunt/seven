@@ -1,19 +1,16 @@
 import * as Globals from "@Enum";
+import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { EventMuxStorage } from "@Global/EventMux/EventMuxStorage";
 import { Logger } from "@Global/Logger";
-import {
-  DataStore,
-  DataStoreObserver,
-  DestroyCallback,
-} from "@Global/DataStore";
-import { RealTimeEventing, Notifications } from "@Platform";
+import { Notifications, RealTimeEventing } from "@Platform";
 import { EventMux } from "./EventMuxBase";
 
 export interface IEventMuxSubscriptionParams {
   eventType: Globals.RealTimeEventType;
 }
 
-export class EventMuxMonitor extends DataStoreObserver<
+export class EventMuxMonitor extends BroadcasterObserver<
   Notifications.RealTimeEventData,
   IEventMuxSubscriptionParams
 > {

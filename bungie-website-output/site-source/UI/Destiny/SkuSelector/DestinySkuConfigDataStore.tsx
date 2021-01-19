@@ -5,11 +5,6 @@ import { DataStore } from "@Global/DataStore";
 import { FetchUtils } from "@Utilities/FetchUtils";
 import { BuildVersion } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
-import { ContentUtils } from "@Utilities/ContentUtils";
-import moment from "moment";
-import { Logger } from "@Global/Logger";
 
 export interface IDestinySkuValidRegion {
   key: string;
@@ -29,11 +24,10 @@ export interface IDestinySkuStore {
 }
 
 export interface IDestinySkuSale {
-  productSkuTag: string;
-  store: string;
-  startDate: string;
-  endDate: string;
-  discountString: string;
+  startDate: Date;
+  endDate: Date;
+  amount: string;
+  type: string;
 }
 
 export interface IDestinySkuProductStoreRegion {
@@ -93,46 +87,10 @@ class DestinySkuConfigDataStore extends DataStore<IDestinySkuConfig> {
     FetchUtils.FetchJson<IDestinySkuConfig>(
       `/JsonSkuDestinations.ashx?bv=${cacheString}`
     ).then((data) => {
-      if (data) {
-        const productGroupsCopy = [...data.productGroups];
-
-        Platform.ContentService.GetContentByTagAndType(
-          "current-sales",
-          "ContentSet",
-          Localizer.CurrentCultureName,
-          false
-        ).then((contentSet) => {
-          const currentSales: Content.ContentItemPublicContract[] =
-            contentSet.properties["ContentItems"];
-
-          currentSales?.forEach((s) => {
-            const sale = ContentUtils.saleFromContent(s);
-            const start = moment(sale.startDate).utc();
-            const end = moment(sale.endDate).utc();
-
-            if (moment.utc().isBetween(start, end)) {
-              productGroupsCopy.map((pg) => {
-                const productOnSale = pg.products.find(
-                  (p) => p.key === sale.productSkuTag
-                );
-
-                if (productOnSale) {
-                  const storeWithSale = productOnSale.stores.find(
-                    (st) => st.key === sale.store
-                  );
-                  storeWithSale.activeSale = sale;
-                }
-              });
-            }
-          });
-        });
-
-        this.update({
-          ...data,
-          productGroups: productGroupsCopy,
-          loaded: true,
-        });
-      }
+      this.update({
+        ...data,
+        loaded: true,
+      });
     });
   }
 }

@@ -1,11 +1,12 @@
 import { ContentfulFetch } from "@Contentful/ContentfulFetch";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import {
   GlobalStateContext,
   GlobalStateDataStore,
   GlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { DataStore } from "@Global/DataStore";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import {
   SystemDisabledError,

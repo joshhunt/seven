@@ -1,7 +1,8 @@
-import { DataStore, DataStoreObserver } from "@Global/DataStore";
+import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { createContext } from "react";
 
-export interface ResponsiveUpdatedData {
+export interface ResponsiveUpdatedDat {
   ResponsiveSize: ResponsiveSize;
   mediaQueryTest: boolean;
 }
@@ -26,7 +27,7 @@ export interface IResponsiveState {
   pico: boolean;
 }
 
-export class ResponsiveMonitor extends DataStoreObserver<IResponsiveState> {}
+export class ResponsiveMonitor extends BroadcasterObserver<IResponsiveState> {}
 
 class ResponsiveMediaQuery {
   public name: ResponsiveSize;

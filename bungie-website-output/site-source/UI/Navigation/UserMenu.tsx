@@ -1,36 +1,36 @@
+import { BungieCredentialType } from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import {
-  withGlobalState,
-  GlobalStateComponentProps,
   GlobalState,
+  GlobalStateComponentProps,
+  withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import { NotificationCounts } from "@Global/EventMux/NotificationCount/InternalNotificationViewModel";
+import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
+import { Localizer } from "@Global/Localizer";
+import { RouteHelper } from "@Global/Routes/RouteHelper";
+import { SystemNames } from "@Global/SystemNames";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import {
   INavigationTopLink,
   NavigationConfigLegacy,
 } from "@UI/Navigation/MainNavigation";
 import { MenuItem } from "@UI/Navigation/MenuItem";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Icon } from "@UIKit/Controls/Icon";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { LocalStorageUtils } from "@Utilities/StorageUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
-import styles from "./UserMenu.module.scss";
-import stylesMenuItem from "./MenuItem.module.scss";
-import { RouteHelper } from "@Global/Routes/RouteHelper";
-import { Localizer } from "@Global/Localizer";
-import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
-import { NotificationCounts } from "@Global/EventMux/NotificationCount/InternalNotificationViewModel";
 import { Anchor } from "./Anchor";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
 import LocaleSwitcher from "./LocaleSwitcher";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
-import { BungieCredentialType } from "@Enum";
-import { LocalStorageUtils } from "@Utilities/StorageUtils";
-import { SystemNames } from "@Global/SystemNames";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import stylesMenuItem from "./MenuItem.module.scss";
+import styles from "./UserMenu.module.scss";
 
 interface ISignInOutProps
   extends GlobalStateComponentProps<"loggedInUser" | "loggedInUserClans"> {

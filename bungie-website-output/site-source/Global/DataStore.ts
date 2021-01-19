@@ -1,50 +1,23 @@
 import { DetailedError } from "@CustomErrors";
+import {
+  Broadcaster,
+  BroadcasterObserver,
+  DestroyCallback,
+  ParameterlessConstructor,
+} from "@Global/Broadcaster/Broadcaster";
 import { useState, useEffect } from "react";
 import deepEqual from "deep-equal";
-
-export type DestroyCallback = () => void;
-
-interface ParameterlessConstructor<
-  ConstructorType,
-  TDataType,
-  TObserverProps = any
-> {
-  new (
-    callback: (newData: TDataType) => void,
-    input: TObserverProps
-  ): ConstructorType;
-}
-
-export class DataStoreObserver<TDataType, TInputType = any> {
-  private updateTimer = null;
-  protected updateDelayMs = 1000 / 60;
-
-  private readonly callback: (newData: TDataType) => void;
-  public readonly params: TInputType;
-
-  constructor(callback: (newData: TDataType) => void, params: TInputType) {
-    this.callback = callback;
-    this.params = params;
-  }
-
-  public update(newData: TDataType) {
-    clearTimeout(this.updateTimer);
-    this.updateTimer = setTimeout(() => {
-      this.callback(newData);
-    }, this.updateDelayMs);
-  }
-}
 
 export class DataStore<
   TDataType extends object,
   TObserverProps = any,
-  TObserverType extends DataStoreObserver<
+  TObserverType extends BroadcasterObserver<
     TDataType,
     TObserverProps
-  > = DataStoreObserver<TDataType>
-> {
+  > = BroadcasterObserver<TDataType>
+> extends Broadcaster<TDataType, TObserverProps, TObserverType> {
   protected _internalState: TDataType = null;
-  protected readonly observers: { [key: string]: TObserverType } = {};
+
   public get state() {
     return this._internalState;
   }
@@ -52,18 +25,19 @@ export class DataStore<
   /**
    * Creates a DataStore
    * @param initialData The starting data (can be null)
-   * @param subscriptionConstructor A constructor for the subscription, if it is not the default (just pass the class itself)
-   * @param propsRequired If true, subscribing will require params
+   * @param subscriptionConstructor
+   * @param propsRequired
    */
   constructor(
     initialData: TDataType,
-    private readonly subscriptionConstructor: ParameterlessConstructor<
+    subscriptionConstructor: ParameterlessConstructor<
       TObserverType,
       TDataType,
       TObserverProps
     > = null,
-    protected readonly propsRequired = false
+    propsRequired = false
   ) {
+    super(subscriptionConstructor, propsRequired);
     if (initialData) {
       this._internalState = initialData;
     }
@@ -74,7 +48,7 @@ export class DataStore<
    * @param data
    */
   public update(data: Partial<TDataType>) {
-    const newState = { ...(this._internalState ?? {}), ...data } as TDataType;
+    const newState = { ...(this._internalState ?? {}), ...data };
     const equal = deepEqual(newState, this._internalState);
 
     if (equal) {
@@ -86,21 +60,9 @@ export class DataStore<
       ...data,
     } as TDataType;
 
-    this.updateObservers(data);
+    this.broadcast(this._internalState);
 
-    return true; //
-  }
-
-  protected get allObservers(): TObserverType[] {
-    return Object.keys(this.observers).map((guid) => this.observers[guid]);
-  }
-
-  public broadcast(observersToUpdate?: TObserverType[]) {
-    const broadcastTo = observersToUpdate
-      ? observersToUpdate
-      : this.allObservers;
-
-    broadcastTo.forEach((observer) => observer.update(this._internalState));
+    return true;
   }
 
   /**
@@ -111,59 +73,30 @@ export class DataStore<
    */
   public observe(
     callback: (newData: TDataType) => void,
-    props?: TObserverProps,
+    props?: any,
     updateImmediately = true
   ): DestroyCallback {
-    if (this.propsRequired && props === undefined) {
-      throw new DetailedError(
-        "Props cannot be null",
-        "This data store requires props parameters for each subscription"
-      );
-    }
-
-    const subscription: TObserverType = this.subscriptionConstructor
-      ? new this.subscriptionConstructor(callback, props)
-      : (new DataStoreObserver(callback, props) as TObserverType);
-
-    const guid = this.guid();
-
-    this.observers[guid] = subscription;
+    const { destroy, observer } = this.storeObserver(callback, props);
 
     if (updateImmediately) {
-      subscription.update(this._internalState);
+      observer.update(this._internalState);
     }
 
-    return () => delete this.observers[guid];
-  }
-
-  private guid() {
-    return (new Date().getTime() * Math.random()).toString(36);
-  }
-
-  protected getObserversToUpdate(update: Partial<TDataType>) {
-    return this.allObservers;
-  }
-
-  private updateObservers(update: Partial<TDataType>) {
-    const toUpdate = this.getObserversToUpdate(update);
-
-    this.broadcast(toUpdate);
-  }
-
-  public static destroyAll(...destroyCallbacks: DestroyCallback[]) {
-    destroyCallbacks.forEach((u) => u());
+    return destroy;
   }
 }
 
 /**
  * Subscribe to a data store such that the data is always up-to-date.
  * @param ds
+ * @param props
+ * @param updateImmediately
  */
 export const useDataStore = <
   TData extends object,
   TObserverProps extends object
 >(
-  ds: DataStore<TData, TObserverProps>,
+  ds: DataStore<TData>,
   props?: TObserverProps,
   updateImmediately = true
 ) => {

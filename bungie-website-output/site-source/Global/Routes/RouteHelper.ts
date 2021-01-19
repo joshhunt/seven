@@ -297,6 +297,7 @@ export class RouteHelper {
   public static PlayTests = BasicReactPath(
     RouteDefs.Areas.UserResearch.getAction()
   );
+  public static BungieNewsRoom = LegacyPath("/Newsroom");
 
   /**
    *

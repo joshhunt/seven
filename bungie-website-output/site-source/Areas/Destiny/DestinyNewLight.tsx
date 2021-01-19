@@ -6,32 +6,31 @@ import {
   StackedCardBlock,
   VideoCarousel,
 } from "@Areas/Destiny/BeyondLight/Components";
-import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
-import React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { Localizer } from "@Global/Localizer";
-import styles from "./DestinyNewLight.module.scss";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import {
-  withGlobalState,
   GlobalStateComponentProps,
+  withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { Img } from "@Helpers";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
+import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
-import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
-import classNames from "classnames";
-import { Responsive, IResponsiveState } from "@Boot/Responsive";
-import { DataStore, DestroyCallback } from "@Global/DataStore";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
-import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
-import { DestinyNewsAndMedia } from "./Shared/DestinyNewsAndMedia";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { Img } from "@Helpers";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
+import classNames from "classnames";
+import React from "react";
+import { RouteComponentProps } from "react-router-dom";
+import styles from "./DestinyNewLight.module.scss";
+import { DestinyNewsAndMedia } from "./Shared/DestinyNewsAndMedia";
 
 export type DestinyClasses = "warlock" | "hunter" | "titan";
 

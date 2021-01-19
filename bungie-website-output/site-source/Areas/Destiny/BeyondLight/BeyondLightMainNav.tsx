@@ -1,6 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import * as React from "react";
 import styles from "./BeyondLightMainNav.module.scss";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -10,7 +11,6 @@ import classNames from "classnames";
 import { Localizer } from "@Global/Localizer";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { DestroyCallback } from "@Global/DataStore";
 import LocaleSwitcher from "@UI/Navigation/LocaleSwitcher";
 import * as H from "history";
 

@@ -1,17 +1,18 @@
-import { DataStore, DataStoreObserver } from "@Global/DataStore";
-import MyWorker from "./DestinyDefinitions.worker";
+import { DefinitionNotFoundError, InvalidPropsError } from "@CustomErrors";
+import { DestinyDatabase } from "@Database/Database";
 import {
   DestinyWorldDefinitionsGenerated,
   DestinyWorldDefinitionsTypeMap,
 } from "@Definitions";
-import { DefinitionNotFoundError, InvalidPropsError } from "@CustomErrors";
-import { Config, Platform } from "@Platform";
-import { DestinyDatabase } from "@Database/Database";
+import { RendererLogLevel } from "@Enum";
+import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localizer";
 import { Logger } from "@Global/Logger";
+import { Config, Platform } from "@Platform";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import React from "react";
-import { RendererLogLevel } from "@Enum";
+import MyWorker from "./DestinyDefinitions.worker";
 
 interface IMessageEventData<T> {
   name: string;
@@ -67,7 +68,7 @@ export interface ManifestPayload {
   hasError?: boolean;
 }
 
-export class DestinyDefinitionsObserver extends DataStoreObserver<
+export class DestinyDefinitionsObserver extends BroadcasterObserver<
   ManifestPayload,
   IDestinyDefinitionsObserverProps<DestinyDefinitionType>
 > {}

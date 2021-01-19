@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { BungieMembershipType, DestinyGameVersions } from "@Enum";
-import { DestroyCallback } from "@Global/DataStore";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import {
   GlobalStateComponentProps,
   withGlobalState,

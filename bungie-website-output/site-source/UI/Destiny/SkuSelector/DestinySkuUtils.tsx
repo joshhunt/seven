@@ -1,7 +1,6 @@
 import {
   IDestinyProductDefinition,
   IDestinyProductFamilyDefinition,
-  SkuTagKeyValuePair,
 } from "./DestinyProductDefinitions";
 import { Content, Platform } from "@Platform";
 import {
@@ -176,20 +175,6 @@ export class DestinySkuUtils {
     }
 
     return product.stores.find((ps) => ps?.activeSale) !== undefined;
-  }
-
-  public static getDiscountStringForProduct(
-    skuTag: string,
-    skuConfig: IDestinySkuConfig
-  ) {
-    const product = DestinySkuUtils.getProduct(skuTag, skuConfig);
-
-    if (!product) {
-      return null;
-    }
-
-    return product.stores.find((ps) => ps.activeSale !== undefined)?.activeSale
-      ?.discountString;
   }
 
   public static getSaleForProductAndStore(

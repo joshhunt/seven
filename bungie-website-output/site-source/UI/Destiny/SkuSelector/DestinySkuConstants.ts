@@ -2,15 +2,15 @@ export class DestinySkuTags {
   public static NewLightDetail = "freetoplay";
   public static ShadowkeepStandard = "shadowkeepstandard";
   public static ShadowkeepCollectors = "shadowkeepcollectors";
-  public static ShadowkeepForsakenUpgradeEdition =
-    "shadowkeepforsakenupgradeedition";
   public static ForsakenDetail = "forsaken";
   public static LegendaryEdition = "legendaryedition";
 }
 
-export class DestinySkuContentSets {
-  public static NewLight = "destiny-newlight-skus";
-  public static Seasons = "destiny-season-skus";
-  public static Shadowkeep = "destiny-shadowkeep-skus";
-  public static Forsaken = "destiny-forsaken-skus";
+export class DestinyProductFamilies {
+  public static NewLight = "freetoplay";
+  public static LegendaryEdition = "legendary";
+  public static Shadowkeep = "shadowkeep";
+  public static Forsaken = "forsaken";
+  public static BeyondLight = "beyondlight";
+  public static SilverBundle = "silverbundle";
 }

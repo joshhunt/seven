@@ -1,15 +1,14 @@
-import * as React from "react";
-import { DetailedError } from "./CustomErrors";
-import styles from "./BasicErrorBoundary.module.scss";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import Helmet from "react-helmet";
 import * as Globals from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { Localizer } from "@Global/Localizer";
 import { Logger } from "@Global/Logger";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import { DestroyCallback } from "@Global/DataStore";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Localizer } from "@Global/Localizer";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import styles from "./BasicErrorBoundary.module.scss";
+import { DetailedError } from "./CustomErrors";
 
 interface IBasicErrorBoundaryProps extends RouteComponentProps {}
 

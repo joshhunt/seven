@@ -1,16 +1,12 @@
-import * as React from "react";
-import {
-  DetailedError,
-  PlatformError,
-  PageDoesNotExistError,
-} from "./CustomErrors";
-import { Platform } from "@Platform";
 import * as Globals from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Logger } from "@Global/Logger";
-import { ErrorDisplay } from "./ErrorDisplay";
+import { Platform } from "@Platform";
+import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { DetailedError, PageDoesNotExistError } from "./CustomErrors";
 import { Error404 } from "./Error404";
-import { withRouter, RouteComponentProps } from "react-router-dom";
-import { DestroyCallback } from "@Global/DataStore";
+import { ErrorDisplay } from "./ErrorDisplay";
 
 interface IInnerErrorBoundaryProps extends RouteComponentProps {
   error?: Error;

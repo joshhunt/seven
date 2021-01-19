@@ -1,34 +1,27 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { DestinyBuyDetailItem } from "@Areas/Destiny/Buy/Shared/DestinyBuyDetailItem";
-import { DetailedError } from "@CustomErrors";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import * as React from "react";
-import styles from "./BeyondLightProducts.module.scss";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localizer";
+import { Content, Platform } from "@Platform";
+import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import {
-  IDestinyProductFamilyDefinition,
   IDestinyProductDefinition,
+  IDestinyProductFamilyDefinition,
 } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
 } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
-import { DestroyCallback } from "@Global/DataStore";
-import { Localizer } from "@Global/Localizer";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
-import { Platform, Content } from "@Platform";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
 import classNames from "classnames";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { RouteHelper, IMultiSiteLink } from "@Routes/RouteHelper";
-import {
-  GlobalStateComponentProps,
-  GlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import * as React from "react";
+import styles from "./BeyondLightProducts.module.scss";
 
 export type beyondLightEdition =
   | "beyondlightdeluxe"

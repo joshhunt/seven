@@ -38,6 +38,7 @@ class DestinyActivityModesSelector extends React.Component<
 
     // Separate into modes without parents and modes with parents
     allModeHashes.forEach((hash) => {
+      console.log(hash, allModes[hash]);
       const modeDefinition = allModes[hash];
       const hasParent = modeDefinition.parentHashes?.length >= 1;
       const parentMode = modeDefinition.parentHashes?.[0];

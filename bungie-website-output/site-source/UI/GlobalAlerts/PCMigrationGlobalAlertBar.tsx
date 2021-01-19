@@ -1,29 +1,23 @@
-import React from "react";
-import styles from "./PCMigrationGlobalAlertBar.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import {
-  withGlobalState,
   GlobalStateComponentProps,
+  withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import classNames from "classnames";
+import { Localizer } from "@Global/Localizer";
+import { Contract } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { RouteComponentProps } from "react-router-dom";
-import { Contract, Platform, User } from "@Platform";
 import {
-  DestroyCallback,
-  DataStoreObserver,
-  DataStore,
-} from "@Global/DataStore";
-import {
-  PCMigrationUserDataStore,
   IPCMigrationUserData,
+  PCMigrationUserDataStore,
 } from "@UI/User/PCMigrationUserDataStore";
-import { PCMigrationUtilities } from "@Areas/PCMigration/Shared/PCMigrationUtilities";
-import { GlobalBar } from "./GlobalBar";
-import { BungieCredentialType } from "@Enum";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
+import classNames from "classnames";
+import React from "react";
+import { RouteComponentProps } from "react-router-dom";
+import { GlobalBar } from "./GlobalBar";
+import styles from "./PCMigrationGlobalAlertBar.module.scss";
 
 interface IPCMigrationGlobalAlertProps
   extends GlobalStateComponentProps<"loggedInUser" | "credentialTypes">,

@@ -1,14 +1,13 @@
-import classNames from "classnames";
-import * as React from "react";
-import styles from "./SubNav.module.scss";
-import { Dropdown, IDropdownOption } from "../Forms/Dropdown";
-import { History } from "history";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Respond } from "@Boot/Respond";
-import { ResponsiveSize, Responsive, IResponsiveState } from "@Boot/Responsive";
+import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
+import { IMultiSiteLink } from "@Routes/RouteHelper";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import { DestroyCallback, DataStore } from "@Global/DataStore";
+import classNames from "classnames";
+import { History } from "history";
+import * as React from "react";
+import { Dropdown, IDropdownOption } from "../Forms/Dropdown";
+import styles from "./SubNav.module.scss";
 
 interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
   /** Requires the history object from the page's props (this.props.history). Required to redirect when using mobile dropdown. */

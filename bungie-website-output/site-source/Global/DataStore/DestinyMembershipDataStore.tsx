@@ -13,7 +13,6 @@ interface DestinyMembershipDataStorePayload {
   selectedMembership: GroupsV2.GroupUserInfoCard;
   characters: { [key: string]: Characters.DestinyCharacterComponent };
   selectedCharacter: Characters.DestinyCharacterComponent;
-  initialDataLoaded: boolean;
 }
 
 export class DestinyMembershipDataStore extends DataStore<
@@ -26,7 +25,6 @@ export class DestinyMembershipDataStore extends DataStore<
       selectedMembership: null,
       characters: {},
       selectedCharacter: null,
-      initialDataLoaded: false,
     });
 
     this.initialize();
@@ -51,18 +49,20 @@ export class DestinyMembershipDataStore extends DataStore<
           ]
         : data.destinyMemberships;
 
+      /* If memberships is empty, it will update the value to be [], so if [] is empty, they are either logged out or have no destiny account */
       this.update({
         membershipData: data,
-        memberships,
+        memberships: memberships.length > 0 ? memberships : [],
         selectedMembership: memberships[0],
       });
 
-      this.updatePlatform(
-        EnumUtils.getStringValue(
-          memberships[0].membershipType,
-          BungieMembershipType
-        )
-      );
+      memberships[0] &&
+        this.updatePlatform(
+          EnumUtils.getStringValue(
+            memberships[0].membershipType,
+            BungieMembershipType
+          )
+        );
     });
   };
 
@@ -103,7 +103,6 @@ export class DestinyMembershipDataStore extends DataStore<
         selectedCharacter: this._getMostRecentlyPlayedCharacter(
           profileResponse?.characters?.data
         ),
-        initialDataLoaded: true,
       });
     });
   }
