@@ -25,7 +25,7 @@ interface BeyondLightMapProps {
 
 const BeyondLightMap: React.FC<BeyondLightMapProps> = (props) => {
   const [isActive, setActive] = useState(null);
-  const [parallaxPos, setParallaxPos] = useState();
+  const [parallaxPos, setParallaxPos] = useState<number>();
   const ref = useRef<HTMLElement | undefined>();
 
   useEffect(() => {

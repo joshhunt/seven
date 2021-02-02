@@ -82,7 +82,6 @@ export class Checkbox extends React.Component<ICheckboxProps, ICheckboxState> {
               onChange={onChange}
               onKeyDown={onKeyDown}
               onKeyPress={onKeyPress}
-              name={name}
               checked={this.state.checked}
             />
             <Icon iconType={"material"} iconName={"done"} />

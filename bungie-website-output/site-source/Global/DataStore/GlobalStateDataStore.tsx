@@ -88,7 +88,7 @@ class GlobalStateDataStoreInternal extends DataStore<
       await this.actions.refreshSettings();
     }
 
-    await this.actions.refreshUserAndRelatedData(false);
+    await this.actions.refreshUserData(false);
 
     this.actions.updateLoaded(true);
 
@@ -253,7 +253,7 @@ class GlobalStateDataStoreInternal extends DataStore<
      * Reset all user-related data and download it again
      * @param bustCache
      */
-    refreshUserAndRelatedData: async (bustCache?: boolean) => {
+    refreshUserData: async (bustCache?: boolean) => {
       EventMux.destroy();
       NotificationCountManager.destroy();
 

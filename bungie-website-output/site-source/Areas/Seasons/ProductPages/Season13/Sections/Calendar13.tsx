@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Platform } from "@Platform";
-import { ContentUtils } from "@Utilities/ContentUtils";
+import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import styles from "./Calendar13.module.scss";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -13,7 +13,7 @@ interface Calendar13Props {
 }
 
 export const Calendar13: React.FC<Calendar13Props> = (props) => {
-  const [calendar, setCalendar] = useState();
+  const [calendar, setCalendar] = useState<IMarketingMediaAsset>();
 
   useEffect(() => {
     Platform.ContentService.GetContentByTagAndType(
