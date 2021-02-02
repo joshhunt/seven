@@ -11,7 +11,7 @@ type DataStoreActionReturn<TDataType> =
   | Partial<TDataType>
   | Promise<Partial<TDataType>>;
 type DataStoreActions<TDataType> = Record<
-  string,
+  any,
   (...args: any[]) => DataStoreActionReturn<TDataType>
 >;
 
@@ -25,7 +25,7 @@ export abstract class DataStore<
 > extends Broadcaster<TDataType, TObserverProps, TObserverType> {
   protected _internalState: TDataType = null;
 
-  public abstract actions: DataStoreActions<TDataType>;
+  public actions;
 
   public get state() {
     return this._internalState;
@@ -58,7 +58,7 @@ export abstract class DataStore<
    */
   protected readonly createActions = <T extends DataStoreActions<TDataType>>(
     actions: T
-  ) => {
+  ): T => {
     return Object.keys(actions).reduce((acc, item) => {
       const action = actions[item];
 

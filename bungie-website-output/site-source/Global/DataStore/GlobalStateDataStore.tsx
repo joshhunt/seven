@@ -64,53 +64,6 @@ class GlobalStateDataStoreInternal extends DataStore<
     super(initial, GlobalStateDataStoreMonitor, true);
   }
 
-  /**
-   * Initializes GlobalStateDataStore
-   */
-  public async initialize() {
-    if (this.isInitialized) {
-      return;
-    }
-
-    this.isInitialized = true;
-
-    this.createContext();
-
-    Responsive.observe(
-      (state) => this.actions.updateResponsive(state),
-      undefined,
-      true
-    );
-
-    const didLoadFromStorage = !!(await this.actions.refreshSettings());
-
-    if (!didLoadFromStorage) {
-      await this.actions.refreshSettings();
-    }
-
-    await this.actions.refreshUserData(false);
-
-    this.actions.updateLoaded(true);
-
-    this.actions.refreshSettings();
-  }
-
-  protected getObserversToUpdate(data: Partial<IGlobalState>) {
-    const keysUpdated = Object.keys(
-      data
-    ) as GlobalStateSubscriptionPartialKeys[];
-
-    return this.allObservers.filter((subscription) => {
-      return keysUpdated.some((updated) => {
-        return (
-          subscription.params.includes(updated) ||
-          (updated as string) === "loaded" ||
-          (updated as string) === "coreSettings"
-        );
-      });
-    });
-  }
-
   public actions = this.createActions({
     /**
      * Set the loaded state
@@ -253,7 +206,7 @@ class GlobalStateDataStoreInternal extends DataStore<
      * Reset all user-related data and download it again
      * @param bustCache
      */
-    refreshUserData: async (bustCache?: boolean) => {
+    refreshUserAndRelatedData: async (bustCache?: boolean) => {
       EventMux.destroy();
       NotificationCountManager.destroy();
 
@@ -275,6 +228,53 @@ class GlobalStateDataStoreInternal extends DataStore<
       return {};
     },
   });
+
+  /**
+   * Initializes GlobalStateDataStore
+   */
+  public async initialize() {
+    if (this.isInitialized) {
+      return;
+    }
+
+    this.isInitialized = true;
+
+    this.createContext();
+
+    Responsive.observe(
+      (state) => this.actions.updateResponsive(state),
+      undefined,
+      true
+    );
+
+    const didLoadFromStorage = !!(await this.actions.refreshSettings());
+
+    if (!didLoadFromStorage) {
+      await this.actions.refreshSettings();
+    }
+
+    await this.actions.refreshUserAndRelatedData(false);
+
+    this.actions.updateLoaded(true);
+
+    this.actions.refreshSettings();
+  }
+
+  protected getObserversToUpdate(data: Partial<IGlobalState>) {
+    const keysUpdated = Object.keys(
+      data
+    ) as GlobalStateSubscriptionPartialKeys[];
+
+    return this.allObservers.filter((subscription) => {
+      return keysUpdated.some((updated) => {
+        return (
+          subscription.params.includes(updated) ||
+          (updated as string) === "loaded" ||
+          (updated as string) === "coreSettings"
+        );
+      });
+    });
+  }
 
   private createContext() {
     const { Provider, Consumer } = React.createContext<IGlobalState>(null);

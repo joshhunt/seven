@@ -56,7 +56,7 @@ const updateEmailSettings = (membershipId: string, onSuccess: () => void) => {
     .then(() => {
       onSuccess();
 
-      GlobalStateDataStore.actions.refreshUserData(true);
+      GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
 
       Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
         position: "br",

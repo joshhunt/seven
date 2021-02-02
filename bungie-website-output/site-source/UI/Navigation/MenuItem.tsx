@@ -216,7 +216,7 @@ const MenuLink = (props: ILinkProps) => {
     onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       BrowserUtils.openWindow(url, "loginui", () =>
-        GlobalStateDataStore.actions.refreshUserData()
+        GlobalStateDataStore.actions.refreshUserAndRelatedData()
       );
       props.onChildSelected(e);
 

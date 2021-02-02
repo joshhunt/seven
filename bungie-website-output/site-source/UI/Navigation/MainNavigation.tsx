@@ -166,7 +166,7 @@ class MainNavigationInternal extends React.Component<
 
   private readonly onJoinClick = () => {
     BrowserUtils.openWindow(RouteHelper.Join().url, "loginui", () =>
-      GlobalStateDataStore.actions.refreshUserData()
+      GlobalStateDataStore.actions.refreshUserAndRelatedData()
     );
   };
 
