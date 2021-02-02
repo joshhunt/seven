@@ -67,7 +67,7 @@ class BasicErrorBoundaryInner extends React.Component<
   }
 
   private renderErrorDisplay() {
-    const chunkError = !!this.state.error?.message.match(/loading chunk/gi);
+    const chunkError = !!this.state.error?.message?.match(/loading chunk/gi);
 
     let title = "Error";
     let message = <p>{this.state.error.message}</p>;

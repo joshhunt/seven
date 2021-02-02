@@ -98,7 +98,7 @@ class CrossSaveArea extends React.Component<
     ) {
       CrossSaveFlowStateDataStore.loadUserData()
         .catch(ConvertToPlatformError)
-        .then((error: PlatformError) => {
+        .catch((error: PlatformError) => {
           this.setState({
             error,
           });
