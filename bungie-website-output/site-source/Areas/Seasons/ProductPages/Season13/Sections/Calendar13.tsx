@@ -38,7 +38,7 @@ export const Calendar13: React.FC<Calendar13Props> = (props) => {
       <div
         className={styles.calendar}
         role={"article"}
-        style={{ backgroundImage: `url(${calendar.thumbnailImage})` }}
+        style={{ backgroundImage: `url(${calendar.largeImage})` }}
         onClick={() => {
           Modal.open(
             <img
