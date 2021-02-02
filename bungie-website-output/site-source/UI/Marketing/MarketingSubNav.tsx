@@ -27,6 +27,7 @@ interface IMarketingSubNavProps {
   menuItemClassName?: string;
   primaryColor?: NavPrimaryColors;
   accentColor?: NavAccentColors;
+  withGutter?: boolean;
 }
 
 interface DefaultProps {
@@ -158,6 +159,7 @@ export class MarketingSubNav extends React.Component<
       buttonProps,
       primaryColor,
       accentColor,
+      withGutter,
     } = this.props;
 
     const menuItems = Object.keys(idToElementsMapping).map((id) => {
@@ -184,10 +186,9 @@ export class MarketingSubNav extends React.Component<
     const wrapperClasses = classNames(
       styles.wrapper,
       styles[primaryColor],
-      {
-        [styles.open]: this.state.menuOpen,
-      },
-      { [styles.menuFixed]: this.state.fixed }
+      { [styles.open]: this.state.menuOpen },
+      { [styles.menuFixed]: this.state.fixed },
+      { [styles.withGutter]: withGutter }
     );
 
     const icon = this.state.menuOpen
@@ -195,7 +196,7 @@ export class MarketingSubNav extends React.Component<
       : "keyboard_arrow_down";
 
     return (
-      <React.Fragment>
+      <div>
         <MainNavAffix
           from={this.props.relockUnder}
           hideNavOnLock={true}
@@ -216,7 +217,7 @@ export class MarketingSubNav extends React.Component<
             [styles.menuFixed]: this.state.fixed,
           })}
         />
-      </React.Fragment>
+      </div>
     );
   }
 }

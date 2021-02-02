@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./SettingsBanners.module.scss";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
 import classNames from "classnames";
 import { RouteHelper } from "@Routes/RouteHelper";

@@ -1,38 +1,38 @@
-import * as React from "react";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
-import { Platform, CrossSave } from "@Platform";
-import styles from "./CrossSaveCommit.module.scss";
-import { RouteDefs } from "@Routes/RouteDefs";
-import {
-  ICrossSaveFlowState,
-  CrossSaveFlowStateDataStore,
-} from "../Shared/CrossSaveFlowStateDataStore";
-import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import * as Globals from "@Enum";
-import { Icon } from "@UI/UIKit/Controls/Icon";
-import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
-import classNames from "classnames";
-import posed from "react-pose";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { CrossSaveStaggerPose } from "../Shared/CrossSaveStaggerPose";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { CrossSaveValidationError } from "./Components/CrossSaveValidationError";
-import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInfo";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { CrossSaveAccountCard } from "./Components/CrossSaveAccountCard";
-import { CrossSaveClanCard } from "../Shared/CrossSaveClanCard";
-import { CrossSaveCardHeader } from "../Shared/CrossSaveCardHeader";
-import { PlatformError } from "@CustomErrors";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Spinner } from "@UI/UIKit/Controls/Spinner";
 import { Responsive } from "@Boot/Responsive";
-import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
+import { PlatformError } from "@CustomErrors";
+import * as Globals from "@Enum";
+import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
+import { EnumKey } from "@Helpers";
+import { CrossSave, Platform } from "@Platform";
+import { RouteDefs } from "@Routes/RouteDefs";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { Spinner } from "@UI/UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { EnumKey } from "@Helpers";
+import classNames from "classnames";
+import * as React from "react";
+import posed from "react-pose";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { CrossSaveCardHeader } from "../Shared/CrossSaveCardHeader";
+import { CrossSaveClanCard } from "../Shared/CrossSaveClanCard";
+import {
+  CrossSaveFlowStateDataStore,
+  ICrossSaveFlowState,
+} from "../Shared/CrossSaveFlowStateDataStore";
+import { CrossSaveStaggerPose } from "../Shared/CrossSaveStaggerPose";
+import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
+import { CrossSaveAccountCard } from "./Components/CrossSaveAccountCard";
+import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInfo";
+import { CrossSaveValidationError } from "./Components/CrossSaveValidationError";
+import styles from "./CrossSaveCommit.module.scss";
 
 interface ICrossSaveReviewProps
   extends RouteComponentProps,
@@ -40,7 +40,7 @@ interface ICrossSaveReviewProps
       "loggedInUser" | "responsive" | "loggedInUserClans"
     > {
   flowState: ICrossSaveFlowState;
-  onAccountLinked: (isVerify: boolean) => Promise<void | PlatformError>;
+  onAccountLinked: (isVerify: boolean) => Promise<any | PlatformError>;
 }
 
 interface ICrossSaveReviewState {
@@ -235,7 +235,7 @@ class CrossSaveCommit extends React.Component<
 
       Modal.open(allErrors);
     } else {
-      CrossSaveFlowStateDataStore.resetSetup();
+      CrossSaveFlowStateDataStore.actions.resetSetup();
 
       const confirmationPath = RouteDefs.Areas.CrossSave.resolve("Confirmation")
         .url;

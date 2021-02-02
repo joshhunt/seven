@@ -1,17 +1,17 @@
-import * as React from "react";
-import classNames from "classnames";
-import styles from "./Modal.module.scss";
-import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
-import { Icon } from "../Icon";
-import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
-import { withRouter, RouteComponentProps } from "react-router-dom";
-import ConfirmationModal from "./ConfirmationModal";
-import { Localizer } from "@Global/Localizer";
 import { DetailedError } from "@CustomErrors";
 import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { Auth } from "@UI/User/Auth";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
+import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Icon } from "../Icon";
+import ConfirmationModal from "./ConfirmationModal";
+import styles from "./Modal.module.scss";
 
 export enum ModalOverflowTypes {
   /**
@@ -69,11 +69,11 @@ export const showModalInternal = (
 ): React.RefObject<Modal> => {
   const modalRef = existingRef || React.createRef<Modal>();
 
-  const modalGuid = Math.ceil(Math.random() * 1000000);
+  const globalElementGuid = StringUtils.generateGuid();
 
   const onClose = () => {
     setTimeout(() => {
-      GlobalElementDataStore.removeModal(modalGuid);
+      GlobalElementDataStore.actions.removeElementByGuid(globalElementGuid);
 
       BrowserUtils.unlockScroll();
 
@@ -89,7 +89,7 @@ export const showModalInternal = (
     </Modal>
   );
 
-  GlobalElementDataStore.addElement(modalRef, modalGuid, modal);
+  GlobalElementDataStore.actions.addElement(globalElementGuid, modal);
 
   return modalRef;
 };

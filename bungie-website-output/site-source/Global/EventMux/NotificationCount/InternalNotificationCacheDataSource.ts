@@ -68,20 +68,16 @@ export class InternalNotificationCacheDataSource {
     const cachedItems = this.gatherCachedItems();
 
     for (const item of cachedItems) {
-      this.distributor.update(item);
+      this.distributor.broadcast(item);
     }
   }
 
   private addListeners() {
     for (const notification of this.notificationsToCache) {
       this.unsubscribers.push(
-        this.distributor.observe(
-          this.onUpdate,
-          {
-            notificationType: notification,
-          },
-          false
-        )
+        this.distributor.observe(this.onUpdate, {
+          notificationType: notification,
+        })
       );
     }
   }

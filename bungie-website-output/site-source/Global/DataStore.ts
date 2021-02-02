@@ -1,14 +1,21 @@
-import { DetailedError } from "@CustomErrors";
 import {
   Broadcaster,
   BroadcasterObserver,
+  CustomObserverClass,
   DestroyCallback,
-  ParameterlessConstructor,
 } from "@Global/Broadcaster/Broadcaster";
-import { useState, useEffect } from "react";
 import deepEqual from "deep-equal";
+import { useEffect, useState } from "react";
 
-export class DataStore<
+type DataStoreActionReturn<TDataType> =
+  | Partial<TDataType>
+  | Promise<Partial<TDataType>>;
+type DataStoreActions<TDataType> = Record<
+  string,
+  (...args: any[]) => DataStoreActionReturn<TDataType>
+>;
+
+export abstract class DataStore<
   TDataType extends object,
   TObserverProps = any,
   TObserverType extends BroadcasterObserver<
@@ -17,6 +24,8 @@ export class DataStore<
   > = BroadcasterObserver<TDataType>
 > extends Broadcaster<TDataType, TObserverProps, TObserverType> {
   protected _internalState: TDataType = null;
+
+  public abstract actions: DataStoreActions<TDataType>;
 
   public get state() {
     return this._internalState;
@@ -30,7 +39,7 @@ export class DataStore<
    */
   constructor(
     initialData: TDataType,
-    subscriptionConstructor: ParameterlessConstructor<
+    subscriptionConstructor: CustomObserverClass<
       TObserverType,
       TDataType,
       TObserverProps
@@ -44,10 +53,41 @@ export class DataStore<
   }
 
   /**
+   * Creates a helper function for actions which updates the data store when the action returns
+   * @param actions An object of functions which return data that updates the store
+   */
+  protected readonly createActions = <T extends DataStoreActions<TDataType>>(
+    actions: T
+  ) => {
+    return Object.keys(actions).reduce((acc, item) => {
+      const action = actions[item];
+
+      acc[item] = async (...args: any[]) => {
+        // Call it, with the given arguments
+        const result = action.apply(this, [...args]);
+
+        // Determine whether the result is a promise
+        const isAsync = result instanceof Promise;
+
+        // If the result is a promise, await it
+        const outputData = isAsync ? await result : result;
+
+        // update the data store with the new data
+        this.update(outputData);
+
+        // Return an empty object, because there's no reason to use this anyway
+        return {};
+      };
+
+      return acc;
+    }, {} as DataStoreActions<TDataType>) as T;
+  };
+
+  /**
    * Update the store with new data, and update subscribers.
    * @param data
    */
-  public update(data: Partial<TDataType>) {
+  private update(data: Partial<TDataType> = {}) {
     const newState = { ...(this._internalState ?? {}), ...data };
     const equal = deepEqual(newState, this._internalState);
 
@@ -76,7 +116,7 @@ export class DataStore<
     props?: any,
     updateImmediately = true
   ): DestroyCallback {
-    const { destroy, observer } = this.storeObserver(callback, props);
+    const { destroy, observer } = this.saveObserver(callback, props);
 
     if (updateImmediately) {
       observer.update(this._internalState);

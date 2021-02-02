@@ -10,7 +10,7 @@ import { IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import React, { useEffect, useRef, useState } from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./SeasonOfTheHunt.module.scss";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { InfoBlock } from "@UI/Content/InfoBlock";
@@ -35,6 +35,8 @@ import { Img } from "@Helpers";
 
 interface SeasonOfTheHuntProps {}
 
+const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
+
 /**
  * Seasons' Index Page
  *  *
@@ -42,7 +44,6 @@ interface SeasonOfTheHuntProps {}
  * @returns
  */
 const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
-  const [menuLocked, setMenuLocked] = useState(false);
   const [haveShownToast, setHaveShownToast] = useState(false);
   const [calendarImage, setCalendarImage] = useState<string>(
     Img(
@@ -54,8 +55,6 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
     "loggedInUser",
     "responsive",
   ]);
-
-  const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
   const [heroRef, setHeroRef] = useState<HTMLDivElement>(null);
 

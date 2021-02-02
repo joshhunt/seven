@@ -2,6 +2,7 @@
 // tslint:disable: max-file-line-count
 
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
+import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
@@ -10,7 +11,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -26,7 +27,6 @@ import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";

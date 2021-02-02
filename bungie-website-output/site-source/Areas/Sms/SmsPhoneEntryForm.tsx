@@ -3,7 +3,7 @@ import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
 import { SmsError } from "@Areas/Sms/SmsError";
 import styles from "@Areas/Sms/SmsPage.module.scss";
 import { PlatformError } from "@CustomErrors";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
@@ -27,7 +27,11 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
     setError("");
     Platform.UserService.AddPhoneNumber(phone)
       .then((response) => {
-        response ? sendCode() : setLoading(false);
+        if (response) {
+          sendCode();
+        } else {
+          setLoading(false);
+        }
       })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
@@ -51,7 +55,7 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
   };
 
   const goToCodeInput = () => {
-    SmsDataStore.updatePhase("CodeEntry");
+    SmsDataStore.actions.updatePhase("CodeEntry");
   };
 
   const clearErrorAndHandleInput = (input) => {

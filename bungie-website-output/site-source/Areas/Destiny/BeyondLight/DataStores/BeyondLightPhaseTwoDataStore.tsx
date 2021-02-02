@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
@@ -34,7 +34,7 @@ class _BeyondLightPhaseTwoDataStore extends DataStore<
     return Object.keys(this.state[phase]).length > 0;
   }
 
-  public initialize() {
+  public async initialize() {
     if (
       this.initialized &&
       this.initialLocale === Localizer.CurrentCultureName
@@ -45,31 +45,35 @@ class _BeyondLightPhaseTwoDataStore extends DataStore<
     this.initialized = true;
     this.initialLocale = Localizer.CurrentCultureName;
 
-    this.update({
-      phaseTwoActive: ConfigUtils.SystemStatus("BeyondLightPhase2"),
-    });
-
-    this.fetchStrings();
+    this.actions.updateActive(ConfigUtils.SystemStatus("BeyondLightPhase2"));
+    await this.actions.getStrings();
   }
 
-  private fetchStrings() {
-    // Load all items, and if they fail, just ignore it.
-    const promise: Promise<Content.ContentItemPublicContract> = Platform.ContentService.GetContentByTagAndType(
-      "bl-phase-two",
-      "StringCollection",
-      Localizer.CurrentCultureName,
-      false
-    ).catch(() => void 0);
-
-    Promise.resolve(promise).then((rawAllPhaseData) => {
-      const data = LocalizerUtils.stringCollectionToObject(rawAllPhaseData);
-
-      this.update({
-        phaseTwo: data,
-        loaded: true,
-      });
-    });
-  }
+  public actions = this.createActions({
+    /**
+     * Sets the phase active state
+     * @param active
+     */
+    updateActive: (active: boolean) => ({ phaseTwoActive: active }),
+    /**
+     * Download strings
+     */
+    getStrings: async () => {
+      return Platform.ContentService.GetContentByTagAndType(
+        "bl-phase-two",
+        "StringCollection",
+        Localizer.CurrentCultureName,
+        false
+      )
+        .then((rawAllPhaseData) => {
+          return {
+            phaseTwo: LocalizerUtils.stringCollectionToObject(rawAllPhaseData),
+            loaded: true,
+          };
+        })
+        .catch(() => void 0);
+    },
+  });
 }
 
 export const BeyondLightPhaseTwoDataStore =

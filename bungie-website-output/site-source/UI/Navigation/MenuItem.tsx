@@ -1,22 +1,22 @@
+import { IResponsiveState } from "@Boot/Responsive";
+import { BungieMembershipType } from "@Enum";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
 import {
+  IMenuParentItem,
   INavigationLinkItem,
   INavigationTopLink,
   NavigationConfigLegacy,
-  IMenuParentItem,
 } from "@UI/Navigation/MainNavigation";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
-import styles from "./MenuItem.module.scss";
-import { Localizer } from "@Global/Localizer";
 import { Anchor } from "./Anchor";
-import { IResponsiveState } from "@Boot/Responsive";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { ClanMenuItem } from "./ClanMenuItem";
-import { Icon } from "@UI/UIKit/Controls/Icon";
-import { BungieMembershipType } from "@Enum";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import styles from "./MenuItem.module.scss";
 
 interface IMenuItemProps {
   /** Additional HTML classes */
@@ -216,7 +216,7 @@ const MenuLink = (props: ILinkProps) => {
     onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       BrowserUtils.openWindow(url, "loginui", () =>
-        GlobalStateDataStore.refreshUserData()
+        GlobalStateDataStore.actions.refreshUserData()
       );
       props.onChildSelected(e);
 

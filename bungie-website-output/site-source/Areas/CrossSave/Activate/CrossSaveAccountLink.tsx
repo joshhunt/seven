@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import styles from "../CrossSaveActivate.module.scss";
 import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
 import { Icon } from "@UI/UIKit/Controls/Icon";
@@ -15,7 +15,7 @@ interface ICrossSaveAccountLinkProps
   extends GlobalStateComponentProps<"loggedInUser" | "responsive"> {
   deactivating: boolean;
   flowState: ICrossSaveFlowState;
-  onAccountLinked: (isVerify: boolean) => Promise<void | PlatformError>;
+  onAccountLinked: (isVerify: boolean) => Promise<any | PlatformError>;
   excludeUnlinked?: boolean;
 }
 

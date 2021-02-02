@@ -122,6 +122,23 @@ class ResponsiveInternal extends DataStore<
     return this.state;
   }
 
+  public actions = this.createActions({
+    /**
+     * Broadcast the state of Responsive
+     */
+    refreshState: () => {
+      const newSubscriptionState: IResponsiveState = {
+        ...ResponsiveInternal.InitialState,
+      };
+
+      this.ResponsiveState.forEach((state) => {
+        newSubscriptionState[ResponsiveSize[state]] = true;
+      });
+
+      return newSubscriptionState;
+    },
+  });
+
   private addListeners() {
     window.addEventListener("resize", this.determineMq);
     window.addEventListener("load", this.determineMq);
@@ -137,11 +154,13 @@ class ResponsiveInternal extends DataStore<
       const mediaQuery = mediaQueries[i];
       const mediaQueryTest: boolean = mediaQuery.test();
 
-      this.updateCurrentResponsiveState(
+      this.updateInternalStateForSize(
         ResponsiveSize[ResponsiveSize[mediaQuery.name]],
         mediaQueryTest
       );
     }
+
+    this.actions.refreshState();
   };
 
   public getResponsiveClasses(): string[] {
@@ -157,36 +176,26 @@ class ResponsiveInternal extends DataStore<
     return classes;
   }
 
-  private updateCurrentResponsiveState(
+  private updateInternalStateForSize(
     responsiveSize: ResponsiveSize,
-    isAdded: boolean
+    sizeIsCurrent: boolean
   ): void {
     if (typeof this.ResponsiveState === "undefined") {
       this.ResponsiveState = [];
     }
 
     if (this.ResponsiveState.indexOf(responsiveSize) === -1) {
-      if (isAdded) {
+      if (sizeIsCurrent) {
         this.ResponsiveState.push(responsiveSize);
       }
     } else {
-      if (!isAdded) {
+      if (!sizeIsCurrent) {
         this.ResponsiveState.splice(
           this.ResponsiveState.indexOf(responsiveSize),
           1
         );
       }
     }
-
-    const newSubscriptionState: IResponsiveState = {
-      ...ResponsiveInternal.InitialState,
-    };
-
-    this.ResponsiveState.forEach((state) => {
-      newSubscriptionState[ResponsiveSize[state]] = true;
-    });
-
-    this.update(newSubscriptionState);
   }
 }
 

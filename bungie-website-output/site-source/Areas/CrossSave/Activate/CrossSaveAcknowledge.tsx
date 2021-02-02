@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {
@@ -51,9 +51,7 @@ export class CrossSaveAcknowledge extends React.Component<
       acknowledged: newAck,
     });
 
-    CrossSaveFlowStateDataStore.update({
-      acknowledged: newAck,
-    });
+    CrossSaveFlowStateDataStore.actions.updateAcknowledged(newAck);
   };
 
   private readonly checkAcknowledgeStatus = () => {

@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import {
   IDestinyNewsMedia,

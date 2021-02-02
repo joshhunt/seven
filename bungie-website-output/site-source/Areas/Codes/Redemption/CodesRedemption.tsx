@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import styles from "./CodesRedemption.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import {
   withGlobalState,
   GlobalStateComponentProps,

@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import * as React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import * as Globals from "@Enum";
 import styles from "./MenuItem.module.scss";
 import classNames from "classnames";

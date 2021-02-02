@@ -16,7 +16,7 @@ import { LegalPrivacyPolicy } from "./LegalPrivacyPolicy";
 import { LegalSLA } from "./LegalSLA";
 import { LegalTerms } from "./LegalTerms";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";

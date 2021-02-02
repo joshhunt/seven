@@ -47,11 +47,11 @@ const retry = (
 
 class LoadingFallback extends React.Component {
   public componentDidMount() {
-    AppLoadingDataStore.update({ loading: true });
+    AppLoadingDataStore.actions.updateLoading(true);
   }
 
   public componentWillUnmount() {
-    AppLoadingDataStore.update({ loading: false });
+    AppLoadingDataStore.actions.updateLoading(false);
   }
 
   public render() {

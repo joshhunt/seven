@@ -28,8 +28,6 @@ export const WithRouteData = <TParams, S>(
     }
 
     private updateRouteData(path: string) {
-      RouteDataStore.Instance.update({
-        currentPath: path,
-      });
+      RouteDataStore.Instance.actions.setCurrentPath(path);
     }
   };

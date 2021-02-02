@@ -1,7 +1,7 @@
 import * as React from "react";
 import styles from "./CrossSavePlatformInfo.module.scss";
 import { GroupsV2, Platforms } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { BungieMembershipType } from "@Enum";

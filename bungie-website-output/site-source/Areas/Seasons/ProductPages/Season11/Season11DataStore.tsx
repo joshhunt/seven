@@ -2,7 +2,7 @@ import { DataStore } from "@Global/DataStore";
 import React from "react";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SystemNames } from "@Global/SystemNames";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 
 export interface Season11DataStorePayload {
   idToElementsMapping: { [key: string]: HTMLElement };
@@ -24,45 +24,50 @@ class _Season11DataStore extends DataStore<Season11DataStorePayload> {
   });
 
   public initialize() {
-    const exoticTrailerYoutubeId = this.trailerJsonParamToLocalizedValue(
-      "ExoticTrailer"
-    );
-    const heroTrailerYoutubeId = this.trailerJsonParamToLocalizedValue(
-      "HeroTrailer"
-    );
-    const prophecyTrailerYoutubeId = this.trailerJsonParamToLocalizedValue(
-      "ProphecyTrailer"
-    );
-    const ranksTrailerYoutubeId = this.trailerJsonParamToLocalizedValue(
-      "RanksTrailer"
-    );
-
-    this.update({
-      exoticTrailerYoutubeId,
-      heroTrailerYoutubeId,
-      prophecyTrailerYoutubeId,
-      ranksTrailerYoutubeId,
-    });
+    this.actions.setTrailerIds();
   }
 
-  public addIdElementMapping = (element: HTMLElement, id: string) => {
-    if (!(id in this.state.idToElementsMapping)) {
-      this.update({
-        idToElementsMapping: {
-          ...this.state.idToElementsMapping,
-          ...{ [id]: element },
-        },
-      });
-    }
-  };
+  public actions = this.createActions({
+    /**
+     * Set the reference for the hero element
+     * @param heroRef
+     */
+    setHeroRef: (heroRef: HTMLElement) => ({ heroRef }),
+    /**
+     * Get the parameter values from Webmaster for the trailer IDs
+     */
+    setTrailerIds: () => {
+      return {
+        exoticTrailerYoutubeId: _Season11DataStore.trailerJsonParamToLocalizedValue(
+          "ExoticTrailer"
+        ),
+        heroTrailerYoutubeId: _Season11DataStore.trailerJsonParamToLocalizedValue(
+          "HeroTrailer"
+        ),
+        prophecyTrailerYoutubeId: _Season11DataStore.trailerJsonParamToLocalizedValue(
+          "ProphecyTrailer"
+        ),
+        ranksTrailerYoutubeId: _Season11DataStore.trailerJsonParamToLocalizedValue(
+          "RanksTrailer"
+        ),
+      };
+    },
+    /**
+     * Update the mapping of element IDs to element references, for subnav
+     * @param element
+     * @param id
+     */
+    mapIdToElement: (element: HTMLElement, id: string) => {
+      return {
+        ...this.state.idToElementsMapping,
+        ...{ [id]: element },
+      };
+    },
+  });
 
-  public setHeroRef(ref: HTMLElement) {
-    this.update({
-      heroRef: ref,
-    });
-  }
-
-  private trailerJsonParamToLocalizedValue(paramName: string): string | null {
+  private static trailerJsonParamToLocalizedValue(
+    paramName: string
+  ): string | null {
     const trailerString = ConfigUtils.GetParameter(
       SystemNames.Season11Page,
       paramName,

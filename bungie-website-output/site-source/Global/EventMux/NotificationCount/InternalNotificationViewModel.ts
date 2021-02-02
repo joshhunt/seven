@@ -49,36 +49,44 @@ export class InternalNotificationViewModel extends DataStore<
     acks: {},
   };
 
+  public actions = this.createActions({
+    /**
+     * Broadcast the notification counts
+     */
+    refresh: () => InternalNotificationViewModel.counts,
+  });
+
   private readonly notificationCount = (item: BnetNotification) => {
     InternalNotificationViewModel.counts.notifications = item.notificationCount;
-    this.updateAll();
+
+    this.actions.refresh();
   };
 
   private readonly messageCount = (item: BnetNotification) => {
     InternalNotificationViewModel.counts.messages = item.messageCount;
-    this.updateAll();
+
+    this.actions.refresh();
   };
 
   private readonly groupMessageCount = (item: BnetNotification) => {
     InternalNotificationViewModel.counts.groupMessages = item.groupMessageCount;
-    this.updateAll();
+
+    this.actions.refresh();
   };
 
   private readonly onlineFriendCount = (item: BnetNotification) => {
     InternalNotificationViewModel.counts.onlineFriends = item.onlineFriendCount;
-    this.updateAll();
+
+    this.actions.refresh();
   };
 
   private readonly acks = (item: BnetNotification) => {
     InternalNotificationViewModel.counts.acks = item.acks;
-    this.updateAll();
+
+    this.actions.refresh();
   };
 
-  private updateAll() {
-    this.update(InternalNotificationViewModel.counts);
-  }
-
-  private providersNeedingReauth(notification: BnetNotification) {
+  private static providersNeedingReauth(notification: BnetNotification) {
     const providersNeedingReauth = notification.providersNeedingReauth;
 
     if (providersNeedingReauth && providersNeedingReauth.length > 0) {
@@ -99,7 +107,7 @@ export class InternalNotificationViewModel extends DataStore<
     this.addSub(this.groupMessageCount, NotificationTypes.GroupMessageCount);
     this.addSub(this.onlineFriendCount, NotificationTypes.OnlineFriendCount);
     this.addSub(
-      this.providersNeedingReauth,
+      InternalNotificationViewModel.providersNeedingReauth,
       NotificationTypes.ProviderNeedsReauth
     );
     this.addSub(this.acks, NotificationTypes.Announcements);
@@ -110,13 +118,9 @@ export class InternalNotificationViewModel extends DataStore<
     type: NotificationTypes
   ) {
     this.unsubscribers.push(
-      this.distributor.observe(
-        callback,
-        {
-          notificationType: type,
-        },
-        false
-      )
+      this.distributor.observe(callback, {
+        notificationType: type,
+      })
     );
   }
 }

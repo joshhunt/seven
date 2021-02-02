@@ -12,7 +12,7 @@ import styles from "./CrossSaveVerifyAllAccounts.module.scss";
 interface ICrossSaveVerifyAllAccountsProps {
   loggedInUser: Contract.UserDetail;
   flowState: ICrossSaveFlowState;
-  onAccountLinked?: (shouldReset: boolean) => Promise<void | PlatformError>;
+  onAccountLinked?: (shouldReset: boolean) => Promise<any>;
 }
 
 interface ICrossSaveVerifyAllAccountsState {}

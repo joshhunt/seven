@@ -7,7 +7,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
@@ -166,8 +166,7 @@ class CrossSaveRecap extends React.Component<
               showCharacterOrigin={true}
               headerOverride={
                 <CrossSaveCardHeader>
-                  {" "}
-                  <h3>{Localizer.Crosssave.CharactersHeader}</h3>{" "}
+                  <h3>{Localizer.Crosssave.CharactersHeader}</h3>
                 </CrossSaveCardHeader>
               }
             />
@@ -189,8 +188,7 @@ class CrossSaveRecap extends React.Component<
                 hideCharacters={true}
                 headerOverride={
                   <CrossSaveCardHeader>
-                    {" "}
-                    <h3>{Localizer.Crosssave.ClanHeader}</h3>{" "}
+                    <h3>{Localizer.Crosssave.ClanHeader}</h3>
                   </CrossSaveCardHeader>
                 }
               >

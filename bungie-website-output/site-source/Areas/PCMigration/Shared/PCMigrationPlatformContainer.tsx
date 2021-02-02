@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 import styles from "./PCMigrationPlatformContainer.module.scss";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
 import { BungieCredentialType } from "@Enum";

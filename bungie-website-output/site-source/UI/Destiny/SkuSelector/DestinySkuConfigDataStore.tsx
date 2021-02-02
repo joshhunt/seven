@@ -1,10 +1,11 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { DetailedError } from "@CustomErrors";
 import { DataStore } from "@Global/DataStore";
-import { FetchUtils } from "@Utilities/FetchUtils";
 import { BuildVersion } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { FetchUtils } from "@Utilities/FetchUtils";
 
 export interface IDestinySkuValidRegion {
   key: string;
@@ -24,10 +25,11 @@ export interface IDestinySkuStore {
 }
 
 export interface IDestinySkuSale {
-  startDate: Date;
-  endDate: Date;
-  amount: string;
-  type: string;
+  productSkuTag: string;
+  store: string;
+  startDate: string;
+  endDate: string;
+  discountString: string;
 }
 
 export interface IDestinySkuProductStoreRegion {
@@ -78,21 +80,33 @@ class DestinySkuConfigDataStore extends DataStore<IDestinySkuConfig> {
     });
   }
 
-  public initialize() {
-    // Locally, we don't want to have to wait for the string cache to update
-    const cacheString = ConfigUtils.EnvironmentIsLocal
-      ? Date.now()
-      : BuildVersion;
-
-    FetchUtils.FetchJson<IDestinySkuConfig>(
-      `/JsonSkuDestinations.ashx?bv=${cacheString}`
-    ).then((data) => {
-      this.update({
-        ...data,
-        loaded: true,
-      });
-    });
+  public async initialize() {
+    await this.actions.refresh();
   }
+
+  public actions = this.createActions({
+    /**
+     * Refresh the SKU config data
+     */
+    refresh: async () => {
+      // Locally, we don't want to have to wait for the string cache to update
+      const cacheString = ConfigUtils.EnvironmentIsLocal
+        ? Date.now()
+        : BuildVersion;
+
+      const data = await FetchUtils.FetchJson<IDestinySkuConfig>(
+        `/JsonSkuDestinations.ashx?bv=${cacheString}`
+      );
+      if (data) {
+        return {
+          ...data,
+          loaded: true,
+        };
+      }
+
+      throw new DetailedError("Load Failure", "Failed to load SKU data");
+    },
+  });
 }
 
 DestinySkuConfigDataStore.Instance.initialize();

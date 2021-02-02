@@ -13,29 +13,39 @@ class CodesDataStoreInternal extends DataStore<ICodesState> {
     selectedMembership: BungieMembershipType.None,
   });
 
-  /**
-   * Initializes CodesDataStore
-   */
-  public async initialize(userIsCrossSaved = true) {
-    Platform.UserService.GetMembershipDataForCurrentUser()
-      .then((data) => {
-        if (data.destinyMemberships.length > 0) {
+  public actions = this.createActions({
+    /**
+     * Re-fetch membership data
+     * @param userIsCrossSaved
+     */
+    refreshUserMemberships: async (userIsCrossSaved = true) => {
+      try {
+        const membershipData = await Platform.UserService.GetMembershipDataForCurrentUser();
+
+        if (membershipData.destinyMemberships.length > 0) {
           const userMemberships = userIsCrossSaved
-            ? data.destinyMemberships[0].applicableMembershipTypes
-            : data.destinyMemberships.map((dm) => dm.membershipType);
+            ? membershipData.destinyMemberships[0].applicableMembershipTypes
+            : membershipData.destinyMemberships.map((dm) => dm.membershipType);
 
-          this.update({
+          return {
             userMemberships,
-          });
+          };
         }
-      })
-      .catch((e: Error) => {
+      } catch (e) {
         throw new Error(e.message);
-      });
-  }
+      }
+    },
+    /**
+     * Sets the selected membership type
+     * @param selectedMembership
+     */
+    updateSelectedMembership: (selectedMembership: BungieMembershipType) => ({
+      selectedMembership,
+    }),
+  });
 
-  public updateSelectedMembership(membership: BungieMembershipType) {
-    this.update({ selectedMembership: membership });
+  public async initialize(userIsCrossSaved = true) {
+    return this.actions.refreshUserMemberships(userIsCrossSaved);
   }
 }
 

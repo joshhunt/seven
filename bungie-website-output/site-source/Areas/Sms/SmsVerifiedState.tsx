@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -34,8 +34,11 @@ export const SmsVerifiedState: React.FC<SmsVerifiedStateProps> = (props) => {
   const removePhoneLinking = () => {
     Platform.UserService.RemovePhoneNumber()
       .then((response) => {
-        response && SmsDataStore.updatePhase("PhoneEntry");
-        SmsDataStore.updateLastDigits("");
+        if (response) {
+          SmsDataStore.actions.updatePhase("PhoneEntry");
+        } else {
+          SmsDataStore.actions.updateLastDigits("");
+        }
       })
       .catch(Modal.error);
   };

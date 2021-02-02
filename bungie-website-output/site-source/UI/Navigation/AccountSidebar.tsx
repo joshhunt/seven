@@ -5,7 +5,7 @@ import classNames from "classnames";
 import * as React from "react";
 import styles from "./Sidebar.module.scss";
 import { AuthTrigger } from "./AuthTrigger";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "./Anchor";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";

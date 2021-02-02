@@ -4,7 +4,7 @@
 import React from "react";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { InfoBlock } from "@UI/Content/InfoBlock";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 
 /**
  * LegalTrademarks - Legal info around Bungie intellectual property and trademarks

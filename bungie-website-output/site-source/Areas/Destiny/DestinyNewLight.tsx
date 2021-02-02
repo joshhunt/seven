@@ -6,6 +6,7 @@ import {
   StackedCardBlock,
   VideoCarousel,
 } from "@Areas/Destiny/BeyondLight/Components";
+import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { DataStore } from "@Global/DataStore";
@@ -13,7 +14,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
@@ -24,7 +25,6 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import classNames from "classnames";
 import React from "react";

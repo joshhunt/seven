@@ -4,7 +4,7 @@
 import * as React from "react";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
 import styles from "Areas/Destiny/PcRegister.module.scss";
@@ -343,7 +343,7 @@ class PcRegister extends React.Component<IPcRegisterProps, IPcRegisterState> {
     const url = `/${Localizer.CurrentCultureName}/User/Link/SteamId?flowStart=1&force=0`;
 
     BrowserUtils.openWindow(url, "linkui", () =>
-      GlobalStateDataStore.refreshUserData()
+      GlobalStateDataStore.actions.refreshUserAndRelatedData()
     );
   };
 }

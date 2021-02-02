@@ -5,7 +5,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { RequiresAuth } from "@UI/User/RequiresAuth";

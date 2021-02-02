@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { RouteComponentProps } from "react-router";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Modal, ModalOverflowTypes } from "@UI/UIKit/Controls/Modal/Modal";
 import {
   withGlobalState,
@@ -91,7 +91,7 @@ class PCMigrationPage extends React.Component<
   }
 
   public componentDidMount() {
-    GlobalStateDataStore.updateUserCredentialTypes();
+    GlobalStateDataStore.actions.refreshCredentialTypes();
 
     this.getPCMigrationTransferState(this.props.globalState.credentialTypes);
 
@@ -167,9 +167,11 @@ class PCMigrationPage extends React.Component<
   ) {
     this.signInModal.current.close();
 
-    GlobalStateDataStore.updateUserCredentialTypes().then(() =>
-      this.getPCMigrationTransferState(temporaryGlobalState.credentialTypes)
-    );
+    GlobalStateDataStore.actions
+      .refreshCredentialTypes()
+      .then(() =>
+        this.getPCMigrationTransferState(temporaryGlobalState.credentialTypes)
+      );
 
     this.temporaryAuthOverride = UserUtils.isAuthenticated(
       temporaryGlobalState
@@ -372,7 +374,7 @@ class PCMigrationPage extends React.Component<
       pcMigrationModalOpen: false,
     });
 
-    GlobalStateDataStore.updateUserCredentialTypes();
+    GlobalStateDataStore.actions.refreshCredentialTypes();
 
     if (typeof this.props.globalState.credentialTypes !== "undefined") {
       this.getPCMigrationTransferState(this.props.globalState.credentialTypes);

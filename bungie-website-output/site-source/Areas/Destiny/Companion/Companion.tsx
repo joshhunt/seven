@@ -4,7 +4,7 @@
 import * as React from "react";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
@@ -111,7 +111,7 @@ export class Companion extends React.Component<
                 <div>
                   <a
                     href={
-                      "https://apps.apple.com/us/app/destiny-2-companion/id" +
+                      "http://itunes.apple.com/us/app/bungie-mobile/" +
                       this.companionAppId
                     }
                     className={styles.btnAppStore}

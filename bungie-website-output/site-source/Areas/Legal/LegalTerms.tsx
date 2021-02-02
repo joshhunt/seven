@@ -1,6 +1,6 @@
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import * as React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 
 /**

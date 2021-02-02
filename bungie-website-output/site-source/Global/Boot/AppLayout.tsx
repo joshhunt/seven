@@ -1,56 +1,48 @@
-import { ContentfulFetch } from "@Contentful/ContentfulFetch";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import {
-  GlobalStateContext,
-  GlobalStateDataStore,
-  GlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
-import { DataStore } from "@Global/DataStore";
-import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
-import {
-  SystemDisabledError,
-  DetailedError,
-  SeoDataError,
-} from "@UI/Errors/CustomErrors";
-import { MainNavigation } from "@UI/Navigation/MainNavigation";
-import {
-  SpinnerContainer,
-  SpinnerDisplayMode,
-} from "@UI/UIKit/Controls/Spinner";
-import * as React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import "./AppLayout.scss";
-import { Footer } from "./Footer";
-import { Localizer, StringFetcher } from "@Global/Localizer";
-import { Responsive } from "./Responsive";
-import classNames from "classnames";
-import { CookieConsent } from "./CookieConsent";
-import PCMigrationGlobalAlertBar from "@UI/GlobalAlerts/PCMigrationGlobalAlertBar";
-import { BlizzardPCMigrationModalOpener } from "@UI/User/BlizzardPCMigrationModal";
-import ScrollMemory from "react-router-scroll-memory";
-import { EmailValidationGlobalAlertsBar } from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
-import Helmet from "react-helmet";
-import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import {
   DestinyDefinitions,
   ManifestPayload,
 } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
+import {
+  GlobalState,
+  GlobalStateDataStore,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { StringFetcher } from "@Global/Localization/StringFetcher";
 import { Environment } from "@Helpers";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { AnalyticsUtils } from "@Utilities/AnalyticsUtils";
+import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
+import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
+import { SeoDataError, SystemDisabledError } from "@UI/Errors/CustomErrors";
+import { EmailValidationGlobalAlertsBar } from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
+import PCMigrationGlobalAlertBar from "@UI/GlobalAlerts/PCMigrationGlobalAlertBar";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
+import { MainNavigation } from "@UI/Navigation/MainNavigation";
+import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import {
+  SpinnerContainer,
+  SpinnerDisplayMode,
+} from "@UI/UIKit/Controls/Spinner";
+import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
+import { AnalyticsUtils } from "@Utilities/AnalyticsUtils";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import classNames from "classnames";
 import {
   FirehoseDebuggerDataStore,
   IFirehoseDebuggerItemData,
 } from "Platform/FirehoseDebuggerDataStore";
-import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
-import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
-import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
+import * as React from "react";
+import Helmet from "react-helmet";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import ScrollMemory from "react-router-scroll-memory";
+import "./AppLayout.scss";
+import { CookieConsent } from "./CookieConsent";
+import { Footer } from "./Footer";
+import { Responsive } from "./Responsive";
 
 interface IInternalAppLayoutState {
   currentPath: string;
@@ -102,7 +94,7 @@ class AppLayout extends React.Component<
         });
       }),
       GlobalStateDataStore.observe(
-        (data) => {
+        async (data) => {
           if (data && data.coreSettings && data.coreSettings.environment) {
             ConfigUtils.setEnvironment(
               data.coreSettings.environment as Environment
@@ -110,7 +102,6 @@ class AppLayout extends React.Component<
 
             // StringFetcher needs to know the environment before it can fetch, so we wait until here to do so
             StringFetcher.fetch();
-            //ContentfulFetch.initialize();
           }
 
           this.setState(
@@ -146,7 +137,9 @@ class AppLayout extends React.Component<
         });
       }),
       GlobalFatalDataStore.observe((data) => {
-        data && this.setState({ globalError: data.error });
+        if (data.error?.length > 0) {
+          this.setState({ globalError: data.error });
+        }
       })
     );
 
@@ -193,7 +186,8 @@ class AppLayout extends React.Component<
 
   private readonly onHistoryUpdate = () => {
     this.trackPage();
-    FirehoseDebuggerDataStore.clear();
+
+    FirehoseDebuggerDataStore.actions.clear();
   };
 
   private trackPage() {
@@ -358,7 +352,9 @@ class AppLayout extends React.Component<
           />
 
           <div id={`main-content`}>
-            {globalError && <GlobalErrorModal errorString={globalError} />}
+            {globalError.length > 0 && (
+              <GlobalErrorModal errorString={globalError} />
+            )}
             <BasicErrorBoundary>{this.props.children}</BasicErrorBoundary>
           </div>
           {showDebugger && (

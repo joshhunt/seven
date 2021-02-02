@@ -3,7 +3,7 @@
 
 import { CodesDataStore } from "@Areas/Codes/CodesDataStore";
 import { BungieMembershipType } from "@Enum";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { useDataStore } from "@Utilities/ReactUtils";
@@ -42,7 +42,9 @@ export const CodesPlatformSelector: React.FC<CodesPlatformSelectorProps> = (
       <Dropdown
         options={_convertMembershipsToOptions(codesDatastore.userMemberships)}
         onChange={(value: string) => {
-          CodesDataStore.updateSelectedMembership(BungieMembershipType[value]);
+          CodesDataStore.actions.updateSelectedMembership(
+            BungieMembershipType[value]
+          );
         }}
       />
     </div>

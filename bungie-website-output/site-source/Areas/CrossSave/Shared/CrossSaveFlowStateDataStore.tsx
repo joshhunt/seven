@@ -1,6 +1,11 @@
+import {
+  BungieMembershipType,
+  DestinyGameVersions,
+  GroupsForMemberFilter,
+  GroupType,
+} from "@Enum";
 import { DataStore } from "@Global/DataStore";
 import React from "react";
-import * as Globals from "@Enum";
 import { Renderer, Platform, CrossSave, GroupsV2 } from "@Platform";
 import { CrossSaveUtils } from "./CrossSaveUtils";
 import { ConvertToPlatformError } from "@ApiIntermediary";
@@ -24,8 +29,8 @@ export interface ICrossSaveFlowState extends Renderer.CrossSaveUserData {
   userClans: GroupsV2.GroupMembership[];
 
   // Flow state
-  includedMembershipTypes: Globals.BungieMembershipType[];
-  primaryMembershipType: Globals.BungieMembershipType;
+  includedMembershipTypes: BungieMembershipType[];
+  primaryMembershipType: BungieMembershipType;
   loaded: boolean;
   isActive: boolean;
   userCanIncludeAccounts: boolean;
@@ -33,9 +38,9 @@ export interface ICrossSaveFlowState extends Renderer.CrossSaveUserData {
   mode: CrossSaveMode;
 }
 
-export const CrossSaveValidGameVersions: Globals.DestinyGameVersions[] = [
-  Globals.DestinyGameVersions.Shadowkeep,
-  Globals.DestinyGameVersions.Forsaken,
+export const CrossSaveValidGameVersions: DestinyGameVersions[] = [
+  DestinyGameVersions.Shadowkeep,
+  DestinyGameVersions.Forsaken,
 ];
 
 class CrossSaveFlowStateDataStoreInternal extends DataStore<
@@ -63,7 +68,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
       ? GlobalStateDataStore.state.loggedInUserClans.results
       : [],
     includedMembershipTypes: [],
-    primaryMembershipType: Globals.BungieMembershipType.None,
+    primaryMembershipType: BungieMembershipType.None,
     loaded: false,
     isActive: false,
     userCanIncludeAccounts: false,
@@ -77,7 +82,111 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
     CrossSaveFlowStateDataStoreInternal.InitialState
   );
 
-  private updateAckStorage(newAck: boolean) {
+  public actions = this.createActions({
+    /**
+     * Reset the state to the initial state
+     */
+    reset: () => CrossSaveFlowStateDataStoreInternal.InitialState,
+    /**
+     * Reset the user choices to the initial state
+     */
+    resetSetup: () => ({
+      includedMembershipTypes: [],
+      primaryMembershipType: null,
+    }),
+    /**
+     * Set whether the user has acknowledged the agreement
+     * @param acknowledged
+     */
+    updateAcknowledged: (acknowledged: boolean) => {
+      CrossSaveFlowStateDataStoreInternal.updateAckStorage(
+        this._internalState.acknowledged
+      );
+
+      return {
+        acknowledged,
+      };
+    },
+    /**
+     * Set the pairing status for a given membership ID
+     * @param pairingStatus
+     * @param membershipId
+     */
+    setPairingStatus: async (
+      pairingStatus: CrossSave.CrossSavePairingStatus,
+      membershipId: string
+    ) => {
+      try {
+        const isActive = CrossSaveFlowStateDataStoreInternal.isActive(
+          pairingStatus
+        );
+
+        const stateIdentifier =
+          this.state.stateIdentifier || Math.ceil(Math.random() * 1000000);
+
+        const userClansPromise = !this._internalState.userClans
+          ? Platform.GroupV2Service.GetGroupsForMember(
+              BungieMembershipType.BungieNext,
+              membershipId,
+              GroupsForMemberFilter.All,
+              GroupType.Clan
+            )
+          : undefined;
+
+        const validationEndpoint = isActive
+          ? Platform.CrosssaveService.GetCrossSaveUnpairValidationStatus(
+              stateIdentifier
+            )
+          : Platform.CrosssaveService.GetCrossSavePairValidationStatus(
+              stateIdentifier
+            );
+
+        const [crossSaveUserData, validation, userClans] = await Promise.all([
+          Platform.RendererService.CrossSaveUserData(membershipId),
+          validationEndpoint,
+          userClansPromise,
+        ]);
+
+        const includedMembershipTypes = CrossSaveUtils.getPresetPairingDecision(
+          pairingStatus,
+          this._internalState.mode
+        );
+        const primaryMembershipType =
+          pairingStatus.primaryMembershipType !== undefined
+            ? pairingStatus.primaryMembershipType
+            : null;
+
+        return {
+          stateIdentifier,
+          ...crossSaveUserData.data,
+          definitions: crossSaveUserData.definitions,
+          pairingStatus,
+          isActive,
+          userCanIncludeAccounts: this.userCanIncludeAccounts(
+            pairingStatus,
+            validation
+          ),
+          includedMembershipTypes,
+          primaryMembershipType,
+          validation,
+          userClans: this._internalState.userClans || userClans.results,
+          acknowledged: this.state.acknowledged || isActive,
+          loaded: true,
+        };
+      } catch (e) {
+        ConvertToPlatformError(e).then(Modal.error);
+      }
+    },
+    /**
+     * Sets the primary membershipType for the user's Cross Save status
+     * @param membershipType
+     */
+    updatePrimaryMembershipType: (membershipType: BungieMembershipType) => ({
+      primaryMembershipType: membershipType,
+    }),
+  });
+
+  private static updateAckStorage(newAck: boolean) {
     if (newAck !== undefined) {
       SessionStorageUtils.setItem(
         CrossSaveFlowStateDataStoreInternal.ACK_KEY,
@@ -86,15 +195,9 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
     }
   }
 
-  public update(data: Partial<ICrossSaveFlowState>) {
-    const result = super.update(data);
-
-    this.updateAckStorage(this._internalState.acknowledged);
-
-    return result;
-  }
-
-  private isActive(pairingStatus: CrossSave.CrossSavePairingStatus): boolean {
+  private static isActive(
+    pairingStatus: CrossSave.CrossSavePairingStatus
+  ): boolean {
     return (
       pairingStatus &&
       pairingStatus.overriddenProfiles &&
@@ -122,14 +225,14 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
 
     const validMembershipTypes = Object.keys(
       validation.pairableMembershipTypes
-    ).map((mtString) => Globals.BungieMembershipType[mtString]);
+    ).map((mtString) => BungieMembershipType[mtString]);
 
     return validMembershipTypes.some(
       (membershipType) => involvedMembershipTypes.indexOf(membershipType) === -1
     );
   }
 
-  public loadUserData() {
+  public async loadUserData() {
     const gs = GlobalStateDataStore.state;
 
     if (!UserUtils.isAuthenticated(gs)) {
@@ -140,95 +243,22 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
       GlobalStateDataStore.state
     );
 
-    const userClansPromise = !this._internalState.userClans
-      ? Platform.GroupV2Service.GetGroupsForMember(
-          Globals.BungieMembershipType.BungieNext,
-          membershipId,
-          Globals.GroupsForMemberFilter.All,
-          Globals.GroupType.Clan
-        )
-      : undefined;
-
-    return Promise.resolve(
-      Platform.CrosssaveService.GetCrossSavePairingStatus()
-    ).then((pairingStatus) => {
-      const isActive = this.isActive(pairingStatus);
-
-      const stateIdentifier =
-        this.state.stateIdentifier || Math.ceil(Math.random() * 1000000);
-
-      const validationEndpoint = isActive
-        ? Platform.CrosssaveService.GetCrossSaveUnpairValidationStatus(
-            stateIdentifier
-          )
-        : Platform.CrosssaveService.GetCrossSavePairValidationStatus(
-            stateIdentifier
-          );
-
-      Promise.all([
-        Platform.RendererService.CrossSaveUserData(membershipId),
-        validationEndpoint,
-        userClansPromise,
-      ])
-        .then((data) => {
-          const crossSaveUserData = data[0];
-          const validation = data[1];
-          const userClans = data[2];
-
-          const includedMembershipTypes = CrossSaveUtils.getPresetPairingDecision(
-            pairingStatus,
-            this._internalState.mode
-          );
-          const primaryMembershipType =
-            pairingStatus.primaryMembershipType !== undefined
-              ? pairingStatus.primaryMembershipType
-              : null;
-
-          this.update({
-            stateIdentifier,
-            ...crossSaveUserData.data,
-            definitions: crossSaveUserData.definitions,
-            pairingStatus,
-            isActive,
-            userCanIncludeAccounts: this.userCanIncludeAccounts(
-              pairingStatus,
-              validation
-            ),
-            includedMembershipTypes,
-            primaryMembershipType,
-            validation,
-            userClans: this._internalState.userClans || userClans.results,
-            acknowledged: this.state.acknowledged || isActive,
-            loaded: true,
-          });
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          Modal.error(e);
-        });
-    });
+    return Platform.CrosssaveService.GetCrossSavePairingStatus()
+      .then((pairingStatus) =>
+        this.actions.setPairingStatus(pairingStatus, membershipId)
+      )
+      .catch(Modal.error);
   }
-  public onAccountLinked = (requiresReset: boolean) => {
+
+  public onAccountLinked = async (requiresReset: boolean) => {
     if (requiresReset) {
-      GlobalStateDataStore.refreshUserData(true);
+      await GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
     }
 
-    this.resetSetup();
+    this.actions.resetSetup();
 
     return this.loadUserData();
   };
-
-  public resetSetup() {
-    this.update({
-      includedMembershipTypes: [],
-      primaryMembershipType: null,
-      //stateIdentifier: undefined
-    });
-  }
-
-  public reset() {
-    this.update(CrossSaveFlowStateDataStoreInternal.InitialState);
-  }
 }
 
 export const CrossSaveFlowStateContext = React.createContext<

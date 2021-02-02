@@ -1,7 +1,7 @@
 import { Content } from "@Platform";
 import Cookies from "js-cookie";
 import moment from "moment";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { DetailedError } from "@CustomErrors";
 import { BungieMembershipType } from "@Enum";
 import { CookieUtils } from "./CookieUtils";

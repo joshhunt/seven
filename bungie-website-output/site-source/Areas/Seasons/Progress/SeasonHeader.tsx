@@ -7,7 +7,7 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SeasonsArray } from "../SeasonsDefinitions";
 import moment from "moment";
 

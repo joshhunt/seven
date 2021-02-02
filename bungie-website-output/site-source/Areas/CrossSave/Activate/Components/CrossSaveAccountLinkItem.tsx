@@ -3,7 +3,7 @@ import { CrossSave, Renderer, Characters } from "@Platform";
 import styles from "./CrossSaveAccountLinkItem.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";
 import { CrossSaveValidationError } from "./CrossSaveValidationError";
@@ -29,7 +29,7 @@ interface ICrossSaveAccountLinkItemProps {
   linkedCredentialTypes: BungieCredentialType[];
   authButtonOverride?: () => void;
   hideAccountInfo?: boolean;
-  onAccountLinked?: (shouldReset: boolean) => Promise<void | PlatformError>;
+  onAccountLinked?: (shouldReset: boolean) => Promise<any>;
   resetAuth?: boolean;
 }
 

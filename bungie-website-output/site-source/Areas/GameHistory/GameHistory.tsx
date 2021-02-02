@@ -10,7 +10,7 @@ import { DestinyActivityModeType } from "@Enum";
 import { useDataStore } from "@Global/DataStore";
 import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import { HistoricalStats, Platform } from "@Platform";
 import {

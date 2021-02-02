@@ -4,7 +4,7 @@ import { SmsError } from "@Areas/Sms/SmsError";
 import styles from "@Areas/Sms/SmsPage.module.scss";
 import { PlatformError } from "@CustomErrors";
 import { PhoneValidationStatusEnum } from "@Enum";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { Recaptcha } from "@UI/Authentication/Recaptcha";
 import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
@@ -32,7 +32,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
       .then(
         (response) =>
           response.phoneStatus === PhoneValidationStatusEnum.CodeSent &&
-          SmsDataStore.updateLastDigits(response.lastDigits)
+          SmsDataStore.actions.updateLastDigits(response.lastDigits)
       )
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
@@ -54,8 +54,8 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
 
     Platform.UserService.CheckPhoneValidation(code)
       .then((response) => {
-        SmsDataStore.updateLastDigits(response.lastDigits);
-        SmsDataStore.updatePhase("Verified");
+        SmsDataStore.actions.updateLastDigits(response.lastDigits);
+        SmsDataStore.actions.updatePhase("Verified");
         setLoading(false);
       })
       .catch(ConvertToPlatformError)
@@ -68,7 +68,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
   //Goes to previous page
   const onCancel = () => {
     setLoading(false);
-    SmsDataStore.updatePhase("PhoneEntry");
+    SmsDataStore.actions.updatePhase("PhoneEntry");
   };
 
   const showFailedRecaptchaError = () => {

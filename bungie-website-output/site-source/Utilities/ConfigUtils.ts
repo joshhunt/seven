@@ -1,8 +1,8 @@
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { DetailedError } from "@CustomErrors";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Logger } from "@Global/Logger";
-import { Environment } from "@Helpers";
 import { ValidSystemNames } from "@Global/SystemNames";
+import { Environment } from "@Helpers";
 
 export class ConfigUtils {
   /** Gets the current site environment */
@@ -122,6 +122,6 @@ export class ConfigUtils {
    * Updates settings
    */
   public static updateSettings() {
-    GlobalStateDataStore.updateSettings();
+    return GlobalStateDataStore.actions.refreshSettings();
   }
 }

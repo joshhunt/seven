@@ -13,7 +13,7 @@ import {
 } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import {
   withGlobalState,
@@ -154,8 +154,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
   public componentWillUnmount() {
     DataStore.destroyAll(...this.subs);
+
     window.removeEventListener("scroll", this.onScroll);
-    DestinyBuyDataStore.update({ selectedSkuIndex: 0 });
+
+    DestinyBuyDataStore.actions.setSelectedSkuIndex(0);
   }
 
   private readonly onSkuConfigLoaded = () => {
@@ -214,9 +216,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
               editionSelectorSkus?.findIndex(
                 (sku) => sku.skuTag === skuFromQuery
               ) ?? 0;
-            DestinyBuyDataStore.update({
-              selectedSkuIndex: indexOfQueryParamSku,
-            });
+
+            DestinyBuyDataStore.actions.setSelectedSkuIndex(
+              indexOfQueryParamSku
+            );
           }
         }
       })

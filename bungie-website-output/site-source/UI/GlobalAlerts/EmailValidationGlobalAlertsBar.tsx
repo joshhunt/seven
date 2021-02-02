@@ -11,7 +11,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { PCMigrationUtilities } from "@Areas/PCMigration/Shared/PCMigrationUtilities";
 import { EmailVerificationState } from "@Areas/PCMigration/Shared/PCMigrationModalStagePage";
 import { GlobalBar } from "./GlobalBar";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 
 // Required props
 interface IEmailValidationGlobalAlertsBarProps

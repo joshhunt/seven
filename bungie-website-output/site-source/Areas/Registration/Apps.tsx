@@ -3,17 +3,17 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { RegistrationContentItem } from "@Areas/Registration/Shared/RegistrationContentItem";
+import { PlatformError } from "@CustomErrors";
+import { Localizer } from "@Global/Localization/Localizer";
+import { Img } from "@Helpers";
+import { Content, Platform } from "@Platform";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import styles from "./Apps.module.scss";
-import { PlatformError } from "@CustomErrors";
-import { Localizer } from "@Global/Localizer";
-import { Content, Platform } from "@Platform";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import React from "react";
+import styles from "./Apps.module.scss";
 
 interface AppsProps {}
 
@@ -72,13 +72,31 @@ export class Apps extends React.Component<AppsProps, AppsState> {
           title={metaTitle}
           image={metaImage}
           description={metaSubtitle}
-        />
+        >
+          <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        </BungieHelmet>
+        <div className={styles.header}>
+          <div className={styles.devices} />
+          <div className={styles.heroContent}>
+            <img
+              className={styles.logo}
+              src={Img("/destiny/bgs/third_party_apps/destiny2logo.png")}
+            />
+            <img
+              className={styles.line}
+              src={Img("/destiny/bgs/third_party_apps/hr.png")}
+            />
+            <div className={styles.title}>{Localizer.Apps.HeroTitle}</div>
+            <div className={styles.subtitle}>{Localizer.Apps.HeroSubtitle}</div>
+          </div>
+        </div>
         <Grid className={styles.bodyContent}>
           <GridCol cols={12}>
             {!pageHasContent && <p>{pageHasNoContent}</p>}
             {pageHasContent && (
               <RegistrationContentItem
                 contentItem={this.state.contentRenderable}
+                noTitles={true}
               />
             )}
           </GridCol>

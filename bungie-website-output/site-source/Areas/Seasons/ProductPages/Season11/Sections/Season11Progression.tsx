@@ -1,6 +1,6 @@
 import React from "react";
 import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Responsive } from "@Boot/Responsive";
 import classNames from "classnames";
 import { useDataStore } from "@Global/DataStore";
@@ -36,7 +36,7 @@ export const Season11Progression = React.forwardRef(() => {
   return (
     <SubNavSection
       id={"progression"}
-      useRef={Season11DataStore.addIdElementMapping}
+      useRef={Season11DataStore.actions.mapIdToElement}
     >
       <div
         className={styles.wrapper}

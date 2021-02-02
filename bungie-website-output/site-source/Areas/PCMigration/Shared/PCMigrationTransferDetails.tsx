@@ -15,7 +15,7 @@ import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";

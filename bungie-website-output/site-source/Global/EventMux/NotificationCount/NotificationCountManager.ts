@@ -79,7 +79,7 @@ class NotificationCountManagerBase {
   }
 
   private broadcastUpdates(updates: BnetNotification) {
-    this.distributor.update(updates);
+    this.distributor.broadcast(updates);
   }
 
   /** Helper for old getCounts() mechanism to force a fixup when eventmux is not used.

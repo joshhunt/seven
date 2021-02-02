@@ -1,3 +1,7 @@
+import {
+  IPCMigrationUserData,
+  PCMigrationUserDataStore,
+} from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import React, { ReactElement } from "react";
 import { PCMigrationLinkAccount } from "./PCMigrationLinkAccount";
@@ -11,10 +15,6 @@ import { PCMigrationSuccess } from "./PCMigrationSuccess";
 import { EmailVerificationState } from "./PCMigrationModalStagePage";
 import { DataStore } from "@Global/DataStore";
 import * as Globals from "@Enum";
-import {
-  IPCMigrationUserData,
-  PCMigrationUserDataStore,
-} from "@UI/User/PCMigrationUserDataStore";
 import { PCMigrationTransfer } from "./PCMigrationTransfer";
 import {
   GlobalState,
@@ -292,7 +292,7 @@ export class PCMigrationModal extends React.Component<
 
   private updateUser() {
     // update global user data
-    GlobalStateDataStore.refreshUserData(true);
+    GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
 
     PCMigrationUserDataStore.getDestinyAccount(this.state.globalState);
   }

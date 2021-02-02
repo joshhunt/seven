@@ -1,3 +1,4 @@
+import { StringUtils } from "@Utilities/StringUtils";
 import * as React from "react";
 import classNames from "classnames";
 import styles from "./Toast.module.scss";
@@ -68,11 +69,11 @@ export const showToastInternal = (
 ): React.RefObject<ToastContent> => {
   const toastRef = existingRef || React.createRef<ToastContent>();
 
-  const modalGuid = Math.ceil(Math.random() * 1000000);
+  const globalElementGuid = StringUtils.generateGuid();
 
   const onClose = () => {
     setTimeout(() => {
-      GlobalElementDataStore.removeModal(modalGuid);
+      GlobalElementDataStore.actions.removeElementByGuid(globalElementGuid);
 
       setTimeout(() => {
         props && props.onClose && props.onClose();
@@ -96,7 +97,7 @@ export const showToastInternal = (
     setTimeout(() => toastRef.current.close(), props.timeout);
   }
 
-  GlobalElementDataStore.addElement(toastRef, modalGuid, toast);
+  GlobalElementDataStore.actions.addElement(globalElementGuid, toast);
 
   return toastRef;
 };

@@ -46,7 +46,7 @@ export class InternalNotificationPollingDataSource {
             onlineFriendCount: result.onlineFriendCount,
           };
 
-          this.distributor.update(friendCount);
+          this.distributor.broadcast(friendCount);
 
           const reauth: BnetNotification = {
             source: this.notificationSource,
@@ -54,7 +54,7 @@ export class InternalNotificationPollingDataSource {
             providersNeedingReauth: result.providersNeedingReauth,
           };
 
-          this.distributor.update(reauth);
+          this.distributor.broadcast(reauth);
 
           const notificationCount: BnetNotification = {
             source: this.notificationSource,
@@ -62,7 +62,7 @@ export class InternalNotificationPollingDataSource {
             notificationCount: result.notificationCount,
           };
 
-          this.distributor.update(notificationCount);
+          this.distributor.broadcast(notificationCount);
 
           const messageCount: BnetNotification = {
             source: this.notificationSource,
@@ -70,7 +70,7 @@ export class InternalNotificationPollingDataSource {
             messageCount: result.messageCount,
           };
 
-          this.distributor.update(messageCount);
+          this.distributor.broadcast(messageCount);
 
           this.nextGetCounts();
         })

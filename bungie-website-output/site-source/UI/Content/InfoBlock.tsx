@@ -2,7 +2,7 @@ import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import possibleStyles from "./InfoBlock.module.scss";
 import { Platform, Renderable } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { PageDoesNotExistError, NotFoundError } from "@CustomErrors";
 
 interface IContentItemProps {

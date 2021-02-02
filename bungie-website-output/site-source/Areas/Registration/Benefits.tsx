@@ -16,7 +16,7 @@ import { EmailValidationStatus } from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";
 import { Redirect } from "react-router";
 import { Platform, Content, Contract } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Spinner, SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
 import { Icon } from "@UI/UIKit/Controls/Icon";

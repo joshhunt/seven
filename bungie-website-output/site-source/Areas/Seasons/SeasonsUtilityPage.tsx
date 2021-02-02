@@ -8,7 +8,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Actions, Platform, Responses, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";

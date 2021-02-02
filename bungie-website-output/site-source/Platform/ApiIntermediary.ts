@@ -3,7 +3,7 @@ import { PromiseUtils } from "@Utilities/PromiseUtils";
 import * as Globals from "@Enum";
 import { DetailedError, PlatformError } from "@CustomErrors";
 import { Logger, ILogger } from "@Global/Logger";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import {
   FirehoseDebuggerDataStore,
   IFirehoseDebuggerItemData,
@@ -283,7 +283,8 @@ export class ApiIntermediary {
       const response = isGetContentCall
         ? jsonResponse.Response
         : jsonResponse.Response?.Content;
-      FirehoseDebuggerDataStore.add(response);
+
+      FirehoseDebuggerDataStore.actions.add(response);
     }
 
     // Log API responses for easy reading

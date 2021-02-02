@@ -3,10 +3,10 @@
 
 import { DataStore } from "@Global/DataStore";
 
-export type verificationPhases = "PhoneEntry" | "CodeEntry" | "Verified";
+export type SmsVerificationPhases = "PhoneEntry" | "CodeEntry" | "Verified";
 
 interface SmsDataStorePayload {
-  verificationPhase: verificationPhases;
+  verificationPhase: SmsVerificationPhases;
   lastDigits: string;
 }
 
@@ -16,13 +16,20 @@ class SmsDataStoreInternal extends DataStore<SmsDataStorePayload> {
     lastDigits: "",
   });
 
-  public updatePhase(phase: verificationPhases) {
-    this.update({ verificationPhase: phase });
-  }
-
-  public updateLastDigits(digits: string) {
-    this.update({ lastDigits: digits });
-  }
+  public actions = this.createActions({
+    /**
+     * Update the last 4 digits
+     * @param lastDigits
+     */
+    updateLastDigits: (lastDigits: string) => ({ lastDigits }),
+    /**
+     * Set the current phase of the verification flow
+     * @param phase
+     */
+    updatePhase: (phase: SmsVerificationPhases) => ({
+      verificationPhase: phase,
+    }),
+  });
 }
 
 export const SmsDataStore = SmsDataStoreInternal.Instance;

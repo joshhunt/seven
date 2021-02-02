@@ -7,7 +7,7 @@ import { Season11TripleBox } from "../Components/Season11TripleBox";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
 import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import styles from "./Season11Story.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Season11GridBoundary } from "@Areas/Seasons/ProductPages/Season11/Components/Season11GridBoundary";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
@@ -17,7 +17,7 @@ export const Season11Story = () => {
     <SubNavSection
       className={styles.wrapper}
       id={"story"}
-      useRef={Season11DataStore.addIdElementMapping}
+      useRef={Season11DataStore.actions.mapIdToElement}
     >
       <Season11VerticalSubtitle separator={"//"} className={styles.subtitle}>
         {Localizer.Season11.S11StoryActivities}

@@ -5,7 +5,7 @@ import * as React from "react";
 import styles from "./SeasonsPageNav.module.scss";
 import { World, Components } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
 import {
   withDestinyDefinitions,

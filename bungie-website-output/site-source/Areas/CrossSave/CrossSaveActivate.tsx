@@ -1,44 +1,43 @@
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import * as React from "react";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Route, RouteComponentProps, Redirect, Switch } from "react-router-dom";
-import { RouteDefs } from "@Routes/RouteDefs";
-import { CrossSaveCharacters } from "./Activate/CrossSaveCharacters";
-import styles from "./CrossSaveActivate.module.scss";
-import posed, { PoseGroup } from "react-pose";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
-import classNames from "classnames";
-import { CrossSaveAccountLink } from "./Activate/CrossSaveAccountLink";
-import {
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-} from "./Shared/CrossSaveFlowStateDataStore";
-import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 import { DataStore } from "@Global/DataStore";
 import {
-  PoseDirection,
-  PoseDirectionContext,
-} from "./Shared/CrossSaveStaggerPose";
-import { CrossSaveAcknowledge } from "./Activate/CrossSaveAcknowledge";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Logger } from "@Global/Logger";
+import { RouteDefs } from "@Routes/RouteDefs";
+import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import CrossSaveCommit from "./Activate/CrossSaveCommit";
-import { CrossSavePcMoveRequired } from "./Activate/Components/CrossSavePcMoveRequired";
-import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
-import { StringUtils, StringCompareOptions } from "@Utilities/StringUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
-import { IMultiSiteLink } from "@Routes/RouteHelper";
+import { RequiresAuth } from "@UI/User/RequiresAuth";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import classNames from "classnames";
+import * as React from "react";
+import posed, { PoseGroup } from "react-pose";
+import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
+import { CrossSavePcMoveRequired } from "./Activate/Components/CrossSavePcMoveRequired";
+import { CrossSaveAccountLink } from "./Activate/CrossSaveAccountLink";
+import { CrossSaveAcknowledge } from "./Activate/CrossSaveAcknowledge";
+import { CrossSaveCharacters } from "./Activate/CrossSaveCharacters";
+import CrossSaveCommit from "./Activate/CrossSaveCommit";
+import styles from "./CrossSaveActivate.module.scss";
+import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
+import {
+  CrossSaveFlowStateDataStore,
+  ICrossSaveFlowState,
+} from "./Shared/CrossSaveFlowStateDataStore";
+import {
+  PoseDirection,
+  PoseDirectionContext,
+} from "./Shared/CrossSaveStaggerPose";
+import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 
 export type CrossSaveActivateSteps =
   | "Acknowledge"

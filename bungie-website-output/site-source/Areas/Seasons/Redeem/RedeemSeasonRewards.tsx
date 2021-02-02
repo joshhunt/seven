@@ -13,7 +13,7 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { World, Platform, Renderer, Components } from "@Platform";
 import { DestinyDefinitions } from "@Definitions";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";

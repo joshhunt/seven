@@ -3,7 +3,7 @@
 
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { DataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
@@ -43,7 +43,6 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
   const productFamilyTag = props.title.replace(/\s/g, "");
-
   const strangerEditionSelected =
     props.strangerEdition?.skuTag === selectedSkuTag;
 
@@ -97,7 +96,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
                   role="button"
                   onClick={() => {
                     setSelectedSkuTag(sku.skuTag);
-                    DestinyBuyDataStore.update({ selectedSkuIndex: i });
+                    DestinyBuyDataStore.actions.setSelectedSkuIndex(i);
                   }}
                 >
                   <img src={sku.imagePath} alt="" role="presentation" />

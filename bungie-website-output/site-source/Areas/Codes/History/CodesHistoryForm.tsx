@@ -9,7 +9,7 @@ import { PlatformError } from "@CustomErrors";
 import { AclEnum, BungieMembershipType, OfferRedeemMode } from "@Enum";
 import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";

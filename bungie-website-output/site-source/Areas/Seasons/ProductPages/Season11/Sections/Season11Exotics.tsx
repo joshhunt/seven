@@ -5,7 +5,7 @@ import {
 import React from "react";
 import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import styles from "./Season11Exotics.module.scss";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
@@ -15,7 +15,7 @@ export const Season11Exotics = () => {
   return (
     <SubNavSection
       id={"exotics"}
-      useRef={Season11DataStore.addIdElementMapping}
+      useRef={Season11DataStore.actions.mapIdToElement}
     >
       <div className={styles.wrapper}>
         <Season11VerticalSubtitle separator={"//"}>

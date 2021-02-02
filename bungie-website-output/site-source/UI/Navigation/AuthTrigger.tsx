@@ -84,7 +84,8 @@ export class AuthTrigger extends React.Component<
   private triggerSignInWindow(href: string) {
     BrowserUtils.openWindow(href, "loginui", () => {
       this.props.onAuthWindowClosed && this.props.onAuthWindowClosed();
-      GlobalStateDataStore.refreshUserData();
+
+      GlobalStateDataStore.actions.refreshUserData();
     });
   }
 }

@@ -4,7 +4,7 @@ import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { useDataStore } from "@Global/DataStore";
 import { Season11DataStore } from "./Season11DataStore";
 import { Season11Hero } from "./Sections/Season11Hero";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Season11Story } from "./Sections/Season11Story";
 import { Season11Dungeon } from "./Sections/Season11Dungeon";
 import { Season11Exotics } from "./Sections/Season11Exotics";

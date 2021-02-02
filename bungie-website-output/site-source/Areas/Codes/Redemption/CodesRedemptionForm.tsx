@@ -10,7 +10,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -141,9 +141,9 @@ class CodesRedemptionForm extends React.Component<
       redeemedOffer: null,
     });
 
-    CodesDataStore.update({
-      selectedMembership: Globals.BungieMembershipType.None,
-    });
+    CodesDataStore.actions.updateSelectedMembership(
+      Globals.BungieMembershipType.None
+    );
   };
 
   private readonly handleChange = (e) => {
@@ -239,7 +239,7 @@ class CodesRedemptionForm extends React.Component<
   private readonly selectMembership = (
     membership: Globals.BungieMembershipType
   ) => {
-    CodesDataStore.updateSelectedMembership(membership);
+    CodesDataStore.actions.updateSelectedMembership(membership);
   };
 
   public render() {
@@ -317,138 +317,129 @@ class CodesRedemptionForm extends React.Component<
       <SystemDisabledHandler systems={["BungieTokens"]}>
         <form onSubmit={(e) => this.handleSubmit(e, codeValid)}>
           <SpinnerContainer loading={!this.state.loaded}>
-            {
-              <div className={styles.container}>
+            <div className={styles.container}>
+              <p>{Localizer.Coderedemption.SignedInAs}</p>
+              <div className={styles.box}>
+                <p className={styles.id}>{loggedInUser?.user.displayName}</p>
+                <p className={styles.unique_name}>
+                  {loggedInUser?.user.uniqueName}
+                </p>
+              </div>
+
+              <AuthTrigger isSignOut={true} className={styles.signout}>
+                <p>{Localizer.Coderedemption.NotYou}</p>
+              </AuthTrigger>
+
+              {!codeRedeemed ? (
+                // if we are in the initial state, show code input box
                 <>
-                  <p>{Localizer.Coderedemption.SignedInAs}</p>
-                  <div className={styles.box}>
-                    <p className={styles.id}>
-                      {loggedInUser?.user.displayName}
+                  <p>{Localizer.Coderedemption.RedeemCode}</p>
+                  <div className={classNames(styles.input_box, lineColor)}>
+                    <input
+                      ref={this.inputRef}
+                      placeholder={Localizer.Coderedemption.Placeholder}
+                      maxLength={17}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="on"
+                      spellCheck={false}
+                      onChange={this.handleChange}
+                      value={this.state.inputValue}
+                    />
+                  </div>
+                  <Button
+                    buttonType={buttonColor}
+                    className={styles.button}
+                    size={BasicSize.Medium}
+                    onClick={(e) => this.handleSubmit(e, codeValid)}
+                    disabled={!codeValid}
+                  >
+                    {Localizer.Coderedemption.ClickRedeem}
+                  </Button>
+                </>
+              ) : (
+                // if user has just redeemed a code, show success message
+                <>
+                  <div className={classNames(styles.box, styles.mbottom2)}>
+                    <p>
+                      <span className={styles.success}>
+                        {Localizer.Coderedemption.Success}
+                      </span>{" "}
+                      {this.state.redeemedOffer.OfferDisplayName}
                     </p>
-                    <p className={styles.unique_name}>
-                      {loggedInUser?.user.uniqueName}
-                    </p>
+                    <p>{this.state.redeemedOffer.OfferDisplayDetail}</p>
                   </div>
 
-                  <AuthTrigger isSignOut={true} className={styles.signout}>
-                    <p>{Localizer.Coderedemption.NotYou}</p>
-                  </AuthTrigger>
+                  {
+                    /* if it is a consumable, show the platform selector (with error message if no destiny account found)*/
 
-                  {!codeRedeemed ? (
-                    // if we are in the initial state, show code input box
-                    <>
-                      <p>{Localizer.Coderedemption.RedeemCode}</p>
-                      <div className={classNames(styles.input_box, lineColor)}>
-                        <input
-                          ref={this.inputRef}
-                          placeholder={Localizer.Coderedemption.Placeholder}
-                          maxLength={17}
-                          autoComplete="off"
-                          autoCorrect="off"
-                          autoCapitalize="on"
-                          spellCheck={false}
-                          onChange={this.handleChange}
-                          value={this.state.inputValue}
-                        />
-                      </div>
-                      <Button
-                        buttonType={buttonColor}
-                        className={styles.button}
-                        size={BasicSize.Medium}
-                        onClick={(e) => this.handleSubmit(e, codeValid)}
-                        disabled={!codeValid}
-                      >
-                        {Localizer.Coderedemption.ClickRedeem}
-                      </Button>
-                    </>
-                  ) : (
-                    // if user has just redeemed a code, show success message
-                    <>
-                      <div className={classNames(styles.box, styles.mbottom2)}>
-                        <p>
-                          <span className={styles.success}>
-                            {Localizer.Coderedemption.Success}
-                          </span>{" "}
-                          {this.state.redeemedOffer.OfferDisplayName}
-                        </p>
-                        <p>{this.state.redeemedOffer.OfferDisplayDetail}</p>
-                      </div>
-
-                      {
-                        /* if it is a consumable, show the platform selector (with error message if no destiny account found)*/
-
-                        redeemedOfferIsConsumable ? (
-                          <div className={styles.platformSection}>
-                            {hasDestinyAccount ? (
-                              <div>
-                                <h2>
-                                  {" "}
-                                  {Localizer.Coderedemption.WhichPlatform}{" "}
-                                </h2>
-                                <div className={styles.platformItems}>
-                                  {userMemberships.map((membership, i) => (
-                                    <UserPlatform
-                                      key={membership}
-                                      selectedMembershipType={
-                                        this.state.codesDataStorePayload
-                                          .selectedMembership
-                                      }
-                                      membershipType={membership}
-                                      onClick={() =>
-                                        this.selectMembership(membership)
-                                      }
-                                    />
-                                  ))}
-                                </div>
-
-                                <h3 className={styles.pickUp}>
-                                  {platformPickupMessage}
-                                </h3>
-                                <Button
-                                  buttonType={buttonColor}
-                                  className={styles.button}
-                                  size={BasicSize.Medium}
-                                  onClick={this.handleApply}
-                                  disabled={!platformSelected}
-                                >
-                                  {Localizer.Coderedemption.ApplyOffer}
-                                </Button>
-                              </div>
-                            ) : (
-                              /* error if no Destiny Account found */
-                              <div>
-                                <h1 className={styles.noDestinyTitle}>
-                                  {
-                                    Localizer.Coderedemption
-                                      .LinkedDestinyAccountRequiredHeader
+                    redeemedOfferIsConsumable ? (
+                      <div className={styles.platformSection}>
+                        {hasDestinyAccount ? (
+                          <div>
+                            <h2> {Localizer.Coderedemption.WhichPlatform} </h2>
+                            <div className={styles.platformItems}>
+                              {userMemberships.map((membership, i) => (
+                                <UserPlatform
+                                  key={membership}
+                                  selectedMembershipType={
+                                    this.state.codesDataStorePayload
+                                      .selectedMembership
                                   }
-                                </h1>
-                                <h3 className={styles.noDestinyText}>
-                                  {noDestinyAccountsErrorMessage}
-                                </h3>
-                                <h3 className={styles.noDestinyText}>
-                                  {helpErrorMessage}
-                                </h3>
-                              </div>
-                            )}
+                                  membershipType={membership}
+                                  onClick={() =>
+                                    this.selectMembership(membership)
+                                  }
+                                />
+                              ))}
+                            </div>
+
+                            <h3 className={styles.pickUp}>
+                              {platformPickupMessage}
+                            </h3>
+                            <Button
+                              buttonType={buttonColor}
+                              className={styles.button}
+                              size={BasicSize.Medium}
+                              onClick={this.handleApply}
+                              disabled={!platformSelected}
+                            >
+                              {Localizer.Coderedemption.ApplyOffer}
+                            </Button>
                           </div>
                         ) : (
-                          /*  if it's not a consumable, show "redeem another" button */
-                          <Button
-                            buttonType={"gold"}
-                            className={styles.button}
-                            size={BasicSize.Medium}
-                            onClick={this.reset}
-                          >
-                            {Localizer.Coderedemption.RedeemAnother}
-                          </Button>
-                        )
-                      }
-                    </>
-                  )}
+                          /* error if no Destiny Account found */
+                          <div>
+                            <h1 className={styles.noDestinyTitle}>
+                              {
+                                Localizer.Coderedemption
+                                  .LinkedDestinyAccountRequiredHeader
+                              }
+                            </h1>
+                            <h3 className={styles.noDestinyText}>
+                              {noDestinyAccountsErrorMessage}
+                            </h3>
+                            <h3 className={styles.noDestinyText}>
+                              {helpErrorMessage}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      /*  if it's not a consumable, show "redeem another" button */
+                      <Button
+                        buttonType={"gold"}
+                        className={styles.button}
+                        size={BasicSize.Medium}
+                        onClick={this.reset}
+                      >
+                        {Localizer.Coderedemption.RedeemAnother}
+                      </Button>
+                    )
+                  }
                 </>
-              </div>
-            }
+              )}
+            </div>
           </SpinnerContainer>
         </form>
       </SystemDisabledHandler>

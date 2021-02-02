@@ -9,7 +9,7 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Platform } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import {
   withGlobalState,
   GlobalStateComponentProps,

@@ -6,7 +6,7 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { IPCMigrationEntitlementDisplay } from "./PCMigrationModalStagePage";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 
 interface IPCMigrationLicensesProps {

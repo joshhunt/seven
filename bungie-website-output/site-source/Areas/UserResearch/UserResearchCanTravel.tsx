@@ -17,7 +17,7 @@ import { FullPageLoadingBar } from "@UI/UIKit/Controls/FullPageLoadingBar";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteComponentProps } from "react-router-dom";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 
 // Required props

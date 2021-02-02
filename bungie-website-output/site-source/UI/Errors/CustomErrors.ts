@@ -3,7 +3,7 @@
 
 import { PlatformResponse } from "@ApiIntermediary";
 import * as Globals from "@Enum";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 
 /**
  * A special error with a title and a message

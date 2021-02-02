@@ -3,7 +3,7 @@
 
 import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";

@@ -25,7 +25,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { DestinyNewsAndMedia } from "../Shared/DestinyNewsAndMedia";
 import { Img } from "@Helpers";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SystemNames } from "@Global/SystemNames";
 

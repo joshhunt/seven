@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
@@ -45,31 +45,38 @@ class _BeyondLightPhaseFourDataStore extends DataStore<
     this.initialized = true;
     this.initialLocale = Localizer.CurrentCultureName;
 
-    this.update({
-      phaseFourActive: ConfigUtils.SystemStatus("BeyondLightPhase4"),
-    });
+    this.actions.updateActive(ConfigUtils.SystemStatus("BeyondLightPhase4"));
 
-    this.fetchStrings();
+    this.actions.getStrings();
   }
 
-  private fetchStrings() {
-    // Load all items, and if they fail, just ignore it.
-    const promise: Promise<Content.ContentItemPublicContract> = Platform.ContentService.GetContentByTagAndType(
-      "bl-phase-four",
-      "StringCollection",
-      Localizer.CurrentCultureName,
-      false
-    ).catch(() => void 0);
+  public actions = this.createActions({
+    /**
+     * Set this phase active
+     * @param active
+     */
+    updateActive: (active: boolean) => ({
+      phaseFourActive: active,
+    }),
+    /**
+     * Download strings
+     */
+    getStrings: async () => {
+      const rawAllPhaseData = await Platform.ContentService.GetContentByTagAndType(
+        "bl-phase-four",
+        "StringCollection",
+        Localizer.CurrentCultureName,
+        false
+      );
 
-    Promise.resolve(promise).then((rawAllPhaseData) => {
       const data = LocalizerUtils.stringCollectionToObject(rawAllPhaseData);
 
-      this.update({
+      return {
         phaseFour: data ?? {},
         loaded: true,
-      });
-    });
-  }
+      };
+    },
+  });
 }
 
 export const BeyondLightPhaseFourDataStore =

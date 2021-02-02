@@ -3,7 +3,7 @@ import React from "react";
 import { Season11TripleBox } from "@Areas/Seasons/ProductPages/Season11/Components/Season11TripleBox";
 import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./Season11Gear.module.scss";
 import { Season11PotentialVideo } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PotentialVideo";
 import { useDataStore } from "@Global/DataStore";
@@ -33,7 +33,10 @@ export const Season11Gear = () => {
   const season11Data = useDataStore(Season11DataStore);
 
   return (
-    <SubNavSection id={"gear"} useRef={Season11DataStore.addIdElementMapping}>
+    <SubNavSection
+      id={"gear"}
+      useRef={Season11DataStore.actions.mapIdToElement}
+    >
       <div className={styles.gearWrapper}>
         <Season11VerticalSubtitle separator={"//"}>
           {Localizer.Season11.S11GearRewards}

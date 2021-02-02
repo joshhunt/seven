@@ -13,6 +13,9 @@ export enum BodyClasses {
   /** Hides Main Top Nav */
   HideMainNav = 1 << 2,
 
+  /** Gives Manin Nav a solid Background before scroll **/
+  SolidMainNav = 1 << 3,
+
   // Follow this format for future entries: https://basarat.gitbook.io/typescript/type-system/enums#number-enums-as-flags
 }
 
@@ -33,6 +36,10 @@ export const SpecialBodyClasses = (classes: BodyClasses) => {
 
   if (classes & BodyClasses.HideMainNav) {
     classList.push("hide-main-nav");
+  }
+
+  if (classes & BodyClasses.SolidMainNav) {
+    classList.push("solid-main-nav");
   }
 
   return classList.join(" ");

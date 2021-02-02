@@ -7,7 +7,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Spinner, SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";

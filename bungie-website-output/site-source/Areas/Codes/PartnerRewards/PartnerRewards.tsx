@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
 import { Tokens, Platform } from "@Platform";

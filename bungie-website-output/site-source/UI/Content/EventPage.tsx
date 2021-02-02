@@ -1,7 +1,7 @@
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import {

@@ -1,6 +1,6 @@
 export type DestroyCallback = () => void;
 
-export interface ParameterlessConstructor<
+export interface CustomObserverClass<
   ConstructorType,
   TDataType,
   TObserverProps = any
@@ -43,11 +43,11 @@ export class Broadcaster<
 
   /**
    * Creates a Broadcaster
-   * @param subscriptionConstructor A constructor for the subscription, if it is not the default (just pass the class itself)
-   * @param propsRequired If true, subscribing will require params
+   * @param observerClassConstructor A constructor for the observer, if it is not the default (just pass the class itself)
+   * @param propsRequired If true, observing will require params
    */
   constructor(
-    protected readonly subscriptionConstructor: ParameterlessConstructor<
+    protected readonly observerClassConstructor: CustomObserverClass<
       TObserverType,
       TDataType,
       TObserverProps
@@ -65,28 +65,28 @@ export class Broadcaster<
     broadcastTo.forEach((observer) => observer.update(data));
   }
 
-  protected createObserver(
+  protected buildObserver(
     callback: (newData: TDataType) => void,
     props?: TObserverProps
   ) {
     if (this.propsRequired && props === undefined) {
       throw new Error(
-        "Props cannot be null, this data store requires props parameters for each subscription"
+        "Props cannot be null, this data store requires props parameters for each observer"
       );
     }
 
-    const subscription: TObserverType = this.subscriptionConstructor
-      ? new this.subscriptionConstructor(callback, props)
+    const observer: TObserverType = this.observerClassConstructor
+      ? new this.observerClassConstructor(callback, props)
       : (new BroadcasterObserver(callback, props) as TObserverType);
 
-    return subscription;
+    return observer;
   }
 
-  protected storeObserver(
+  protected saveObserver(
     callback: (newData: TDataType) => void,
     props?: TObserverProps
   ): { destroy: DestroyCallback; observer: TObserverType } {
-    const observer = this.createObserver(callback, props);
+    const observer = this.buildObserver(callback, props);
     const guid = Broadcaster.guid();
 
     this.observers[guid] = observer;
@@ -106,7 +106,7 @@ export class Broadcaster<
     callback: (newData: TDataType) => void,
     props?: TObserverProps
   ) {
-    const { destroy } = this.storeObserver(callback, props);
+    const { destroy } = this.saveObserver(callback, props);
 
     return destroy;
   }

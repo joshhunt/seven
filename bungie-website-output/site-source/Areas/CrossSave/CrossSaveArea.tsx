@@ -1,36 +1,34 @@
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import * as React from "react";
-import { RouteComponentProps, Route } from "react-router-dom";
-import { RouteDefs } from "@Routes/RouteDefs";
-import { CrossSaveIndex } from "./CrossSaveIndex";
-import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
-import CrossSaveActivate from "./CrossSaveActivate";
-import { Localizer } from "@Global/Localizer";
-
-import {
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-  CrossSaveFlowStateContext,
-} from "./Shared/CrossSaveFlowStateDataStore";
-import { DataStore } from "@Global/DataStore";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { CrossSaveConfirmation } from "./CrossSaveConfirmation";
-import CrossSaveDeactivate from "./CrossSaveDeactivate";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
-import styles from "./CrossSaveArea.module.scss";
-import CrossSaveRecap from "./CrossSaveRecap";
-import { Anchor } from "@UI/Navigation/Anchor";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import {
+  GlobalStateComponentProps,
+  GlobalStateDataStore,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
-
+import { Anchor } from "@UI/Navigation/Anchor";
+import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
-import { UserUtils } from "@Utilities/UserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
+import { Route, RouteComponentProps } from "react-router-dom";
+import CrossSaveActivate from "./CrossSaveActivate";
+import styles from "./CrossSaveArea.module.scss";
+import { CrossSaveConfirmation } from "./CrossSaveConfirmation";
+import CrossSaveDeactivate from "./CrossSaveDeactivate";
+import { CrossSaveIndex } from "./CrossSaveIndex";
+import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
+import CrossSaveRecap from "./CrossSaveRecap";
+import {
+  CrossSaveFlowStateContext,
+  CrossSaveFlowStateDataStore,
+  ICrossSaveFlowState,
+} from "./Shared/CrossSaveFlowStateDataStore";
 
 interface ICrossSaveAreaParams {}
 
@@ -91,7 +89,7 @@ class CrossSaveArea extends React.Component<
      * going to see anything from the previous user.
      */
     if (!UserUtils.isAuthenticated(GlobalStateDataStore.state)) {
-      CrossSaveFlowStateDataStore.reset();
+      CrossSaveFlowStateDataStore.actions.reset();
     }
 
     if (

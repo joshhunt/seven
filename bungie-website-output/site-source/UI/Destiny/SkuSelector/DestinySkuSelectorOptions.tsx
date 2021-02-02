@@ -5,7 +5,7 @@ import * as Globals from "@Enum";
 import { Img } from "@Helpers";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as React from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SquareButton } from "@UI/UIKit/Controls/Button/SquareButton";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Dropdown, IDropdownOption } from "@UI/UIKit/Forms/Dropdown";

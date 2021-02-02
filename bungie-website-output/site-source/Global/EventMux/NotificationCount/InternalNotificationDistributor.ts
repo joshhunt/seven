@@ -1,5 +1,8 @@
 import * as Globals from "@Enum";
-import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
+import {
+  Broadcaster,
+  BroadcasterObserver,
+} from "@Global/Broadcaster/Broadcaster";
 import { DataStore } from "@Global/DataStore";
 import { User } from "@Platform";
 
@@ -25,7 +28,7 @@ export interface BnetNotification {
 
 // The Distributor accepts subscriptions for notification count events and distributes them to
 // interested entities.
-export class InternalNotificationDistributor extends DataStore<
+export class InternalNotificationDistributor extends Broadcaster<
   BnetNotification,
   DistributorParams,
   BroadcasterObserver<BnetNotification>

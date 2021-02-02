@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { Spinner } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";

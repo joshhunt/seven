@@ -1,10 +1,10 @@
+import { IPCMigrationUserData } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import {
   IPCMigrationTransferStageProps,
   PCMigrationTransferStageBase,
   IPCMigrationStageBaseState,
 } from "./PCMigrationModalStagePage";
-import { IPCMigrationUserData } from "@UI/User/PCMigrationUserDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import React from "react";
 import classNames from "classnames";

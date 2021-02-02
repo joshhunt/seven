@@ -1,27 +1,27 @@
+import { Respond } from "@Boot/Respond";
+import { ResponsiveSize } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import {
+  GlobalState,
+  GlobalStateComponentProps,
+  GlobalStateDataStore,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { AccountSidebar } from "@UI/Navigation/AccountSidebar";
 import { MenuItem } from "@UI/Navigation/MenuItem";
 import { UserMenu } from "@UI/Navigation/UserMenu";
-import * as React from "react";
-import styles from "./MainNavigation.module.scss";
-import { NotificationSidebar } from "./NotificationSidebar";
-import { RouteHelper } from "@Global/Routes/RouteHelper";
-import classNames from "classnames";
-import { Anchor } from "./Anchor";
-import { Localizer } from "@Global/Localizer";
-import { ResponsiveSize } from "@Boot/Responsive";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Respond } from "@Boot/Respond";
-import * as H from "history";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import {
-  GlobalState,
-  GlobalStateDataStore,
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import classNames from "classnames";
+import * as H from "history";
+import * as React from "react";
+import { Anchor } from "./Anchor";
+import styles from "./MainNavigation.module.scss";
+import { NotificationSidebar } from "./NotificationSidebar";
 
 declare var NavigationConfig: INavigationConfig;
 
@@ -166,7 +166,7 @@ class MainNavigationInternal extends React.Component<
 
   private readonly onJoinClick = () => {
     BrowserUtils.openWindow(RouteHelper.Join().url, "loginui", () =>
-      GlobalStateDataStore.refreshUserData()
+      GlobalStateDataStore.actions.refreshUserData()
     );
   };
 

@@ -8,7 +8,7 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import { NotificationCounts } from "@Global/EventMux/NotificationCount/InternalNotificationViewModel";
 import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { SystemNames } from "@Global/SystemNames";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";

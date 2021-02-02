@@ -1,6 +1,6 @@
 // tslint:disable: max-classes-per-file
 
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper, IMultiSiteLink } from "@Routes/RouteHelper";
 
 export abstract class SeasonDefinition {
@@ -136,6 +136,30 @@ class Season12 extends SeasonDefinition {
   public smallIcon = "7/ca/destiny/bgs/season12/icon_season12_full.png";
 }
 
+class SeasonOfTheChosen extends SeasonDefinition {
+  public static instance = new SeasonOfTheChosen();
+
+  public get title(): string {
+    return Localizer.Seasons.SeasonOfTheChosen;
+  }
+
+  public image = "/7/ca/destiny/bgs/season12/ArticleBanner_01.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season12/season_progress_bg.jpg";
+  public productPageLink = RouteHelper.SeasonOfTheChosen();
+  public calendarContentItem;
+  public calendarBackgroundImage =
+    "/7/ca/destiny/bgs/season12/calendar_bg_desktop.png";
+  public seasonNumber = 13;
+  public actionRouteString = "SeasonOfTheChosen";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreSeasonOfTheChosen;
+  }
+
+  public smallIcon = "7/ca/destiny/bgs/season12/icon_season12_full.png";
+}
+
 export class SeasonsDefinitions {
   public static currentSeason = Season12.instance;
   public static previousSeason = Season11.instance;
@@ -143,6 +167,7 @@ export class SeasonsDefinitions {
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
   public static seasonOfTheWorthy = SeasonOfTheWorthy.instance;
+  public static seasonOfTheChosen = SeasonOfTheChosen.instance;
   public static season11 = Season11.instance;
   public static season12 = Season12.instance;
 }

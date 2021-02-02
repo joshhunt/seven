@@ -18,7 +18,7 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import { UserUtils } from "@Utilities/UserUtils";
 import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RequiresAuth } from "@UI/User/RequiresAuth";

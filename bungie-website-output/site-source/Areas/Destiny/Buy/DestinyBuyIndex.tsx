@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";

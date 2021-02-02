@@ -1,16 +1,16 @@
+import {
+  IPCMigrationUserData,
+  PCMigrationUserDataStore,
+} from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { DataStore } from "@Global/DataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Contract } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import {
-  IPCMigrationUserData,
-  PCMigrationUserDataStore,
-} from "@UI/User/PCMigrationUserDataStore";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import classNames from "classnames";

@@ -8,7 +8,7 @@ import { BeyondLightPhaseThreeDataStore } from "@Areas/Destiny/BeyondLight/DataS
 import { BeyondLightPhaseFourDataStore } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseFourDataStore";
 
 import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { AsyncRoute } from "@Routes/AsyncRoute";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";

@@ -1,7 +1,7 @@
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import * as React from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {
   withGlobalState,

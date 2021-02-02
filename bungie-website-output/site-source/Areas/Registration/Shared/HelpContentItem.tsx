@@ -7,7 +7,7 @@ import {
   RegistrationItemContent,
 } from "./RegistrationContentItem";
 import React, { useState } from "react";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
 
 export const HelpArticlesContentSet: React.FC<IRegistrationContentItemProps> = (

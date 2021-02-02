@@ -8,7 +8,7 @@ import {
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import { PCMigrationWarning } from "./PCMigrationWarning";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
 import { Platform, User } from "@Platform";

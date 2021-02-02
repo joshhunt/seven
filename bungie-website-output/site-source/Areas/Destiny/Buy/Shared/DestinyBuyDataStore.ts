@@ -10,6 +10,14 @@ class DestinyBuyDataStoreGeneral extends DataStore<IDestinyBuyDataState> {
   public static Instance = new DestinyBuyDataStoreGeneral({
     selectedSkuIndex: 0,
   });
+
+  public actions = this.createActions({
+    /**
+     * Set the SKU index selected in the buy flow
+     * @param index
+     */
+    setSelectedSkuIndex: (index: number) => ({ selectedSkuIndex: index }),
+  });
 }
 
 export const DestinyBuyDataStore = DestinyBuyDataStoreGeneral.Instance;

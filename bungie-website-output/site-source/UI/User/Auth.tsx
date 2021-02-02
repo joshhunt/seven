@@ -5,7 +5,7 @@ import {
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as Globals from "@Enum";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./RequiresAuth.module.scss";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";

@@ -2,7 +2,7 @@ import React from "react";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./PCMigrationModal.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
   IPCMigrationStageBaseState,

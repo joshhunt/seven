@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RouteDefs } from "@Routes/RouteDefs";
 import styles from "./CrossSaveConfirmation.module.scss";

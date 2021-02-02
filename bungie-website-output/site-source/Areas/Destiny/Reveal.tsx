@@ -12,7 +12,7 @@ import { RouteDefs } from "@Routes/RouteDefs";
 import { OptInFlags, EmailValidationStatus } from "@Enum";
 import { Contract, Platform } from "@Platform";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import {
   withGlobalState,
@@ -302,7 +302,7 @@ class Reveal extends React.Component<Props, IRevealState> {
           settingsUpdating: false,
         });
 
-        GlobalStateDataStore.refreshUserData(true);
+        GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
 
         Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
           position: "br",

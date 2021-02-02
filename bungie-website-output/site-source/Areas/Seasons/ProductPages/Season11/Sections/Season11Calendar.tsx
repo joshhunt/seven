@@ -1,4 +1,4 @@
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import React from "react";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SystemNames } from "@Global/SystemNames";

@@ -5,7 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { EmailValidationStatus, OptInFlags } from "@Enum";
 import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -56,7 +56,7 @@ const updateEmailSettings = (membershipId: string, onSuccess: () => void) => {
     .then(() => {
       onSuccess();
 
-      GlobalStateDataStore.refreshUserData(true);
+      GlobalStateDataStore.actions.refreshUserData(true);
 
       Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
         position: "br",

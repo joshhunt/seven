@@ -6,7 +6,7 @@ import * as React from "react";
 import styles from "./DestinyPlatformSelector.module.scss";
 import { User, CrossSave } from "@Platform";
 import { IDropdownOption, Dropdown } from "@UI/UIKit/Forms/Dropdown";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { BungieMembershipType } from "@Enum";
 
 // Required props

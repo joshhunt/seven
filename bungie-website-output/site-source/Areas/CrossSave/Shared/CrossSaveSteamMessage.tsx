@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import styles from "./CrossSaveSteamMessage.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemNames } from "@Global/SystemNames";

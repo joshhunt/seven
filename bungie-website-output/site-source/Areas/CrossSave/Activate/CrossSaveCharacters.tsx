@@ -1,27 +1,27 @@
-import * as React from "react";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
-import styles from "./CrossSaveCharacters.module.scss";
-import {
-  ICrossSaveFlowState,
-  CrossSaveFlowStateDataStore,
-} from "../Shared/CrossSaveFlowStateDataStore";
-import classNames from "classnames";
-import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
-import { Icon } from "@UI/UIKit/Controls/Icon";
-import { CrossSaveStaggerPose } from "../Shared/CrossSaveStaggerPose";
-import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInfo";
-import { Responses } from "@Platform";
-import { CrossSaveAccountCard } from "./Components/CrossSaveAccountCard";
-import { CrossSaveSilverBalance } from "./Components/CrossSaveSilverBalance";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { RouteHelper, IMultiSiteLink } from "@Routes/RouteHelper";
-import { SystemNames } from "@Global/SystemNames";
-import { CrossSaveSteamMessage } from "../Shared/CrossSaveSteamMessage";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { BungieMembershipType } from "@Enum";
+import { Localizer } from "@Global/Localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
+import { Responses } from "@Platform";
+import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import classNames from "classnames";
+import * as React from "react";
+import {
+  CrossSaveFlowStateDataStore,
+  ICrossSaveFlowState,
+} from "../Shared/CrossSaveFlowStateDataStore";
+import { CrossSaveStaggerPose } from "../Shared/CrossSaveStaggerPose";
+import { CrossSaveSteamMessage } from "../Shared/CrossSaveSteamMessage";
+import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
+import { CrossSaveAccountCard } from "./Components/CrossSaveAccountCard";
+import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInfo";
+import { CrossSaveSilverBalance } from "./Components/CrossSaveSilverBalance";
+import styles from "./CrossSaveCharacters.module.scss";
 
 interface ICrossSaveCharactersProps {
   flowState: ICrossSaveFlowState;
@@ -56,9 +56,9 @@ export class CrossSaveCharacters extends React.Component<
       primaryMembership: membershipType,
     });
 
-    CrossSaveFlowStateDataStore.update({
-      primaryMembershipType: membershipType,
-    });
+    CrossSaveFlowStateDataStore.actions.updatePrimaryMembershipType(
+      membershipType
+    );
   }
 
   private onCharactersHovered(membershipType: BungieMembershipType) {
@@ -80,9 +80,7 @@ export class CrossSaveCharacters extends React.Component<
       primaryMembership: null,
     });
 
-    CrossSaveFlowStateDataStore.update({
-      primaryMembershipType: null,
-    });
+    CrossSaveFlowStateDataStore.actions.updatePrimaryMembershipType(null);
 
     setTimeout(() => this.deHover, 500);
   };

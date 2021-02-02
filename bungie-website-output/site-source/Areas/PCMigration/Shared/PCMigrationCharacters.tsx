@@ -1,3 +1,4 @@
+import { IPCMigrationCharacterDisplay } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import React from "react";
 import styles from "./PCMigrationModal.module.scss";
 import * as Globals from "@Enum";
@@ -5,8 +6,7 @@ import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
-import { IPCMigrationCharacterDisplay } from "@UI/User/PCMigrationUserDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
 
 interface IPCMigrationCharactersProps {
   characterDisplays: IPCMigrationCharacterDisplay[];

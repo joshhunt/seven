@@ -1,13 +1,17 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
+import { SmsAccountLine } from "@Areas/Sms/SmsAccountLine";
+import { SmsCodeForm } from "@Areas/Sms/SmsCodeForm";
+import { SmsDataStore, SmsVerificationPhases } from "@Areas/Sms/SmsDataStore";
+import { SmsPhoneEntryForm } from "@Areas/Sms/SmsPhoneEntryForm";
 import { SmsSignInButton } from "@Areas/Sms/SmsSignInButton";
+import { SmsVerifiedState } from "@Areas/Sms/SmsVerifiedState";
 import { PlatformError } from "@CustomErrors";
 import { PhoneValidationStatusEnum } from "@Enum";
 import { useDataStore } from "@Global/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -19,10 +23,6 @@ import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./SmsPage.module.scss";
-import { SmsPhoneEntryForm } from "@Areas/Sms/SmsPhoneEntryForm";
-import { SmsAccountLine } from "@Areas/Sms/SmsAccountLine";
-import { SmsCodeForm } from "@Areas/Sms/SmsCodeForm";
-import { SmsVerifiedState } from "@Areas/Sms/SmsVerifiedState";
 
 interface SmsPageProps {}
 
@@ -38,11 +38,16 @@ export const SmsPage: React.FC<SmsPageProps> = (props) => {
 
       Platform.UserService.GetSmsValidationStatus()
         .then((response) => {
-          response.phoneStatus === PhoneValidationStatusEnum.Validated
-            ? SmsDataStore.updatePhase("Verified")
-            : SmsDataStore.updatePhase("PhoneEntry");
-          response.lastDigits &&
-            SmsDataStore.updateLastDigits(response.lastDigits);
+          const phase: SmsVerificationPhases =
+            response.phoneStatus === PhoneValidationStatusEnum.Validated
+              ? "Verified"
+              : "PhoneEntry";
+
+          SmsDataStore.actions.updatePhase(phase);
+
+          if (response.lastDigits) {
+            SmsDataStore.actions.updateLastDigits(response.lastDigits);
+          }
 
           setLoading(false);
         })

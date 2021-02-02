@@ -1,6 +1,7 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
+import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { DataStore } from "@Global/DataStore";
@@ -8,7 +9,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -20,7 +21,6 @@ import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";

@@ -1,6 +1,7 @@
+import { StringFetcher } from "@Global/Localization/StringFetcher";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Localizer, StringFetcher } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./LocaleSwitcher.module.scss";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";

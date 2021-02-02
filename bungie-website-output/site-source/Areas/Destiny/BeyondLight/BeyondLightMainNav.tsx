@@ -8,7 +8,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import LocaleSwitcher from "@UI/Navigation/LocaleSwitcher";

@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./ConfirmationModal.module.scss";
 import { Icon } from "../Icon";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import classNames from "classnames";
 import { Button, ButtonTypes } from "../Button/Button";
 import { ModalProps, Modal } from "./Modal";

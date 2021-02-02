@@ -1,10 +1,10 @@
-import { Content, Platform } from "@Platform";
-import React, { useState } from "react";
+import styles from "@Areas/Registration/Apps.module.scss";
+import { Content } from "@Platform";
+import React from "react";
 import stylesRegistration from "./ContentItemRegistration.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { RouteHelper } from "@Routes/RouteHelper";
 import classNames from "classnames";
 import {
   RegistrationBlockTypeConfig,
@@ -16,6 +16,7 @@ const DEBUG_REPEAT_NUMBER = 0;
 
 export interface IRegistrationContentItemProps {
   contentItem: Content.ContentItemPublicContract;
+  noTitles?: boolean;
   definition?: RegistrationBlockTypeDefinition;
 }
 
@@ -115,8 +116,14 @@ export const ContentSet: React.FC<IRegistrationContentItemProps> = (
 
   return (
     <div className={className}>
-      <h3>{contentItem.properties["Title"]}</h3>
-      <p>{contentItem.properties["Summary"]}</p>
+      {!props.noTitles ? (
+        <div className={styles.emptyStyling} />
+      ) : (
+        <>
+          <h3>{contentItem.properties["Title"]}</h3>
+          <p>{contentItem.properties["Summary"]}</p>
+        </>
+      )}
       {hyperLinkContentDefined &&
         def?.wrapperLinkLabelLocKey?.length > 0 &&
         Localizer.Registrationbenefits[def.wrapperLinkLabelLocKey]?.length >

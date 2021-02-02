@@ -5,7 +5,7 @@ import {
 import React from "react";
 import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./Season11Dungeon.module.scss";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11PotentialVideo } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PotentialVideo";
@@ -21,7 +21,7 @@ export const Season11Dungeon = () => {
   return (
     <SubNavSection
       id={"dungeon"}
-      useRef={Season11DataStore.addIdElementMapping}
+      useRef={Season11DataStore.actions.mapIdToElement}
     >
       <div
         className={styles.wrapper}

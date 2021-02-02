@@ -1,6 +1,6 @@
 import * as Globals from "@Enum";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Logger } from "@Global/Logger";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";

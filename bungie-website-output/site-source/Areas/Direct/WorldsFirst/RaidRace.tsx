@@ -1,5 +1,5 @@
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";

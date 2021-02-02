@@ -79,7 +79,7 @@ export class InternalNotificationEventDataSource {
       notificationCount: update.notificationCount,
     };
 
-    this.distributor.update(count);
+    this.distributor.broadcast(count);
   };
 
   private readonly onMessageCountsChanged = (
@@ -91,7 +91,7 @@ export class InternalNotificationEventDataSource {
       messageCount: update.privateMessageCount,
     };
 
-    this.distributor.update(privateMessageCount);
+    this.distributor.broadcast(privateMessageCount);
 
     const groupMessageCount: BnetNotification = {
       source: this.notificationSource,
@@ -99,7 +99,7 @@ export class InternalNotificationEventDataSource {
       groupMessageCount: update.externalMessageCount,
     };
 
-    this.distributor.update(groupMessageCount);
+    this.distributor.broadcast(groupMessageCount);
   };
 
   private readonly onFriendCountsChanged = (
@@ -121,7 +121,7 @@ export class InternalNotificationEventDataSource {
       onlineFriendCount: total,
     };
 
-    this.distributor.update(count);
+    this.distributor.broadcast(count);
 
     const reauth: BnetNotification = {
       source: this.notificationSource,
@@ -129,7 +129,7 @@ export class InternalNotificationEventDataSource {
       providersNeedingReauth: update.needsReauth,
     };
 
-    this.distributor.update(reauth);
+    this.distributor.broadcast(reauth);
   };
 
   private readonly onAnnouncementsChanged = (
@@ -141,6 +141,6 @@ export class InternalNotificationEventDataSource {
       acks: update.announcements,
     };
 
-    this.distributor.update(response);
+    this.distributor.broadcast(response);
   };
 }

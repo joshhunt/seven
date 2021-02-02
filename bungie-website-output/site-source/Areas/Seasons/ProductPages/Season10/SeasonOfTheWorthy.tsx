@@ -3,11 +3,11 @@
 // Created by a-larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import * as React from "react";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
 import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
-import { PCMigrationUserDataStore } from "@UI/User/PCMigrationUserDataStore";
 import { DataStore } from "@Global/DataStore";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
@@ -19,7 +19,7 @@ import {
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { InfoBlock } from "@UI/Content/InfoBlock";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -225,6 +225,7 @@ class SeasonOfTheWorthyInner extends React.Component<
     return isVisible;
   };
 
+  // tslint:disable-next-line: react-a11y-accessible-headings
   public render() {
     // Get FAQ content id from Webmaster
     const faq = ConfigUtils.GetParameter("CoreAreaSeasons", "D2SeasonsFAQ", 0);

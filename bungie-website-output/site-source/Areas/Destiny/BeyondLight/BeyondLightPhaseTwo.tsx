@@ -11,7 +11,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Spinner } from "@UIKit/Controls/Spinner";

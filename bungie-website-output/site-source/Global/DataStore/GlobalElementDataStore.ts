@@ -2,9 +2,8 @@ import { DataStore } from "@Global/DataStore";
 import { RefObject } from "react";
 
 export interface IGlobalElement {
-  guid: number;
+  guid: string;
   el: JSX.Element;
-  ref: RefObject<any>;
 }
 
 export interface IGlobalElementDataStorePayload {
@@ -18,29 +17,41 @@ class GlobalElementDataStoreInternal extends DataStore<
     elements: [],
   });
 
-  public addElement(ref: RefObject<any>, guid: number, el: JSX.Element) {
-    const elements = [
-      ...this.state.elements,
-      {
-        ref,
-        guid,
-        el,
-      },
-    ];
+  public actions = this.createActions({
+    /**
+     * Remove an element using the GUID used in `addElement()`
+     * @param guid
+     */
+    removeElementByGuid: (guid: string) => {
+      const elements = this.state.elements.filter((m) => m.guid !== guid);
 
-    this.update({
-      elements,
-    });
-  }
+      return {
+        elements,
+      };
+    },
+    /**
+     * Add an element to global elements
+     * @param ref The element reference
+     * @param guid A unique ID that we can use to store the item and find it later
+     * @param el The element
+     */
+    addElement: (guid: string, el: JSX.Element) => {
+      const elements = [
+        ...this.state.elements,
+        {
+          guid,
+          el,
+        },
+      ];
 
-  public removeModal(guid: number) {
-    const elements = this.state.elements.filter((m) => m.guid !== guid);
-
-    this.update({
-      elements,
-    });
-  }
+      return {
+        elements,
+      };
+    },
+  });
 }
 
-/** A datastore to put elements at the root of the app, outside of the rest of the content */
+/**
+ *
+ */
 export const GlobalElementDataStore = GlobalElementDataStoreInternal.Instance;

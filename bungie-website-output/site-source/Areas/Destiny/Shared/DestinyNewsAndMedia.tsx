@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import styles from "./DestinyNewsAndMedia.module.scss";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import classNames from "classnames";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RouteHelper } from "@Routes/RouteHelper";

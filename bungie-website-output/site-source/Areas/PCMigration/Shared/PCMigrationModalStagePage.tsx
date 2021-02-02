@@ -1,3 +1,4 @@
+import { IPCMigrationCharacterDisplay } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import React from "react";
 import {
   GlobalState,
@@ -5,7 +6,6 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import { PCMigrationStage } from "./PCMigrationModal";
 import * as Globals from "@Enum";
-import { IPCMigrationCharacterDisplay } from "@UI/User/PCMigrationUserDataStore";
 
 export enum EmailVerificationState {
   None,

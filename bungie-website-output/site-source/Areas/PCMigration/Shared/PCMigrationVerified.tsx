@@ -1,25 +1,23 @@
-import React from "react";
-import styles from "./PCMigrationModal.module.scss";
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { IPCMigrationUserData } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
+import { PlatformError } from "@CustomErrors";
+import * as Globals from "@Enum";
+import { Localizer } from "@Global/Localization/Localizer";
+import { Contract, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { RouteHelper } from "@Routes/RouteHelper";
-import {
-  PCMigrationStageBase,
-  IPCMigrationStageBaseProps,
-  IPCMigrationStageBaseState,
-  IPCMigrationStageGated,
-} from "./PCMigrationModalStagePage";
-import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
-import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
-import { Localizer } from "@Global/Localizer";
-import * as Globals from "@Enum";
-import { PCMigrationUtilities } from "./PCMigrationUtilities";
-import { IPCMigrationUserData } from "@UI/User/PCMigrationUserDataStore";
-import { Platform, Contract } from "@Platform";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { ErrorDisplay } from "@UI/Errors/ErrorDisplay";
+import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
+import React from "react";
+import styles from "./PCMigrationModal.module.scss";
+import {
+  IPCMigrationStageBaseProps,
+  IPCMigrationStageGated,
+  PCMigrationStageBase,
+} from "./PCMigrationModalStagePage";
+import { PCMigrationUtilities } from "./PCMigrationUtilities";
+import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 
 interface IPCMigrationVerifiedProps extends IPCMigrationStageBaseProps {
   pcMigrationUser: IPCMigrationUserData;

@@ -2,7 +2,7 @@ import classNames from "classnames";
 import * as React from "react";
 import styles from "./Footer.module.scss";
 import { RouteHelper, IMultiSiteLink } from "@Global/Routes/RouteHelper";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import moment from "moment";
 import { Models } from "@Platform";
 import { Anchor } from "@UI/Navigation/Anchor";

@@ -6,7 +6,7 @@ import {
   GlobalState,
   GlobalStateComponentProps,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RouteHelper } from "@Routes/RouteHelper";

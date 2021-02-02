@@ -77,28 +77,22 @@ class GlobalStateDataStoreInternal extends DataStore<
     this.createContext();
 
     Responsive.observe(
-      (state) => {
-        this.update({
-          responsive: state,
-        });
-      },
+      (state) => this.actions.updateResponsive(state),
       undefined,
       true
     );
 
-    const didLoadFromStorage = this.updateSettingsFromStorage();
+    const didLoadFromStorage = !!(await this.actions.refreshSettings());
 
     if (!didLoadFromStorage) {
-      await this.updateSettings();
+      await this.actions.refreshSettings();
     }
 
-    await this.updateUserData(false);
+    await this.actions.refreshUserAndRelatedData(false);
 
-    this.update({
-      loaded: true,
-    });
+    this.actions.updateLoaded(true);
 
-    this.updateSettings();
+    this.actions.refreshSettings();
   }
 
   protected getObserversToUpdate(data: Partial<IGlobalState>) {
@@ -117,152 +111,170 @@ class GlobalStateDataStoreInternal extends DataStore<
     });
   }
 
-  /**
-   * Refreshes the user data portion of global data
-   */
-  public async refreshUserData(bustCache = false) {
-    EventMux.destroy();
-    NotificationCountManager.destroy();
+  public actions = this.createActions({
+    /**
+     * Set the loaded state
+     * @param loaded loaded state
+     */
+    updateLoaded: (loaded: boolean) => ({ loaded }),
+    /**
+     * Set the current Responsive state
+     * @param responsive
+     */
+    updateResponsive: (responsive: IResponsiveState) => ({ responsive }),
+    /**
+     * Refreshes the user credentials portion of global data
+     */
+    refreshCredentialTypes: async () => {
+      let credentialTypes: Contract.GetCredentialTypesForAccountResponse[];
 
-    await this.updateUserData(bustCache);
-  }
-
-  /**
-   * Refreshes the user credentials portion of global data
-   */
-  public async updateUserCredentialTypes() {
-    let credentialTypes: Contract.GetCredentialTypesForAccountResponse[];
-
-    try {
-      credentialTypes = await Platform.UserService.GetCredentialTypesForAccount();
-    } catch (e) {
-      Logger.error(e);
-    }
-
-    this.update({
-      credentialTypes,
-    });
-
-    return;
-  }
-
-  private updateSettingsFromStorage() {
-    const stored = this.fetchStoredCoreSettings();
-    if (stored) {
-      this.update({
-        coreSettings: stored,
-      });
-
-      return true;
-    }
-
-    return false;
-  }
-
-  public async updateSettings() {
-    try {
-      // Grab the common settings and the user overrides, then replace values with the overridden ones
-      const data = await Promise.all([
-        Platform.CoreService.GetCommonSettings(),
-        Platform.CoreService.GetUserSystemOverrides(),
-      ]);
-
-      const coreSettings = data[0];
-      const userSystemOverrides = data[1];
-      const overrideSystemNames = Object.keys(userSystemOverrides);
-      overrideSystemNames.forEach((systemName) => {
-        coreSettings.systems[systemName] = userSystemOverrides[systemName];
-      });
-      this.update({
-        coreSettings,
-      });
-
-      // Store settings in localstorage to make the site start faster the next time
-      this.storeCoreSettings(coreSettings);
-    } catch (e) {
-      Modal.error(e);
-
-      Logger.logToServer(e);
-    }
-  }
-
-  private async updateUserData(bustCache) {
-    if (UserUtils.hasAuthenticationCookie) {
-      await this.updateCurrentUser(bustCache);
-
-      EventMux.initialize();
-      NotificationCountManager.initialize(this.state.coreSettings);
-
-      await Promise.all([
-        this.updateLoggedInUserClans(),
-        this.updateUserCredentialTypes(),
-        this.updateCrossSavePairingStatus(),
-      ]);
-    } else {
-      this.update({
-        loggedInUser: undefined,
-        loggedInUserClans: undefined,
-      });
-    }
-  }
-
-  private updateCurrentUser(bustCache) {
-    const queryAppend = bustCache ? `&bustCache=${Date.now()}` : undefined;
-
-    return Platform.UserService.GetCurrentUser(queryAppend)
-      .then((data) => {
-        this.update({
-          loggedInUser: data,
-        });
-      })
-      .catch((e: Error) => {
-        GlobalFatalDataStore.addErrorToStore(e.message);
-        this.update({
-          loggedInUser: undefined,
-        });
-      });
-  }
-
-  private async updateLoggedInUserClans(): Promise<
-    GroupsV2.GetGroupsForMemberResponse
-  > {
-    let loggedInUserClans: GroupsV2.GetGroupsForMemberResponse;
-    try {
-      const results = await Platform.GroupV2Service.GetGroupsForMember(
-        BungieMembershipType.BungieNext,
-        UserUtils.loggedInUserMembershipIdFromCookie,
-        GroupsForMemberFilter.All,
-        GroupType.Clan
-      );
-
-      if (results) {
-        loggedInUserClans = results;
+      try {
+        credentialTypes = await Platform.UserService.GetCredentialTypesForAccount();
+      } catch (e) {
+        Logger.error(e);
       }
-    } catch (e) {
-      Logger.error(e);
-    }
 
-    this.update({
-      loggedInUserClans,
-    });
+      return {
+        credentialTypes,
+      };
+    },
+    /**
+     * Update CoreSettings from the value stored in localStorage, for faster loading
+     */
+    setSettingsFromStorage: () => {
+      const stored = GlobalStateDataStoreInternal.fetchStoredCoreSettings();
+      if (stored) {
+        return {
+          coreSettings: stored,
+        };
+      }
+    },
+    /**
+     * Reload settings from the server
+     */
+    refreshSettings: async () => {
+      try {
+        // Grab the common settings and the user overrides, then replace values with the overridden ones
+        const data = await Promise.all([
+          Platform.CoreService.GetCommonSettings(),
+          Platform.CoreService.GetUserSystemOverrides(),
+        ]);
 
-    return;
-  }
+        const coreSettings = data[0];
+        const userSystemOverrides = data[1];
+        const overrideSystemNames = Object.keys(userSystemOverrides);
+        overrideSystemNames.forEach((systemName) => {
+          coreSettings.systems[systemName] = userSystemOverrides[systemName];
+        });
 
-  private async updateCrossSavePairingStatus(): Promise<void> {
-    let crossSavePairingStatus: CrossSave.CrossSavePairingStatus;
-    try {
-      crossSavePairingStatus = await Platform.CrosssaveService.GetCrossSavePairingStatus();
-    } catch (e) {
-      Logger.error(e);
-    }
+        // Store settings in localstorage to make the site start faster the next time
+        GlobalStateDataStoreInternal.storeCoreSettings(coreSettings);
 
-    this.update({
-      crossSavePairingStatus,
-    });
+        return {
+          coreSettings,
+        };
+      } catch (e) {
+        Modal.error(e);
 
-    return;
-  }
+        await Logger.logToServer(e);
+
+        return;
+      }
+    },
+    /**
+     * Set user data back to initial state
+     */
+    resetUserData: () => ({
+      loggedInUser: undefined,
+      loggedInUserClans: undefined,
+    }),
+    /**
+     * Update the logged in user data
+     * @param user The logged in user data
+     */
+    setLoggedInUser: (user: Contract.UserDetail) => ({
+      loggedInUser: user,
+    }),
+    /**
+     * Fetch the current user's clan data
+     */
+    refreshLoggedInUserClans: async () => {
+      let loggedInUserClans: GroupsV2.GetGroupsForMemberResponse;
+      try {
+        const results = await Platform.GroupV2Service.GetGroupsForMember(
+          BungieMembershipType.BungieNext,
+          UserUtils.loggedInUserMembershipIdFromCookie,
+          GroupsForMemberFilter.All,
+          GroupType.Clan
+        );
+
+        if (results) {
+          loggedInUserClans = results;
+        }
+      } catch (e) {
+        Logger.error(e);
+      }
+
+      return {
+        loggedInUserClans,
+      };
+    },
+    /**
+     * Fetch the current user's cross save state
+     */
+    refreshCrossSavePairingStatus: async () => {
+      let crossSavePairingStatus: CrossSave.CrossSavePairingStatus;
+      try {
+        crossSavePairingStatus = await Platform.CrosssaveService.GetCrossSavePairingStatus();
+      } catch (e) {
+        Logger.error(e);
+      }
+
+      return {
+        crossSavePairingStatus,
+      };
+    },
+    /**
+     * Fetch the current user data
+     * @param bustCache
+     */
+    refreshCurrentUser: (bustCache?: boolean) => {
+      const queryAppend = bustCache ? `&bustCache=${Date.now()}` : undefined;
+
+      return Platform.UserService.GetCurrentUser(queryAppend)
+        .then(this.actions.setLoggedInUser)
+        .catch((e: Error) => {
+          GlobalFatalDataStore.actions.addError(e.message);
+
+          return this.actions.setLoggedInUser(undefined);
+        });
+    },
+    /**
+     * Reset all user-related data and download it again
+     * @param bustCache
+     */
+    refreshUserAndRelatedData: async (bustCache?: boolean) => {
+      EventMux.destroy();
+      NotificationCountManager.destroy();
+
+      if (UserUtils.hasAuthenticationCookie) {
+        await this.actions.refreshCurrentUser(bustCache);
+
+        EventMux.initialize();
+        NotificationCountManager.initialize(this.state.coreSettings);
+
+        await Promise.all([
+          this.actions.refreshLoggedInUserClans(),
+          this.actions.refreshCredentialTypes(),
+          this.actions.refreshCrossSavePairingStatus(),
+        ]);
+      } else {
+        this.actions.resetUserData();
+      }
+
+      return {};
+    },
+  });
 
   private createContext() {
     const { Provider, Consumer } = React.createContext<IGlobalState>(null);
@@ -271,18 +283,20 @@ class GlobalStateDataStoreInternal extends DataStore<
     this.Consumer = Consumer;
   }
 
-  private storeCoreSettings(settings: Models.CoreSettingsConfiguration) {
+  private static storeCoreSettings(settings: Models.CoreSettingsConfiguration) {
     const stringified = JSON.stringify(settings);
+
     LocalStorageUtils.setItem(
       GlobalStateDataStoreInternal.CoreSettingsLocalStorageKey,
       stringified
     );
   }
 
-  private fetchStoredCoreSettings() {
+  private static fetchStoredCoreSettings() {
     const stringified = LocalStorageUtils.getItem(
       GlobalStateDataStoreInternal.CoreSettingsLocalStorageKey
     );
+
     if (stringified) {
       return JSON.parse(stringified) as Models.CoreSettingsConfiguration;
     }

@@ -1,4 +1,4 @@
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import React from "react";
 import styles from "./Season11AvailableToAll.module.scss";
 import classNames from "classnames";

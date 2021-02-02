@@ -11,20 +11,29 @@ class GlobalFatalDataStoreInternal extends DataStore<
   IGlobalFatalDataStorePayload
 > {
   public static Instance = new GlobalFatalDataStoreInternal({
-    error: null,
+    error: [],
   });
 
-  public addErrorToStore(errorString: string) {
-    const errorArray = [];
+  public actions = this.createActions({
+    /**
+     * Add an error. This should only include errors that are truly fatal, meaning the page is totally broken.
+     * @param errorString The error contents
+     */
+    addError: (errorString: string) => {
+      const errorArray = [...this.state.error];
 
-    if (errorString) {
-      errorArray.push(errorString);
+      if (errorString) {
+        errorArray.push(errorString);
+      }
 
-      this.update({
+      return {
         error: errorArray,
-      });
-    }
-  }
+      };
+    },
+  });
 }
 
+/**
+ * Holds error information related to errors that block fundamental site content from working.
+ */
 export const GlobalFatalDataStore = GlobalFatalDataStoreInternal.Instance;

@@ -1,3 +1,4 @@
+import { IPCMigrationUserData } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import React from "react";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./PCMigrationModal.module.scss";
@@ -8,8 +9,7 @@ import {
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localizer";
-import { IPCMigrationUserData } from "@UI/User/PCMigrationUserDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";

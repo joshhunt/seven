@@ -4,7 +4,7 @@ import {
   Season11DataStore,
   Season11DataStorePayload,
 } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { Season11PlayButton } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PlayButton";
@@ -44,7 +44,7 @@ export class Season11Hero extends React.Component<{}, Season11HeroState> {
     return (
       <div
         className={styles.hero}
-        ref={(ref) => ref && Season11DataStore.setHeroRef(ref)}
+        ref={(ref) => ref && Season11DataStore.actions.setHeroRef(ref)}
       >
         {season11Data.heroTrailerYoutubeId && (
           <Season11PlayButton

@@ -3,7 +3,7 @@
 
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import {

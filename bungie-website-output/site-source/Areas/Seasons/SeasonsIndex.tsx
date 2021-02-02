@@ -6,7 +6,7 @@ import {
   SeasonsArray,
   SeasonsDefinitions,
 } from "@Areas/Seasons/SeasonsDefinitions";
-import { Localizer } from "@Global/Localizer";
+import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
