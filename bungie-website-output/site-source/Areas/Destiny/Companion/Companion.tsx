@@ -111,7 +111,7 @@ export class Companion extends React.Component<
                 <div>
                   <a
                     href={
-                      "http://itunes.apple.com/us/app/bungie-mobile/" +
+                      "https://apps.apple.com/us/app/destiny-2-companion/id" +
                       this.companionAppId
                     }
                     className={styles.btnAppStore}
