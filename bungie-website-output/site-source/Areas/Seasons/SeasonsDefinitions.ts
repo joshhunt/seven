@@ -143,13 +143,13 @@ class SeasonOfTheChosen extends SeasonDefinition {
     return Localizer.Seasons.SeasonOfTheChosen;
   }
 
-  public image = "/7/ca/destiny/bgs/season12/ArticleBanner_01.jpg";
+  public image = "/7/ca/destiny/bgs/season13/Season13_Key_Art.jpg";
   public progressPageImage =
-    "/7/ca/destiny/bgs/season12/season_progress_bg.jpg";
+    "/7/ca/destiny/bgs/season13/seasonbackground_13.jpg";
   public productPageLink = RouteHelper.SeasonOfTheChosen();
   public calendarContentItem;
   public calendarBackgroundImage =
-    "/7/ca/destiny/bgs/season12/calendar_bg_desktop.png";
+    "/7/ca/destiny/bgs/season13/calendar_bg_desktop.jpg";
   public seasonNumber = 13;
   public actionRouteString = "SeasonOfTheChosen";
 
@@ -157,12 +157,12 @@ class SeasonOfTheChosen extends SeasonDefinition {
     return Localizer.Seasons.LearnMoreSeasonOfTheChosen;
   }
 
-  public smallIcon = "7/ca/destiny/bgs/season12/icon_season12_full.png";
+  public smallIcon = "7/ca/destiny/bgs/season13/s13_icon.svg";
 }
 
 export class SeasonsDefinitions {
-  public static currentSeason = Season12.instance;
-  public static previousSeason = Season11.instance;
+  public static currentSeason = SeasonOfTheChosen.instance;
+  public static previousSeason = Season12.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -173,6 +173,7 @@ export class SeasonsDefinitions {
 }
 
 export const SeasonsArray = [
+  SeasonOfTheChosen.instance,
   Season12.instance,
   Season11.instance,
   SeasonOfTheWorthy.instance,

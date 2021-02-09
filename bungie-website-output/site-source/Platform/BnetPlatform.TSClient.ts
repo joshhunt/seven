@@ -1849,16 +1849,6 @@ export declare namespace Contract {
     archivedLastReplyDate?: string;
   }
 
-  export interface LegacyGamePlayer {
-    HaloReach: Models.PlayerGameDetails;
-
-    Halo3Odst: Models.PlayerGameDetails;
-
-    Halo3: Models.PlayerGameDetails;
-
-    Halo2: Models.PlayerGameDetails;
-  }
-
   export interface UserBanRequest {
     comment: string;
 
@@ -4886,22 +4876,6 @@ export declare namespace Models {
     requestContinuationToken: string;
   }
 
-  export interface PlayerGameDetails {
-    Gamertag: string;
-
-    GamesPlayed?: string;
-
-    ServiceTag: string;
-
-    EmblemUrl: string;
-
-    PlayerModelUrl: string;
-
-    PlayerModelAvatarUrl: string;
-
-    Status: Globals.GameServiceStatus;
-  }
-
   export interface CoreSettingsConfiguration {
     environment: string;
 
@@ -5004,6 +4978,8 @@ export declare namespace Models {
     currentSeasonalArtifactHash: number;
 
     currentSeasonHash?: number;
+
+    seasonalChallengesPresentationNodeHash?: number;
 
     futureSeasonHashes: number[];
 
@@ -6986,6 +6962,13 @@ export declare namespace Definitions {
     displayProperties: Definitions.DestinyVendorDisplayPropertiesDefinition;
 
     /**
+		The type of reward progression that this vendor has.
+		Default - The original rank progression from token redemption.
+		Ritual - Progression from ranks in ritual content. For example: Crucible (Shaxx), Gambit (Drifter), and Battlegrounds (War Table).
+		*/
+    vendorProgressionType: Globals.DestinyVendorProgressionType;
+
+    /**
 		If the vendor has a custom localized string describing the "buy" action, that is
 		returned here.
 		*/
@@ -8018,11 +8001,6 @@ export declare namespace Definitions {
     releaseTime: number;
 
     /**
-		The difficulty level of the activity.
-		*/
-    activityLevel: number;
-
-    /**
 		The recommended light level for this activity.
 		*/
     activityLightLevel: number;
@@ -8519,7 +8497,7 @@ export declare namespace Definitions {
 	terms: but an actual instance of an item can vary widely from these generic definitions.
 	*/
   export interface DestinyInventoryItemDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+    displayProperties: Definitions.DestinyItemDisplayPropertiesDefinition;
 
     /**
 		Tooltips that only come up conditionally for the item.  Check the live data 
@@ -8931,6 +8909,22 @@ export declare namespace Definitions {
     index: number;
 
     redacted: boolean;
+  }
+
+  export interface DestinyItemDisplayPropertiesDefinition {
+    flavorText: string;
+
+    description: string;
+
+    name: string;
+
+    icon: string;
+
+    iconSequences: Common.DestinyIconSequenceDefinition[];
+
+    highResIcon: string;
+
+    hasIcon: boolean;
   }
 
   export interface DestinyItemTooltipNotification {
@@ -14610,6 +14604,8 @@ export declare namespace Records {
 
     recordValueStyle: Globals.DestinyRecordValueStyle;
 
+    forTitleGilding: boolean;
+
     titleInfo: Records.DestinyRecordTitleBlock;
 
     completionInfo: Records.DestinyRecordCompletionBlock;
@@ -14660,6 +14656,8 @@ export declare namespace Records {
 		For those who prefer to use the definitions.
 		*/
     titlesByGenderHash: { [key: number]: string };
+
+    gildingTrackingRecordHash?: number;
   }
 
   export interface DestinyRecordCompletionBlock {
@@ -14696,6 +14694,8 @@ export declare namespace Records {
   export interface DestinyRecordIntervalBlock {
     intervalObjectives: Records.DestinyRecordIntervalObjective[];
 
+    intervalRewards: Records.DestinyRecordIntervalRewards[];
+
     originalObjectiveArrayInsertionIndex: number;
   }
 
@@ -14703,6 +14703,10 @@ export declare namespace Records {
     intervalObjectiveHash: number;
 
     intervalScoreValue: number;
+  }
+
+  export interface DestinyRecordIntervalRewards {
+    intervalRewardItems: World.DestinyItemQuantity[];
   }
 }
 
@@ -17811,11 +17815,58 @@ export declare namespace Seasons {
 
     sealPresentationNodeHash?: number;
 
+    seasonalChallengesPresentationNodeHash?: number;
+
+    /**
+		Optional - Defines the promotional text, images, and links to preview this season.
+		*/
+    preview: Seasons.DestinySeasonPreviewDefinition;
+
     hash: number;
 
     index: number;
 
     redacted: boolean;
+  }
+
+  /**
+	Defines the promotional text, images, and links to preview this season.
+	*/
+  export interface DestinySeasonPreviewDefinition {
+    /**
+		A localized description of the season.
+		*/
+    description: string;
+
+    /**
+		A localized link to learn more about the season.
+		*/
+    link: string;
+
+    /**
+		A list of images to preview the seasonal content. Should have at least three to show.
+		*/
+    images: Seasons.DestinySeasonPreviewImageDefinition[];
+  }
+
+  /**
+	Defines the thumbnail icon, high-res image, and video link for promotional images
+	*/
+  export interface DestinySeasonPreviewImageDefinition {
+    /**
+		Path to a thumbnail icon to preview seasonal content.
+		*/
+    thumbnailIcon: string;
+
+    /**
+		Optional path to a high-res image.
+		*/
+    highResImage: string;
+
+    /**
+		Optional link to a localized video, probably YouTube.
+		*/
+    videoLink: string;
   }
 
   export interface DestinySeasonPassDefinition {
@@ -19999,7 +20050,7 @@ class UserServiceInternal {
     clientState?: any
   ): Promise<User.UserPhoneResponse> =>
     ApiIntermediary.doPostRequest(
-      `/User/AddPhoneNumber/${e(phoneNumber)}`,
+      `/User/AddPhoneNumber/${e(phoneNumber)}/`,
       [],
       optionalQueryAppend,
       "User",
@@ -20039,7 +20090,7 @@ class UserServiceInternal {
     clientState?: any
   ): Promise<User.UserPhoneResponse> =>
     ApiIntermediary.doPostRequest(
-      `/User/CheckPhoneValidation/${e(oneTimeCode)}`,
+      `/User/CheckPhoneValidation/${e(oneTimeCode)}/`,
       [],
       optionalQueryAppend,
       "User",
@@ -22579,7 +22630,7 @@ class ActivityServiceInternal {
   /**
    * Get your paged set of Friends and their presence info, per credential for which you have friends.
    * @param credentialType The type of friend platform to use.
-   * @param currentPage The zero based page to access
+   * @param currentPage The one based page to access
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -23718,50 +23769,6 @@ class IgnoreServiceInternal {
       optionalQueryAppend,
       "Ignore",
       "GetReportContext",
-      undefined,
-      clientState
-    );
-}
-
-class GameServiceInternal {
-  /**
-   * Returns all legacy game data for the supplied membership id.
-   * @param membershipId The membershipId of the user to retrieve.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetPlayerGamesById = (
-    membershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<Contract.LegacyGamePlayer> =>
-    ApiIntermediary.doGetRequest(
-      `/Game/GetPlayerGamesById/${e(membershipId)}/`,
-      [],
-      optionalQueryAppend,
-      "Game",
-      "GetPlayerGamesById",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Updates the reach avatar of a user via sneakernet code.
-   * @param code
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static ReachModelSneakerNet = (
-    code: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<boolean> =>
-    ApiIntermediary.doPostRequest(
-      `/Game/ReachModelSneakerNet/${e(code)}/`,
-      [],
-      optionalQueryAppend,
-      "Game",
-      "ReachModelSneakerNet",
       undefined,
       clientState
     );
@@ -27273,7 +27280,6 @@ export class Platform {
   public static ActivityService = ActivityServiceInternal;
   public static GroupV2Service = GroupV2ServiceInternal;
   public static IgnoreService = IgnoreServiceInternal;
-  public static GameService = GameServiceInternal;
   public static AdminService = AdminServiceInternal;
   public static TokensService = TokensServiceInternal;
   public static Destiny2Service = Destiny2ServiceInternal;

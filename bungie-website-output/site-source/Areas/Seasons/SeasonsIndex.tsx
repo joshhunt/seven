@@ -8,9 +8,11 @@ import {
 } from "@Areas/Seasons/SeasonsDefinitions";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { ScrollToAnchorTags } from "@UI/Navigation/ScrollToAnchorTags";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
 import classNames from "classnames";
 import React from "react";
 import styles from "./SeasonsIndex.module.scss";
@@ -24,36 +26,39 @@ export const SeasonsIndex: React.FC<SeasonsIndexProps> = (props) => {
   const currentSeason = SeasonsDefinitions.currentSeason;
 
   return (
-    <Grid className={styles.grid}>
-      <GridCol cols={12}>
-        <h2 className={styles.sectionHeader}>
-          {Localizer.Seasons.CurrentSeason}
-        </h2>
-      </GridCol>
-
-      <Anchor url={currentSeason.productPageLink}>
-        <GridCol
-          cols={12}
-          className={classNames(styles.cardWrapper, styles.currentSeason)}
-        >
-          <SeasonCard season={currentSeason} isCurrent={true} />
+    <>
+      <ScrollToAnchorTags animate={true} />
+      <Grid className={styles.grid}>
+        <GridCol cols={12}>
+          <h2 className={styles.sectionHeader}>
+            {Localizer.Seasons.CurrentSeason}
+          </h2>
         </GridCol>
-      </Anchor>
 
-      <GridCol cols={12}>
-        <h3 className={styles.sectionHeader}>
-          {Localizer.Seasons.PastSeasons}
-        </h3>
-      </GridCol>
-
-      {pastSeasons.map((season, i) => (
-        <Anchor url={season.productPageLink} key={i}>
-          <GridCol cols={6} mobile={12} className={styles.cardWrapper}>
-            <SeasonCard season={season} />
+        <Anchor url={currentSeason.productPageLink}>
+          <GridCol
+            cols={12}
+            className={classNames(styles.cardWrapper, styles.currentSeason)}
+          >
+            <SeasonCard season={currentSeason} isCurrent={true} />
           </GridCol>
         </Anchor>
-      ))}
-    </Grid>
+
+        <GridCol cols={12} id="past-seasons">
+          <h3 className={styles.sectionHeader}>
+            {Localizer.Seasons.PastSeasons}
+          </h3>
+        </GridCol>
+
+        {pastSeasons.map((season, i) => (
+          <Anchor url={season.productPageLink} key={i}>
+            <GridCol cols={6} mobile={12} className={styles.cardWrapper}>
+              <SeasonCard season={season} />
+            </GridCol>
+          </Anchor>
+        ))}
+      </Grid>
+    </>
   );
 };
 

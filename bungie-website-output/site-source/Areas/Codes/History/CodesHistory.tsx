@@ -46,7 +46,7 @@ class CodesHistory extends React.Component<
   public componentDidMount() {
     if (UserUtils.isAuthenticated(this.props.globalState)) {
       CodesDataStore.initialize(
-        !!this.props.globalState.crossSavePairingStatus?.primaryMembershipType
+        !!this.props.globalState.crossSavePairingStatus?.primaryMembershipId
       );
     }
   }
@@ -58,7 +58,7 @@ class CodesHistory extends React.Component<
     // if user logs in then need to load everything
     if (!wasAuthed && isNowAuthed) {
       CodesDataStore.initialize(
-        !!this.props.globalState.crossSavePairingStatus?.primaryMembershipType
+        !!this.props.globalState.crossSavePairingStatus?.primaryMembershipId
       );
     }
   }

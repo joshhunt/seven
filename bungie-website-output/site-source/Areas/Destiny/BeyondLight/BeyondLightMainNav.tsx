@@ -244,6 +244,7 @@ export class BeyondLightMainNav extends React.Component<
                 })}
                 className={styles.preOrderNav}
                 buttonType={"blue"}
+                analyticsId={"BeyondLightNavBuyButton"}
               >
                 {preorderNav}
               </Button>

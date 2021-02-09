@@ -4,6 +4,7 @@ export class DestinySkuTags {
   public static ShadowkeepCollectors = "shadowkeepcollectors";
   public static ForsakenDetail = "forsaken";
   public static LegendaryEdition = "legendaryedition";
+  public static SilverBundle = "silverbundle";
 }
 
 export class DestinyProductFamilies {

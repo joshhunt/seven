@@ -1,6 +1,7 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
+import { BeyondLightWinBack } from "@Areas/Destiny/BeyondLight/BeyondLightWinBack";
 import { NextGenModule } from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
 import {
   BeyondLightPhaseFourDataStore,
@@ -147,11 +148,15 @@ class BeyondLightOverhaul extends React.Component<
     }
 
     return (
-      <React.Fragment>
+      <div className={styles.overhaulContainer}>
         <Hero
-          posterPath={homepage.heroVideoPosterPath}
-          videoLoopPath={homepage.heroVideoLoop}
-          mobileBgPath={homepage.heroMobileImage}
+          posterPath={
+            "/7/ca/destiny/products/beyondlight/01_HERO_desktop_bg.jpg"
+          }
+          videoLoopPath={""}
+          mobileBgPath={
+            "/7/ca/destiny/products/beyondlight/01_hero_mobile_bg.jpg"
+          }
           heading={beyondlightLoc.BeyondLight}
           logoPath={`/7/ca/destiny/products/beyondlight/logo_${
             Localizer.CurrentCultureName || "en"
@@ -166,234 +171,19 @@ class BeyondLightOverhaul extends React.Component<
           buttonTwoType={"blue"}
           isMedium={medium}
           isMobile={mobile}
-          releaseDateEyebrow={beyondlightLoc.GoBeyondTheLight}
-          releaseDate={beyondlightLoc.September222020}
+          releaseDateEyebrow={beyondlightLoc.AvailableNow}
+          releaseDate={""}
           bgColor={homepage.bgHexHero ?? homepage.bgHexHero}
-          overlayImage={homepage.heroOverlayImage}
+          overlayImage={""}
         />
-        <div className={styles.nextGenBanner}>
-          <div className={styles.nextGenHeader}>{beyondlightLoc.NextGen}</div>
-          <div className={styles.nextGenDesc}>
-            {beyondlightLoc.ExperienceDestiny2Upgrades}
-          </div>
-          <Button
-            className={styles.nextGenLearnMore}
-            buttonType={"clear"}
-            onClick={() => this.scrollToNextGen()}
-          >
-            {beyondlightLoc.LearnMore}
-          </Button>
-        </div>
+        <BeyondLightWinBack trailerId={phaseFour.heroTrailerButtonVideoId} />
 
-        <section
-          className={styles.goBeyond}
-          style={{ backgroundColor: "#080f1f" }}
-        >
-          <div
-            className={styles.bgContainer}
-            style={{
-              backgroundImage: mobile
-                ? `url(${"/7/ca/destiny/products/beyondlight/bl_overview_bg_mobile.jpg"})`
-                : `url(${homepage.sectionTwoDesktopBackgroundImage})`,
-            }}
-          >
-            <div className={styles.contentWrapper}>
-              <TextBlock
-                title={homepage.sectionTwoHeading}
-                body={homepage.sectionTwoBodyCopy}
-                videoProps={homepage.sectionTwoVideoID || null}
-              />
-              {homepage.sectionTwoVideoID && (
-                <VideoBlock
-                  videoPath={homepage.sectionTwoVideoID}
-                  videoThumbnail={homepage.sectionTwoVideoPathThumb}
-                  isMedium={medium}
-                />
-              )}
-            </div>
-          </div>
-        </section>
-        <section
-          className={styles.textWithButton}
-          style={{ backgroundColor: homepage.bgHex3 ?? "rgb(33, 40, 51)" }}
-        >
-          <div
-            className={styles.contentWrapper}
-            style={{
-              backgroundImage: mobile
-                ? `url(${homepage.sectionThreeMobileImage})`
-                : `url(${homepage.sectionThreeDesktopImage})`,
-            }}
-          >
-            <div className={styles.textWrapper}>
-              <h2>{homepage.sectionThreeHeading}</h2>
-              <span className={styles.shortBorder} />
-              <p>{homepage.sectionThreeBodyCopy}</p>
-              <Button
-                caps
-                buttonType={"white"}
-                url={homepage.exploreButtonLink}
-              >
-                {homepage.exploreButtonText}
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className={styles.textWithScreenShots}
-          style={{ backgroundColor: homepage.bgHex3 ?? "rgb(33, 40, 51)" }}
-        >
-          <div
-            className={styles.contentWrapper}
-            style={{
-              backgroundImage: mobile
-                ? `url(${homepage.sectionFourMobileImage})`
-                : `url(${homepage.sectionFourDesktopImage})`,
-            }}
-          >
-            <div>
-              <h2 className={styles.europaTitle}>
-                {beyondlightLoc.europaAwaitsTitle}
-              </h2>
-              <span className={styles.shortBorder} />
-              <p>{beyondlightLoc.europaAwaitsDesc}</p>
-            </div>
-
-            {!phaseTwoActive && phaseTwo.exploreButton ? (
-              <div className={styles.screenshotWrapper}>
-                <ScreenShotBlock
-                  screenshotPath={
-                    "destiny/products/beyondlight/europa_screenshot_1.jpg"
-                  }
-                  thumbnailPath={`destiny/products/beyondlight/europa_screenshot_1_thumbnail.jpg`}
-                  isMedium={medium}
-                />
-                <ScreenShotBlock
-                  screenshotPath={
-                    "destiny/products/beyondlight/europa_screenshot_2.jpg"
-                  }
-                  thumbnailPath={`destiny/products/beyondlight/europa_screenshot_2_thumbnail.jpg`}
-                  isMedium={medium}
-                />
-                <ScreenShotBlock
-                  screenshotPath={
-                    "destiny/products/beyondlight/europa_screenshot_3.jpg"
-                  }
-                  thumbnailPath={`destiny/products/beyondlight/europa_screenshot_3_thumbnail.jpg`}
-                  isMedium={medium}
-                />
-              </div>
-            ) : (
-              <Button
-                caps
-                buttonType={"white"}
-                url={RouteHelper.BeyondLightPhases("europa")}
-              >
-                {phaseTwo.exploreButton}
-              </Button>
-            )}
-          </div>
-        </section>
-
-        <section
-          className={styles.textWithScreenShots}
-          style={{ backgroundColor: homepage.bgHex4 ?? "rgb(33, 40, 51)" }}
-        >
-          <div
-            className={classNames(styles.contentWrapper, styles.arsenalWrapper)}
-            style={{
-              backgroundImage: mobile
-                ? `url(${homepage.sectionFiveMobileImage})`
-                : `url(${homepage.sectionFiveDesktopImage})`,
-            }}
-          >
-            <div>
-              <h2 className={styles.arsenalTitle}>
-                {homepage.sectionFiveHeading}
-              </h2>
-              <span className={styles.shortBorder} />
-              <p>{homepage.sectionSixBodyCopy}</p>
-            </div>
-
-            {!phaseThreeActive && phaseThree.exploreButton ? (
-              <div className={styles.screenshotWrapper}>
-                <ScreenShotBlock
-                  screenshotPath={homepage.sectionFiveScreenshot1}
-                  thumbnailPath={homepage.sectionFiveScreenshot1Thumb}
-                  isMedium={medium}
-                />
-                <ScreenShotBlock
-                  screenshotPath={homepage.sectionFiveScreenshot2}
-                  thumbnailPath={homepage.sectionFiveScreenshot2Thumb}
-                  isMedium={medium}
-                />
-                <ScreenShotBlock
-                  screenshotPath={homepage.sectionFiveScreenshot3}
-                  thumbnailPath={homepage.sectionFiveScreenshot3Thumb}
-                  isMedium={medium}
-                />
-              </div>
-            ) : (
-              <Button
-                caps
-                buttonType={"white"}
-                url={RouteHelper.BeyondLightPhases("gear")}
-              >
-                {phaseThree.exploreButton}
-              </Button>
-            )}
-          </div>
-        </section>
-
-        <section
-          className={styles.textWithScreenShots}
-          style={{ backgroundColor: homepage.bgHex5 ?? "rgb(33, 40, 51)" }}
-        >
-          <div
-            className={styles.contentWrapper}
-            style={{
-              backgroundImage: mobile
-                ? `url(${homepage.sectionSixMobileImage})`
-                : `url(${homepage.sectionSixDesktopImage})`,
-            }}
-          >
-            <div className={styles.textWrapper}>
-              <h2>{homepage.sectionSevenHeading}</h2>
-              <span className={styles.shortBorder} />
-              <p>{homepage.sectionSevenBody}</p>
-            </div>
-            {phaseFour.exploreButton && (
-              <Button
-                caps
-                buttonType={"white"}
-                url={RouteHelper.BeyondLightPhases("story")}
-              >
-                {phaseFour.exploreButton}
-              </Button>
-            )}
-          </div>
-        </section>
-        <section
-          className={styles.deepStoneCrypt}
-          style={{
-            backgroundImage: mobile
-              ? null
-              : `url(${homepage.sectionSevenDesktopImage})`,
-          }}
-        >
-          <div>
-            <h2>{beyondlightLoc.deepStoneCryptTitle}</h2>
-            <span className={styles.shortBorder} />
-            <p>{beyondlightLoc.deepStoneCryptDesc}</p>
-          </div>
-        </section>
         <NextGenModule />
         <div id={"editions"} className={styles.preorder}>
           {this.contentBlock(beyondlightLoc.Editions, "", blockType.centered)}
           <BeyondLightProducts globalState={this.props.globalState} />
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 

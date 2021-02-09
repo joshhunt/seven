@@ -34,7 +34,12 @@ const TextBlock: React.FC<IBeyondLightTextBlock> = ({
       style={{ paddingTop: reverseColumn ? "3rem" : null }}
     >
       {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
-      {title && <h2 className={styles.title}>{title}</h2>}
+      {title && (
+        <h2
+          className={styles.title}
+          dangerouslySetInnerHTML={{ __html: title }}
+        />
+      )}
       <span className={styles.shortBorder} />
       {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
       {body && <p className={styles.bodyText}>{body}</p>}

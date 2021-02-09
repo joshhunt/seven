@@ -145,57 +145,24 @@ class BeyondLightOriginal extends React.Component<
               </div>
             </div>
           </div>
-          <div className={styles.preorderBonusWrapper}>
-            <div className={styles.preorderBonus}>
-              <div className={styles.preorderBonusContent}>
-                <div className={styles.preorderBonusText}>
-                  <p>{preorderBonus}</p>
-                  <p>{beyondlightLoc.DigitalDeluxeOwnersAlso}</p>
-                </div>
-              </div>
-            </div>
-          </div>
           <div
             className={styles.gobeyond}
             id={"overview"}
             ref={(el) => (this.idToElementsMapping["overview"] = el)}
           >
             {this.contentBlock(
-              beyondlightLoc.gobeyondTitle,
+              beyondlightLoc.DarknessIsHere,
               beyondlightLoc.gobeyondDesc,
               blockType.centered
             )}
+            <Button
+              className={styles.trailerButton}
+              onClick={() => this.showVideo(this.gameplayVideoId)}
+            >
+              <div className={styles.playButton} />
+              <p>{beyondlightLoc.WatchTheLaunchTrailer}</p>
+            </Button>
           </div>
-          {this.gameplayVideoId !== "" && (
-            <div className={styles.gameplayReveal}>
-              <div className={styles.trailerContent}>
-                <Button
-                  className={styles.trailerButton}
-                  onClick={() => this.showVideo(this.gameplayVideoId)}
-                >
-                  <div className={styles.trailerContainer}>
-                    <video
-                      playsInline={true}
-                      autoPlay={true}
-                      muted={true}
-                      loop={true}
-                      poster={
-                        "/7/ca/destiny/products/beyondlight/bl_hero_video_FPO.jpg"
-                      }
-                    >
-                      <source
-                        src={`/7/ca/destiny/products/beyondlight/d2_beyondlight_gameplay_trailer_video_h264.mp4`}
-                        type="video/mp4"
-                      />
-                    </video>
-                  </div>
-                  <div className={styles.playButton} />
-                  <p>{beyondlightLoc.BeyondLightGameplayTrailer}</p>
-                </Button>
-              </div>
-            </div>
-          )}
-
           <div
             id={"destination"}
             className={styles.europaAwaits}

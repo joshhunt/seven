@@ -389,6 +389,7 @@ export enum AclEnum {
   BNextApplicationSupervision = 28,
   BNextMentorColors = 29,
   Tiger2Ban = 30,
+  BNextClanCreationBan = 31,
 }
 
 /**
@@ -894,6 +895,7 @@ export enum PlatformErrorCodes {
   ActivityLoggingDisabled = 707,
   ClanRequiresExistingDestinyAccount = 750,
   ClanNameRestricted = 751,
+  ClanCreationBan = 752,
   ItemAlreadyFollowed = 801,
   ItemNotFollowed = 802,
   CannotFollowSelf = 803,
@@ -941,6 +943,9 @@ export enum PlatformErrorCodes {
   PsnApiAccountAttributeMissing = 1237,
   PsnApiNoPermission = 1238,
   PsnApiTargetUserBlocked = 1239,
+  PsnApiJwksMissing = 1240,
+  PsnApiJwtMalformedHeader = 1241,
+  PsnApiJwtMalformedPayload = 1242,
   XblExSystemDisabled = 1300,
   XblExUnknownError = 1301,
   XblApiErrorWebException = 1302,
@@ -1291,6 +1296,31 @@ export enum PhoneValidationStatusEnum {
   Banned = 5,
 }
 
+export enum GlobalAcknowledgementItem {
+  Triumphs = 0,
+  GearManager = 1,
+  Nux = 2,
+  TwitchLink = 3,
+}
+
+export enum OptInFlags {
+  None = 0,
+  Newsletter = 1,
+  System = 2,
+  Marketing = 4,
+  UserResearch = 8,
+  CustomerService = 16,
+  Social = 32,
+  PlayTests = 64,
+  PlayTestsLocal = 128,
+  Careers = 256,
+}
+
+export enum AnonymousIdentifierSource {
+  BungieNext = 0,
+  DestinyTwitchExt = 1,
+}
+
 export enum TemplateFormat {
   BNet = 0,
   Plain = 1,
@@ -1608,6 +1638,7 @@ export enum DestinyGameVersions {
   Forsaken = 8,
   YearTwoAnnualPass = 16,
   Shadowkeep = 32,
+  BeyondLight = 64,
 }
 
 export enum DestinyRace {
@@ -2219,6 +2250,10 @@ export enum DestinyVendorItemState {
 		This indicates that the item is for charity.
 		*/
   Charity = 8192,
+  /**
+		This indicates that the item has a seasonal reward expiration.
+		*/
+  SeasonalRewardExpiration = 16384,
 }
 
 export enum TierType {
@@ -2404,6 +2439,21 @@ export enum BucketCategory {
   Currency = 2,
   Equippable = 3,
   Ignored = 4,
+}
+
+/**
+	Describes the type of progression that a vendor has.
+	*/
+export enum DestinyVendorProgressionType {
+  /**
+		The original rank progression from token redemption.
+		*/
+  Default = 0,
+  /**
+		Progression from ranks in ritual content.
+		For example: Crucible (Shaxx), Gambit (Drifter), and Season 13 Battlegrounds (War Table).
+		*/
+  Ritual = 1,
 }
 
 /**
@@ -2886,6 +2936,8 @@ export enum DestinyRecordToastStyle {
   Badge = 3,
   MetaRecord = 4,
   MedalComplete = 5,
+  SeasonChallengeComplete = 6,
+  GildedTitleComplete = 7,
 }
 
 export enum DestinyUnlockState {
@@ -2921,31 +2973,6 @@ export enum EntityType {
   Tag = 8,
   Application = 9,
   ClanFireteam = 10,
-}
-
-export enum GlobalAcknowledgementItem {
-  Triumphs = 0,
-  GearManager = 1,
-  Nux = 2,
-  TwitchLink = 3,
-}
-
-export enum OptInFlags {
-  None = 0,
-  Newsletter = 1,
-  System = 2,
-  Marketing = 4,
-  UserResearch = 8,
-  CustomerService = 16,
-  Social = 32,
-  PlayTests = 64,
-  PlayTestsLocal = 128,
-  Careers = 256,
-}
-
-export enum AnonymousIdentifierSource {
-  BungieNext = 0,
-  DestinyTwitchExt = 1,
 }
 
 export enum ContentSortBy {
@@ -3144,6 +3171,7 @@ export enum ActivityType {
   ClaimProgressionReward = 2900,
   View = 3000,
   Click = 3001,
+  SubmitPhoneNumber = 3002,
   None = -1,
 }
 
@@ -3206,13 +3234,6 @@ export enum FriendOnlineStatus {
   Offline = 0,
   Online = 1,
   Idle = 2,
-}
-
-export enum GameServiceStatus {
-  Error = 0,
-  NotFound = 1,
-  Success = 2,
-  Unknown = 3,
 }
 
 export enum OfferRedeemMode {

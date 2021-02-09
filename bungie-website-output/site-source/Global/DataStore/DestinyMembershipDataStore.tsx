@@ -1,11 +1,9 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { ConvertToPlatformError } from "@ApiIntermediary";
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { DataStore } from "@Global/DataStore";
 import { Characters, GroupsV2, Platform, User } from "@Platform";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React from "react";
 import { EnumUtils } from "@Utilities/EnumUtils";
 
@@ -15,95 +13,28 @@ interface DestinyMembershipDataStorePayload {
   selectedMembership: GroupsV2.GroupUserInfoCard;
   characters: { [key: string]: Characters.DestinyCharacterComponent };
   selectedCharacter: Characters.DestinyCharacterComponent;
-  initialDataLoaded: boolean;
 }
 
-export class DestinyMembershipDataStore extends DataStore<
+class DestinyMembershipDataStoreGeneral extends DataStore<
   DestinyMembershipDataStorePayload
 > {
-  constructor(private readonly membershipId: string) {
-    super({
-      membershipData: null,
-      memberships: [],
-      selectedMembership: null,
-      characters: {},
-      selectedCharacter: null,
-      initialDataLoaded: false,
-    });
-
-    this.initialize();
-  }
-
-  public async initialize() {
-    await this.actions.refreshMembershipData();
-
-    const defaultMembership = this.state.memberships[0];
-    await this.actions.updatePlatform(
-      EnumUtils.getStringValue(
-        defaultMembership.membershipType,
-        BungieMembershipType
-      )
-    );
-  }
+  public static Instance = new DestinyMembershipDataStoreGeneral({
+    membershipData: null,
+    memberships: [],
+    selectedMembership: null,
+    characters: {},
+    selectedCharacter: null,
+  });
 
   public actions = this.createActions({
     /**
-     * Update the membership type, and fetch the Destiny profile that matches
-     * @param membershipTypeString
+     * Get all memberships for user and update data store fields
      */
-    updatePlatform: async (
-      membershipTypeString: EnumStrings<typeof BungieMembershipType>
-    ) => {
-      const membershipToUse = this.state.memberships.find((m) =>
-        EnumUtils.looseEquals(
-          m.membershipType,
-          membershipTypeString,
-          BungieMembershipType
-        )
-      );
-
-      try {
-        const profileResponse = await Platform.Destiny2Service.GetProfile(
-          membershipToUse.membershipType,
-          membershipToUse.membershipId,
-          [
-            DestinyComponentType.Profiles,
-            DestinyComponentType.CharacterProgressions,
-            DestinyComponentType.Characters,
-          ]
-        );
-
-        return {
-          selectedMembership: membershipToUse,
-          characters: profileResponse?.characters?.data,
-          selectedCharacter: this._getMostRecentlyPlayedCharacter(
-            profileResponse?.characters?.data
-          ),
-          initialDataLoaded: true,
-        };
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    /**
-     * Update the currently selected character based on its character ID
-     * @param characterId
-     */
-    updateCharacter: (characterId: string) => {
-      return {
-        selectedCharacter: this.state.characters[characterId],
-      };
-    },
-    /**
-     * Fetch membership data
-     */
-    refreshMembershipData: async () => {
-      try {
-        const data = await Platform.UserService.GetMembershipDataById(
-          this.membershipId,
-          BungieMembershipType.BungieNext
-        );
-
+    getMemberships: (membershipId: string) => {
+      return Platform.UserService.GetMembershipDataById(
+        membershipId,
+        BungieMembershipType.BungieNext
+      ).then((data) => {
         const isCrossSaved = typeof data.primaryMembershipId !== "undefined";
 
         const memberships = isCrossSaved
@@ -114,17 +45,41 @@ export class DestinyMembershipDataStore extends DataStore<
             ]
           : data.destinyMemberships;
 
+        /* If memberships is empty, it will update the value to be [], so if [] is empty, they are either logged out or have no destiny account */
         return {
           membershipData: data,
-          memberships,
+          memberships: memberships.length > 0 ? memberships : [],
           selectedMembership: memberships[0],
         };
-      } catch (e) {
-        const pe = await ConvertToPlatformError(e);
-
-        Modal.error(pe);
-      }
+      });
     },
+    updatePlatform: (value: string) => {
+      const membershipToUse = this.state.memberships.find((m) =>
+        EnumUtils.looseEquals(m.membershipType, value, BungieMembershipType)
+      );
+
+      return Platform.Destiny2Service.GetProfile(
+        membershipToUse.membershipType,
+        membershipToUse.membershipId,
+        [
+          DestinyComponentType.Profiles,
+          DestinyComponentType.CharacterProgressions,
+          DestinyComponentType.Characters,
+        ]
+      ).then((profileResponse) => {
+        return {
+          selectedMembership: membershipToUse,
+          characters: profileResponse?.characters?.data,
+          selectedCharacter: this._getMostRecentlyPlayedCharacter(
+            profileResponse?.characters?.data
+          ),
+          initialDataLoaded: true,
+        };
+      });
+    },
+    updateCharacter: (value: string) => ({
+      selectedCharacter: this.state.characters[value],
+    }),
   });
 
   private readonly _getMostRecentlyPlayedCharacter = (characters: {
@@ -144,3 +99,6 @@ export class DestinyMembershipDataStore extends DataStore<
     return characters[mostRecentCharId];
   };
 }
+
+export const DestinyMembershipDataStore =
+  DestinyMembershipDataStoreGeneral.Instance;

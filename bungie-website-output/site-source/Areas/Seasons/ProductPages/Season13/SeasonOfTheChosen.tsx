@@ -81,7 +81,7 @@ const SeasonOfTheChosen: React.FC<SeasonOfTheChosenProps> = (props) => {
       />
       <SeasonPassList13 />
       <BungieRewards13 />
-      <SilverBundle13 />
+      <SilverBundle13 inputRef={(ref) => ref} />
       <Calendar13 inputRef={(ref) => (idToElementsMapping["calendar"] = ref)} />
       <div className={styles.finalElements}>
         <FirehoseNewsAndMedia tag={"season-13-media"} />

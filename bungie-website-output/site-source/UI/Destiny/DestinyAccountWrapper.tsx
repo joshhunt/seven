@@ -53,70 +53,76 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
   onPlatformChange,
   onCharacterChange,
 }) => {
-  const destinyMembershipDataStore = useMemo(
-    () =>
-      new DestinyMembershipDataStore(
-        UserUtils.loggedInUserMembershipIdFromCookie
-      ),
-    []
-  );
-
   //check for changes in auth status
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembership = useDataStore(destinyMembershipDataStore);
+  const destinyMembership = useDataStore(DestinyMembershipDataStore);
 
-  return destinyMembership.initialDataLoaded ? (
+  useEffect(() => {
+    DestinyMembershipDataStore.actions.getMemberships(
+      UserUtils.loggedInUserMembershipIdFromCookie
+    );
+  }, []);
+
+  return destinyMembership.membershipData ? (
     <Grid>
       <SystemDisabledHandler systems={["Destiny2"]}>
         <RequiresAuth />
-        {children({
-          platformSelector: (
-            <DestinyPlatformSelector
-              userMembershipData={destinyMembership.membershipData}
-              onChange={async (
-                value: EnumStrings<typeof BungieMembershipType>
-              ) => {
-                await destinyMembershipDataStore.actions.updatePlatform(value);
-                onPlatformChange?.(value);
-              }}
-              defaultValue={destinyMembership.memberships[0].membershipType}
-              crossSavePairingStatus={globalState.crossSavePairingStatus}
-            />
-          ),
-          characterSelector: (
-            <DestinyCharacterSelector
-              characterComponent={destinyMembership.characters}
-              defaultCharacterId={
-                destinyMembership.selectedCharacter.characterId
-              }
-              onChange={(value: string) => {
-                destinyMembershipDataStore.actions.updateCharacter(value);
-                onCharacterChange?.(value);
-              }}
-            />
-          ),
-          bnetProfile: (
-            <div className={styles.bnetProfile}>
-              <TwoLineItem
-                icon={
-                  <img
-                    src={destinyMembership.selectedCharacter?.emblemPath}
-                    alt={Localizer.profile.EmblemAltText}
-                  />
-                }
-                itemTitle={globalState.loggedInUser.user.displayName}
-                itemSubtitle={
-                  Localizer.Platforms[
-                    EnumUtils.getStringValue(
-                      destinyMembership.selectedMembership.membershipType,
-                      BungieMembershipType
-                    )
-                  ]
-                }
+        {destinyMembership.memberships.length > 0 ? (
+          children({
+            platformSelector: (
+              <DestinyPlatformSelector
+                userMembershipData={destinyMembership.membershipData}
+                onChange={(value: string) => {
+                  DestinyMembershipDataStore.actions.updatePlatform(value);
+                  onPlatformChange?.(value);
+                }}
+                defaultValue={destinyMembership.memberships[0].membershipType}
+                crossSavePairingStatus={globalState.crossSavePairingStatus}
               />
-            </div>
-          ),
-        })}
+            ),
+            characterSelector: (
+              <>
+                {destinyMembership.selectedCharacter && (
+                  <DestinyCharacterSelector
+                    characterComponent={destinyMembership.characters}
+                    defaultCharacterId={
+                      destinyMembership.selectedCharacter.characterId
+                    }
+                    onChange={(value: string) => {
+                      DestinyMembershipDataStore.actions.updateCharacter(value);
+                      onCharacterChange?.(value);
+                    }}
+                  />
+                )}
+              </>
+            ),
+            bnetProfile: (
+              <div className={styles.bnetProfile}>
+                <TwoLineItem
+                  icon={
+                    <img
+                      src={destinyMembership.selectedCharacter?.emblemPath}
+                      alt={Localizer.profile.EmblemAltText}
+                    />
+                  }
+                  itemTitle={globalState.loggedInUser.user.displayName}
+                  itemSubtitle={
+                    Localizer.Platforms[
+                      EnumUtils.getStringValue(
+                        destinyMembership.selectedMembership.membershipType,
+                        BungieMembershipType
+                      )
+                    ]
+                  }
+                />
+              </div>
+            ),
+          })
+        ) : (
+          <div className={styles.noAccount}>
+            {Localizer.CodeRedemption.LinkedDestinyAccountRequiredHeader}
+          </div>
+        )}
       </SystemDisabledHandler>
     </Grid>
   ) : null;

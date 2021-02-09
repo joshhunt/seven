@@ -42,16 +42,13 @@ interface GameHistoryProps
  */
 const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const destinyMembership = useDataStore(DestinyMembershipDataStore);
 
-  // DestinyMembershipDataStore maintains the membership and character data for the dropdowns used in DestinyAccountWrapper
-  const destinyMembershipDataStore = useMemo(
-    () =>
-      new DestinyMembershipDataStore(
-        UserUtils.loggedInUserMembershipIdFromCookie
-      ),
-    []
-  );
-  const destinyMembership = useDataStore(destinyMembershipDataStore);
+  useEffect(() => {
+    DestinyMembershipDataStore.actions.getMemberships(
+      UserUtils.loggedInUserMembershipIdFromCookie
+    );
+  }, []);
 
   // Initialize types
   const initialHistory: HistoricalStats.DestinyActivityHistoryResults = null;

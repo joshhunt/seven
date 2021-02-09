@@ -114,17 +114,19 @@ const Hero = ({
         backgroundColor: bgColor ? bgColor : "rgb(33, 40, 51)",
       }}
     >
-      <div className={styles.videoContainer}>
-        <video
-          playsInline={true}
-          autoPlay={true}
-          muted={true}
-          loop={true}
-          poster={posterPath}
-        >
-          {videoLoopPath && <source src={videoLoopPath} type="video/mp4" />}
-        </video>
-      </div>
+      {videoLoopPath && (
+        <div className={styles.videoContainer}>
+          <video
+            playsInline={true}
+            autoPlay={true}
+            muted={true}
+            loop={true}
+            poster={posterPath}
+          >
+            <source src={videoLoopPath} type="video/mp4" />
+          </video>
+        </div>
+      )}
       {overlayImage && (
         <div
           className={overlayClasses}
@@ -154,17 +156,26 @@ const Hero = ({
             <Button
               buttonType={videoPlayButtonType}
               onClick={() => showVideo(youTubeVideoId)}
+              analyticsId={"BeyondLightHeroTrailerButton"}
             >
               {videoPlayButtonText}
             </Button>
           )}
           {buttonOneLink && (
-            <Button buttonType={buttonOneType} url={buttonOneLink}>
+            <Button
+              buttonType={buttonOneType}
+              url={buttonOneLink}
+              analyticsId={"BeyondLightHeroBuyButton1"}
+            >
               {buttonOneText}
             </Button>
           )}
           {buttonTwoLink && (
-            <Button buttonType={buttonTwoType} url={buttonTwoLink}>
+            <Button
+              buttonType={buttonTwoType}
+              url={buttonTwoLink}
+              analyticsId={"BeyondLightHeroBuyButton2"}
+            >
               {buttonTwoText}
             </Button>
           )}

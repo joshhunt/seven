@@ -549,6 +549,11 @@ export declare namespace DestinyDefinitions {
     None = 6,
   }
 
+  enum DestinyVendorProgressionType {
+    Default = 0,
+    Ritual = 1,
+  }
+
   enum VendorDisplayCategorySortOrder {
     Default = 0,
     SortByTier = 1,
@@ -608,6 +613,7 @@ export declare namespace DestinyDefinitions {
     PriceDrop = 2048,
     DailyOffer = 4096,
     Charity = 8192,
+    SeasonalRewardExpiration = 16384,
   }
 
   enum DestinySocketCategoryStyle {
@@ -678,6 +684,8 @@ export declare namespace DestinyDefinitions {
     Badge = 3,
     MetaRecord = 4,
     MedalComplete = 5,
+    SeasonChallengeComplete = 6,
+    GildedTitleComplete = 7,
   }
 
   enum DestinyPresentationScreenStyle {
@@ -744,8 +752,6 @@ export declare namespace DestinyDefinitions {
     releaseIcon: string;
 
     releaseTime: number;
-
-    activityLevel: number;
 
     completionUnlockHash: number;
 
@@ -1385,7 +1391,7 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyInventoryItemDefinition {
-    displayProperties: DestinyDisplayPropertiesDefinition;
+    displayProperties: DestinyItemDisplayPropertiesDefinition;
 
     tooltipNotifications: DestinyItemTooltipNotification[];
 
@@ -1524,6 +1530,22 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
+  }
+
+  export interface DestinyItemDisplayPropertiesDefinition {
+    flavorText: string;
+
+    description: string;
+
+    name: string;
+
+    icon: string;
+
+    iconSequences: DestinyIconSequenceDefinition[];
+
+    highResIcon: string;
+
+    hasIcon: boolean;
   }
 
   export interface DestinyItemTooltipNotification {
@@ -3227,6 +3249,8 @@ export declare namespace DestinyDefinitions {
   export interface DestinyVendorDefinition {
     displayProperties: DestinyVendorDisplayPropertiesDefinition;
 
+    vendorProgressionType: DestinyVendorProgressionType;
+
     buyString: string;
 
     sellString: string;
@@ -3873,7 +3897,7 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyInventoryItemLiteDefinition {
-    displayProperties: DestinyDisplayPropertiesDefinition;
+    displayProperties: DestinyItemDisplayPropertiesDefinition;
 
     tooltipNotifications: DestinyItemTooltipNotification[];
 
@@ -4545,6 +4569,8 @@ export declare namespace DestinyDefinitions {
 
     startTimeOverrideUnlockValueHash?: number;
 
+    seasonalChallengesPresentationNodeHash?: number;
+
     memorializedBonusUnlockValueHash?: number;
 
     activeUnlockExpression: DestinyUnlockExpressionDefinition;
@@ -4557,6 +4583,8 @@ export declare namespace DestinyDefinitions {
 
     seasonEndingSoonUnlockExpression: DestinyUnlockExpressionDefinition;
 
+    preview: DestinySeasonPreviewDefinition;
+
     boundToRelease: string;
 
     hash: number;
@@ -4568,6 +4596,22 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
+  }
+
+  export interface DestinySeasonPreviewDefinition {
+    description: string;
+
+    link: string;
+
+    images: DestinySeasonPreviewImageDefinition[];
+  }
+
+  export interface DestinySeasonPreviewImageDefinition {
+    thumbnailIcon: string;
+
+    highResImage: string;
+
+    videoLink: string;
   }
 
   export interface DestinySeasonPassDefinition {
@@ -4733,6 +4777,8 @@ export declare namespace DestinyDefinitions {
 
     recordValueStyle: DestinyRecordValueStyle;
 
+    forTitleGilding: boolean;
+
     titleInfo: DestinyRecordTitleBlock;
 
     completionInfo: DestinyRecordCompletionBlock;
@@ -4746,6 +4792,8 @@ export declare namespace DestinyDefinitions {
     intervalInfo: DestinyRecordIntervalBlock;
 
     rewardItems: DestinyItemQuantity[];
+
+    intervalRewards: DestinyRecordIntervalRewards[];
 
     presentationNodeType: DestinyPresentationNodeType;
 
@@ -4778,6 +4826,8 @@ export declare namespace DestinyDefinitions {
     masculineTitle: string;
 
     feminineTitle: string;
+
+    gildingTrackingRecordHash?: number;
   }
 
   export interface DestinyRecordCompletionBlock {
@@ -4821,6 +4871,8 @@ export declare namespace DestinyDefinitions {
   export interface DestinyRecordIntervalBlock {
     intervalObjectives: DestinyRecordIntervalObjective[];
 
+    intervalRewards: DestinyRecordIntervalRewards[];
+
     originalObjectiveArrayInsertionIndex: number;
 
     isIntervalVersionedFromNormalRecord: boolean;
@@ -4834,6 +4886,10 @@ export declare namespace DestinyDefinitions {
     intervalScoreValue: number;
 
     intervalClaimedRewardSiteHash?: number;
+  }
+
+  export interface DestinyRecordIntervalRewards {
+    intervalRewardItems: DestinyItemQuantity[];
   }
 
   export interface DestinyPresentationChildBlock {

@@ -86,179 +86,182 @@ class PhaseTwo extends React.Component<PhaseTwoProps, PhaseTwoState> {
           description={phaseTwo.heroSubheading}
           image={phaseTwo.heroMobileImage}
         />
-        <Hero
-          posterPath={phaseTwo.heroPosterImage}
-          videoLoopPath={phaseTwo.heroVideoLoopPath}
-          mobileBgPath={phaseTwo.heroMobileImage}
-          heading={phaseTwo.heroHeading}
-          subheading={phaseTwo.heroSubheading}
-          videoPlayButtonText={phaseTwo.heroTrailerButtonText}
-          videoPlayButtonType={"white"}
-          youTubeVideoId={phaseTwo.heroTrailerButtonVideoId}
-          buttonOneLink={RouteHelper.DestinyBuyDetail({
-            productFamilyTag: "beyondlight",
-          })}
-          buttonOneText={phaseTwo.heroTrailerPreOrderButtonLink}
-          overlayImage={phaseTwo.heroMobileOverlay}
-          buttonOneType={"blue"}
-          isMedium={medium}
-          isMobile={mobile}
-        />
+        <div className={styles.pageWrapper}>
+          <Hero
+            posterPath={phaseTwo.heroPosterImage}
+            videoLoopPath={phaseTwo.heroVideoLoopPath}
+            mobileBgPath={phaseTwo.heroMobileImage}
+            heading={phaseTwo.heroHeading}
+            subheading={phaseTwo.heroSubheading}
+            videoPlayButtonText={phaseTwo.heroTrailerButtonText}
+            videoPlayButtonType={"white"}
+            youTubeVideoId={phaseTwo.heroTrailerButtonVideoId}
+            buttonOneLink={RouteHelper.DestinyBuyDetail({
+              productFamilyTag: "beyondlight",
+            })}
+            buttonOneText={phaseTwo.heroTrailerPreOrderButtonLink}
+            overlayImage={phaseTwo.heroMobileOverlay}
+            buttonOneType={"blue"}
+            isMedium={medium}
+            isMobile={mobile}
+          />
 
-        <section
-          className={styles.sectionOne}
-          style={{
-            backgroundColor:
-              phaseTwo.sectionOneBackgroundHex ?? "rgb(33, 40, 51)",
-          }}
-        >
-          <div
-            className={styles.contentWrapper}
+          <section
+            className={styles.sectionOne}
             style={{
-              backgroundImage: mobile
-                ? `url(${phaseTwo.sectionOneMobileBackground})`
-                : `url(${phaseTwo.sectionOneDesktopBackground})`,
+              backgroundColor:
+                phaseTwo.sectionOneBackgroundHex ?? "rgb(33, 40, 51)",
             }}
           >
-            <TextBlock
-              title={phaseTwo.sectionOneHeading}
-              body={phaseTwo.sectionOneSubheading}
-            />
-          </div>
-        </section>
+            <div
+              className={styles.contentWrapper}
+              style={{
+                backgroundImage: mobile
+                  ? `url(${phaseTwo.sectionOneMobileBackground})`
+                  : `url(${phaseTwo.sectionOneDesktopBackground})`,
+              }}
+            >
+              <TextBlock
+                title={phaseTwo.sectionOneHeading}
+                body={phaseTwo.sectionOneSubheading}
+              />
+            </div>
+          </section>
 
-        <section
-          className={styles.videoSection}
-          style={{
-            backgroundColor: phaseTwo.videoSectionHex ?? "rgb(33, 40, 51)",
-          }}
-        >
-          <div
-            className={styles.contentWrapper}
+          <section
+            className={styles.videoSection}
             style={{
-              backgroundImage: mobile
-                ? `url(${phaseTwo.videoSectionMobileBackground})`
-                : `url(${phaseTwo.videoSectionDesktopBackground})`,
+              backgroundColor: phaseTwo.videoSectionHex ?? "rgb(33, 40, 51)",
             }}
           >
-            <h2 className={styles.videoSectionHeading}>
-              {phaseTwo.videoSectionHeading}
-            </h2>
-            <span className={styles.bottomBorder} />
-            <VideoBlock
-              classes={{ wrapper: styles.videoWrapper }}
-              videoPath={phaseTwo.videoSectionVideoId}
-              videoThumbnail={phaseTwo.videoSectionPoster}
-              isMedium={medium}
-              alignment="center"
+            <div
+              className={styles.contentWrapper}
+              style={{
+                backgroundImage: mobile
+                  ? `url(${phaseTwo.videoSectionMobileBackground})`
+                  : `url(${phaseTwo.videoSectionDesktopBackground})`,
+              }}
+            >
+              <h2 className={styles.videoSectionHeading}>
+                {phaseTwo.videoSectionHeading}
+              </h2>
+              <span className={styles.bottomBorder} />
+              <VideoBlock
+                classes={{ wrapper: styles.videoWrapper }}
+                videoPath={phaseTwo.videoSectionVideoId}
+                videoThumbnail={phaseTwo.videoSectionPoster}
+                isMedium={medium}
+                alignment="center"
+              />
+              {mobile && (
+                <p className={styles.arrowEyebrow}>
+                  {phaseTwo.sectionTwoEyebrow}
+                </p>
+              )}
+            </div>
+            <DownArrows />
+          </section>
+
+          {mobile ? (
+            <PhaseTwoAccordion
+              accordionData={[
+                {
+                  title: phaseTwo.sectionTwoItemOneTitle,
+                  labelBackground: `${
+                    phaseTwo.sectionTwoItemOneMobileBackground +
+                    Localizer.CurrentCultureName
+                  }.jpg`,
+                  description: phaseTwo.sectionTwoItemOneDescription,
+                  image: phaseTwo.sectionTwoItemOneImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemTwoTitle,
+                  labelBackground: `${
+                    phaseTwo.sectionTwoItemTwoMobileBackground +
+                    Localizer.CurrentCultureName
+                  }.jpg`,
+                  description: phaseTwo.sectionTwoItemTwoDescription,
+                  image: phaseTwo.sectionTwoItemTwoImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemThreeTitle,
+                  labelBackground: `${
+                    phaseTwo.sectionTwoItemThreeMobileBackground +
+                    Localizer.CurrentCultureName
+                  }.jpg`,
+                  description: phaseTwo.sectionTwoItemThreeDescription,
+                  image: phaseTwo.sectionTwoItemThreeImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemFourTitle,
+                  labelBackground: `${
+                    phaseTwo.sectionTwoItemFourMobileBackground +
+                    Localizer.CurrentCultureName
+                  }.jpg`,
+                  description: phaseTwo.sectionTwoItemFourDescription,
+                  image: phaseTwo.sectionTwoItemFourImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemFiveTitle,
+                  labelBackground: `${
+                    phaseTwo.sectionTwoItemFiveMobileBackground +
+                    Localizer.CurrentCultureName
+                  }.jpg`,
+                  description: phaseTwo.sectionTwoItemFiveDescription,
+                  image: phaseTwo.sectionTwoItemFiveImage,
+                },
+              ]}
             />
-            {mobile && (
-              <p className={styles.arrowEyebrow}>
-                {phaseTwo.sectionTwoEyebrow}
-              </p>
-            )}
+          ) : (
+            <BeyondLightMap
+              mapPointData={[
+                {
+                  title: phaseTwo.sectionTwoItemOneTitle,
+                  description: phaseTwo.sectionTwoItemOneDescription,
+                  imageThumb: phaseTwo.sectionTwoItemOneImageThumb,
+                  image: phaseTwo.sectionTwoItemOneImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemTwoTitle,
+                  description: phaseTwo.sectionTwoItemTwoDescription,
+                  imageThumb: phaseTwo.sectionTwoItemTwoImageThumb,
+                  image: phaseTwo.sectionTwoItemTwoImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemThreeTitle,
+                  description: phaseTwo.sectionTwoItemThreeDescription,
+                  imageThumb: phaseTwo.sectionTwoItemThreeImageThumb,
+                  image: phaseTwo.sectionTwoItemThreeImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemFourTitle,
+                  description: phaseTwo.sectionTwoItemFourDescription,
+                  imageThumb: phaseTwo.sectionTwoItemFourImageThumb,
+                  image: phaseTwo.sectionTwoItemFourImage,
+                },
+                {
+                  title: phaseTwo.sectionTwoItemFiveTitle,
+                  description: phaseTwo.sectionTwoItemFiveDescription,
+                  imageThumb: phaseTwo.sectionTwoItemFiveImageThumb,
+                  image: phaseTwo.sectionTwoItemFiveImage,
+                },
+              ]}
+              sectionHeading={phaseTwo.sectionTwoHeading}
+              sectionEyebrow={phaseTwo.sectionTwoEyebrow}
+              backgroundImage={`${
+                phaseTwo.sectionTwoBackgroundImage +
+                Localizer.CurrentCultureName
+              }.jpg`}
+              backgroundImageCandy={phaseTwo.sectionTwoBackgroundCandyOne}
+              backgroundImageCandyTwo={phaseTwo.sectionTwoBackgroundCandyTwo}
+              toolTipFlair={phaseTwo.sectionTwoToolTipBackground}
+            />
+          )}
+
+          <div id={"editions"} className={styles.preorder}>
+            {this.contentBlock(beyondlightLoc.Editions, "", blockType.centered)}
+            <BeyondLightProducts globalState={this.props.globalState} />
           </div>
-          <DownArrows />
-        </section>
-
-        {mobile ? (
-          <PhaseTwoAccordion
-            accordionData={[
-              {
-                title: phaseTwo.sectionTwoItemOneTitle,
-                labelBackground: `${
-                  phaseTwo.sectionTwoItemOneMobileBackground +
-                  Localizer.CurrentCultureName
-                }.jpg`,
-                description: phaseTwo.sectionTwoItemOneDescription,
-                image: phaseTwo.sectionTwoItemOneImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemTwoTitle,
-                labelBackground: `${
-                  phaseTwo.sectionTwoItemTwoMobileBackground +
-                  Localizer.CurrentCultureName
-                }.jpg`,
-                description: phaseTwo.sectionTwoItemTwoDescription,
-                image: phaseTwo.sectionTwoItemTwoImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemThreeTitle,
-                labelBackground: `${
-                  phaseTwo.sectionTwoItemThreeMobileBackground +
-                  Localizer.CurrentCultureName
-                }.jpg`,
-                description: phaseTwo.sectionTwoItemThreeDescription,
-                image: phaseTwo.sectionTwoItemThreeImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemFourTitle,
-                labelBackground: `${
-                  phaseTwo.sectionTwoItemFourMobileBackground +
-                  Localizer.CurrentCultureName
-                }.jpg`,
-                description: phaseTwo.sectionTwoItemFourDescription,
-                image: phaseTwo.sectionTwoItemFourImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemFiveTitle,
-                labelBackground: `${
-                  phaseTwo.sectionTwoItemFiveMobileBackground +
-                  Localizer.CurrentCultureName
-                }.jpg`,
-                description: phaseTwo.sectionTwoItemFiveDescription,
-                image: phaseTwo.sectionTwoItemFiveImage,
-              },
-            ]}
-          />
-        ) : (
-          <BeyondLightMap
-            mapPointData={[
-              {
-                title: phaseTwo.sectionTwoItemOneTitle,
-                description: phaseTwo.sectionTwoItemOneDescription,
-                imageThumb: phaseTwo.sectionTwoItemOneImageThumb,
-                image: phaseTwo.sectionTwoItemOneImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemTwoTitle,
-                description: phaseTwo.sectionTwoItemTwoDescription,
-                imageThumb: phaseTwo.sectionTwoItemTwoImageThumb,
-                image: phaseTwo.sectionTwoItemTwoImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemThreeTitle,
-                description: phaseTwo.sectionTwoItemThreeDescription,
-                imageThumb: phaseTwo.sectionTwoItemThreeImageThumb,
-                image: phaseTwo.sectionTwoItemThreeImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemFourTitle,
-                description: phaseTwo.sectionTwoItemFourDescription,
-                imageThumb: phaseTwo.sectionTwoItemFourImageThumb,
-                image: phaseTwo.sectionTwoItemFourImage,
-              },
-              {
-                title: phaseTwo.sectionTwoItemFiveTitle,
-                description: phaseTwo.sectionTwoItemFiveDescription,
-                imageThumb: phaseTwo.sectionTwoItemFiveImageThumb,
-                image: phaseTwo.sectionTwoItemFiveImage,
-              },
-            ]}
-            sectionHeading={phaseTwo.sectionTwoHeading}
-            sectionEyebrow={phaseTwo.sectionTwoEyebrow}
-            backgroundImage={`${
-              phaseTwo.sectionTwoBackgroundImage + Localizer.CurrentCultureName
-            }.jpg`}
-            backgroundImageCandy={phaseTwo.sectionTwoBackgroundCandyOne}
-            backgroundImageCandyTwo={phaseTwo.sectionTwoBackgroundCandyTwo}
-            toolTipFlair={phaseTwo.sectionTwoToolTipBackground}
-          />
-        )}
-
-        <div id={"editions"} className={styles.preorder}>
-          {this.contentBlock(beyondlightLoc.Editions, "", blockType.centered)}
-          <BeyondLightProducts globalState={this.props.globalState} />
         </div>
       </>
     );

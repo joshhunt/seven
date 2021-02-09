@@ -5,7 +5,10 @@ import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
+import {
+  IDestinyProductDefinition,
+  IDestinyProductFamilyDefinition,
+} from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
 } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
@@ -26,7 +29,6 @@ import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import * as React from "react";
-import { IDestinyProductFamilyDefinition } from "../../../UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import styles from "./DestinyBuyIndex.module.scss";
 import { DestinyBuyCoverCard } from "./Shared/DestinyBuyCoverCard";
 
@@ -90,7 +92,7 @@ export default class DestinyBuyInternal extends React.Component<
         (a) => a.key === "DestinyProductFamilies"
       );
 
-      // Load the Firehose content item for the specified tags
+      /* Load the Firehose content item for the specified tags */
       this.loadProductFamilyContent(familySection.firehoseContentSetTag);
       this.loadSkuContent(skuSection.firehoseContentSetTag);
       this.carouselContent();

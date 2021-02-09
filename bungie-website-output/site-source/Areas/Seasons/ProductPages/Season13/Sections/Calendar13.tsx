@@ -27,31 +27,31 @@ export const Calendar13: React.FC<Calendar13Props> = (props) => {
     });
   }, []);
 
-  return calendar?.largeImage ? (
-    <div
-      id={"calendar"}
-      ref={props.inputRef}
-      className={styles.calendarSection}
-    >
-      <h2 className={styles.title}>{Localizer.Seasons.Calendar}</h2>
+  return (
+    <div id={"calendar"} ref={props.inputRef}>
+      {calendar?.largeImage ? (
+        <div className={styles.calendarSection}>
+          <h2 className={styles.title}>{Localizer.Seasons.Calendar}</h2>
 
-      <div
-        className={styles.calendar}
-        role={"article"}
-        style={{ backgroundImage: `url(${calendar.largeImage})` }}
-        onClick={() => {
-          Modal.open(
-            <img
-              src={calendar.largeImage}
-              className={styles.largeImage}
-              alt={Localizer.Seasons.Calendar}
-            />,
-            {
-              isFrameless: true,
-            }
-          );
-        }}
-      />
+          <div
+            className={styles.calendar}
+            role={"article"}
+            style={{ backgroundImage: `url(${calendar.largeImage})` }}
+            onClick={() => {
+              Modal.open(
+                <img
+                  src={calendar.largeImage}
+                  className={styles.largeImage}
+                  alt={Localizer.Seasons.Calendar}
+                />,
+                {
+                  isFrameless: true,
+                }
+              );
+            }}
+          />
+        </div>
+      ) : null}
     </div>
-  ) : null;
+  );
 };

@@ -24,27 +24,13 @@ import { LegalLicenses } from "./LegalLicenses";
 import { LegalCookiePolicy } from "./LegalCookiePolicy";
 import { UrlUtils } from "@Utilities/UrlUtils";
 
-interface LegalAreaState {
-  trademarksItemExists: boolean;
-}
+interface LegalAreaState {}
 
 class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
   constructor(props: RouteComponentProps) {
     super(props);
 
-    this.state = {
-      trademarksItemExists: false,
-    };
-  }
-
-  public async componentDidMount() {
-    const trademarksItem = await Platform.ContentService.GetContentByTagAndType(
-      "bungie trademarks page 3",
-      "InformationBlock",
-      Localizer.CurrentCultureName,
-      true
-    );
-    this.setState({ trademarksItemExists: trademarksItem !== undefined });
+    this.state = {};
   }
 
   public render() {
@@ -59,8 +45,6 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
     const paymentServicesAct = RouteDefs.Areas.Legal.getAction(
       "paymentServicesAct"
     );
-
-    //TODO: make this act just like the others in 2021
     const trademarks = RouteDefs.Areas.Legal.getAction(
       "IntellectualPropertyTrademarks"
     );
@@ -96,7 +80,7 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
         to: licenses.resolve(),
         current: licenses.action === currentAction,
       },
-      this.state.trademarksItemExists && {
+      {
         label: Localizer.Userpages.LegalTrademarksTitle,
         to: trademarks.resolve(),
         current: trademarks.action === currentAction,
@@ -139,11 +123,9 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
                 <Route path={cookiePolicy.path}>
                   <h2>{Localizer.Pagetitles.CookiePolicy}</h2>
                 </Route>
-                {this.state.trademarksItemExists && (
-                  <Route path={trademarks.path}>
-                    <h2>{Localizer.UserPages.LegalTrademarksTitle}</h2>
-                  </Route>
-                )}
+                <Route path={trademarks.path}>
+                  <h2>{Localizer.UserPages.LegalTrademarksTitle}</h2>
+                </Route>
                 <Route path={paymentServicesAct.path}>
                   <h2>{Localizer.Pagetitles.paymentServicesAct}</h2>
                 </Route>
@@ -176,9 +158,7 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
                   component={LegalCodeOfConduct}
                 />
                 <Route path={licenses.path} component={LegalLicenses} />
-                {this.state.trademarksItemExists && (
-                  <Route path={trademarks.path} component={LegalTrademarks} />
-                )}
+                <Route path={trademarks.path} component={LegalTrademarks} />
                 <Route
                   path={paymentServicesAct.path}
                   component={LegalPaymentServicesAct}
