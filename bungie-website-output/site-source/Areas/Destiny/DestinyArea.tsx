@@ -4,7 +4,6 @@ import { Redirect, Route, RouteComponentProps } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
-import { DestinySeasonPass } from "./DestinySeasonPass";
 import PcRegister from "./PcRegister";
 import StadiaRegister from "./StadiaRegister";
 import EventsRouter from "@Areas/Seasons/Events/EventsRouter";
@@ -78,7 +77,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           />
           <Route path={beyondLightPath} component={BeyondLightFlickerWrapper} />
           <Route path={companionPath} component={Companion} />
-          <Route path={seasonPassPath} component={DestinySeasonPass} />
           <Route path={pcRegister} component={PcRegister} />
           <Route path={stadiaRegister} component={StadiaRegister} />
           <Route path={infoFlowUrl} component={EventsRouter} />

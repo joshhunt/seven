@@ -17,7 +17,7 @@ export type Environment =
   | "live";
 
 export const EnumKey = <TEnum>(enumVal: any, enumObj: TEnum) => {
-  return (enumObj[enumVal] as unknown) as keyof typeof enumObj;
+  return ((enumObj as any)[enumVal] as unknown) as keyof typeof enumObj;
 };
 
 /**

@@ -26,7 +26,7 @@ export class PCMigrationNotVerified extends PCMigrationStageBase<
 > {
   private readonly checkboxRef: React.RefObject<Checkbox>;
 
-  constructor(props) {
+  constructor(props: IPCMigrationStageBaseProps) {
     super(props);
 
     this.sendVerificationEmail = this.sendVerificationEmail.bind(this);

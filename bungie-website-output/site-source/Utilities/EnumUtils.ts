@@ -40,7 +40,7 @@ export class EnumUtils {
 
     return isNaN(parseInt(enumValue as string))
       ? (enumValue as EnumStrings<T>)
-      : (enumType[enumValue] as EnumStrings<T>);
+      : ((enumType as any)[enumValue] as EnumStrings<T>);
   }
 
   /**

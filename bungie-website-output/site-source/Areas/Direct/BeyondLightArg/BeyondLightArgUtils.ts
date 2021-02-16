@@ -26,7 +26,7 @@ export class BeyondLightArgUtils {
 
   public static hash(input: string) {
     return new Promise<string>((resolve) => {
-      sm(input).then((hash) => resolve(hash));
+      sm(input).then((hash: any) => resolve(hash));
     });
   }
 

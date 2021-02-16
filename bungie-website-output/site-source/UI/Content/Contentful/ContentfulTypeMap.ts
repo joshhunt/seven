@@ -54,11 +54,14 @@ export type ValidContentfulTypes = keyof typeof TypeMap;
 /**
  * This is an object with the keys being content type names, and the value being the same.
  */
-export const ContentfulTypes = Object.keys(TypeMap).reduce((acc, typeName) => {
-  acc[typeName] = typeName;
+export const ContentfulTypes = Object.keys(TypeMap).reduce(
+  (acc, typeName: ValidContentfulTypes) => {
+    acc[typeName] = typeName;
 
-  return acc;
-}, {} as { [key in ValidContentfulTypes]: string });
+    return acc;
+  },
+  {} as { [key in ValidContentfulTypes]: string }
+);
 
 /**
  * Returns the correct component for the entry provided, based on the entry's content type

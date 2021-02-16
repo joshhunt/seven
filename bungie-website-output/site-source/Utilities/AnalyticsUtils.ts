@@ -19,7 +19,7 @@ export class AnalyticsUtils {
 
   private static initSuccess = false;
 
-  private static userId = undefined;
+  private static userId: string = undefined;
 
   private static initOnce() {
     if (AnalyticsUtils.initSuccess) {
@@ -39,13 +39,16 @@ export class AnalyticsUtils {
         debug: reactGaTestMode,
         useExistingGa: true,
       } as any); // todo $jlauer - remove "as any" once react-ga supports useExistingGa in its types
+
       if (ConfigUtils.SystemStatus(SystemNames.BungieAnalytics)) {
-        ReactGA.ga((tracker) => {
-          const clientId = tracker.get("clientId");
+        ReactGA.ga((tracker: any) => {
+          const clientId = tracker?.get("clientId");
+          // @ts-ignore
           window["BungieAnalytics"] = new BungieAnalytics(
             "net_bungie_www",
             clientId
           );
+          // @ts-ignore
           window["BungieAnalytics"].setUserId(AnalyticsUtils.userId);
           ReactGA.set({ userId: AnalyticsUtils.userId });
         });
@@ -71,12 +74,14 @@ export class AnalyticsUtils {
   private static onUserLoggedIn(userId: string) {
     AnalyticsUtils.userId = userId;
     ReactGA.set({ userId: userId });
+    // @ts-ignore
     window["BungieAnalytics"]?.setUserId(userId);
   }
 
   private static onUserLoggedOut() {
     AnalyticsUtils.userId = undefined;
     ReactGA.set({ userId: undefined });
+    // @ts-ignore
     window["BungieAnalytics"]?.setUserId(undefined);
   }
 

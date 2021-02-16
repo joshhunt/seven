@@ -46,15 +46,15 @@ const BeyondLightMap: React.FC<BeyondLightMapProps> = (props) => {
     }
   };
 
-  const handleClick = (e) => {
-    const targetId = e.target.getAttribute("id");
+  const handleClick = (e: MouseEvent) => {
+    const targetId = (e.target as HTMLElement).getAttribute("id");
 
     if (e.target) {
       setActive(targetId);
     }
   };
 
-  const transformer = (max) =>
+  const transformer = (max: number) =>
     `50% ${max * parallaxPos * 1.5}px, 50% ${max * parallaxPos * 0.7}px`;
   const outerMax = 250;
   const outer = transformer(outerMax);

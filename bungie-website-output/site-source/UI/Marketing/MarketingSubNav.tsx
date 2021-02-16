@@ -27,6 +27,7 @@ interface IMarketingSubNavProps {
   menuItemClassName?: string;
   primaryColor?: NavPrimaryColors;
   accentColor?: NavAccentColors;
+  /** The banner size will max out at 1920px, centered */
   withGutter?: boolean;
 }
 
@@ -84,7 +85,7 @@ export class MarketingSubNav extends React.Component<
   }
 
   private get idsToCenterpoints() {
-    const result = {};
+    const result: Record<string, number> = {};
 
     Object.keys(this.props.idToElementsMapping).forEach((key) => {
       const el = this.props.idToElementsMapping[key];

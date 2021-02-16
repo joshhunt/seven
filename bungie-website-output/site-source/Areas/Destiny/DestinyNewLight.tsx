@@ -105,7 +105,7 @@ class DestinyNewLightInternal extends React.Component<
     }
   };
 
-  private readonly ext = (original) => {
+  private readonly ext = (original: string) => {
     return this.state.supportsWebp ? "webp" : original;
   };
 
@@ -116,7 +116,7 @@ class DestinyNewLightInternal extends React.Component<
         : Img("/destiny/bgs/new_light/destiny2_logo_en_light.svg");
 
     return (
-      <React.Fragment>
+      <div className={styles.destinyFont}>
         <BungieHelmet
           title={Localizer.Destiny.Destiny2PlayForFree}
           image={Img("/destiny/bgs/new_light/hero_desktop_bg.jpg")}
@@ -703,7 +703,7 @@ class DestinyNewLightInternal extends React.Component<
             ]}
           />
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }

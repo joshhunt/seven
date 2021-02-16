@@ -12,7 +12,7 @@ export interface IDestinyNewsCalloutProps {
 export class DestinyNewsCallout extends React.Component<
   IDestinyNewsCalloutProps
 > {
-  constructor(props) {
+  constructor(props: IDestinyNewsCalloutProps) {
     super(props);
   }
 

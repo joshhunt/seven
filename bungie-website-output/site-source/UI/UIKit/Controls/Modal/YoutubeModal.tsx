@@ -36,7 +36,7 @@ class YoutubeModal extends React.Component<
     this.state = {};
   }
 
-  public shouldComponentUpdate() {
+  public shouldComponentUpdate(): boolean {
     this.rejectInvalidProps();
 
     return ReactUtils.shouldComponentUpdate(this, arguments);

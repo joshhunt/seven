@@ -43,11 +43,11 @@ export class VideoSlider extends React.Component<
     return this.props.children.filter((c) => !!c);
   }
 
-  private readonly getBackgroundPosition = (index) => {
+  private readonly getBackgroundPosition = (index: number) => {
     return `${index * -25 - 25}px, 100%`;
   };
 
-  private readonly selectSlide = (index) => () => {
+  private readonly selectSlide = (index: number) => () => {
     this.setState({ currentIndex: index });
   };
 

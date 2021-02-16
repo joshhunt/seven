@@ -4,6 +4,7 @@
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
+// @ts-ignore
 import inEU from "@segment/in-eu";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";

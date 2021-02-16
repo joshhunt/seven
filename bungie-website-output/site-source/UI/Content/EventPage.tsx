@@ -244,7 +244,7 @@ class EventPageInternal extends React.Component<
               >
                 {heroContent}
 
-                {content.HeroBackgrounds.map((bg, i) => {
+                {content.HeroBackgrounds.map((bg: any, i: number) => {
                   return (
                     <ParallaxLayer
                       key={i}
@@ -272,7 +272,7 @@ class EventPageInternal extends React.Component<
 
             <div>
               {content.ContentBlocks
-                ? content.ContentBlocks.map((mcb, i) => {
+                ? content.ContentBlocks.map((mcb: any, i: number) => {
                     const props = mcb.properties;
                     const mobileBgSize = this.props.globalState.responsive.tiny
                       ? "contain"
@@ -377,7 +377,7 @@ class EventPageInternal extends React.Component<
               news={
                 content.News ? (
                   <div>
-                    {content.News.map((n, i) => {
+                    {content.News.map((n: any, i: number) => {
                       return (
                         <DestinyNewsCallout
                           key={i}
@@ -392,7 +392,7 @@ class EventPageInternal extends React.Component<
               }
               videos={
                 content.Videos
-                  ? content.Videos.map((v) => {
+                  ? content.Videos.map((v: any) => {
                       return {
                         isVideo: true,
                         thumbnail: v.Thumbnail,
@@ -403,7 +403,7 @@ class EventPageInternal extends React.Component<
               }
               wallpapers={
                 content.Wallpapers
-                  ? content.Wallpapers.map((w) => {
+                  ? content.Wallpapers.map((w: any) => {
                       return {
                         isVideo: false,
                         thumbnail: w.Thumbnail,
@@ -414,7 +414,7 @@ class EventPageInternal extends React.Component<
               }
               screenshots={
                 content.Screenshots
-                  ? content.Screenshots.map((s) => {
+                  ? content.Screenshots.map((s: any) => {
                       return {
                         isVideo: false,
                         thumbnail: s.Thumbnail,

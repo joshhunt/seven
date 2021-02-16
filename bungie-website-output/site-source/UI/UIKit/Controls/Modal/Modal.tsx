@@ -171,7 +171,8 @@ export class Modal extends React.Component<ModalProps, IModalState> {
    * @param props Optional props passed to the modal
    */
   public static signIn(
-    onSignIn = (temporaryGlobalState: GlobalState<"loggedInUser">) => void 0,
+    onSignIn = (temporaryGlobalState: GlobalState<"loggedInUser">) =>
+      void 0 as void,
     props?: ModalProps
   ) {
     const { isFrameless, ...rest } = props ?? {};

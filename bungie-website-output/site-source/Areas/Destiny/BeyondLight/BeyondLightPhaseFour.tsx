@@ -82,7 +82,7 @@ class BeyondLightPhaseFour extends React.Component<
     }
 
     return (
-      <>
+      <div className={styles.destinyFont}>
         <BungieHelmet
           title={phaseFour.pageTitle}
           description={phaseFour.heroSubheading}
@@ -280,7 +280,7 @@ class BeyondLightPhaseFour extends React.Component<
             <BeyondLightProducts globalState={this.props.globalState} />
           </div>
         </div>
-      </>
+      </div>
     );
   }
 

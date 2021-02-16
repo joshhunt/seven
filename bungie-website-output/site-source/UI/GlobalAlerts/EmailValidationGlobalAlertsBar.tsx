@@ -6,6 +6,7 @@ import styles from "./EmailValidationGlobalAlertsBar.module.scss";
 import {
   withGlobalState,
   GlobalStateComponentProps,
+  GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { PCMigrationUtilities } from "@Areas/PCMigration/Shared/PCMigrationUtilities";
@@ -32,7 +33,7 @@ interface IEmailValidationGlobalAlertsBarState {
  * @param {IEmailValidationGlobalAlertsBarProps} props
  * @returns
  */
-export class EmailValidationGlobalAlertsBar extends React.Component<
+class EmailValidationGlobalAlertsBar extends React.Component<
   Props,
   IEmailValidationGlobalAlertsBarState
 > {
@@ -76,7 +77,7 @@ export class EmailValidationGlobalAlertsBar extends React.Component<
     }
 
     //user logs out
-    if (this.state.showToUser && this.isLoaded) {
+    if (this.state.showToUser && !this.isLoaded) {
       this.setState({ showToUser: false });
     }
   }

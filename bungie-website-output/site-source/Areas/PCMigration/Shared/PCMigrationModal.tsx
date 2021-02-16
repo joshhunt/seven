@@ -25,7 +25,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 interface IPCMigrationModalProperties {
   transferComplete: boolean;
 
-  closeModal(closeModal: boolean);
+  closeModal: (closeModal: boolean) => void;
 }
 
 interface IPCMigrationModalState {
@@ -56,7 +56,7 @@ export class PCMigrationModal extends React.Component<
   );
   private readonly subs: DestroyCallback[] = [];
 
-  constructor(props) {
+  constructor(props: IPCMigrationModalProperties) {
     super(props);
 
     this.state = {
@@ -290,9 +290,9 @@ export class PCMigrationModal extends React.Component<
     }
   }
 
-  private updateUser() {
+  private async updateUser() {
     // update global user data
-    GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
+    await GlobalStateDataStore.refreshUserAndRelatedData(true);
 
     PCMigrationUserDataStore.getDestinyAccount(this.state.globalState);
   }

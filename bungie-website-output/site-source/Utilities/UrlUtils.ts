@@ -24,7 +24,7 @@ export class UrlUtils {
   public static QueryToObject(
     q: string = location.search
   ): { [key: string]: string } {
-    const output = {};
+    const output: { [key: string]: string } = {};
 
     const query = q.startsWith("?") ? q.substr(1) : q;
 
@@ -68,7 +68,7 @@ export class UrlUtils {
       const toQueryStringify = Object.keys(allParams).filter(
         (k) => validKeys.indexOf(k) === -1 && allParams[k] !== undefined
       );
-      const queryObj = {};
+      const queryObj: Record<string, string> = {};
       toQueryStringify.forEach((k) => (queryObj[k] = allParams[k]));
 
       query =
@@ -174,8 +174,6 @@ export class UrlUtils {
     }
 
     p.history.push(url);
-
-    return null;
   }
 
   /**
@@ -310,7 +308,14 @@ export class UrlUtils {
       return false;
     }
 
-    const hostSplit = hrefLocation.host.split(".");
+    return this.isBungieNetUrl(hrefLocation.host);
+  }
+
+  //Returns true if this link is staying within Bungie.net
+  public static isBungieNetUrl(urlHost: string) {
+    console.log(urlHost);
+
+    const hostSplit = urlHost.split(".");
     const endUrl = hostSplit
       .slice(hostSplit.length - 2, hostSplit.length)
       .join(".");
@@ -326,7 +331,7 @@ export class UrlUtils {
         "bng.local",
         StringCompareOptions.IgnoreCase
       ) ||
-      StringUtils.equals(hrefLocation.host, "firehose")
+      StringUtils.equals(urlHost, "firehose")
     );
   }
 

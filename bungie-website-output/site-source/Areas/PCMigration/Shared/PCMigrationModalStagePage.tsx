@@ -15,8 +15,8 @@ export enum EmailVerificationState {
 }
 
 export interface IPCMigrationStageBaseProps extends GlobalStateComponentProps {
-  updateStage(newStage: PCMigrationStage);
-  closeModal(closeModal: boolean);
+  updateStage: (newStage: PCMigrationStage) => void;
+  closeModal: (closeModal: boolean) => void;
   globalState: GlobalState<"loggedInUser" | "credentialTypes">;
   bypass: boolean;
 }
@@ -48,8 +48,9 @@ export class PCMigrationStageBase<
   P extends IPCMigrationStageBaseProps,
   S extends IPCMigrationStageBaseState
 > extends React.Component<P, S> {
-  constructor(props) {
+  constructor(props: P) {
     super(props);
+
     this.closeModal = this.closeModal.bind(this);
   }
 
@@ -62,7 +63,7 @@ export class PCMigrationTransferStageBase<
   P extends IPCMigrationTransferStageProps,
   S extends IPCMigrationStageBaseState
 > extends PCMigrationStageBase<P, S> {
-  constructor(props) {
+  constructor(props: P) {
     super(props);
   }
 }

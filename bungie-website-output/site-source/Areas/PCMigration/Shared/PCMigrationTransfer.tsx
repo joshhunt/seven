@@ -38,7 +38,7 @@ export class PCMigrationTransfer extends PCMigrationTransferStageBase<
   IPCMigrationTransferProperties,
   IPCMigrationTransferState
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationTransferProperties) {
     super(props);
 
     this.state = {
@@ -157,7 +157,7 @@ export class PCMigrationTransfer extends PCMigrationTransferStageBase<
                       .filter(
                         (c) => c.platform === BungieMembershipType.TigerBlizzard
                       )
-                      .map((c) => (character, index) => (
+                      .map((c) => (character: any, index: any) => (
                         <OneLineItem
                           key={index}
                           itemTitle={character.title}

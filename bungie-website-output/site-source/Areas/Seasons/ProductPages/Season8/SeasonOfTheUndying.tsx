@@ -120,7 +120,7 @@ class SeasonOfTheUndyingInternal extends React.Component<
     });
   };
 
-  private readonly ext = (original) =>
+  private readonly ext = (original: string) =>
     this.state.supportsWebp ? "webp" : original;
 
   private isMedium(): boolean {

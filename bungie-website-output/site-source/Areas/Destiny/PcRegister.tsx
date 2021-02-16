@@ -343,7 +343,7 @@ class PcRegister extends React.Component<IPcRegisterProps, IPcRegisterState> {
     const url = `/${Localizer.CurrentCultureName}/User/Link/SteamId?flowStart=1&force=0`;
 
     BrowserUtils.openWindow(url, "linkui", () =>
-      GlobalStateDataStore.actions.refreshUserAndRelatedData()
+      GlobalStateDataStore.refreshUserAndRelatedData()
     );
   };
 }

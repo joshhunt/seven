@@ -216,7 +216,7 @@ const MenuLink = (props: ILinkProps) => {
     onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       e.preventDefault();
       BrowserUtils.openWindow(url, "loginui", () =>
-        GlobalStateDataStore.actions.refreshUserAndRelatedData()
+        GlobalStateDataStore.refreshUserAndRelatedData()
       );
       props.onChildSelected(e);
 
@@ -232,21 +232,18 @@ const MenuLink = (props: ILinkProps) => {
     ) {
       const loggedInClans =
         GlobalStateDataStore.state.loggedInUserClans.results;
-      let clansByActiveCrossSaveFirst = [];
-      clansByActiveCrossSaveFirst = clansByActiveCrossSaveFirst.concat(
-        loggedInClans.filter(
+      const clansByActiveCrossSaveFirst = [
+        ...loggedInClans.filter(
           (r) =>
             r.member.destinyUserInfo.crossSaveOverride ===
             r.member.destinyUserInfo.membershipType
-        )
-      );
-      clansByActiveCrossSaveFirst = clansByActiveCrossSaveFirst.concat(
-        loggedInClans.filter(
+        ),
+        ...loggedInClans.filter(
           (r) =>
             r.member.destinyUserInfo.crossSaveOverride !==
             r.member.destinyUserInfo.membershipType
-        )
-      );
+        ),
+      ];
 
       return (
         <React.Fragment>

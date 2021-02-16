@@ -76,7 +76,7 @@ export class FirehoseNewsAndMedia extends React.Component<
 
       const news: React.ReactNode = this._hasItems(content.News) ? (
         <div>
-          {content.News.map((n, i) => {
+          {content.News.map((n: any, i: number) => {
             return (
               <DestinyNewsCallout
                 key={i}
@@ -90,7 +90,7 @@ export class FirehoseNewsAndMedia extends React.Component<
       ) : null;
 
       const videos: IDestinyNewsMedia[] = this._hasItems(content.VideoItems)
-        ? content.VideoItems.map((v) => {
+        ? content.VideoItems.map((v: any) => {
             return {
               isVideo: true,
               thumbnail: v.properties.VideoThumbnail,
@@ -104,7 +104,7 @@ export class FirehoseNewsAndMedia extends React.Component<
         ? []
         : null;
       this._hasItems(content.LoreItems) &&
-        content.LoreItems.forEach((li) => {
+        content.LoreItems.forEach((li: any) => {
           const lorePath = RouteHelper.NewsArticle(Number(li.contentId));
 
           lore.push({
@@ -120,7 +120,7 @@ export class FirehoseNewsAndMedia extends React.Component<
       const wallpapers: IDestinyNewsMedia[] = this._hasItems(
         content.WallpaperItems
       )
-        ? content.WallpaperItems.map((w) => {
+        ? content.WallpaperItems.map((w: any) => {
             return {
               isVideo: false,
               thumbnail: w.properties.ImageThumbnail,
@@ -132,7 +132,7 @@ export class FirehoseNewsAndMedia extends React.Component<
       const screenshots: IDestinyNewsMedia[] = this._hasItems(
         content.ScreenshotItems
       )
-        ? content.ScreenshotItems.map((s) => {
+        ? content.ScreenshotItems.map((s: any) => {
             return {
               isVideo: false,
               thumbnail: s.properties.ImageThumbnail,

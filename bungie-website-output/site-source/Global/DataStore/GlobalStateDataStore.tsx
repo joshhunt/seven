@@ -142,13 +142,6 @@ class GlobalStateDataStoreInternal extends DataStore<
       loggedInUserClans: undefined,
     }),
     /**
-     * Update the logged in user data
-     * @param user The logged in user data
-     */
-    setLoggedInUser: (user: Contract.UserDetail) => ({
-      loggedInUser: user,
-    }),
-    /**
      * Fetch the current user's clan data
      */
     refreshLoggedInUserClans: async () => {
@@ -191,43 +184,44 @@ class GlobalStateDataStoreInternal extends DataStore<
      * Fetch the current user data
      * @param bustCache
      */
-    refreshCurrentUser: (bustCache?: boolean) => {
+    refreshCurrentUser: async (bustCache?: boolean) => {
       const queryAppend = bustCache ? `&bustCache=${Date.now()}` : undefined;
 
-      return Platform.UserService.GetCurrentUser(queryAppend)
-        .then(this.actions.setLoggedInUser)
-        .catch((e: Error) => {
-          GlobalFatalDataStore.actions.addError(e.message);
+      try {
+        const loggedInUser = await Platform.UserService.GetCurrentUser(
+          queryAppend
+        );
 
-          return this.actions.setLoggedInUser(undefined);
-        });
-    },
-    /**
-     * Reset all user-related data and download it again
-     * @param bustCache
-     */
-    refreshUserAndRelatedData: async (bustCache?: boolean) => {
-      EventMux.destroy();
-      NotificationCountManager.destroy();
-
-      if (UserUtils.hasAuthenticationCookie) {
-        await this.actions.refreshCurrentUser(bustCache);
-
-        EventMux.initialize();
-        NotificationCountManager.initialize(this.state.coreSettings);
-
-        await Promise.all([
-          this.actions.refreshLoggedInUserClans(),
-          this.actions.refreshCredentialTypes(),
-          this.actions.refreshCrossSavePairingStatus(),
-        ]);
-      } else {
-        this.actions.resetUserData();
+        return {
+          loggedInUser,
+        };
+      } catch (e) {
+        GlobalFatalDataStore.actions.addError(e.message);
       }
-
-      return {};
     },
   });
+
+  public async refreshUserAndRelatedData(bustCache?: boolean) {
+    EventMux.destroy();
+    NotificationCountManager.destroy();
+
+    if (UserUtils.hasAuthenticationCookie) {
+      await this.actions.refreshCurrentUser(bustCache);
+
+      EventMux.initialize();
+      NotificationCountManager.initialize(this.state.coreSettings);
+
+      await Promise.all([
+        this.actions.refreshLoggedInUserClans(),
+        this.actions.refreshCredentialTypes(),
+        this.actions.refreshCrossSavePairingStatus(),
+      ]);
+    } else {
+      this.actions.resetUserData();
+    }
+
+    return {};
+  }
 
   /**
    * Initializes GlobalStateDataStore
@@ -253,7 +247,7 @@ class GlobalStateDataStoreInternal extends DataStore<
       await this.actions.refreshSettings();
     }
 
-    await this.actions.refreshUserAndRelatedData(false);
+    await this.refreshUserAndRelatedData(false);
 
     this.actions.updateLoaded(true);
 

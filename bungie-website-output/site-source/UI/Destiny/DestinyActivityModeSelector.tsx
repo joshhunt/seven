@@ -5,8 +5,10 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
+import { Definitions } from "@Platform";
 import { Dropdown, IDropdownOption } from "@UI/UIKit/Forms/Dropdown";
 import * as React from "react";
+type DestinyActivityModeDefinition = Definitions.DestinyActivityModeDefinition;
 
 // Required props
 interface IDestinyActivityModesSelectorProps
@@ -16,7 +18,7 @@ interface IDestinyActivityModesSelectorProps
     | "DestinyActivityDefinition"
   > {
   className?: string;
-  onChange?: (value) => void;
+  onChange?: (value: string) => void;
 }
 
 /**
@@ -29,8 +31,8 @@ class DestinyActivityModesSelector extends React.Component<
   IDestinyActivityModesSelectorProps
 > {
   private readonly createActivityOptions = () => {
-    const parentModes = [];
-    const childModes = [];
+    const parentModes: DestinyActivityModeDefinition[] = [];
+    const childModes: DestinyActivityModeDefinition[] = [];
     const activityOptions: IDropdownOption[] = [];
 
     const allModes = this.props.definitions.DestinyActivityModeDefinition.all();
@@ -77,14 +79,14 @@ class DestinyActivityModesSelector extends React.Component<
     familyArray.forEach((obj) => {
       activityOptions.push({
         label: obj.parentMode.displayProperties.name,
-        value: obj.parentMode.modeType,
+        value: obj.parentMode.modeType.toString(),
         iconPath: obj.parentMode.displayProperties.icon,
       });
 
       obj.childModes.forEach((child) => {
         activityOptions.push({
           label: child.displayProperties.name,
-          value: child.modeType,
+          value: child.modeType.toString(),
           iconPath: child.displayProperties.icon,
           style: { paddingLeft: "3rem" },
         });

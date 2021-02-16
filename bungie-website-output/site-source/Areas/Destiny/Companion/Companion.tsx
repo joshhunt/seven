@@ -133,7 +133,7 @@ export class Companion extends React.Component<
                 </div>
               </div>
             </div>
-            {contentSet.properties["ContentItems"].map((contentItem) => (
+            {contentSet.properties["ContentItems"].map((contentItem: any) => (
               <GridCol
                 cols={4}
                 medium={6}

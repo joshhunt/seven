@@ -265,9 +265,9 @@ export class DestinySkuUtils {
       return null;
     }
 
-    const cachedSkuMapping = {};
+    const cachedSkuMapping: { [key: string]: IDestinyProductDefinition } = {};
 
-    const tryCache = (skuTag) => {
+    const tryCache = (skuTag: string) => {
       if (cachedSkuMapping[skuTag]) {
         return cachedSkuMapping[skuTag];
       } else {

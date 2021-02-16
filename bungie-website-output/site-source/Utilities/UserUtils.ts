@@ -1,4 +1,7 @@
-import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
+import {
+  GlobalState,
+  GlobalStateComponentProps,
+} from "@Global/DataStore/GlobalStateDataStore";
 import Cookies from "js-cookie";
 import * as Globals from "@Enum";
 import { DetailedError } from "@CustomErrors";
@@ -36,7 +39,10 @@ export class UserUtils {
     return membershipId !== undefined && membershipId !== "0";
   }
 
-  public static getAuthChangeStatus(currentProps, prevProps) {
+  public static getAuthChangeStatus(
+    currentProps: GlobalStateComponentProps,
+    prevProps: GlobalStateComponentProps
+  ) {
     const wasAuthed = UserUtils.isAuthenticated(prevProps.globalState);
     const isNowAuthed = UserUtils.isAuthenticated(currentProps.globalState);
 

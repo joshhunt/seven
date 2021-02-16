@@ -90,7 +90,7 @@ export class ConfigUtils {
   }
 
   private static convertType<T>(input: string, defaultVal: T) {
-    let output = null;
+    let output: any = null;
     switch (typeof defaultVal) {
       case "boolean":
         output = input === "true";

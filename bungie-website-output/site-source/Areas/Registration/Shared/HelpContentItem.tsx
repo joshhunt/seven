@@ -78,7 +78,7 @@ export const HelpArticlesContentSet: React.FC<IRegistrationContentItemProps> = (
       <h3>{contentItem.properties["Title"]}</h3>
       <p>{contentItem.properties["Summary"]}</p>
       <div className={stylesRegistration.blocks}>
-        {contentItem.properties["ContentItems"].map((item) => (
+        {contentItem.properties["ContentItems"].map((item: any) => (
           <RegistrationItemContent
             contentItem={item}
             key={`${item.contentId}-${Date.UTC}`}

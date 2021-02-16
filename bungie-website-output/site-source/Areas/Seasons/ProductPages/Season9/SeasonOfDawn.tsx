@@ -44,7 +44,7 @@ interface ISeasonOfDawnState {
   menuLocked: boolean;
   responsive: IResponsiveState;
   rewardPage: number;
-  visibleContentItems: {};
+  visibleContentItems: Record<string, boolean>;
   calendarImage: string;
   lore: Content.ContentItemPublicContract[];
   heroTrailerId: string;
@@ -178,7 +178,7 @@ class SeasonOfDawnInternal extends React.Component<
     });
   };
 
-  private readonly isScrolledIntoView = (id) => {
+  private readonly isScrolledIntoView = (id: string) => {
     let isVisible = false;
     const el = document.getElementById(id);
     if (el) {
@@ -197,7 +197,7 @@ class SeasonOfDawnInternal extends React.Component<
     });
   };
 
-  private readonly ext = (original) =>
+  private readonly ext = (original: string) =>
     this.state.supportsWebp ? "webp" : original;
 
   private isMedium(): boolean {
@@ -258,7 +258,7 @@ class SeasonOfDawnInternal extends React.Component<
       );
     });
 
-    const lore = [];
+    const lore: any[] = [];
     this.state.lore &&
       this.state.lore.forEach((li) => {
         const lorePath = RouteHelper.NewsArticle(Number(li.contentId));

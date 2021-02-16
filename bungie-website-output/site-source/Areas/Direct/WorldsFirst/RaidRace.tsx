@@ -26,7 +26,7 @@ import styles from "./RaidRace.module.scss";
 type TwitchUsers = { [key: string]: any }[];
 
 const fetchDisallowList = async () => {
-  let usernames = [];
+  let usernames: string[] = [];
 
   try {
     const sc = await Platform.ContentService.GetContentByTagAndType(
@@ -64,7 +64,7 @@ const fetchUsers = async () => {
     );
 
     const data = await twitchResponse.json();
-    const users = data?.streams;
+    const users = data?.streams as any[];
 
     const filtered = users.filter(
       (u) => !disallowList.includes(u.channel.name.toLowerCase())
@@ -227,7 +227,10 @@ const PreReveal = () => {
  * @param existingOrderedUsers
  * @param newUsers
  */
-const updateStreamerArray = (existingOrderedUsers, newUsers): TwitchUsers => {
+const updateStreamerArray = (
+  existingOrderedUsers: any[],
+  newUsers: any[]
+): TwitchUsers => {
   if (newUsers && !existingOrderedUsers) {
     return newUsers;
   }

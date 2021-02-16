@@ -66,7 +66,7 @@ export class EventMuxTabManager {
     });
   }
 
-  private setupTabId(callback = () => null) {
+  private setupTabId(callback: () => void = () => null) {
     Logger.logVerbose("[TabManager] Setting up Tab ID");
     this.getStoredTabId();
     if (this.tabId === null) {
@@ -116,7 +116,7 @@ export class EventMuxTabManager {
     );
   }
 
-  private setNewTabId(callback = () => null) {
+  private setNewTabId(callback: () => void = () => null) {
     // This is temporary and should be replaced by a GET to the event system
     this.tabId = this.generateId();
 
@@ -355,7 +355,7 @@ export class EventMuxTabManager {
 
     id = id & 0x7fffffff;
 
-    return id.toString();
+    return id;
   }
 
   public destroy() {

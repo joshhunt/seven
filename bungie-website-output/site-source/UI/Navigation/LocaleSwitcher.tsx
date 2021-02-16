@@ -149,7 +149,7 @@ class LocaleSwitcher extends React.Component<
     }
   }
 
-  private readonly onChange = (value) => {
+  private readonly onChange = (value: string) => {
     this.toggleOpen(false);
 
     LocalizerUtils.updateCookieLocale(value);

@@ -29,8 +29,6 @@ class SeasonOfTheUndying extends SeasonDefinition {
   public progressPageImage =
     "/7/ca/destiny/bgs/seasons/season_undying_progressbg.jpg";
   public productPageLink = RouteHelper.SeasonOfTheUndying();
-  public calendarContentItem;
-  public calendarBackgroundImage;
   public seasonNumber = 8;
   public actionRouteString = "SeasonOfTheUndying";
 
@@ -39,6 +37,8 @@ class SeasonOfTheUndying extends SeasonDefinition {
   }
 
   public smallIcon: string;
+  public calendarBackgroundImage: string;
+  public calendarContentItem: string;
 }
 
 class SeasonOfDawn extends SeasonDefinition {
@@ -52,7 +52,6 @@ class SeasonOfDawn extends SeasonDefinition {
   public progressPageImage =
     "/7/ca/destiny/bgs/seasons/season_dawn_progressbg.jpg";
   public productPageLink = RouteHelper.SeasonOfDawn();
-  public calendarContentItem;
   public calendarBackgroundImage =
     "/7/ca/destiny/bgs/season_of_dawn/calendar_desktop_bg.png";
   public seasonNumber = 9;
@@ -63,6 +62,7 @@ class SeasonOfDawn extends SeasonDefinition {
   }
 
   public smallIcon = "7/ca/destiny/icons/icon_season_dawn.jpg";
+  public calendarContentItem: string;
 }
 
 class SeasonOfTheWorthy extends SeasonDefinition {
@@ -99,7 +99,6 @@ class Season11 extends SeasonDefinition {
   public progressPageImage =
     "/7/ca/destiny/bgs/season11/season_progress_bg.jpg";
   public productPageLink = RouteHelper.Season11();
-  public calendarContentItem;
   public calendarBackgroundImage =
     "/7/ca/destiny/bgs/season11/S11_Calendar_bg.png";
   public seasonNumber = 11;
@@ -110,6 +109,7 @@ class Season11 extends SeasonDefinition {
   }
 
   public smallIcon = "7/ca/destiny/bgs/season11/icon_season11_full.png";
+  public calendarContentItem: string;
 }
 
 class Season12 extends SeasonDefinition {
@@ -123,7 +123,7 @@ class Season12 extends SeasonDefinition {
   public progressPageImage =
     "/7/ca/destiny/bgs/season12/season_progress_bg.jpg";
   public productPageLink = RouteHelper.Season12();
-  public calendarContentItem;
+  public calendarContentItem: string;
   public calendarBackgroundImage =
     "/7/ca/destiny/bgs/season12/calendar_bg_desktop.png";
   public seasonNumber = 12;
@@ -147,7 +147,7 @@ class SeasonOfTheChosen extends SeasonDefinition {
   public progressPageImage =
     "/7/ca/destiny/bgs/season13/seasonbackground_13.jpg";
   public productPageLink = RouteHelper.SeasonOfTheChosen();
-  public calendarContentItem;
+  public calendarContentItem: string;
   public calendarBackgroundImage =
     "/7/ca/destiny/bgs/season13/calendar_bg_desktop.jpg";
   public seasonNumber = 13;

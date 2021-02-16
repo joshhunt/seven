@@ -10,10 +10,10 @@ import PCMigrationPage from "./PCMigrationPage";
 
 interface PCMigrationAreaProperties
   extends RouteComponentProps,
-    GlobalStateComponentProps {}
+    GlobalStateComponentProps<"loggedInUser"> {}
 
 class PCMigrationArea extends React.Component<PCMigrationAreaProperties> {
-  constructor(props) {
+  constructor(props: PCMigrationAreaProperties) {
     super(props);
   }
 

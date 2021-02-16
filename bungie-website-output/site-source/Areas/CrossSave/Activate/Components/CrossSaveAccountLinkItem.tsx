@@ -1,25 +1,23 @@
-import * as React from "react";
-import { CrossSave, Renderer, Characters } from "@Platform";
-import styles from "./CrossSaveAccountLinkItem.module.scss";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localization/Localizer";
-import { Icon } from "@UI/UIKit/Controls/Icon";
-import classNames from "classnames";
-import { CrossSaveValidationError } from "./CrossSaveValidationError";
-import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
-import { CrossSaveHeader } from "@Areas/CrossSave/Shared/CrossSaveHeader";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { CrossSaveAccountCard } from "./CrossSaveAccountCard";
-import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
-import { PlatformError } from "@CustomErrors";
-import { Logger } from "@Global/Logger";
-import { BungieMembershipType, BungieCredentialType } from "@Enum";
-import { UserUtils } from "@Utilities/UserUtils";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { CrossSaveHeader } from "@Areas/CrossSave/Shared/CrossSaveHeader";
+import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
+import { BungieCredentialType, BungieMembershipType } from "@Enum";
+import { Localizer } from "@Global/Localization/Localizer";
+import { CrossSave } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import classNames from "classnames";
+import * as React from "react";
+import { CrossSaveAccountCard } from "./CrossSaveAccountCard";
+import styles from "./CrossSaveAccountLinkItem.module.scss";
+import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
+import { CrossSaveValidationError } from "./CrossSaveValidationError";
 
 interface ICrossSaveAccountLinkItemProps {
   className?: string;
@@ -69,14 +67,13 @@ export class CrossSaveAccountLinkItem extends React.Component<
   ): ICrossSaveAccountLinkItemState {
     const { membershipType, linkedCredentialTypes } = props;
 
-    const authStatus =
-      props.flowState.validation.authStatuses[
-        BungieMembershipType[membershipType]
-      ];
+    const mt = BungieMembershipType[membershipType] as EnumStrings<
+      typeof BungieMembershipType
+    >;
+
+    const authStatus = props.flowState.validation.authStatuses[mt];
     const validationErrors =
-      props.flowState.validation.profileSpecificErrors[
-        BungieMembershipType[membershipType]
-      ];
+      props.flowState.validation.profileSpecificErrors[mt];
 
     const status = CrossSaveUtils.getAccountLinkStatus(
       membershipType,
@@ -142,9 +139,11 @@ export class CrossSaveAccountLinkItem extends React.Component<
   };
 
   private readonly showErrors = () => {
-    const errors = this.props.flowState.validation.profileSpecificErrors[
-      BungieMembershipType[this.props.membershipType]
-    ];
+    const mt = BungieMembershipType[this.props.membershipType] as EnumStrings<
+      typeof BungieMembershipType
+    >;
+
+    const errors = this.props.flowState.validation.profileSpecificErrors[mt];
 
     const modalSubtitle = Localizer.Format(
       Localizer.Crosssave.ErrorModalSubtitle,
@@ -193,9 +192,11 @@ export class CrossSaveAccountLinkItem extends React.Component<
       }
     );
 
-    const errors = this.props.flowState.validation.profileSpecificErrors[
-      BungieMembershipType[this.props.membershipType]
-    ];
+    const mt = BungieMembershipType[this.props.membershipType] as EnumStrings<
+      typeof BungieMembershipType
+    >;
+
+    const errors = this.props.flowState.validation.profileSpecificErrors[mt];
 
     return (
       <CrossSaveAccountCard

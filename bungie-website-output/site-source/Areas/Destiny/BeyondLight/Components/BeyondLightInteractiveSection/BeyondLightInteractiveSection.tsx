@@ -114,7 +114,7 @@ export class InteractiveSection extends React.Component<
     window.removeEventListener("mousemove", (e) => this.parallax(e));
   }
 
-  private parallax(e) {
+  private parallax(e: MouseEvent) {
     requestAnimationFrame(() => {
       const windowWidth = window?.innerWidth / 2;
       const windowHeight = window?.innerHeight / 2;
@@ -285,8 +285,10 @@ export class InteractiveSection extends React.Component<
                 linkText={this.props.itemTwoTitle}
                 subheading={this.props.itemTwoSubtitle}
                 isActive={
-                  this.props.itemTwoModalBackgroundPoster &&
-                  this.props.itemTwoModalTitle
+                  !!(
+                    this.props.itemTwoModalBackgroundPoster &&
+                    this.props.itemTwoModalTitle
+                  )
                 }
                 handleClick={() =>
                   buildModal(
@@ -311,8 +313,10 @@ export class InteractiveSection extends React.Component<
                 linkText={this.props.itemOneTitle}
                 subheading={this.props.itemOneSubtitle}
                 isActive={
-                  this.props.itemOneModalBackgroundPoster &&
-                  this.props.itemOneModalTitle
+                  !!(
+                    this.props.itemOneModalBackgroundPoster &&
+                    this.props.itemOneModalTitle
+                  )
                 }
                 handleClick={() =>
                   buildModal(
@@ -338,8 +342,10 @@ export class InteractiveSection extends React.Component<
                 linkText={this.props.itemThreeTitle}
                 subheading={this.props.itemThreeSubtitle}
                 isActive={
-                  this.props.itemThreeModalBackgroundPoster &&
-                  this.props.itemThreeModalTitle
+                  !!(
+                    this.props.itemThreeModalBackgroundPoster &&
+                    this.props.itemThreeModalTitle
+                  )
                 }
                 handleClick={() =>
                   buildModal(
@@ -367,13 +373,21 @@ export class InteractiveSection extends React.Component<
   }
 }
 
+interface AnchorPlusIconProps {
+  linkText: string;
+  itemClass: string;
+  handleClick: () => void;
+  subheading: React.ReactNode;
+  isActive: boolean;
+}
+
 export const AnchorWithPlusIcon = ({
   linkText,
   itemClass,
   handleClick,
   subheading,
   isActive,
-}) => {
+}: AnchorPlusIconProps) => {
   const activeLink = isActive ? styles.svgWrapperActive : "";
 
   return (

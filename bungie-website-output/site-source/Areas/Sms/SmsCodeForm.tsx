@@ -14,7 +14,7 @@ import { SubmitButton } from "@UIKit/Forms/SubmitButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { useDataStore } from "@Utilities/ReactUtils";
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface SmsCodeFormProps {}
 
@@ -42,7 +42,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
   }, []);
 
   //Handles change for input
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setError("");
     setCode(event.target.value);

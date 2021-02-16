@@ -23,6 +23,6 @@ export class Error404 extends React.Component<IError404Props, IError404State> {
   }
 
   public render() {
-    return null;
+    return <div />;
   }
 }

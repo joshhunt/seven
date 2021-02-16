@@ -128,7 +128,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     }
   };
 
-  private readonly getSaleDateString = (activeSale) => {
+  private readonly getSaleDateString = (activeSale: IDestinySkuSale) => {
     const ed = moment(
       moment(activeSale.endDate).local(true),
       "YYYY-MM-DD HH:mm"
@@ -175,11 +175,12 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
       ""
     );
     const disabledPSNSkusRegex = new RegExp(regexString, "gi");
-    const isPlaystation = (store) => store.stringKey === "StorePlaystation";
-    const isDisabled = (skuTag) => disabledPSNSkusRegex.test(skuTag);
+    const isPlaystation = (store: IDestinySkuStore) =>
+      store.stringKey === "StorePlaystation";
+    const isDisabled = (skuTag: string) => disabledPSNSkusRegex.test(skuTag);
     const outerClasses = classNames(styles.options, className);
 
-    const productFamilyTag = def.title.replace(/\s/g, "");
+    const productFamilyTag = def.subtitle.replace(/\s/g, "");
 
     return (
       <div className={outerClasses}>

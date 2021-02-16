@@ -18,14 +18,14 @@ export class PromiseUtils {
    * @param interval The period in between retries, defaults to 500 (ms)
    */
   public static retryImport = (
-    fn,
+    fn: Function,
     retriesLeft = 5,
     interval = 500
   ): Promise<{ default: React.ComponentType<any> }> => {
     return new Promise((resolve, reject) => {
       fn()
         .then(resolve)
-        .catch((error) => {
+        .catch((error: Error) => {
           setTimeout(() => {
             if (retriesLeft === 1) {
               reject(error);

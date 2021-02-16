@@ -4,7 +4,7 @@ export class CookieUtils {
    * @param cookieValue
    */
   public static ParseCookiePairs(cookieValue: string): any {
-    const kv = {};
+    const kv: Record<string, string> = {};
     if (cookieValue) {
       const pairs = cookieValue.split("&");
       pairs.forEach((pair) => {

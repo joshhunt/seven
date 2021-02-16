@@ -2,15 +2,17 @@
 // Copyright Bungie, Inc.
 
 import {
+  GlobalState,
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
+import { User } from "@Platform";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import { Auth } from "@UI/User/Auth";
+import { Auth, AuthTemporaryGlobalState } from "@UI/User/Auth";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -51,7 +53,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
 
   public componentDidMount() {
     if (UserUtils.isAuthenticated(this.props.globalState)) {
-      this.redirect(this.props.globalState);
+      this.redirect(this.props.globalState.loggedInUser.user);
     }
 
     const params = new URLSearchParams(location.search);
@@ -85,7 +87,9 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
 
     return (
       <Auth
-        onSignIn={(tempGlobalState) => this.redirect(tempGlobalState)}
+        onSignIn={(tempGlobalState) =>
+          this.redirect(tempGlobalState.loggedInUser.user)
+        }
         customLabel={customLabel}
         referrer={this.state.referrer}
         mode="standalone"
@@ -93,12 +97,11 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
     );
   }
 
-  private redirect(globalState): void {
+  private redirect(user: User.GeneralUser): void {
     this.setState({
       isRedirecting: true,
     });
 
-    const user = globalState.loggedInUser.user;
     let url = this.state.referrer;
 
     if (

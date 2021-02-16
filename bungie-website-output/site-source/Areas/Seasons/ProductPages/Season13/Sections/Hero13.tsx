@@ -65,7 +65,7 @@ export const Hero13: React.FC<Hero13Props> = (props) => {
     return () => window.removeEventListener("mousemove", (e) => parallax(e));
   }, []);
 
-  const parallax = (e) => {
+  const parallax = (e: MouseEvent) => {
     requestAnimationFrame(() => {
       const xMidpointDistance = window?.innerWidth / 2 - e.clientX;
       const yMidpointDistance = window?.innerHeight / 2 - e.clientY;

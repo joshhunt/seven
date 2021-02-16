@@ -119,7 +119,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
                     {characterSelector}
                     <div className={styles.activityModeSelector}>
                       <DestinyActivityModesSelector
-                        onChange={(value) => onActivityChange(value)}
+                        onChange={(value) => onActivityChange(Number(value))}
                       />
                     </div>
                   </div>

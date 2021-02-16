@@ -95,7 +95,7 @@ class DestinyCharacterSelector extends React.Component<
     );
   }
 
-  private onDropdownChange(newValue) {
+  private onDropdownChange(newValue: string) {
     this.props.onChange(newValue);
 
     this.setState({

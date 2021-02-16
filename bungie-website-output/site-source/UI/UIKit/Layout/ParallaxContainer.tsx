@@ -34,7 +34,7 @@ export class ParallaxContainer extends React.Component<ParallaxDomProps> {
   };
 
   public render() {
-    const style = this.props.isFadeEnabled
+    let style: React.CSSProperties = this.props.isFadeEnabled
       ? {
           backgroundPositionY: this.state.offset / this.props.parallaxSpeed,
           opacity:
@@ -48,10 +48,10 @@ export class ParallaxContainer extends React.Component<ParallaxDomProps> {
             this.props.backgroundOffset,
         };
 
-    this.props.style &&
-      Object.keys(this.props.style).forEach(
-        (k) => (style[k] = this.props.style[k])
-      );
+    style = {
+      ...style,
+      ...this.props.style,
+    };
 
     return (
       <div

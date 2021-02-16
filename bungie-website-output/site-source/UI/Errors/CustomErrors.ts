@@ -2,7 +2,7 @@
 // Disabling max-classes because this file is specifically meant to include a lot of them
 
 import { PlatformResponse } from "@ApiIntermediary";
-import * as Globals from "@Enum";
+import { PlatformErrorCodes, SpamReductionLevel } from "@Enum";
 import { Localizer } from "@Global/Localization/Localizer";
 
 /**
@@ -13,13 +13,12 @@ export class DetailedError extends Error {
   public logMessage: string;
   public logDetail: any[];
   public readonly detail: any[];
-  public readonly spamReductionLevel: Globals.SpamReductionLevel;
+  public readonly spamReductionLevel: SpamReductionLevel;
 
   constructor(
     public readonly title: string,
     public readonly message: string,
-    spamReductionLevel: Globals.SpamReductionLevel = Globals.SpamReductionLevel
-      .Default,
+    spamReductionLevel: SpamReductionLevel = SpamReductionLevel.Default,
     ...detail: any[]
   ) {
     super(message);
@@ -36,10 +35,11 @@ export class DetailedError extends Error {
 
 /** A system is disabled */
 export class SystemDisabledError extends DetailedError {
-  constructor(public readonly systemName) {
+  constructor(public readonly systemName: string) {
     super(
       Localizer.Errors.SystemDisabledTitle,
       Localizer.Errors.SystemDisabled,
+      SpamReductionLevel.Major,
       systemName
     );
 
@@ -67,7 +67,7 @@ export class NotFoundError extends DetailedError {
 /** Platform errors */
 export class PlatformError extends DetailedError {
   public response: any;
-  public errorCode: Globals.PlatformErrorCodes;
+  public errorCode: PlatformErrorCodes;
   public throttleSeconds: number;
   public errorStatus: string;
   public messageData: any;
@@ -131,7 +131,7 @@ export class SeoDataError extends DetailedError {
     super(
       "SEO data missing in BungieHelmet",
       `${propertyName.join(", ")} not populated.`,
-      Globals.SpamReductionLevel.Minor
+      SpamReductionLevel.Minor
     );
 
     Object.setPrototypeOf(this, SeoDataError.prototype);

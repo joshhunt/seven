@@ -49,7 +49,7 @@ interface ISeasonOfTheWorthyState {
   menuLocked: boolean;
   responsive: IResponsiveState;
   mediaAssets: IMarketingMediaAsset[];
-  visibleContentItems: {};
+  visibleContentItems: Record<string, any>;
   trialsParallaxScroll: IScrollViewportData;
   gearParallaxScroll: IScrollViewportData;
   seasonPageLive: boolean;
@@ -124,7 +124,7 @@ class SeasonOfTheWorthyInner extends React.Component<
       true
     ).then((response) =>
       this.setState({
-        mediaAssets: response.properties.ContentItems.map((ci) =>
+        mediaAssets: response.properties.ContentItems.map((ci: any) =>
           ContentUtils.marketingMediaAssetFromContent(ci)
         ),
       })
@@ -212,7 +212,7 @@ class SeasonOfTheWorthyInner extends React.Component<
     });
   };
 
-  private readonly isScrolledIntoView = (id) => {
+  private readonly isScrolledIntoView = (id: string) => {
     let isVisible = false;
     const el = document.getElementById(id);
     if (el) {
@@ -925,7 +925,7 @@ interface IVerticalSubtitleProps {
 }
 
 const VerticalSubtitle = (props: IVerticalSubtitleProps) => {
-  const colorTable = {
+  const colorTable: Record<string, string> = {
     story: "#C78A33",
     trials: "#7B4F11",
     gear: "#285A6F",
@@ -1025,7 +1025,7 @@ const GearItem = (props: IGearItemProps) => {
 
 interface IImageOrVideoProps {
   mediaAsset: IMarketingMediaAsset;
-  currentVisibleItems: {};
+  currentVisibleItems: Record<string, string>;
 }
 
 const ImageOrVideoHandler = (props: IImageOrVideoProps) => {

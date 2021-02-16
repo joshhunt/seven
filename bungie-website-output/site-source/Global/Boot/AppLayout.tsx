@@ -16,7 +16,7 @@ import { Environment } from "@Helpers";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SeoDataError, SystemDisabledError } from "@UI/Errors/CustomErrors";
-import { EmailValidationGlobalAlertsBar } from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
+import EmailValidationGlobalAlertsBar from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
 import PCMigrationGlobalAlertBar from "@UI/GlobalAlerts/PCMigrationGlobalAlertBar";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
@@ -38,6 +38,7 @@ import {
 import * as React from "react";
 import Helmet from "react-helmet";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+// @ts-ignore
 import ScrollMemory from "react-router-scroll-memory";
 import "./AppLayout.scss";
 import { CookieConsent } from "./CookieConsent";
@@ -342,6 +343,7 @@ class AppLayout extends React.Component<
               loadingLabel={Localizer.Destiny.LoadingDestinyData}
             />
           )}
+
           {ConfigUtils.SystemStatus("PCMigrationSunsetPhase1") && (
             <PCMigrationGlobalAlertBar />
           )}

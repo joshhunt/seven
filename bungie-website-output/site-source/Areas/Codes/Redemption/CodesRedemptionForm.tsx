@@ -24,7 +24,7 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React, { SyntheticEvent } from "react";
 import { CodesDataStore, ICodesState } from "../CodesDataStore";
 import styles from "./CodesRedemptionForm.module.scss";
 
@@ -58,7 +58,7 @@ class CodesRedemptionForm extends React.Component<
   private readonly subs: DestroyCallback[] = [];
   private readonly codeValidate = /^([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})-?([ACDFGHJKLMNPRTVXY34679]{3})(?:-?([ACDFGHJKLMNPRTVXY34679]{5}))?$/;
 
-  constructor(props) {
+  constructor(props: ICodesRedemptionFormProps) {
     super(props);
 
     this.state = {
@@ -71,7 +71,7 @@ class CodesRedemptionForm extends React.Component<
     };
   }
 
-  private readonly showErrorModal = (e) => {
+  private readonly showErrorModal = (e: Error) => {
     this.setState({ modalShowing: true });
     const errorModal = (
       <div>
@@ -121,7 +121,10 @@ class CodesRedemptionForm extends React.Component<
     token?.length && this.setState({ inputValue: this._addDashes(token) });
   }
 
-  public componentDidUpdate(prevState) {
+  public componentDidUpdate(
+    prevProps: ICodesRedemptionFormProps,
+    prevState: ICodesRedemptionFormState
+  ) {
     if (
       prevState.inputValue !== this.state.inputValue &&
       this.inputRef.current
@@ -146,7 +149,7 @@ class CodesRedemptionForm extends React.Component<
     );
   };
 
-  private readonly handleChange = (e) => {
+  private readonly handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     const cursorPosition = e.target.selectionStart;
@@ -156,7 +159,7 @@ class CodesRedemptionForm extends React.Component<
     this.setState({ cursorPosition, inputValue: stringWithoutWhitespace });
   };
 
-  private readonly _addDashes = (code) => {
+  private readonly _addDashes = (code: string) => {
     const codeWithoutDashes = this._removeDashes(code);
 
     let codeWithDashes = "";
@@ -192,7 +195,10 @@ class CodesRedemptionForm extends React.Component<
     return code.replace(/[^\w\s]/gi, "");
   };
 
-  private readonly handleSubmit = (event, codeValid) => {
+  private readonly handleSubmit = (
+    event: React.SyntheticEvent,
+    codeValid: boolean
+  ) => {
     event.preventDefault();
 
     this.state.inputValue !== "" &&
@@ -209,7 +215,7 @@ class CodesRedemptionForm extends React.Component<
         });
   };
 
-  private readonly handleApply = (event) => {
+  private readonly handleApply = (event: React.MouseEvent) => {
     event.preventDefault();
 
     Platform.TokensService.ApplyOfferToCurrentDestinyMembership(

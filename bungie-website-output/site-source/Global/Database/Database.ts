@@ -11,7 +11,7 @@ export const GenerateDestinyDatabaseSchema = () => {
     acc[val] = "hash";
 
     return acc;
-  }, {});
+  }, {} as Record<string, string>);
 
   // Also create a table for the manifest version
   schema["manifest"] = "version";
@@ -39,7 +39,7 @@ class DestinyDatabaseInitializer {
       acc[val] = "hash";
 
       return acc;
-    }, {});
+    }, {} as Record<string, string>);
 
     // Also create a table for the manifest version
     schema["manifest"] = "version";

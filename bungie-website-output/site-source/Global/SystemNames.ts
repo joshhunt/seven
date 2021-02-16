@@ -1,4 +1,4 @@
-type SystemNamesKeys = keyof typeof SystemNames;
+export type SystemNamesKeys = keyof typeof SystemNames;
 export type ValidSystemNames = typeof SystemNames[SystemNamesKeys];
 
 export const SystemNames = {

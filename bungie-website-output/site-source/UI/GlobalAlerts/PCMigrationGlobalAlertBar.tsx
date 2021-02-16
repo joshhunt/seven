@@ -15,13 +15,11 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import classNames from "classnames";
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
 import { GlobalBar } from "./GlobalBar";
 import styles from "./PCMigrationGlobalAlertBar.module.scss";
 
 interface IPCMigrationGlobalAlertProps
-  extends GlobalStateComponentProps<"loggedInUser" | "credentialTypes">,
-    RouteComponentProps {}
+  extends GlobalStateComponentProps<"loggedInUser" | "credentialTypes"> {}
 
 interface IPCMigrationGlobalAlertState {
   user: Contract.UserDetail;
@@ -41,7 +39,7 @@ class PCMigrationGlobalAlert extends React.Component<
   private readonly destroys: DestroyCallback[] = [];
   private readonly localStorageKey: string = "show-pc-migration-sunset-alert";
 
-  constructor(props) {
+  constructor(props: IPCMigrationGlobalAlertProps) {
     super(props);
 
     this.state = {

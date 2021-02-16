@@ -22,7 +22,7 @@ export class PCMigrationVerifying extends PCMigrationStageBase<
   IPCMigrationStageBaseProps,
   IPCMigrationVerifyingState
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationStageBaseProps) {
     super(props);
 
     this.state = {

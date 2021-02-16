@@ -12,6 +12,7 @@ import { Logger } from "@Global/Logger";
 import { Config, Platform } from "@Platform";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import React from "react";
+// @ts-ignore
 import MyWorker from "./DestinyDefinitions.worker";
 
 interface IMessageEventData<T> {
@@ -130,14 +131,15 @@ class DestinyDefinitionsInternal extends DataStore<
       // If 'definitionsAreUpdated' is true, that means these are new definitions, and they should replace existing ones
       const { definitions: defString } = eventData.detail;
 
-      const definitions = JSON.parse(defString) as Partial<
-        DestinyWorldDefinitionsGenerated
+      const definitions = JSON.parse(defString) as Record<
+        keyof DestinyWorldDefinitionsTypeMap,
+        any
       >;
 
       // Instead of exposing all the definitions all the time, it's safer to expose them as closures (for memory consumption)
       const fetcherize = (
         type: string,
-        defs: { [hash: string]: { hash: string; def: any } }
+        defs: Record<string, { hash: any; def: any }>
       ) => {
         return {
           get: (hash: string | number) => {
@@ -148,7 +150,7 @@ class DestinyDefinitionsInternal extends DataStore<
             throw new DefinitionNotFoundError(hash, type);
           },
           all: () => {
-            const defHashTable = {};
+            const defHashTable: Record<string, any> = {};
 
             Object.keys(defs).forEach(
               (hash) => (defHashTable[hash] = defs[hash].def)
@@ -163,8 +165,8 @@ class DestinyDefinitionsInternal extends DataStore<
       const fetcherized: Partial<AllDefinitionsFetcherized> = this.definitions;
 
       Object.keys(definitions)
-        .filter((k) => !fetcherized[k])
-        .forEach((k) => {
+        .filter((k: keyof DestinyWorldDefinitionsGenerated) => !fetcherized[k])
+        .forEach((k: keyof DestinyWorldDefinitionsGenerated) => {
           fetcherized[k] = fetcherize(k, definitions[k]);
         });
 

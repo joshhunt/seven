@@ -9,7 +9,7 @@ export interface IAreaParams {
   /** The name of the area. This defines the path as well. */
   name: string;
   /** The dynamic import of the Area's entry component */
-  lazyComponent: (props) => JSX.Element;
+  lazyComponent: (props: any) => JSX.Element;
   /** The valid routes within the area */
   routes: ((area: string) => ActionRoute)[];
   /** If defined, we will check whether this system is enabled before rendering the area. */

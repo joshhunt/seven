@@ -27,7 +27,7 @@ interface ISubmitButtonProps extends ButtonProps {
   /* If true, text will be capitalized */
   caps?: boolean;
   /* By default, if this is omitted, clicking on this button should proc the onSubmit function of the form it is in */
-  onClick?: (event) => void;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 interface ISubmitButtonState {}
@@ -58,7 +58,7 @@ export class SubmitButton extends React.Component<
       onClick,
     } = this.props;
 
-    const adjustedOnClick = (e) => {
+    const adjustedOnClick = (e: React.MouseEvent<HTMLElement>) => {
       e.preventDefault();
       onClick(e);
     };

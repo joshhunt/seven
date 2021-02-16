@@ -31,15 +31,6 @@ const LegacyPath = (path: string): IMultiSiteLink => {
   };
 };
 
-const DirectLegacyPath = (path: string): IMultiSiteLink => {
-  const url = path;
-
-  return {
-    url,
-    legacy: true,
-  };
-};
-
 const LegacyPathWithQuery = (path: string) => (
   params?: object
 ): IMultiSiteLink => {
@@ -209,7 +200,7 @@ export class RouteHelper {
     url: "/Destiny2NextChapter",
     legacy: true,
   };
-  public static DestinyItemDefinition = (itemHash) =>
+  public static DestinyItemDefinition = (itemHash: string) =>
     LegacyPath(`/Explore/Detail/DestinyInventoryItemDefinition/${itemHash}`);
   public static SeasonProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")

@@ -53,7 +53,7 @@ export class PCMigrationTransferAgreement extends PCMigrationStageBase<
   private readonly refToInfoBlock: React.RefObject<InfoBlock>;
   private readonly agreeText = Localizer.Pcmigration.IAgree;
 
-  constructor(props) {
+  constructor(props: IPCMigrationTransferAgreementProps) {
     super(props);
 
     this.state = {

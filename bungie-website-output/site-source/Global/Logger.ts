@@ -1,5 +1,6 @@
 // tslint:disable: variable-name
 import { Renderer } from "@Platform";
+// @ts-ignore
 import { mapStackTrace } from "@bungie/sourcemapped-stacktrace";
 import { DetailedError } from "@CustomErrors";
 import { RendererLogLevel, SpamReductionLevel } from "@Enum";
@@ -19,7 +20,7 @@ export enum LogLevel {
   Verbose = 2,
 }
 
-type LogSignature = (content: any, ...optional: any[]) => null;
+type LogSignature = (content: any, ...optional: any[]) => number;
 
 export interface ILogger {
   log: LogSignature;
@@ -29,9 +30,9 @@ export interface ILogger {
   error: LogSignature;
   errorVerbose: LogSignature;
 
-  logToServer(logThis: Error | string, logLevel: RendererLogLevel);
+  logToServer: (logThis: Error | string, logLevel: RendererLogLevel) => void;
 
-  setLogLevel(level: LogLevel);
+  setLogLevel: (level: LogLevel) => void;
 }
 
 class LoggerInternal implements ILogger {
@@ -64,16 +65,16 @@ class LoggerInternal implements ILogger {
     console
   );
 
-  public log = (content: any, ...optional: any[]) => null;
-  public logVerbose = (content: any, ...optional: any[]) => null;
-  public warn = (content: any, ...optional: any[]) => null;
-  public warnVerbose = (content: any, ...optional: any[]) => null;
+  public log = (content: any, ...optional: any[]) => 0;
+  public logVerbose = (content: any, ...optional: any[]) => 0;
+  public warn = (content: any, ...optional: any[]) => 0;
+  public warnVerbose = (content: any, ...optional: any[]) => 0;
   public error = (
     error: Error | any,
     sendToServer = true,
     ...optional: any[]
-  ) => null;
-  public errorVerbose = (content: any, ...optional: any[]) => null;
+  ) => 0;
+  public errorVerbose = (content: any, ...optional: any[]) => 0;
 
   private constructor(private readonly prefix: string) {
     const logLevelDefault = location.hostname.endsWith("local")
@@ -228,6 +229,7 @@ window.onerror = (
   }
 };
 
+// @ts-ignore
 window["enableLogging"] = () => {
   Logger.setLogLevel(LogLevel.Verbose);
 };

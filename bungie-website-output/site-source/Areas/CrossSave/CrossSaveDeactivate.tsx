@@ -176,7 +176,9 @@ class CrossSaveDeactivate extends React.Component<
     if (!gs.loggedInUser) {
       const indexPath = RouteDefs.Areas.CrossSave.resolve("Index");
 
-      return UrlUtils.PushRedirect(indexPath, this.props);
+      UrlUtils.PushRedirect(indexPath, this.props);
+
+      return null;
     }
 
     if (!this.state.flowState.validation) {

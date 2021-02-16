@@ -27296,6 +27296,7 @@ export class Platform {
   platformSettings: any;
 }
 
+// @ts-ignore
 window["BungieGCPCaptureActivity"] = function (
   input,
   challengeKey,

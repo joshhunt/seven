@@ -60,7 +60,7 @@ export class SeasonCarousel extends React.Component<
     }
   }
 
-  private readonly getOrder = (itemIndex) => {
+  private readonly getOrder = (itemIndex: number) => {
     const { position } = this.state;
     const { children } = this.props;
     const numItems = children.length || 1;
@@ -85,7 +85,10 @@ export class SeasonCarousel extends React.Component<
     this.doSliding("prev", position === 0 ? numItems - 1 : position - 1);
   };
 
-  private readonly doSliding = (direction, position: number) => {
+  private readonly doSliding = (
+    direction: "next" | "prev",
+    position: number
+  ) => {
     this.setState({
       sliding: true,
       direction,

@@ -14,6 +14,12 @@ import React, { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
+declare global {
+  interface Window {
+    dataLayer: any[];
+  }
+}
+
 interface SmsPhoneEntryFormProps {}
 
 export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
@@ -25,6 +31,9 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
   const handleSubmit = () => {
     setLoading(true);
     setError("");
+
+    window.dataLayer.push({ event: "sms_add_phone_submit" });
+
     Platform.UserService.AddPhoneNumber(phone)
       .then((response) => {
         if (response) {
@@ -58,7 +67,7 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
     SmsDataStore.actions.updatePhase("CodeEntry");
   };
 
-  const clearErrorAndHandleInput = (input) => {
+  const clearErrorAndHandleInput = (input: string) => {
     error !== "" && setError("");
     setPhone(input);
   };

@@ -139,7 +139,7 @@ class DestinyShadowkeepInner extends React.Component<
     });
   };
 
-  private readonly ext = (original) =>
+  private readonly ext = (original: string) =>
     this.state.supportsWebp ? "webp" : original;
 
   private launchYouTube(): boolean {
@@ -254,7 +254,7 @@ class DestinyShadowkeepInner extends React.Component<
       : DestinySkuTags.LegendaryEdition;
 
     return (
-      <React.Fragment>
+      <div className={styles.destinyFont}>
         <BungieHelmet
           image={Img("/destiny/bgs/shadowkeep/hero_desktop_bg.webp")}
           title={Localizer.Destiny.NewLightShadowKeepTitle}
@@ -870,7 +870,7 @@ class DestinyShadowkeepInner extends React.Component<
             ]}
           />
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }

@@ -13,7 +13,7 @@ interface IPCMigrationPlatformProps {
   globalState: GlobalState<"loggedInUser" | "credentialTypes">;
   uniqueClassName: string;
   platform: PCPlatform;
-  onClick();
+  onClick: () => void;
 }
 
 export class PCMigrationPlatformContainer extends React.Component<
@@ -24,7 +24,7 @@ export class PCMigrationPlatformContainer extends React.Component<
     "/img/theme/bungienet/icons/BattlenetLogo.png";
   private readonly locPCMigration = Localizer.Pcmigration;
 
-  constructor(props) {
+  constructor(props: IPCMigrationPlatformProps) {
     super(props);
   }
 

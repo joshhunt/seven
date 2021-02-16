@@ -19,7 +19,7 @@ export interface Season11TripleBoxProps {
     title?: string;
   };
   items: Season11TripleBoxItem[];
-  render?: (index, children: React.ReactNode) => React.ReactNode;
+  render?: (index: number, children: React.ReactNode) => React.ReactNode;
 }
 
 export const Season11TripleBox: React.FC<Season11TripleBoxProps> = ({

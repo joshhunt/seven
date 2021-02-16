@@ -41,7 +41,7 @@ export const CodesPlatformSelector: React.FC<CodesPlatformSelectorProps> = (
       <p>{Localizer.UserPages.SelectWhichPlatformToApply}</p>
       <Dropdown
         options={_convertMembershipsToOptions(codesDatastore.userMemberships)}
-        onChange={(value: string) => {
+        onChange={(value: keyof typeof BungieMembershipType) => {
           CodesDataStore.actions.updateSelectedMembership(
             BungieMembershipType[value]
           );

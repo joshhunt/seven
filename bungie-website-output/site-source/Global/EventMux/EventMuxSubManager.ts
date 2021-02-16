@@ -39,7 +39,7 @@ export class EventMuxSubManager extends DataStore<
 
   public actions = this.createActions({});
 
-  public broadcast() {
+  public broadcast(): any[] {
     const storedResponseString = EventMux.storage.getItem(
       EventMuxStorage.storageKeys.StoredResponse
     );

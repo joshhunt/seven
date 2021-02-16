@@ -12,7 +12,7 @@ export interface CustomObserverClass<
 }
 
 export class BroadcasterObserver<TDataType, TInputType = any> {
-  private updateTimer = null;
+  private updateTimer: number = null;
   protected updateDelayMs = 1000 / 60;
 
   private readonly callback: (newData: TDataType) => void;

@@ -33,3 +33,5 @@ class SmsDataStoreInternal extends DataStore<SmsDataStorePayload> {
 }
 
 export const SmsDataStore = SmsDataStoreInternal.Instance;
+
+SmsDataStore.actions.updateLastDigits("asdf");

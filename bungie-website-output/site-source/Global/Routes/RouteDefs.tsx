@@ -235,7 +235,7 @@ export class RouteDefs {
    */
   public static get AllAreaRoutes() {
     const allAreas: Area[] = Object.keys(RouteDefs.Areas)
-      .map((key) => RouteDefs.Areas[key])
+      .map((key: keyof typeof RouteDefs.Areas) => RouteDefs.Areas[key])
       .filter((area: Area) => {
         let enabled = true;
         if (area.params && area.params.webmasterSystem) {

@@ -1,3 +1,4 @@
+import { EnumUtils } from "@Utilities/EnumUtils";
 import {
   ICrossSaveFlowState,
   CrossSaveMode,
@@ -48,10 +49,16 @@ export class CrossSaveUtils {
     crossSaveMode: CrossSaveMode
   ) {
     const profileMembershipTypes = Object.keys(pairingStatus.profiles).map(
-      (key) => BungieMembershipType[key]
+      (key) => BungieMembershipType[this.EnumKeyifyMembershipType(key)]
     ) as BungieMembershipType[];
 
     return profileMembershipTypes;
+  }
+
+  private static EnumKeyifyMembershipType(
+    input: BungieMembershipType | string
+  ) {
+    return input as keyof typeof BungieMembershipType;
   }
 
   /**
@@ -174,9 +181,14 @@ export class CrossSaveUtils {
     membershipType: BungieMembershipType
   ): IFlowStateForMembership {
     const membershipTypeString = BungieMembershipType[membershipType];
-    const profileResponse = flowState.profileResponses[membershipTypeString];
+    const profileResponse =
+      flowState.profileResponses[
+        this.EnumKeyifyMembershipType(membershipTypeString)
+      ];
     const platformMembership =
-      flowState.pairingStatus.profiles[membershipTypeString];
+      flowState.pairingStatus.profiles[
+        this.EnumKeyifyMembershipType(membershipTypeString)
+      ];
     const clan = flowState.userClans.find(
       (a) => a.member.destinyUserInfo.membershipType === membershipType
     );
@@ -239,19 +251,21 @@ export class CrossSaveUtils {
   ) {
     const authStatuses = flowState.validation.authStatuses;
 
+    const mtFixed = this.EnumKeyifyMembershipType(BungieMembershipType[mt]);
+
     if (!loggedInUser) {
       return CrossSaveUtils.getAccountLinkStatus(
         mt,
-        authStatuses[BungieMembershipType[mt]],
-        flowState.validation.profileSpecificErrors[BungieMembershipType[mt]],
+        authStatuses[mtFixed],
+        flowState.validation.profileSpecificErrors[mtFixed],
         []
       );
     }
 
     return CrossSaveUtils.getAccountLinkStatus(
       mt,
-      authStatuses[BungieMembershipType[mt]],
-      flowState.validation.profileSpecificErrors[BungieMembershipType[mt]],
+      authStatuses[mtFixed],
+      flowState.validation.profileSpecificErrors[mtFixed],
       loggedInUser.crossSaveCredentialTypes
     );
   }
@@ -278,10 +292,12 @@ export class CrossSaveUtils {
 
     const goodToGoAccounts = pairableMembershipTypes
       .map((mt) => {
+        const mtFixed = this.EnumKeyifyMembershipType(BungieMembershipType[mt]);
+
         return CrossSaveUtils.getAccountLinkStatus(
           mt,
-          authStatuses[BungieMembershipType[mt]],
-          flowState.validation.profileSpecificErrors[BungieMembershipType[mt]],
+          authStatuses[mtFixed],
+          flowState.validation.profileSpecificErrors[mtFixed],
           loggedInUser.crossSaveCredentialTypes
         );
       })
@@ -308,7 +324,7 @@ export class CrossSaveUtils {
     }
 
     return Object.keys(flowState.validation.pairableMembershipTypes).map(
-      (mtString) => BungieMembershipType[mtString]
+      (mtFixed) => BungieMembershipType[this.EnumKeyifyMembershipType(mtFixed)]
     );
   }
 
@@ -324,10 +340,11 @@ export class CrossSaveUtils {
     let result = false;
 
     try {
+      const mtFixed = this.EnumKeyifyMembershipType(
+        BungieMembershipType[membershipType]
+      );
       const pairability: CrossSave.CrossSavePairabilityStatus =
-        flowState.validation.pairableMembershipTypes[
-          BungieMembershipType[membershipType]
-        ];
+        flowState.validation.pairableMembershipTypes[mtFixed];
 
       result = pairability.canBePrimary;
     } catch (e) {

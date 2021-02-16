@@ -52,7 +52,7 @@ export const withDestinyDefinitions = <
           "You cannot use DestinyInventoryItemDefinition without acknowledging that you know you are going to force users to download a large file. If you don't KNOW FOR SURE that you need these large files, you should DestinyInventoryItemLiteDefinition instead"
         );
 
-        return null;
+        return <React.Fragment />;
       }
     };
   }

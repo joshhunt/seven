@@ -39,7 +39,7 @@ export class SystemDisabledHandler extends React.Component<
   public componentDidMount() {
     // Of the systems passed down through props, see if any are disabled
     const anySystemDisabled = this.props.systems.some(
-      (sys) => !ConfigUtils.SystemStatus(SystemNames[sys])
+      (sys) => !ConfigUtils.SystemStatus(sys)
     );
     this.setState({
       anySystemDisabled,

@@ -154,7 +154,7 @@ class ForsakenPageInternal extends React.Component<
       : DestinySkuTags.LegendaryEdition;
 
     return (
-      <React.Fragment>
+      <div className={styles.destinyFont}>
         <BungieHelmet
           image={Img(
             "/destiny/products/forsaken/forsaken_hero_poster_hires_bg.jpg"
@@ -933,7 +933,7 @@ class ForsakenPageInternal extends React.Component<
             },
           ]}
         />
-      </React.Fragment>
+      </div>
     );
   }
 }

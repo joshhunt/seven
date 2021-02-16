@@ -3,7 +3,7 @@
 
 import styles from "@Areas/GameHistory/GameHistoryEvent.module.scss";
 import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { AclEnum } from "@Enum";
+import { AclEnum, DestinyActivityModeType } from "@Enum";
 import { Definitions, HistoricalStats, Platform } from "@Platform";
 import { PermissionsGate } from "@UI/User/PermissionGate";
 import { Timestamp } from "@UI/Utility/Timestamp";
@@ -24,7 +24,7 @@ interface GameHistoryEventProps {
 export const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
   const allActivityModes = props.definitions.DestinyActivityModeDefinition.all();
 
-  const _getHashFromModeType = (modeType) => {
+  const _getHashFromModeType = (modeType: DestinyActivityModeType) => {
     const allActivityHashes = Object.keys(allActivityModes);
 
     return parseInt(

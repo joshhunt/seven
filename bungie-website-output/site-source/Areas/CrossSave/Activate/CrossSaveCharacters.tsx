@@ -334,10 +334,14 @@ const CharacterChoice = (props: {
         }
       }
 
+      const mt = (profile.membershipType as any) as EnumStrings<
+        typeof BungieMembershipType
+      >;
+
       // Check old school location for silver if it's there.
-      if (props.flowState.profileResponses[profile.membershipType]) {
+      if (props.flowState.profileResponses[mt]) {
         const profileResponse: Responses.DestinyProfileResponse =
-          props.flowState.profileResponses[profile.membershipType];
+          props.flowState.profileResponses[mt];
 
         if (
           profileResponse.profileCurrencies &&

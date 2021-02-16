@@ -80,7 +80,7 @@ class PhaseTwo extends React.Component<PhaseTwoProps, PhaseTwoState> {
     }
 
     return (
-      <>
+      <div className={styles.destinyFont}>
         <BungieHelmet
           title={phaseTwo.pageTitle}
           description={phaseTwo.heroSubheading}
@@ -263,7 +263,7 @@ class PhaseTwo extends React.Component<PhaseTwoProps, PhaseTwoState> {
             <BeyondLightProducts globalState={this.props.globalState} />
           </div>
         </div>
-      </>
+      </div>
     );
   }
 

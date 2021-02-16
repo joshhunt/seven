@@ -25,7 +25,7 @@ export class PCMigrationTransferDetails extends PCMigrationTransferStageBase<
   IPCMigrationTransferStageProps,
   IPCMigrationStageBaseState
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationTransferStageProps) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
     this.continue = this.continue.bind(this);

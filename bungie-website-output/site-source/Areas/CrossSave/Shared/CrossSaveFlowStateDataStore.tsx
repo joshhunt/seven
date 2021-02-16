@@ -209,7 +209,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
     pairingStatus: CrossSave.CrossSavePairingStatus,
     validation: CrossSave.CrossSaveValidationResponse
   ) {
-    const involvedMembershipTypes = [];
+    const involvedMembershipTypes: BungieMembershipType[] = [];
     if (
       pairingStatus &&
       pairingStatus.primaryMembershipId &&
@@ -220,12 +220,15 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
           (a) => a.membershipTypeOverridden
         )
       );
-      involvedMembershipTypes.push(pairingStatus.primaryMembershipId);
+      involvedMembershipTypes.push(pairingStatus.primaryMembershipType);
     }
 
     const validMembershipTypes = Object.keys(
       validation.pairableMembershipTypes
-    ).map((mtString) => BungieMembershipType[mtString]);
+    ).map(
+      (mtString: EnumStrings<typeof BungieMembershipType>) =>
+        BungieMembershipType[mtString]
+    );
 
     return validMembershipTypes.some(
       (membershipType) => involvedMembershipTypes.indexOf(membershipType) === -1
@@ -252,7 +255,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
 
   public onAccountLinked = async (requiresReset: boolean) => {
     if (requiresReset) {
-      await GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
+      await GlobalStateDataStore.refreshUserAndRelatedData(true);
     }
 
     this.actions.resetSetup();

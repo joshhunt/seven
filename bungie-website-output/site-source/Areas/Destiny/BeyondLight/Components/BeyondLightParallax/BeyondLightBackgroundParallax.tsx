@@ -68,9 +68,9 @@ const BeyondLightBackgroundParallax = ({
     });
   };
 
-  const backgroundTransformer = (ratio) =>
+  const backgroundTransformer = (ratio: number) =>
     `50% ${Math.round(-((parallaxPos * ratio) / 100))}px`;
-  const transformer = (ratio) =>
+  const transformer = (ratio: number) =>
     `translateY(${Math.round(-((parallaxPos * ratio) / 100))}px)`;
 
   const childTransform = transformer(childParallaxSpeed);

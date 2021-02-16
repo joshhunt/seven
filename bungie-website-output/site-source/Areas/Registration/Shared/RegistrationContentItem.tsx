@@ -1,5 +1,6 @@
 import styles from "@Areas/Registration/Apps.module.scss";
 import { Content } from "@Platform";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import React from "react";
 import stylesRegistration from "./ContentItemRegistration.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
@@ -55,6 +56,7 @@ export const RegistrationContentItem: React.FC<IRegistrationContentItemProps> = 
         <ContentSet
           contentItem={contentItem}
           definition={childBlockTypeDefinition}
+          noTitles={props.noTitles}
         />
       );
     }
@@ -116,7 +118,7 @@ export const ContentSet: React.FC<IRegistrationContentItemProps> = (
 
   return (
     <div className={className}>
-      {!props.noTitles ? (
+      {props.noTitles ? (
         <div className={styles.emptyStyling} />
       ) : (
         <>
@@ -136,7 +138,7 @@ export const ContentSet: React.FC<IRegistrationContentItemProps> = (
           </Anchor>
         )}
       <div className={stylesRegistration.blocks}>
-        {contentItem.properties["ContentItems"].map((item) => (
+        {contentItem.properties["ContentItems"].map((item: any) => (
           <RegistrationContentItem
             contentItem={item}
             key={`${item.contentId}-${Date.UTC}`}
@@ -169,34 +171,33 @@ export const RegistrationItemContent: React.FC<IRegistrationContentItemProps> = 
       <div className={stylesRegistration[def.blockClassName]}>
         <div
           className={stylesRegistration.background}
-          style={{
-            backgroundImage: `url(${getFirehoseImage(
-              contentItem.properties["Image"]
-            )})`,
-          }}
+          style={{ backgroundImage: `url(${contentItem.properties["Image"]})` }}
         />
       </div>
     );
   }
 
+  const hyperlink = contentItem.properties["Hyperlink"];
+  const hyperlinkHost =
+    hyperlink.split("//")[1]?.split("/")[0]?.replace("www.", "") ?? "";
+
+  const analyticsId =
+    !UrlUtils.isBungieNetUrl(hyperlinkHost) && hyperlinkHost.length > 0
+      ? `registration-${hyperlinkHost}`
+      : "";
+
   return (
     <div className={stylesRegistration[def.blockClassName]}>
       <div
         className={stylesRegistration.background}
-        style={{
-          backgroundImage: `url(${getFirehoseImage(
-            contentItem.properties["Image"]
-          )})`,
-        }}
+        style={{ backgroundImage: `url(${contentItem.properties["Image"]})` }}
       />
       <div className={stylesRegistration.content}>
         {hasIcon && (
           <span
             className={stylesRegistration.icon}
             style={{
-              backgroundImage: `url(${getFirehoseImage(
-                contentItem.properties["Icon"]
-              )})`,
+              backgroundImage: `url(${contentItem.properties["Icon"]})`,
             }}
           />
         )}
@@ -207,16 +208,15 @@ export const RegistrationItemContent: React.FC<IRegistrationContentItemProps> = 
             <React.Fragment>
               {props.definition.hasButton && (
                 <Button
-                  url={contentItem.properties["Hyperlink"]}
+                  url={hyperlink}
                   buttonType={"gold"}
+                  analyticsId={analyticsId}
                 >
                   {linkButtonLabel(contentItem)}
                 </Button>
               )}
               {props.definition.hasLink && (
-                <Anchor url={contentItem.properties["Hyperlink"]}>
-                  {linkButtonLabel(contentItem)}
-                </Anchor>
+                <Anchor url={hyperlink}>{linkButtonLabel(contentItem)}</Anchor>
               )}
             </React.Fragment>
           )}
@@ -238,26 +238,12 @@ export const GenericBanner: React.FC<IRegistrationContentItemProps> = (
       className={classNames(stylesRegistration.genericBanner, {
         [stylesRegistration.leftAligned]: leftAlign,
       })}
-      style={{
-        backgroundImage: `url(${getFirehoseImage(
-          contentItem.properties["Image"]
-        )})`,
-      }}
+      style={{ backgroundImage: `url(${contentItem.properties["Image"]})` }}
     >
       <strong>{contentItem.properties["Title"]}</strong>
       <p>{contentItem.properties["SubTitle"]}</p>
     </div>
   );
-};
-
-//
-// can go away since this is all for debugging
-//
-const getFirehoseImage = (path) => {
-  return path;
-
-  //gets the image from bnetdev since I don't get the firehose assets
-  //return `https://bnetdev.bungie.bng.local${path}`;
 };
 
 const linkButtonLabel = (

@@ -16,7 +16,7 @@ interface IPCMigrationLicensesProps {
 export class PCMigrationLicenses extends React.Component<
   IPCMigrationLicensesProps
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationLicensesProps) {
     super(props);
   }
 

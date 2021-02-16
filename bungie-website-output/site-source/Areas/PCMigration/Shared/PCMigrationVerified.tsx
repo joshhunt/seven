@@ -33,7 +33,7 @@ export class PCMigrationVerified extends PCMigrationStageBase<
   private readonly promoEmailUsageFlag = 45;
   private readonly systemEmailUsageFlag = 18;
 
-  constructor(props) {
+  constructor(props: IPCMigrationVerifiedProps) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
     this.continue = this.continue.bind(this);

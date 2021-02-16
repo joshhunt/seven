@@ -23,14 +23,14 @@ export const AsyncRoute: React.FC<IAsyncRouteProps> = (props) => {
 };
 
 const retry = (
-  fn,
+  fn: Function,
   retriesLeft = 5,
   interval = 500
 ): Promise<{ default: React.ComponentType<any> }> => {
   return new Promise((resolve, reject) => {
     fn()
       .then(resolve)
-      .catch((error) => {
+      .catch((error: Error) => {
         setTimeout(() => {
           if (retriesLeft === 1) {
             reject(error);
@@ -64,7 +64,7 @@ export const createAsyncComponent = (
 ) => {
   const LazyComponent = React.lazy(() => retry(componentPromise));
 
-  return (props) => (
+  return (props: any) => (
     <React.Suspense fallback={<LoadingFallback />}>
       <LazyComponent {...props} />
     </React.Suspense>

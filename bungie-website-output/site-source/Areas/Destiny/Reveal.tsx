@@ -302,7 +302,7 @@ class Reveal extends React.Component<Props, IRevealState> {
           settingsUpdating: false,
         });
 
-        GlobalStateDataStore.actions.refreshUserAndRelatedData(true);
+        GlobalStateDataStore.refreshUserAndRelatedData(true);
 
         Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
           position: "br",

@@ -153,7 +153,7 @@ export class Affix extends React.Component<Props, IAffixState> {
 
     // Get a reference to the child node so we can do stuff to it
     const cloned = React.cloneElement(childElement, {
-      ref: (el) => this.setRef(el),
+      ref: (el: HTMLElement) => this.setRef(el),
     });
 
     if (this.ref) {

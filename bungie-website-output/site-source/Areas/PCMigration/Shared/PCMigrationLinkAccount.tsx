@@ -16,7 +16,7 @@ import * as Globals from "@Enum";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 
 interface IPCMigrationLinkAccountProps extends IPCMigrationStageBaseProps {
-  linkAccount();
+  linkAccount: () => void;
 }
 
 interface IPCMigrationLinkAccountState extends IPCMigrationStageGated {
@@ -28,7 +28,7 @@ export class PCMigrationLinkAccount extends PCMigrationStageBase<
   IPCMigrationLinkAccountProps,
   IPCMigrationLinkAccountState
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationLinkAccountProps) {
     super(props);
 
     this.state = {

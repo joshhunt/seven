@@ -9,8 +9,10 @@ import { Platform } from "@Platform";
 import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+// @ts-ignore
 import makeAsyncScriptLoader from "react-async-script";
 import React, { useEffect, useRef } from "react";
+// @ts-ignore
 import ReCAPTCHA from "react-google-recaptcha";
 
 interface RecaptchaProps {
@@ -55,7 +57,7 @@ export const Recaptcha = (props: RecaptchaProps) => {
   };
 
   //Translate our loc names to google's
-  const recaptchaLocEquivalents = {
+  const recaptchaLocEquivalents: Record<string, string> = {
     de: "de",
     en: "en",
     es: "es",

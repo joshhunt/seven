@@ -21,7 +21,7 @@ import styles from "./BeyondLightARG.module.scss";
 
 interface BeyondLightARGProps {}
 
-let animationId = null;
+let animationId: number | null = null;
 
 const BeyondLightARG: React.FC<BeyondLightARGProps> = () => {
   const [value, setValue] = useState("");

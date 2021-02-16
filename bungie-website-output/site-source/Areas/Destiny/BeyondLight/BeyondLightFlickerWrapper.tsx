@@ -100,7 +100,9 @@ const NavWrapper: React.FC<INavWrapperProps> = ({
     story: beyondLightPhase4,
   };
 
-  const matchingPath: BeyondLightPage = Object.keys(pagePaths).find((p) =>
+  const matchingPath: BeyondLightPage = Object.keys(
+    pagePaths
+  ).find((p: BeyondLightPage) =>
     UrlUtils.UrlMatchesPath(pagePaths[p])
   ) as BeyondLightPage;
 

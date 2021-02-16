@@ -70,7 +70,7 @@ export class ShadowkeepLockingMenu extends React.Component<
   }
 
   private get idsToCenterpoints() {
-    const result = {};
+    const result: { [id: string]: number } = {};
 
     Object.keys(this.props.idToElementsMapping).forEach((key) => {
       const el = this.props.idToElementsMapping[key];

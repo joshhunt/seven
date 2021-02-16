@@ -117,11 +117,12 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
 
       const queryString = UrlUtils.QueryToObject(window.location.search);
 
-      if (
-        queryString["platform"]?.length &&
-        typeof PlatformType[queryString["platform"]] !== "undefined"
-      ) {
-        this.setState({ platform: PlatformType[queryString["platform"]] });
+      const platform = queryString["platform"];
+
+      if (queryString["platform"]?.length && platform in PlatformType) {
+        this.setState({
+          platform: PlatformType[platform as keyof typeof PlatformType],
+        });
       }
 
       //load the content set
@@ -143,7 +144,7 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
     }
   }
 
-  public componentDidUpdate(prevProps) {
+  public componentDidUpdate(prevProps: Props) {
     if (
       UserUtils.getAuthChangeStatus(this.props, prevProps) ===
       AuthChangeStatus.UserLoggedIn
@@ -214,7 +215,7 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
         <Grid className={styles.bodyContent}>
           <GridCol cols={12}>
             {pageHasContent &&
-              content["ContentItems"].map((contentItem) => (
+              content["ContentItems"].map((contentItem: any) => (
                 <RegistrationContentItem
                   contentItem={contentItem}
                   key={`${contentItem.contentId}-${Date.UTC}`}

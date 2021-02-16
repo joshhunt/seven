@@ -131,8 +131,9 @@ class ResponsiveInternal extends DataStore<
         ...ResponsiveInternal.InitialState,
       };
 
-      this.ResponsiveState.forEach((state) => {
-        newSubscriptionState[ResponsiveSize[state]] = true;
+      this.ResponsiveState.forEach((state: number) => {
+        const key = ResponsiveSize[state] as keyof typeof ResponsiveSize;
+        newSubscriptionState[key] = true;
       });
 
       return newSubscriptionState;
@@ -154,10 +155,10 @@ class ResponsiveInternal extends DataStore<
       const mediaQuery = mediaQueries[i];
       const mediaQueryTest: boolean = mediaQuery.test();
 
-      this.updateInternalStateForSize(
-        ResponsiveSize[ResponsiveSize[mediaQuery.name]],
-        mediaQueryTest
-      );
+      const key = ResponsiveSize[
+        mediaQuery.name
+      ] as keyof typeof ResponsiveSize;
+      this.updateInternalStateForSize(ResponsiveSize[key], mediaQueryTest);
     }
 
     this.actions.refreshState();
@@ -168,7 +169,7 @@ class ResponsiveInternal extends DataStore<
     const state = this.state;
 
     for (const key in state) {
-      if (state[key]) {
+      if (state[key as keyof IResponsiveState]) {
         classes.push(`r-${key}`);
       }
     }

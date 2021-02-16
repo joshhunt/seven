@@ -176,7 +176,7 @@ class SeasonPassRewardProgression extends React.Component<
 
     const chunked = this.chunk(steps, slidesPer);
 
-    const slides = chunked.map((a, i) => (
+    const slides = chunked.map((a: React.ReactNode, i: number) => (
       <div key={i} className={styles.rewardSlide}>
         {a}
       </div>

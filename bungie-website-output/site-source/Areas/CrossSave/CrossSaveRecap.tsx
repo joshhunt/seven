@@ -109,7 +109,9 @@ class CrossSaveRecap extends React.Component<
     const indexPath = RouteDefs.Areas.CrossSave.resolve("Index");
     const isLoggedIn = UserUtils.isAuthenticated(globalState);
     if (!isLoggedIn || (flowState.loaded && !flowState.isActive)) {
-      return UrlUtils.PushRedirect(indexPath, this.props);
+      UrlUtils.PushRedirect(indexPath, this.props);
+
+      return null;
     }
 
     const userClans = globalState.loggedInUserClans
@@ -226,8 +228,11 @@ class CrossSaveRecap extends React.Component<
                 >
                   <div className={styles.displayName}>
                     {
-                      flowState.pairingStatus.profiles[BungieMembershipType[mt]]
-                        .platformDisplayName
+                      flowState.pairingStatus.profiles[
+                        BungieMembershipType[mt] as EnumStrings<
+                          typeof BungieMembershipType
+                        >
+                      ].platformDisplayName
                     }
                   </div>
                   <div className={styles.silverContainer}>

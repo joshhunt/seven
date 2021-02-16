@@ -18,6 +18,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
 import BeyondLightOverhaul from "./BeyondLightOverhaul";
 import BeyondLightOriginal from "./BeyondLightOriginal";
+import styles from "./BeyondLight.module.scss";
 
 // Required props
 interface IBeyondLightProps
@@ -115,7 +116,7 @@ class BeyondLight extends React.Component<BeyondLightProps, IBeyondLightState> {
     const phaseFourActive = this.state.phaseFourActive;
 
     return (
-      <React.Fragment>
+      <div className={styles.destinyFont}>
         <Switch>
           <Route path={beyondLightPath} exact>
             {phaseOneActive ? (
@@ -140,7 +141,7 @@ class BeyondLight extends React.Component<BeyondLightProps, IBeyondLightState> {
             <Route path={beyondLightPhase4} component={BeyondLightPhaseFour} />
           )}
         </Switch>
-      </React.Fragment>
+      </div>
     );
   }
 }

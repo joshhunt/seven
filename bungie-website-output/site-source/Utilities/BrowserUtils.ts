@@ -10,6 +10,7 @@ export interface IScrollViewportData {
 export class BrowserUtils {
   /** Returns true if it's a mobile browser */
   public static get mobile(): boolean {
+    // @ts-ignore
     if (
       typeof window.matchMedia !== "undefined" ||
       typeof window["msMatchMedia"] !== "undefined"
@@ -32,7 +33,7 @@ export class BrowserUtils {
   public static openWindow(
     href: string,
     windowName: string,
-    onClosed = () => null,
+    onClosed: () => void = () => null,
     features = "height=760, width=790, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no"
   ) {
     const child = window.open(href, windowName, features, false);

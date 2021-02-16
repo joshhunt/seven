@@ -14,7 +14,7 @@ interface Season11HeroState {
 }
 
 export class Season11Hero extends React.Component<{}, Season11HeroState> {
-  constructor(props) {
+  constructor(props: {}) {
     super(props);
 
     this.state = {

@@ -31,7 +31,10 @@ export class EventMuxStorage {
     this.callbacks = [];
 
     const keys = Object.keys(EventMuxStorage.storageKeys);
-    const vals = keys.map((key) => EventMuxStorage.storageKeys[key]);
+    const vals = keys.map(
+      (key: keyof typeof EventMuxStorage.storageKeys) =>
+        EventMuxStorage.storageKeys[key]
+    );
 
     vals.forEach((val) => LocalStorageUtils.removeItem(val));
     vals.forEach((val) => SessionStorageUtils.removeItem(val));
@@ -102,9 +105,9 @@ export class EventMuxStorage {
     window.addEventListener("customStorage", this.onStorage);
   }
 
-  private readonly onStorage = (event) => {
+  private readonly onStorage = (event: StorageEvent) => {
     const eventTypeString =
-      event.type === "storage" ? event["key"] : event["detail"];
+      event.type === "storage" ? event["key"] : (event as any)["detail"];
     if (eventTypeString.match(/eventmux/gi)) {
       this.callbacks.map((callback) => {
         callback();

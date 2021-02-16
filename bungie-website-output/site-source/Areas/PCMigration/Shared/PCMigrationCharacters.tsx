@@ -15,7 +15,7 @@ interface IPCMigrationCharactersProps {
 export class PCMigrationCharacters extends React.Component<
   IPCMigrationCharactersProps
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationCharactersProps) {
     super(props);
   }
 

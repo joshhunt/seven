@@ -226,8 +226,9 @@ class Benefits extends React.Component<Props, IBenefitsState> {
                 this.props.globalState.loggedInUser.user.membershipId
               }
             />
+
             {pageHasContent &&
-              content["ContentItems"].map((contentItem) => (
+              content["ContentItems"].map((contentItem: any) => (
                 <RegistrationContentItem
                   contentItem={contentItem}
                   key={`${contentItem.contentId}-${Date.UTC}`}

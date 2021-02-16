@@ -49,7 +49,9 @@ export class Respond extends React.Component<IRespondProps, IRespondState> {
   }
 
   public render() {
-    const sizeName = ResponsiveSize[this.props.at];
+    const sizeName = ResponsiveSize[
+      this.props.at
+    ] as keyof typeof ResponsiveSize;
     const test = this.state.responsive[sizeName];
 
     if (!test && !this.props.hide) {

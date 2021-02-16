@@ -254,7 +254,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
   );
 };
 
-const _makeDateString = (date) => {
+const _makeDateString = (date: string) => {
   const d = moment.utc(date);
   const dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
     month: d.format("MMM"),

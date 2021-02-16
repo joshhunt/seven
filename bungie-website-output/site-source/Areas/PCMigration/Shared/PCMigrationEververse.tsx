@@ -15,7 +15,7 @@ interface IPCMigrationEververseProps {
 export class PCMigrationEververse extends React.Component<
   IPCMigrationEververseProps
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationEververseProps) {
     super(props);
   }
 

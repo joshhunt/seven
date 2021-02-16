@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 type DataStoreActionReturn<TDataType> =
   | Partial<TDataType>
   | Promise<Partial<TDataType>>;
-type DataStoreActions<TDataType> = Record<
+export type DataStoreActions<TDataType> = Record<
   any,
   (...args: any[]) => DataStoreActionReturn<TDataType>
 >;
@@ -24,8 +24,6 @@ export abstract class DataStore<
   > = BroadcasterObserver<TDataType>
 > extends Broadcaster<TDataType, TObserverProps, TObserverType> {
   protected _internalState: TDataType = null;
-
-  public actions;
 
   public get state() {
     return this._internalState;
@@ -150,3 +148,21 @@ export const useDataStore = <
 
   return current;
 };
+
+class PizzaPayload {
+  public count: number;
+}
+
+interface IEatable<TData> {
+  eat: () => TData;
+}
+
+class PizzaDataStore
+  extends DataStore<PizzaPayload>
+  implements IEatable<PizzaPayload> {
+  public eat() {
+    return {
+      count: this.state.count - 1,
+    };
+  }
+}

@@ -92,7 +92,7 @@ class DestinyNewsAndMediaInternal extends React.Component<
     window.open(imageName, "_blank'");
   };
 
-  private readonly ext = (original) =>
+  private readonly ext = (original: string) =>
     this.state.supportsWebp ? "webp" : original;
 
   private showVideo(videoId: string) {

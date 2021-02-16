@@ -48,7 +48,7 @@ export class PhaseTwoAccordion extends React.Component<
   }
 
   public render() {
-    const toggleActive = (index) => {
+    const toggleActive = (index: number) => {
       this.setState((prev) => ({
         activePanel: prev.activePanel === index ? -1 : index,
         isActive: !this.state.isActive,

@@ -34,7 +34,7 @@ export class PCMigrationSuccess extends PCMigrationTransferStageBase<
   IPCMigrationSuccessProperties,
   IPCMigrationStageBaseState
 > {
-  constructor(props) {
+  constructor(props: IPCMigrationSuccessProperties) {
     super(props);
     this.closeModal = this.closeModal.bind(this);
   }

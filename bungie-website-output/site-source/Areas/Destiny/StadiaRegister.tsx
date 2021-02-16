@@ -326,7 +326,7 @@ class StadiaRegister extends React.Component<
     const url = `/${Localizer.CurrentCultureName}/User/Link/StadiaId?flowStart=1&force=0`;
 
     BrowserUtils.openWindow(url, "linkui", () =>
-      GlobalStateDataStore.actions.refreshUserAndRelatedData()
+      GlobalStateDataStore.refreshUserAndRelatedData()
     );
   };
 }

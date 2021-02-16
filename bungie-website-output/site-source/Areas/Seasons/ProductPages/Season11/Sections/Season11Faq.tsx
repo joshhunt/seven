@@ -9,15 +9,13 @@ import React, { LegacyRef } from "react";
 import styles from "./Season11Faq.module.scss";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 
-interface Season11FaqProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11FaqProps {}
 
-export const Season11Faq = (props) => {
+export const Season11Faq: React.FC<Season11FaqProps> = (props) => {
   const faq = ConfigUtils.GetParameter("CoreAreaSeasons", "D2SeasonsFAQ", 0);
 
   return (
-    <div className={styles.wrapper} id={"faq"} ref={props.inputRef}>
+    <div className={styles.wrapper} id={"faq"}>
       <Grid isTextContainer={true}>
         <GridCol cols={12} className={styles.FAQ}>
           <div className={styles.smallTitle}>{Localizer.Seasons.FAQTitle}</div>
