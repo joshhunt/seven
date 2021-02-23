@@ -62,7 +62,11 @@ export const Exotics13: React.FC<Exotics13Props> = (props) => {
           cols={6}
           mobile={12}
           className={styles.exoticBlock}
-          style={{ backgroundImage: `url(${exoticQuestItem?.imageThumbnail})` }}
+          style={{
+            backgroundImage: responsive.tiny
+              ? `url(${exoticQuestItem?.imageThumbnail})`
+              : `url(${exoticQuestItem?.largeImage})`,
+          }}
         >
           <div
             className={!isRedacted ? styles.clickable : null}
