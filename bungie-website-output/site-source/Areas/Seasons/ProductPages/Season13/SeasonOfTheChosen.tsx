@@ -37,6 +37,9 @@ const SeasonOfTheChosen: React.FC<SeasonOfTheChosenProps> = (props) => {
     "Season13NavBuyAnalyticsId",
     ""
   );
+  const notSpanish =
+    Localizer.CurrentCultureName !== "es" &&
+    Localizer.CurrentCultureName !== "es-mx";
 
   return (
     <div className={styles.all}>
@@ -85,7 +88,9 @@ const SeasonOfTheChosen: React.FC<SeasonOfTheChosenProps> = (props) => {
       <Calendar13 inputRef={(ref) => (idToElementsMapping["calendar"] = ref)} />
       <div className={styles.finalElements}>
         <FirehoseNewsAndMedia tag={"season-13-media"} />
-        <Faq13 inputRef={(ref) => (idToElementsMapping["faq"] = ref)} />
+        <Faq13
+          inputRef={(ref) => notSpanish && (idToElementsMapping["faq"] = ref)}
+        />
       </div>
     </div>
   );

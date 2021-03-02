@@ -1,6 +1,10 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { SystemNames } from "@Global/SystemNames";
+import { Img } from "@Helpers";
+import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import styles from "./SeasonPass13.module.scss";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@Global/DataStore";
@@ -19,6 +23,27 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
   const s13 = Localizer.Season13;
   const imgDir = "/7/ca/destiny/bgs/season13/";
   const responsive = useDataStore(Responsive);
+
+  const seasonPassVideoJsonParamToLocalizedValue = (
+    paramName: string
+  ): string | null => {
+    const seasonPassVideoString = ConfigUtils.GetParameter(
+      SystemNames.Season13Page,
+      paramName,
+      "{}"
+    ).replace(/'/g, '"');
+    const seasonPassVideoData = JSON.parse(seasonPassVideoString);
+
+    return (
+      seasonPassVideoData[Localizer.CurrentCultureName] ??
+      seasonPassVideoData["en"] ??
+      null
+    );
+  };
+
+  const seasonPassVideoId = seasonPassVideoJsonParamToLocalizedValue(
+    "SeasonPassTrailer"
+  );
 
   // Build seasons pass for the carousel
   const rankRowKeys = [...Array(10).keys()];
@@ -47,6 +72,10 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
       />
     );
   });
+
+  const showVideo = (videoId: string) => {
+    YoutubeModal.show({ videoId });
+  };
 
   return (
     <div id="seasonPass" ref={props.inputRef}>
@@ -94,6 +123,26 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
           </div>
         </div>
       </div>
+
+      {seasonPassVideoId?.length > 0 && (
+        <div className={styles.trailerSection}>
+          <div className={styles.titleContainer}>
+            <div
+              style={{
+                backgroundImage: `url(${Img(
+                  "destiny/bgs/season13/rewards_trailer_thumbnail.jpg"
+                )})`,
+              }}
+              role={"presentation"}
+              onClick={() => showVideo(seasonPassVideoId)}
+            >
+              <div className={styles.thumbnailPlayButton} role={"button"} />
+            </div>
+          </div>
+          <div className={styles.smallTitle}>{s13.SeasonOfTheChosenSeason}</div>
+        </div>
+      )}
+
       <div className={styles.carouselSection}>
         <div className={styles.carouselContainer}>
           <SeasonCarousel

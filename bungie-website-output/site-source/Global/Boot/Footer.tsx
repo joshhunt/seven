@@ -136,6 +136,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 RouteHelper.BungieNewsRoom,
                 navLoc.BungieNewsRoom
               )}
+              {this.renderLink(RouteHelper.BungieTechBlog, navLoc.TechBlog)}
               {this.renderLink(RouteHelper.PressKits(), navLoc.PressKit)}
             </ul>
           </div>

@@ -313,8 +313,6 @@ export class UrlUtils {
 
   //Returns true if this link is staying within Bungie.net
   public static isBungieNetUrl(urlHost: string) {
-    console.log(urlHost);
-
     const hostSplit = urlHost.split(".");
     const endUrl = hostSplit
       .slice(hostSplit.length - 2, hostSplit.length)

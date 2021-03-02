@@ -15,9 +15,12 @@ interface Faq13Props {
 
 export const Faq13: React.FC<Faq13Props> = (props) => {
   const faq = ConfigUtils.GetParameter("CoreAreaSeasons", "D2SeasonsFAQ", 0);
+  const notSpanish =
+    Localizer.CurrentCultureName !== "es" &&
+    Localizer.CurrentCultureName !== "es-mx";
 
   return (
-    <div id={"faq"} ref={props.inputRef}>
+    <div id={"faq"} ref={notSpanish ? props.inputRef : null}>
       <Grid isTextContainer={true}>
         <GridCol cols={12} className={styles.FAQ}>
           <div className={styles.smallTitle}>{Localizer.Seasons.FAQTitle}</div>

@@ -292,6 +292,7 @@ export class RouteHelper {
     RouteDefs.Areas.UserResearch.getAction()
   );
   public static BungieNewsRoom = LegacyPath("/Newsroom");
+  public static BungieTechBlog = LegacyPath("/BungieTech");
 
   /**
    *
