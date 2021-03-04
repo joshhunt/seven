@@ -131,7 +131,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 ),
                 navLoc.Bungie
               )}
-              {this.renderLink(RouteHelper.Careers("jobs"), navLoc.Careers)}
+              {this.renderLink(RouteHelper.Careers("careers"), navLoc.Careers)}
               {this.renderLink(
                 RouteHelper.BungieNewsRoom,
                 navLoc.BungieNewsRoom
