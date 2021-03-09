@@ -249,17 +249,3 @@ const SubNavButton: React.FC<SubNavButtonProps> = (props) => {
     </Button>
   );
 };
-
-interface SubNavSectionProps extends React.HTMLProps<HTMLDivElement> {
-  id: string;
-  useRef: (ref: HTMLElement, id: string) => void;
-}
-export const SubNavSection: React.FC<SubNavSectionProps> = (props) => {
-  const { id, useRef, ...rest } = props;
-
-  return (
-    <div id={props.id} ref={(ref) => props.useRef(ref, props.id)} {...rest}>
-      {props.children}
-    </div>
-  );
-};

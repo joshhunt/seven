@@ -2,8 +2,7 @@ import {
   Season11OverlapImageAsset,
   Season11OverlapItem,
 } from "../Components/Season11OverlapItem";
-import React from "react";
-import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
+import React, { LegacyRef } from "react";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./Season11Dungeon.module.scss";
@@ -15,14 +14,15 @@ import { Season11AvailableToAll } from "@Areas/Seasons/ProductPages/Season11/Com
 import { Anchor } from "@UI/Navigation/Anchor";
 import { RouteHelper } from "@Routes/RouteHelper";
 
-export const Season11Dungeon = () => {
+interface Season11DungeonProps {
+  inputRef: LegacyRef<HTMLDivElement>;
+}
+
+export const Season11Dungeon: React.FC<Season11DungeonProps> = (props) => {
   const season11Data = useDataStore(Season11DataStore);
 
   return (
-    <SubNavSection
-      id={"dungeon"}
-      useRef={Season11DataStore.actions.mapIdToElement}
-    >
+    <div id={"dungeon"} ref={props.inputRef}>
       <div
         className={styles.wrapper}
         style={{
@@ -87,6 +87,6 @@ export const Season11Dungeon = () => {
           </div>
         </div>
       </div>
-    </SubNavSection>
+    </div>
   );
 };

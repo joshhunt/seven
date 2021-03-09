@@ -19,6 +19,8 @@ import { Season11Calendar } from "@Areas/Seasons/ProductPages/Season11/Sections/
 import { Season11Faq } from "@Areas/Seasons/ProductPages/Season11/Sections/Season11Faq";
 import { Responsive, ResponsiveContext } from "@Boot/Responsive";
 
+const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
+
 const Season11 = () => {
   const s11Data = useDataStore(Season11DataStore);
   const responsive = useDataStore(Responsive);
@@ -41,7 +43,7 @@ const Season11 = () => {
       <div className={styles.wrapper}>
         <Season11Hero />
         <MarketingSubNav
-          idToElementsMapping={s11Data.idToElementsMapping}
+          idToElementsMapping={idToElementsMapping}
           relockUnder={s11Data.heroRef}
           stringFinder={(id) => Localizer.Season11[`id-${id}`]}
           primaryColor={"darkgray"}
@@ -52,11 +54,19 @@ const Season11 = () => {
             buttonType: "teal",
           }}
         />
-        <Season11Story />
-        <Season11Dungeon />
-        <Season11Exotics />
-        <Season11Gear />
-        <Season11Progression />
+        <Season11Story
+          inputRef={(ref) => (idToElementsMapping["story"] = ref)}
+        />
+        <Season11Dungeon
+          inputRef={(ref) => (idToElementsMapping["dungeon"] = ref)}
+        />
+        <Season11Exotics
+          inputRef={(ref) => (idToElementsMapping["exotics"] = ref)}
+        />
+        <Season11Gear inputRef={(ref) => (idToElementsMapping["gear"] = ref)} />
+        <Season11Progression
+          inputRef={(ref) => (idToElementsMapping["progression"] = ref)}
+        />
         <Season11Calendar />
         <div id={"media"} className={styles.newsMedia}>
           <FirehoseNewsAndMedia tag={"S11_product_page_media"} />

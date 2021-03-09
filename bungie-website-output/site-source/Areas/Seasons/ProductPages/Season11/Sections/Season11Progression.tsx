@@ -1,4 +1,4 @@
-import React from "react";
+import React, { LegacyRef } from "react";
 import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Responsive } from "@Boot/Responsive";
@@ -9,7 +9,6 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
 import styles from "./Season11Progression.module.scss";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { Season11AvailableToAll } from "@Areas/Seasons/ProductPages/Season11/Components/Season11AvailableToAll";
@@ -19,7 +18,13 @@ import {
   Season11VerticalSubtitle,
 } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 
-export const Season11Progression = React.forwardRef(() => {
+interface Season11ProgressionProps {
+  inputRef: LegacyRef<HTMLDivElement>;
+}
+
+export const Season11Progression: React.FC<Season11ProgressionProps> = (
+  props
+) => {
   const responsive = useDataStore(Responsive);
   const season11Data = useDataStore(Season11DataStore);
 
@@ -34,10 +39,7 @@ export const Season11Progression = React.forwardRef(() => {
   ));
 
   return (
-    <SubNavSection
-      id={"progression"}
-      useRef={Season11DataStore.actions.mapIdToElement}
-    >
+    <div id={"progression"} ref={props.inputRef}>
       <div
         className={styles.wrapper}
         style={{
@@ -160,6 +162,6 @@ export const Season11Progression = React.forwardRef(() => {
           </div>
         </div>
       </div>
-    </SubNavSection>
+    </div>
   );
-});
+};

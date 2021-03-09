@@ -1,7 +1,6 @@
 import { Season11OverlapItem } from "../Components/Season11OverlapItem";
-import React from "react";
+import React, { LegacyRef } from "react";
 import { Season11TripleBox } from "@Areas/Seasons/ProductPages/Season11/Components/Season11TripleBox";
-import { SubNavSection } from "@UI/Marketing/MarketingSubNav";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import styles from "./Season11Gear.module.scss";
@@ -29,14 +28,15 @@ const ShowImageModal = (imagePath: string, alt: string) => {
   }
 };
 
-export const Season11Gear = () => {
+interface Season11GearProps {
+  inputRef: LegacyRef<HTMLDivElement>;
+}
+
+export const Season11Gear: React.FC<Season11GearProps> = (props) => {
   const season11Data = useDataStore(Season11DataStore);
 
   return (
-    <SubNavSection
-      id={"gear"}
-      useRef={Season11DataStore.actions.mapIdToElement}
-    >
+    <div id={"gear"} ref={props.inputRef}>
       <div className={styles.gearWrapper}>
         <Season11VerticalSubtitle separator={"//"}>
           {Localizer.Season11.S11GearRewards}
@@ -140,6 +140,6 @@ export const Season11Gear = () => {
           }
         />
       </div>
-    </SubNavSection>
+    </div>
   );
 };
