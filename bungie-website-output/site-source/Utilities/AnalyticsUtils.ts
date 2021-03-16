@@ -1,6 +1,7 @@
 import BungieAnalytics from "@bungie/analytics";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Logger } from "@Global/Logger";
 import { SystemNames } from "@Global/SystemNames";
 import moment from "moment/moment";
 import ReactGA from "react-ga";
@@ -13,6 +14,8 @@ interface ISession {
   sessionId: string;
   refreshDate: moment.Moment;
 }
+
+declare var ba: BungieAnalytics;
 
 export class AnalyticsUtils {
   private static destroyLoggedInUserObserver: DestroyCallback;
@@ -40,26 +43,14 @@ export class AnalyticsUtils {
         useExistingGa: true,
       } as any); // todo $jlauer - remove "as any" once react-ga supports useExistingGa in its types
 
-      if (ConfigUtils.SystemStatus(SystemNames.BungieAnalytics)) {
-        ReactGA.ga((tracker: any) => {
-          const clientId = tracker?.get("clientId");
-          // @ts-ignore
-          window["BungieAnalytics"] = new BungieAnalytics(
-            "net_bungie_www",
-            clientId
-          );
-          // @ts-ignore
-          window["BungieAnalytics"].setUserId(AnalyticsUtils.userId);
-          ReactGA.set({ userId: AnalyticsUtils.userId });
-        });
-      }
-
       AnalyticsUtils.destroyLoggedInUserObserver = GlobalStateDataStore.observe(
         (data) => {
           const userId = data?.loggedInUser?.user?.membershipId;
+
           if (userId && userId !== AnalyticsUtils.userId) {
             AnalyticsUtils.onUserLoggedIn(userId);
           }
+
           if (!userId && AnalyticsUtils.userId) {
             AnalyticsUtils.onUserLoggedOut();
           }
@@ -75,14 +66,14 @@ export class AnalyticsUtils {
     AnalyticsUtils.userId = userId;
     ReactGA.set({ userId: userId });
     // @ts-ignore
-    window["BungieAnalytics"]?.setUserId(userId);
+    ba?.setUserId(userId);
   }
 
   private static onUserLoggedOut() {
     AnalyticsUtils.userId = undefined;
     ReactGA.set({ userId: undefined });
     // @ts-ignore
-    window["BungieAnalytics"]?.setUserId(undefined);
+    ba?.setUserId(undefined);
   }
 
   /** Tracks the current page to Google Analytics */

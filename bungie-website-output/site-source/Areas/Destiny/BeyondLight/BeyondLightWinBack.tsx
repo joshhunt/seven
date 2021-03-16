@@ -23,7 +23,6 @@ export const BeyondLightWinBack: React.FC<BeyondLightWinBackProps> = (
   props
 ) => {
   const beyondlightLoc = Localizer.Beyondlight;
-  const responsiveState = useDataStore(Responsive);
   const trailerId = props.trailerId;
 
   const showTrailer = (videoId: string) => {

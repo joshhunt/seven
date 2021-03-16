@@ -176,7 +176,7 @@ class BeyondLightOverhaul extends React.Component<
           bgColor={homepage.bgHexHero ?? homepage.bgHexHero}
           overlayImage={""}
         />
-        <BeyondLightWinBack trailerId={phaseFour.heroTrailerButtonVideoId} />
+        <BeyondLightWinBack trailerId={phaseFour.launchTrailerVideoId} />
 
         <NextGenModule />
         <div id={"editions"} className={styles.preorder}>

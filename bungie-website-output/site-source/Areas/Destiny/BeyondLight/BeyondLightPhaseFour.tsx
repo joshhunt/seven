@@ -97,7 +97,7 @@ class BeyondLightPhaseFour extends React.Component<
             subheading={phaseFour.heroSubheading}
             videoPlayButtonText={phaseFour.heroTrailerButtonText}
             videoPlayButtonType={"white"}
-            youTubeVideoId={phaseFour.heroTrailerButtonVideoId}
+            youTubeVideoId={phaseFour.storySectionHeroTrailerVideoId}
             buttonOneLink={RouteHelper.DestinyBuyDetail({
               productFamilyTag: "beyondlight",
             })}

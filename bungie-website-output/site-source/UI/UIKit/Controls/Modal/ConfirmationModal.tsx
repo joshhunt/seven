@@ -1,6 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { Checkbox } from "@UIKit/Forms/Checkbox";
 import * as React from "react";
 import styles from "./ConfirmationModal.module.scss";
 import { Icon } from "../Icon";
@@ -19,6 +20,8 @@ interface IConfirmationModalProps extends ModalProps {
   cancelButtonProps?: IConfirmationModalButtonProps;
   /** Modal title */
   title?: React.ReactNode;
+  acknowledgements?: string[];
+  footerContent?: React.ReactNode;
 }
 
 interface IConfirmationModalButtonProps {
@@ -39,7 +42,10 @@ interface DefaultProps {
 
 type Props = IConfirmationModalProps & Partial<DefaultProps>;
 
-interface IConfirmationModalState {}
+interface IConfirmationModalState {
+  acknowledged: boolean;
+  ackCheckboxState?: boolean[];
+}
 
 /**
  * ConfirmationModal - Replace this description
@@ -54,7 +60,12 @@ class ConfirmationModalInner extends React.Component<
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      acknowledged: !(this.props.acknowledgements?.length > 0),
+      ackCheckboxState: this.props.acknowledgements?.length
+        ? this.props.acknowledgements.map((value, index) => false)
+        : null,
+    };
   }
 
   public static defaultProps: DefaultProps = {
@@ -70,6 +81,23 @@ class ConfirmationModalInner extends React.Component<
     }
   }
 
+  private readonly changeAcknowledge = (acknowledgeNumber: number) => {
+    const ackCheckboxStateArray = this.state.ackCheckboxState;
+
+    ackCheckboxStateArray[acknowledgeNumber] = !this.state.ackCheckboxState[
+      acknowledgeNumber
+    ];
+
+    this.setState({
+      ackCheckboxState: ackCheckboxStateArray,
+      acknowledged: !this.state.ackCheckboxState.includes(false),
+    });
+  };
+
+  private readonly checkAcknowledgeStatus = (acknowledgeNumber: number) => {
+    return this.state.ackCheckboxState[acknowledgeNumber];
+  };
+
   public render() {
     const {
       type,
@@ -78,6 +106,7 @@ class ConfirmationModalInner extends React.Component<
       cancelButtonProps,
       confirmButtonProps,
       title,
+      footerContent,
     } = this.props;
 
     let cancelLabel = Localizer.Actions.canceldialogbutton,
@@ -153,6 +182,27 @@ class ConfirmationModalInner extends React.Component<
             <div className={styles.description}>{children}</div>
           </div>
         </div>
+
+        {this.props.acknowledgements && (
+          <div className={styles.ackWrapper}>
+            {this.props.acknowledgements.map((value, index) => {
+              return (
+                <Checkbox
+                  key={index}
+                  checked={this.state.ackCheckboxState[index]}
+                  onChange={() => this.checkAcknowledgeStatus(index)}
+                  onClick={() => this.changeAcknowledge(index)}
+                  label={value}
+                />
+              );
+            })}
+          </div>
+        )}
+        {footerContent && (
+          <div className={styles.footerContent}>
+            <div className={styles.description}>{footerContent}</div>
+          </div>
+        )}
         <div className={buttonClasses}>
           {!excludeCancelButton && (
             <Button
@@ -168,6 +218,7 @@ class ConfirmationModalInner extends React.Component<
             <Button
               buttonType={confirmType}
               className={styles.confirmButton}
+              disabled={!this.state.acknowledged}
               onClick={() => this.onButtonClick(confirmButtonProps)}
               size={BasicSize.Small}
             >

@@ -175,37 +175,34 @@ class CrossSaveCommit extends React.Component<
       ConfigUtils.SystemStatus(SystemNames.CrossSaveStadiaException) &&
       stadiaIsPrimary;
 
+    const ackList = [
+      `${Localizer.Format(Localizer.Crosssave.CrossSaveLockoutWarning, {
+        timeLimit: this.props.flowState.validation.settings
+          .repairThrottleDurationFragment,
+      })} <a href="${RouteHelper.HelpStep(helpStepId).url}" target="__blank">${
+        Localizer.Crosssave.IDonTUnderstandHelp
+      }</a>`,
+      Localizer.Crosssave.SilverInConfirmationModal,
+      Localizer.Crosssave.AcknowledgementCheckboxText1,
+      Localizer.Crosssave.AcknowledgementCheckboxText2,
+      Localizer.Crosssave.AcknowledgementCheckboxText3,
+    ];
+
+    if (!this.state.showSilverWarning) {
+      ackList.splice(1, 1);
+    }
+
     ConfirmationModal.show({
       type: "info",
       title: Localizer.Crosssave.ConfirmationModalTitle,
+      acknowledgements: ackList,
       children: (
         <div>
-          {Localizer.Format(Localizer.Crosssave.CrossSaveLockoutWarning, {
-            timeLimit: this.props.flowState.validation.settings
-              .repairThrottleDurationFragment,
-          })}
-          <br />
-          <br />
-          <Anchor url={RouteHelper.HelpStep(helpStepId)}>
-            {Localizer.Crosssave.CommitHelpLinkLabel}
-          </Anchor>
-          <br />
-          <br />
           {showStadiaWarning && (
             <div>
               {Localizer.Crosssave.StadiaSeasonsWarning}
               <br />
               <br />
-            </div>
-          )}
-          {this.state.showSilverWarning && (
-            <div>
-              {Localizer.Crosssave.SilverInConfirmationModal}
-              <br />
-              <br />
-              <Anchor url={RouteHelper.CrossSave({ FAQ: "true" })}>
-                {Localizer.Crosssave.SilverLinkFAQ}
-              </Anchor>
             </div>
           )}
         </div>
@@ -218,6 +215,11 @@ class CrossSaveCommit extends React.Component<
           return true;
         },
       },
+      footerContent: (
+        <Anchor url={RouteHelper.CrossSave({ FAQ: "true" })}>
+          {Localizer.Crosssave.SilverLinkFAQ}
+        </Anchor>
+      ),
     });
   };
 
@@ -586,4 +588,5 @@ class CrossSaveCommit extends React.Component<
   }
 }
 
+// tslint:disable-next-line: max-file-line-count
 export default withRouter(CrossSaveCommit);
