@@ -65,7 +65,7 @@ export const Exotics13: React.FC<Exotics13Props> = (props) => {
           style={{
             backgroundImage: responsive.tiny
               ? `url(${exoticQuestItem?.imageThumbnail})`
-              : `url(${exoticQuestItem?.imageThumbnail})`,
+              : `url(${exoticQuestItem?.largeImage})`,
           }}
         >
           <div

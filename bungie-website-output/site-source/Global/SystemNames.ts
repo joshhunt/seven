@@ -81,4 +81,5 @@ export const SystemNames = {
   GoogleRecaptcha: "GoogleRecaptcha",
   SeasonHuntHawkmoonTrailer: "SeasonHuntHawkmoonTrailer",
   SmsResendCodeRecaptcha: "SmsResendCodeRecaptcha",
+  ProvingGroupsTrailer: "ProvingGroupsTrailer",
 } as const;
