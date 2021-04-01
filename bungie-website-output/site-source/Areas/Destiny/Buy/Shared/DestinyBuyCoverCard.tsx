@@ -11,7 +11,6 @@ import { Anchor } from "@UI/Navigation/Anchor";
 interface IDestinyBuyCoverCardProps extends React.DOMAttributes<HTMLElement> {
   productFamily: IDestinyProductFamilyDefinition;
   children?: React.ReactNode;
-  onSale?: boolean;
 }
 
 /**
@@ -29,9 +28,6 @@ export const DestinyBuyCoverCard = (props: IDestinyBuyCoverCardProps) => {
         productFamilyTag: props.productFamily.productFamilyTag,
       })}
     >
-      {props.onSale && (
-        <div className={styles.saleTag}>{Localizer.Buyflow.OnSale}</div>
-      )}
       {props.children}
       <div className={styles.tagline}>{props.productFamily.tagline}</div>
     </Anchor>

@@ -292,6 +292,7 @@ class DestinyDefinitionsInternal extends DataStore<
         manifest: manifestData,
         types: filteredTypes,
         locale: Localizer.CurrentCultureName,
+        mock: false,
       },
     });
   }

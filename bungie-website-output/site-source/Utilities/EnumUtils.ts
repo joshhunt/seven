@@ -26,7 +26,7 @@ export class EnumUtils {
    * @param enumType The enum itself (e.g. BungieMembershipType)
    * @returns The string value of the enum in question (e.g. BungieMembershipType.TigerXbox => "TigerXbox");
    */
-  public static getStringValue<T extends any>(
+  public static getStringValue<T extends object>(
     enumValue: string | number,
     enumType: T
   ): EnumStrings<T> {
@@ -49,7 +49,7 @@ export class EnumUtils {
    * @param enumValue2
    * @param enumType True if the given enums are equivalent values within the given enum (e.g. "2" / 2 / BungieMembershipType.TigerPSN)
    */
-  public static looseEquals<T extends any>(
+  public static looseEquals<T extends object>(
     enumValue1: string | number,
     enumValue2: string | number,
     enumType: T

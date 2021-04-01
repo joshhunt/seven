@@ -177,6 +177,16 @@ export class DestinySkuUtils {
     return product.stores.find((ps) => ps?.activeSale) !== undefined;
   }
 
+  public static isBeyondLightOnSale(skuConfig: IDestinySkuConfig) {
+    const beyondLight = skuConfig.productGroups.filter(
+      (gp) => gp.key === "BeyondLight"
+    )[0];
+
+    return beyondLight.products.some((p) =>
+      this.isProductOnSale(p.key, skuConfig)
+    );
+  }
+
   public static getSaleForProductAndStore(
     skuTag: string,
     storeKey: string,

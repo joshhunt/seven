@@ -27,6 +27,10 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
+import DestinySkuConfigDataStore, {
+  IDestinySkuConfig,
+} from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
+import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
@@ -56,11 +60,12 @@ export type BeyondLightOverhaulProps = IBeyondLightPropsOverhaul & DefaultProps;
 
 interface IBeyondLightState {
   transparentMode: boolean;
+  responsive: IResponsiveState;
   BeyondLightUpdateData: BeyondLightUpdateDataStorePayload;
   BeyondLightPhaseTwoData: BeyondLightPhaseTwoDataStorePayload;
   BeyondLightPhaseThreeData: BeyondLightPhaseThreeDataStorePayload;
   BeyondLightPhaseFourData: BeyondLightPhaseFourDataStorePayload;
-  responsive: IResponsiveState;
+  skuConfig: IDestinySkuConfig;
 }
 
 enum blockType {
@@ -88,6 +93,7 @@ class BeyondLightOverhaul extends React.Component<
       BeyondLightPhaseTwoData: BeyondLightPhaseTwoDataStore.state,
       BeyondLightPhaseThreeData: BeyondLightPhaseThreeDataStore.state,
       BeyondLightPhaseFourData: BeyondLightPhaseFourDataStore.state,
+      skuConfig: DestinySkuConfigDataStore.state,
     };
   }
 
@@ -95,6 +101,9 @@ class BeyondLightOverhaul extends React.Component<
 
   public componentDidMount() {
     this.destroys.push(
+      DestinySkuConfigDataStore.observe((skuConfig) =>
+        this.setState({ skuConfig })
+      ),
       BeyondLightUpdateDataStore.observe((BeyondLightUpdateData) =>
         this.setState({ BeyondLightUpdateData })
       ),
@@ -127,6 +136,9 @@ class BeyondLightOverhaul extends React.Component<
       beyondlightLoc.PreOrderNowToGetInstant,
       { instant: instant }
     );
+    const beyondLightSale =
+      this.state.skuConfig &&
+      DestinySkuUtils.isBeyondLightOnSale(this.state.skuConfig);
 
     const { phaseTwoActive, phaseThreeActive } = this.props;
     const { phaseTwo } = this.state.BeyondLightPhaseTwoData;
@@ -172,7 +184,7 @@ class BeyondLightOverhaul extends React.Component<
           isMedium={medium}
           isMobile={mobile}
           releaseDateEyebrow={beyondlightLoc.AvailableNow}
-          releaseDate={""}
+          releaseDate={beyondLightSale && Localizer.sales.BeyondLight}
           bgColor={homepage.bgHexHero ?? homepage.bgHexHero}
           overlayImage={""}
         />

@@ -101,10 +101,7 @@ export class PCMigrationModal extends React.Component<
   }
 
   public initialize() {
-    if (this.state.globalState.loggedInUser) {
-      this.determineUserStage();
-      PCMigrationUserDataStore.getDestinyAccount(this.state.globalState);
-    }
+    // don't do anything here - we don't need this page anymore
   }
 
   public render() {

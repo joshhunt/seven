@@ -342,12 +342,14 @@ const ProductFamilyTitles = (props: IProductFamilyTitlesProps) => {
   const { title, subtitle, saleDetails, onSale } = props;
 
   return (
-    <div className={styles.titles}>
+    <div className={styles.saleTagCont}>
       {onSale && !StringUtils.isNullOrWhiteSpace(saleDetails) && (
         <p className={styles.discountString}>{saleDetails}</p>
       )}
-      <div className={styles.subtitle}>{subtitle}</div>
-      <div className={styles.title}>{title}</div>
+      <div className={styles.titles}>
+        <div className={styles.subtitle}>{subtitle}</div>
+        <div className={styles.title}>{title}</div>
+      </div>
     </div>
   );
 };
