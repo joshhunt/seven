@@ -178,11 +178,25 @@ export class DestinySkuUtils {
   }
 
   public static isBeyondLightOnSale(skuConfig: IDestinySkuConfig) {
-    const beyondLight = skuConfig.productGroups.filter(
-      (gp) => gp.key === "BeyondLight"
-    )[0];
+    if (skuConfig === null) {
+      return false;
+    }
 
-    return beyondLight.products.some((p) =>
+    if (skuConfig.productGroups === null) {
+      return false;
+    }
+
+    const beyondLightProductGroupArray = skuConfig.productGroups.filter(
+      (gp) => gp.key === "BeyondLight"
+    );
+
+    if (beyondLightProductGroupArray?.length <= 0) {
+      return false;
+    }
+
+    const beyondLightProductGroup = beyondLightProductGroupArray[0];
+
+    return beyondLightProductGroup?.products?.some((p) =>
       this.isProductOnSale(p.key, skuConfig)
     );
   }
