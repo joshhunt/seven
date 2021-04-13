@@ -1,6 +1,6 @@
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 
-const sm = require("./sm");
+const sm: any = require("./sm");
 
 export interface ArgData {
   Image: string;

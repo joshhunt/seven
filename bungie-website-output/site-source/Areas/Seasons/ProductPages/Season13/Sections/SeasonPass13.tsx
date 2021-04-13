@@ -90,6 +90,7 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
         <div className={styles.boxes}>
           <div className={styles.seasonElement}>
             <ClickableVideoOrImgThumb
+              thumbnailClass={styles.imageThumbnail}
               thumbnailPath={`${imgDir}rewards_screenshot_1_thumbnail.jpg`}
               screenshotPath={`${imgDir}rewards_screenshot_1.jpg`}
               isMedium={responsive.medium}
@@ -101,6 +102,7 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
           </div>
           <div className={styles.seasonElement}>
             <ClickableVideoOrImgThumb
+              thumbnailClass={styles.imageThumbnail}
               thumbnailPath={`${imgDir}rewards_screenshot_2_thumbnail.jpg`}
               screenshotPath={`${imgDir}rewards_screenshot_2.jpg`}
               isMedium={responsive.medium}
@@ -112,6 +114,7 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
           </div>
           <div className={styles.seasonElement}>
             <ClickableVideoOrImgThumb
+              thumbnailClass={styles.imageThumbnail}
               thumbnailPath={`${imgDir}rewards_screenshot_3_thumbnail.jpg`}
               screenshotPath={`${imgDir}rewards_screenshot_3.jpg`}
               isMedium={responsive.medium}

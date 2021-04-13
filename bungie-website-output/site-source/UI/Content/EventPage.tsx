@@ -1,28 +1,28 @@
-import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
-import * as React from "react";
-import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import styles from "./EventPage.module.scss";
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
-import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
-import { BuyButton, BuyButtonProps } from "@UI/UIKit/Controls/Button/BuyButton";
-import classNames from "classnames";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
-import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import { ResponsiveSize } from "@Boot/Responsive";
 import { Respond } from "@Boot/Respond";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
+import { ResponsiveSize } from "@Boot/Responsive";
 import { useDataStore } from "@Global/DataStore";
-import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { Content, Platform } from "@Platform";
+import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
+import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { BuyButton, BuyButtonProps } from "@UI/UIKit/Controls/Button/BuyButton";
+import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
+import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
+import { MarketingContentBlock } from "@UI/UIKit/Layout/MarketingContentBlock";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./EventPage.module.scss";
 
 interface IContentItemProps extends GlobalStateComponentProps<"responsive"> {
   /** The Tag of the EventPage to display. Must specify. */
@@ -75,54 +75,6 @@ class EventPageInternal extends React.Component<
 
   public componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
-  }
-
-  private readonly onScroll = () => {
-    if (this.heroRef.current) {
-      if (this.props.globalState.responsive.mobile) {
-        return;
-      }
-
-      const heroPosition = this.heroRef.current.getBoundingClientRect();
-      const heroScrollData = BrowserUtils.viewportElementScrollData(
-        heroPosition
-      );
-
-      this.setState({
-        heroScroll: heroScrollData,
-      });
-    }
-  };
-
-  private isMedium(): boolean {
-    // navigate to YouTube if the browser is in the 'medium' size or smaller
-    return this.props.globalState.responsive.medium;
-  }
-
-  private showVideo(videoId: string) {
-    if (this.isMedium()) {
-      const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      window.location.href = videoUrl;
-    } else {
-      YoutubeModal.show({ videoId });
-    }
-  }
-
-  private makeMargin(alignment: "left" | "right" | "center") {
-    switch (alignment) {
-      case "left":
-        return this.props.globalState.responsive.mobile
-          ? "27rem auto 0px"
-          : "19rem auto 19rem 10%";
-      case "right":
-        return this.props.globalState.responsive.mobile
-          ? "27rem auto 0px"
-          : "19rem 10% 19rem auto";
-      case "center":
-        return this.props.globalState.responsive.mobile
-          ? "27rem auto 0px"
-          : "37rem auto 3rem";
-    }
   }
 
   public render() {
@@ -204,7 +156,9 @@ class EventPageInternal extends React.Component<
               image={heroBackground || content.HeroBackgroundMobile}
             >
               <body
-                className={SpecialBodyClasses(BodyClasses.HideServiceAlert)}
+                className={SpecialBodyClasses(
+                  BodyClasses.HideServiceAlert | BodyClasses.NoSpacer
+                )}
               />
             </BungieHelmet>
             {!useParallax && (
@@ -232,14 +186,7 @@ class EventPageInternal extends React.Component<
 
             {useParallax && (
               <div
-                className={styles.hero}
-                style={{
-                  position: "relative",
-                  height: "1000px",
-                  width: "100%",
-                  marginTop: "-9rem",
-                  overflow: "hidden",
-                }}
+                className={classNames(styles.hero, styles.parallaxContainer)}
                 ref={this.heroRef}
               >
                 {heroContent}
@@ -251,6 +198,10 @@ class EventPageInternal extends React.Component<
                       layer={i}
                       backgroundImage={bg.Image}
                       scrollPercent={scrollPercent}
+                      parallaxClasses={classNames(
+                        styles.parallaxLayer,
+                        styles[`parallaxLayer${i + 1}`]
+                      )}
                     />
                   );
                 })}
@@ -431,48 +382,100 @@ class EventPageInternal extends React.Component<
       return null;
     }
   }
+
+  private readonly onScroll = () => {
+    if (this.heroRef.current) {
+      if (this.props.globalState.responsive.mobile) {
+        return;
+      }
+
+      const heroPosition = this.heroRef.current.getBoundingClientRect();
+      const heroScrollData = BrowserUtils.viewportElementScrollData(
+        heroPosition
+      );
+
+      this.setState({
+        heroScroll: heroScrollData,
+      });
+    }
+  };
+
+  private isMedium(): boolean {
+    // navigate to YouTube if the browser is in the 'medium' size or smaller
+    return this.props.globalState.responsive.medium;
+  }
+
+  private showVideo(videoId: string) {
+    if (this.isMedium()) {
+      const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      window.location.href = videoUrl;
+    } else {
+      YoutubeModal.show({ videoId });
+    }
+  }
+
+  private makeMargin(alignment: "left" | "right" | "center") {
+    switch (alignment) {
+      case "left":
+        return this.props.globalState.responsive.mobile
+          ? "27rem auto 0px"
+          : "19rem auto 19rem 10%";
+      case "right":
+        return this.props.globalState.responsive.mobile
+          ? "27rem auto 0px"
+          : "19rem 10% 19rem auto";
+      case "center":
+        return this.props.globalState.responsive.mobile
+          ? "27rem auto 0px"
+          : "37rem auto 3rem";
+    }
+  }
 }
 
 interface IParallaxLayerProps {
   scrollPercent: number;
   layer: number;
   backgroundImage: string;
+  parallaxClasses?: string;
 }
 
 const ParallaxLayer = (props: IParallaxLayerProps) => {
-  let transform = "";
+  let rate;
+  let transform;
+  let initialOffset;
   let zIndex = 1;
 
+  /** 'oh my god', future generations will ask, 'where did you get this terrible calculative atrocity?'
+   * Well see when you start to scroll on this page, the speed jumps from the initial value to 0.47 to 0.37, which means when you are using it as a multiplier
+   * you'll get a visual leap the first time you scroll, so we set the initial scroll to 0.47. But wait, when you scroll up
+   * to the very top, it only goes up to 0.37 this time */
+
+  const _getInitialOffset = (speed: number) => {
+    return props.scrollPercent <= 0.47
+      ? speed * 0.47
+      : props.scrollPercent * speed;
+  };
+
   if (props.layer === 0) {
-    transform = `translateY(${
-      props.scrollPercent * window.innerHeight * -0.5 +
-      window.innerHeight * 0.25
-    }px)`;
+    rate = -100;
+    initialOffset = _getInitialOffset(rate);
+    transform = `translateY(${props.scrollPercent * rate - initialOffset}px)`;
   } else if (props.layer === 1) {
-    transform = `translateY(${
-      props.scrollPercent * window.innerHeight * -0.15 +
-      window.innerHeight * 0.075
-    }px)`;
+    rate = -200;
+    initialOffset = _getInitialOffset(rate);
+    transform = `translateY(${props.scrollPercent * rate - initialOffset}px)`;
     zIndex = 8;
   } else {
-    transform = `translateY(${
-      props.scrollPercent * 100 + window.innerHeight * 0.01
-    }px)`;
+    rate = 120;
+    transform = `translateY(${props.scrollPercent * rate}px)`;
     zIndex = 10;
   }
 
   return (
-    <div
+    <img
+      className={props.parallaxClasses ?? ""}
+      src={props.backgroundImage}
       style={{
-        position: "absolute",
-        left: 0,
-        bottom: 0,
-        width: "100%",
-        height: "102%",
-        backgroundImage: `url(${props.backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center bottom",
         transform: transform,
         zIndex: zIndex,
       }}

@@ -12,6 +12,8 @@ interface ClickableVideoOrImgThumbProps {
   screenshotPath?: string;
   youTubeId?: string;
   isMedium: boolean;
+  height?: string;
+  thumbnailClass?: string;
 }
 
 const ClickableVideoOrImgThumb = ({
@@ -19,6 +21,7 @@ const ClickableVideoOrImgThumb = ({
   screenshotPath,
   youTubeId,
   isMedium,
+  thumbnailClass,
 }: ClickableVideoOrImgThumbProps) => {
   const showVideo = (videoId: string) => {
     if (isMedium) {
@@ -34,12 +37,16 @@ const ClickableVideoOrImgThumb = ({
       isFrameless: true,
     });
   };
-  const hasVideoId = youTubeId && "playButton";
+  const hasVideoId = youTubeId ? "playButton" : "";
+  const videoThumbnailStyles = classNames(styles.thumbnail, styles[hasVideoId]);
+  const imageThumbnailStyles = classNames(styles.thumbnail, {
+    [thumbnailClass]: thumbnailClass,
+  });
 
   return youTubeId ? (
     <div
       role={"button"}
-      className={classNames(styles.thumbnail, styles[hasVideoId])}
+      className={videoThumbnailStyles}
       onClick={() => showVideo(youTubeId)}
     >
       <div
@@ -50,7 +57,7 @@ const ClickableVideoOrImgThumb = ({
   ) : (
     <div
       role={"button"}
-      className={styles.thumbnail}
+      className={imageThumbnailStyles}
       onClick={() => showImage(screenshotPath)}
     >
       <div

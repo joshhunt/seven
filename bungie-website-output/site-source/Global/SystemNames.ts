@@ -82,4 +82,7 @@ export const SystemNames = {
   SeasonHuntHawkmoonTrailer: "SeasonHuntHawkmoonTrailer",
   SmsResendCodeRecaptcha: "SmsResendCodeRecaptcha",
   ProvingGroupsTrailer: "ProvingGroupsTrailer",
+  FacebookUrlByLocale: "FacebookUrlByLocale",
+  TwitterUrlByLocale: "TwitterUrlByLocale",
+  InstagramUrlByLocale: "InstagramUrlByLocale",
 } as const;

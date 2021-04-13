@@ -1,3 +1,4 @@
+import { SystemNames } from "@Global/SystemNames";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./Footer.module.scss";
@@ -37,6 +38,25 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
     const copyright = Localizer.Format(globalsLoc.Copyright, {
       year: moment().year(),
     });
+
+    // get user's current locale (i.e. 'en', 'es', etc.)
+    const userLanguage = Localizer.CurrentCultureName.toLowerCase();
+    // get appropriate social media links based on user's locale
+    const facebookUrl = ConfigUtils.GetParameter(
+      SystemNames.FacebookUrlByLocale,
+      userLanguage,
+      "https://www.facebook.com/Bungie"
+    );
+    const twitterUrl = ConfigUtils.GetParameter(
+      SystemNames.TwitterUrlByLocale,
+      userLanguage,
+      "https://twitter.com/bungie"
+    );
+    const instagramUrl = ConfigUtils.GetParameter(
+      SystemNames.InstagramUrlByLocale,
+      userLanguage,
+      "https://www.instagram.com/bungie/"
+    );
 
     return (
       <footer className={styles.footer}>
@@ -208,28 +228,28 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
             <ul>
               <li className={styles.facebook}>
                 <a
-                  href="https://www.facebook.com/Bungie"
+                  href={facebookUrl}
                   className="ir"
                   title={Localizer.Community.BungieFacebook}
                 />
               </li>
               <li className={styles.instagram}>
                 <a
-                  href="https://www.instagram.com/bungie/"
+                  href={instagramUrl}
                   className="ir"
                   title={Localizer.Community.BungieInstagram}
                 />
               </li>
               <li className={styles.twitter}>
                 <a
-                  href="https://twitter.com/bungie"
+                  href={twitterUrl}
                   className="ir"
                   title={Localizer.Community.BungieTwitter}
                 />
               </li>
               <li className={styles.youtube}>
                 <a
-                  href="http://www.youtube.com/user/Bungie"
+                  href="https://www.youtube.com/user/Bungie"
                   className="ir"
                   title={Localizer.Community.BungieYoutube}
                 />

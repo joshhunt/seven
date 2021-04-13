@@ -1,13 +1,20 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import classNames from "classnames";
-import styles from "./MarketingContentBlock.module.scss";
-import { MarketingTextBox } from "@UI/Marketing/MarketingTextBox";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./MarketingContentBlock.module.scss";
 
 export type ContentAlignments = "center" | "left" | "right" | "centerTop";
+
+interface IMediaBoxProps {
+  ImageThumbnail: string;
+  VideoId?: string;
+  LargeImage?: string;
+}
 
 interface IMarketingContentBlockProps {
   /** Small, underlined title at the top of the text section */
@@ -30,9 +37,13 @@ interface IMarketingContentBlockProps {
   children?: React.ReactNode;
   /** Is this a splitscreen block? - next to another marketing block when the page is wide */
   splitScreen?: boolean;
+  /** Three clickable thumbnails at bottom of section */
+  threeMediaBoxes?: IMediaBoxProps[] | null;
 }
 
-interface IMarketingContentBlockState {}
+interface IMarketingContentBlockState {
+  responsive: IResponsiveState;
+}
 
 /**
  * MarketingContentBlock - Reusable block component for marketing pages with small and large title and then any additional content
@@ -51,7 +62,9 @@ export class MarketingContentBlock extends React.Component<
   constructor(props: IMarketingContentBlockProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      responsive: Responsive.state,
+    };
   }
 
   public render() {
@@ -67,6 +80,7 @@ export class MarketingContentBlock extends React.Component<
       margin,
       children,
       splitScreen,
+      threeMediaBoxes,
     } = this.props;
 
     return (
@@ -91,6 +105,12 @@ export class MarketingContentBlock extends React.Component<
               />
               {blurb && <p className={styles.mediumBlurb}>{blurb}</p>}
             </TextContainer>
+            {threeMediaBoxes && (
+              <ThreeMediaBoxes
+                mediaBoxes={threeMediaBoxes}
+                isMedium={this.state.responsive.medium}
+              />
+            )}
             {children}
           </div>
         </Section>
@@ -102,9 +122,37 @@ export class MarketingContentBlock extends React.Component<
 interface IBasicDivProps extends React.HTMLProps<HTMLDivElement> {
   children: React.ReactNode;
 }
+
+interface IThreeMediaBoxesProps {
+  mediaBoxes: IMediaBoxProps[];
+  isMedium: boolean;
+}
+
+const ThreeMediaBoxes = (props: IThreeMediaBoxesProps) => {
+  const { isMedium, mediaBoxes } = props;
+
+  return (
+    <div className={styles.mediaBoxes}>
+      {mediaBoxes?.map((mediaBox, i) => {
+        return (
+          <ClickableVideoOrImgThumb
+            thumbnailClass={styles.marketingThumbnail}
+            key={i}
+            thumbnailPath={mediaBox.ImageThumbnail}
+            screenshotPath={mediaBox.LargeImage || null}
+            youTubeId={mediaBox.VideoId || null}
+            isMedium={isMedium}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 interface ISectionTitleProps extends IBasicDivProps {
   isSmall?: boolean;
 }
+
 const SectionTitle = (props: ISectionTitleProps) => {
   const { children, ...rest } = props;
 

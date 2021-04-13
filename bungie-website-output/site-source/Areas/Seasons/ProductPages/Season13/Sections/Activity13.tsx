@@ -29,16 +29,19 @@ export const Activity13: React.FC<Activity13Props> = (props) => {
       <div className={styles.blurb}>{s13.activityblurb}</div>
       <div className={styles.boxes}>
         <ClickableVideoOrImgThumb
+          thumbnailClass={styles.imageThumbnail}
           thumbnailPath={`${imgDir}battlegrounds_screenshot_1_thumbnail.jpg`}
           screenshotPath={`${imgDir}battlegrounds_screenshot_1.jpg`}
           isMedium={responsive.medium}
         />
         <ClickableVideoOrImgThumb
+          thumbnailClass={styles.imageThumbnail}
           thumbnailPath={`${imgDir}battlegrounds_screenshot_2_thumbnail.jpg`}
           screenshotPath={`${imgDir}battlegrounds_screenshot_2.jpg`}
           isMedium={responsive.medium}
         />
         <ClickableVideoOrImgThumb
+          thumbnailClass={styles.imageThumbnail}
           thumbnailPath={`${imgDir}battlegrounds_screenshot_3_thumbnail.jpg`}
           screenshotPath={`${imgDir}battlegrounds_screenshot_3.jpg`}
           isMedium={responsive.medium}

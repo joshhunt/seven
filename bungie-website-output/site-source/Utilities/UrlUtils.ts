@@ -1,8 +1,8 @@
-import * as H from "history";
-import pathToRegexp, { RegExpOptions, Token } from "path-to-regexp";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
+import * as H from "history";
+import * as pathToRegexp from "ptr620";
 import { LocalizerUtils } from "./LocalizerUtils";
-import { StringUtils, StringCompareOptions } from "./StringUtils";
+import { StringCompareOptions, StringUtils } from "./StringUtils";
 
 export class UrlUtils {
   public static readonly AppBaseUrl = "/7";
@@ -44,6 +44,7 @@ export class UrlUtils {
    * Given a router path and parameters, return a useable URL
    * @param path
    * @param params
+   * @param extra
    * @constructor
    */
   public static RouterPathToUrl<T>(
@@ -61,6 +62,7 @@ export class UrlUtils {
     if (allParams) {
       // Check whether the requested params match the options available in the route.
       // If there are extras, convert them to query strings
+
       const tokens = pathToRegexp.parse(path);
       const validKeys = tokens
         .filter((t) => typeof t === "object")
@@ -77,7 +79,10 @@ export class UrlUtils {
           : "";
     }
 
-    const toPath = pathToRegexp.compile(path);
+    const toPath = pathToRegexp.compile(path, {
+      validate: false,
+      encode: (value) => value,
+    });
 
     const paramsWithLocale =
       allParams && "locale" in allParams
@@ -91,6 +96,7 @@ export class UrlUtils {
    * Given a router path and parameters, return a useable MultiSiteLink
    * @param path
    * @param params
+   * @param extra
    * @constructor
    */
   public static RouterPathToMultiLink<T>(
@@ -110,12 +116,15 @@ export class UrlUtils {
    * @param options Regexp options
    * @constructor
    */
-  public static UrlMatchesPath(path: string, options?: RegExpOptions) {
+  public static UrlMatchesPath(
+    path: string,
+    options?: pathToRegexp.TokensToRegexpOptions
+  ) {
     if (path === null) {
       return false;
     }
     const parsed = pathToRegexp.parse(path);
-    const regExp = pathToRegexp.tokensToRegExp(parsed, undefined, options);
+    const regExp = pathToRegexp.tokensToRegexp(parsed, undefined, options);
     const actualPathname = location.pathname.startsWith(this.AppBaseUrl)
       ? location.pathname.substr(this.AppBaseUrl.length)
       : location.pathname;
@@ -193,6 +202,7 @@ export class UrlUtils {
   /**
    * Returns the URL as a string regardless of the format it started as
    * @param originalUrl
+   * @param legacy
    */
   public static getUrlAsMultiLink(
     originalUrl: string | IMultiSiteLink,
@@ -228,6 +238,7 @@ export class UrlUtils {
   /**
    * Returns true if this is a link to the old site
    * @param url
+   * @param legacy
    */
   public static isLegacy(url: string, legacy?: boolean) {
     if (!url) {
@@ -296,7 +307,7 @@ export class UrlUtils {
    * @param sameTab
    */
   public static shouldOpenNewTab(isBungieNet: boolean, sameTab?: boolean) {
-    return !isBungieNet || (typeof sameTab === "boolean" && !false);
+    return !isBungieNet || (typeof sameTab === "boolean" && true);
   }
 
   /**
