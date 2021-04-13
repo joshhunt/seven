@@ -225,9 +225,26 @@ class EventPageInternal extends React.Component<
               {content.ContentBlocks
                 ? content.ContentBlocks.map((mcb: any, i: number) => {
                     const props = mcb.properties;
-                    const mobileBgSize = this.props.globalState.responsive.tiny
+
+                    // pull the properties out of each media box
+                    const threeMediaBoxes:
+                      | any[]
+                      | undefined = props.ThreeMediaBoxes?.map(
+                      (box: any) => box.properties
+                    );
+
+                    // The mobile backgrounds need to be contain if we're at Tiny size,
+                    // or if we're at mobile and the three boxes are present
+                    const isThreeBoxMobile =
+                      (threeMediaBoxes?.length ?? 0) > 0 &&
+                      this.props.globalState.responsive.mobile;
+                    const mobileBgIsContain =
+                      isThreeBoxMobile ||
+                      this.props.globalState.responsive.tiny;
+                    const mobileBgSize = mobileBgIsContain
                       ? "contain"
                       : "cover";
+
                     const bgs = props.BackgroundVideoMp4 ? (
                       <Respond
                         at={ResponsiveSize.mobile}
@@ -285,6 +302,7 @@ class EventPageInternal extends React.Component<
                         }
                         bgColor={props.BackgroundColor}
                         margin={this.makeMargin(props.Alignment)}
+                        threeMediaBoxes={threeMediaBoxes || null}
                       />
                     );
                   })
@@ -444,11 +462,6 @@ const ParallaxLayer = (props: IParallaxLayerProps) => {
   let transform;
   let initialOffset;
   let zIndex = 1;
-
-  /** 'oh my god', future generations will ask, 'where did you get this terrible calculative atrocity?'
-   * Well see when you start to scroll on this page, the speed jumps from the initial value to 0.47 to 0.37, which means when you are using it as a multiplier
-   * you'll get a visual leap the first time you scroll, so we set the initial scroll to 0.47. But wait, when you scroll up
-   * to the very top, it only goes up to 0.37 this time */
 
   const _getInitialOffset = (speed: number) => {
     return props.scrollPercent <= 0.47
