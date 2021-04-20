@@ -2,6 +2,7 @@ import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import { Respond } from "@Boot/Respond";
 import { ResponsiveSize } from "@Boot/Responsive";
+import { NotFoundError } from "@CustomErrors";
 import { useDataStore } from "@Global/DataStore";
 import {
   GlobalStateComponentProps,
@@ -32,6 +33,7 @@ interface IContentItemProps extends GlobalStateComponentProps<"responsive"> {
 interface IContentItemState {
   contentRenderable: Content.ContentItemPublicContract;
   heroScroll: IScrollViewportData;
+  finishedFetching: boolean;
 }
 
 /**
@@ -55,6 +57,7 @@ class EventPageInternal extends React.Component<
         isVisible: false,
         percent: 0.47,
       },
+      finishedFetching: false,
     };
   }
 
@@ -64,11 +67,13 @@ class EventPageInternal extends React.Component<
       "EventPage",
       Localizer.CurrentCultureName,
       true
-    ).then((response) =>
-      this.setState({
-        contentRenderable: response,
-      })
-    );
+    )
+      .then((response) =>
+        this.setState({
+          contentRenderable: response,
+        })
+      )
+      .finally(() => this.setState({ finishedFetching: true }));
 
     window.addEventListener("scroll", this.onScroll);
   }
@@ -397,6 +402,10 @@ class EventPageInternal extends React.Component<
         </SpinnerContainer>
       );
     } else {
+      if (this.state.finishedFetching) {
+        throw new NotFoundError();
+      }
+
       return null;
     }
   }
