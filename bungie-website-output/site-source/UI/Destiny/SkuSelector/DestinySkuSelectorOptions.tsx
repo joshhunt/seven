@@ -3,6 +3,7 @@
 
 import * as Globals from "@Enum";
 import { Img } from "@Helpers";
+import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as React from "react";
 import { Localizer } from "@Global/Localization/Localizer";
@@ -198,6 +199,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                     store.key,
                     this.props.skuConfig
                   );
+
                   const activeSale =
                     DestinySkuUtils.getSaleForProductAndStore(
                       def.skuTag,
@@ -213,6 +215,13 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                       activeSaleEndDate += "*";
                     }
                   }
+
+                  const storeKeyForIcon =
+                    store.key === "StadiaFree"
+                      ? "stadia"
+                      : store.key.toLowerCase();
+                  const storeKeyForTitle =
+                    store.key === "StadiaFree" ? "Stadia" : store.key;
 
                   return (
                     <div
@@ -238,11 +247,11 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                         <img
                           className={styles.icon}
                           src={`${Img(
-                            `bungie/icons/logos/${store.key.toLowerCase()}/${store.key.toLowerCase()}_icon_small.png`
+                            `bungie/icons/logos/${storeKeyForIcon}/${storeKeyForIcon}_icon_small.png`
                           )}`}
                           alt={store.key}
                         />
-                        {store.key}
+                        {storeKeyForTitle}
                       </SquareButton>
 
                       <div className={styles.saleInfo}>
