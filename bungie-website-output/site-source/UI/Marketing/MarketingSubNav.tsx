@@ -11,7 +11,12 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 
-export type NavPrimaryColors = "taupe" | "ash" | "purple" | "darkgray";
+export type NavPrimaryColors =
+  | "taupe"
+  | "ash"
+  | "purple"
+  | "darkgray"
+  | "splicerBlue";
 export type NavAccentColors = "gold" | "teal" | "s11green";
 
 interface IMarketingSubNavProps {

@@ -11,6 +11,7 @@ export interface ILocaleParams {
 
 export class RouteDefs {
   private static readonly AreaNames = {
+    Admin: "Admin",
     Codes: "Codes",
     CrossSave: "CrossSave",
     Destiny: "Destiny",
@@ -28,6 +29,23 @@ export class RouteDefs {
   };
 
   public static Areas = {
+    Admin: new Area({
+      name: RouteDefs.AreaNames.Admin,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/CrossSave/CrossSaveArea" /* webpackChunkName: "CrossSave" */
+          )
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "index"),
+        (area) =>
+          new ActionRoute(area, "Activate", { path: ":step?/:skuName?" }),
+        (area) => new ActionRoute(area, "Confirmation"),
+        (area) => new ActionRoute(area, "Deactivate"),
+        (area) => new ActionRoute(area, "Recap"),
+      ],
+    }),
     CrossSave: new Area({
       name: RouteDefs.AreaNames.CrossSave,
       lazyComponent: createAsyncComponent(
@@ -129,6 +147,7 @@ export class RouteDefs {
     }),
     Legal: new Area({
       name: RouteDefs.AreaNames.Legal,
+      indexParams: { path: ":url" },
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Legal/LegalArea" /* webpackChunkName: "Legal" */)
       ),
@@ -167,6 +186,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfArrivals"),
         (area) => new ActionRoute(area, "SeasonOfTheHunt"),
         (area) => new ActionRoute(area, "SeasonOfTheChosen"),
+        (area) => new ActionRoute(area, "SeasonOfTheSplicer"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),

@@ -249,6 +249,9 @@ export class RouteHelper {
   public static SeasonOfTheChosen = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheChosen")
   );
+  public static SeasonOfTheSplicer = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheSplicer")
+  );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")
@@ -299,6 +302,9 @@ export class RouteHelper {
    * Legal Links
    *
    * */
+  public static LegalPage = BasicReactPath(
+    RouteDefs.Areas.Legal.getAction("Index")
+  );
   public static LegalTermsOfUse = BasicReactPath(
     RouteDefs.Areas.Legal.getAction("Terms")
   );

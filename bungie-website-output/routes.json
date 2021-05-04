@@ -1,5 +1,47 @@
 [
   {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Admin"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Activate",
+    "params": {
+      "path": ":step?/:skuName?"
+    },
+    "path": "/7/en/Admin/Activate/:step?/:skuName?"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Confirmation",
+    "params": {},
+    "path": "/7/en/Admin/Confirmation"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Deactivate",
+    "params": {},
+    "path": "/7/en/Admin/Deactivate"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Recap",
+    "params": {},
+    "path": "/7/en/Admin/Recap"
+  },
+  {
     "areaName": "Codes",
     "areaObjectName": "Codes",
     "componentImportPath": "@Areas/Codes/CodesArea",
@@ -472,6 +514,14 @@
     "action": "SeasonOfTheHunt",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheHunt"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheSplicer",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheSplicer"
   },
   {
     "areaName": "Seasons",

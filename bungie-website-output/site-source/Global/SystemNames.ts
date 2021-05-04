@@ -85,4 +85,10 @@ export const SystemNames = {
   FacebookUrlByLocale: "FacebookUrlByLocale",
   TwitterUrlByLocale: "TwitterUrlByLocale",
   InstagramUrlByLocale: "InstagramUrlByLocale",
+  ContentStack: "ContentStack",
+  LegalContentStackPages: "LegalContentStackPages",
+  ContentStackFetchReverseProxy: "ContentStackFetchReverseProxy",
+  Season14PageUpdate: "Season14PageUpdate",
+  Season14Page: "Season14Page",
+  SeasonsFAQUrlByLocale: "SeasonsFAQUrlByLocale",
 } as const;

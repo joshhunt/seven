@@ -1,5 +1,4 @@
 import { SeasonsIndex } from "@Areas/Seasons/SeasonsIndex";
-import { ContentfulNewsPage } from "@UI/Content/ContentfulNewsPage";
 import { RouteComponentProps, Route, Redirect } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
@@ -12,12 +11,10 @@ import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SeasonsDefinitions } from "./SeasonsDefinitions";
 import { AsyncRoute } from "@Routes/AsyncRoute";
-import { ContentfulEventPage } from "@UI/Content/ContentfulEventPage";
 
 class SeasonsArea extends React.Component<RouteComponentProps> {
   public render() {
     const systemEnabled = ConfigUtils.SystemStatus("CoreAreaSeasons");
-    const contentfulEnabled = ConfigUtils.SystemStatus("ContentfulEventPage");
 
     if (!systemEnabled) {
       throw new NotFoundError();
@@ -77,6 +74,14 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
             )
           }
         />
+        <AsyncRoute
+          path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheSplicer").path}
+          component={() =>
+            import(
+              "./ProductPages/Season14/SeasonOfTheSplicer" /* webpackChunkName: "Season14" */
+            )
+          }
+        />
 
         <Route
           path={RouteDefs.Areas.Seasons.getAction("Events").path}
@@ -90,18 +95,6 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
           path={RouteDefs.Areas.Seasons.getAction("Progress").path}
           component={SeasonsProgress}
         />
-        {contentfulEnabled && (
-          <Route
-            path={RouteDefs.Areas.Seasons.getAction("Event").path}
-            component={ContentfulEventPage}
-          />
-        )}
-        {!ConfigUtils.EnvironmentIsProduction && (
-          <Route
-            path={RouteDefs.Areas.Seasons.getAction("News").path}
-            component={ContentfulNewsPage}
-          />
-        )}
         <Route
           exact={true}
           path={RouteDefs.Areas.Seasons.getAction("Index").path}

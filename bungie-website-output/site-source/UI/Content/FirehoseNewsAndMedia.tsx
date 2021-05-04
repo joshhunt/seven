@@ -10,12 +10,16 @@ import {
   DestinyNewsAndMedia,
   MediaTab,
 } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
+import { DestinyNewsAndMediaUpdated } from "@Areas/Destiny/Shared/DestinyNewsAndMediaUpdated";
 import { StringUtils } from "@Utilities/StringUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
 
 interface IFirehoseNewsAndMediaProps {
   /* Admin tag from Marketing News and Media Content Item in Firehose */
   tag: string;
+  useUpdatedComponent?: boolean;
+  smallSeasonText?: string;
+  selectedTab?: MediaTab;
 }
 
 interface IFirehoseNewsAndMediaState {
@@ -68,7 +72,9 @@ export class FirehoseNewsAndMedia extends React.Component<
         ? content.SectionNewsTitle
         : Localizer.News.News;
       let defaultTab: MediaTab = "screenshots";
-      if (this._hasItems(content.LoreItems)) {
+      if (this.props.selectedTab) {
+        defaultTab = this.props.selectedTab;
+      } else if (this._hasItems(content.LoreItems)) {
         defaultTab = "lore";
       } else if (this._hasItems(content.VideoItems)) {
         defaultTab = "videos";
@@ -142,16 +148,32 @@ export class FirehoseNewsAndMedia extends React.Component<
         : null;
 
       return (
-        <DestinyNewsAndMedia
-          defaultTab={defaultTab}
-          showNews={showNews}
-          news={news}
-          lore={lore}
-          videos={videos}
-          screenshots={screenshots}
-          wallpapers={wallpapers}
-          sectionTitleNews={sectionTitleNews}
-        />
+        <>
+          {this.props.useUpdatedComponent ? (
+            <DestinyNewsAndMediaUpdated
+              defaultTab={defaultTab}
+              showNews={showNews}
+              news={news}
+              lore={lore}
+              videos={videos}
+              screenshots={screenshots}
+              wallpapers={wallpapers}
+              sectionTitleNews={sectionTitleNews}
+              smallSeasonText={this.props.smallSeasonText}
+            />
+          ) : (
+            <DestinyNewsAndMedia
+              defaultTab={defaultTab}
+              showNews={showNews}
+              news={news}
+              lore={lore}
+              videos={videos}
+              screenshots={screenshots}
+              wallpapers={wallpapers}
+              sectionTitleNews={sectionTitleNews}
+            />
+          )}
+        </>
       );
     } else {
       return null;
