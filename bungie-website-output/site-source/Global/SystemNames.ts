@@ -91,4 +91,5 @@ export const SystemNames = {
   Season14PageUpdate: "Season14PageUpdate",
   Season14Page: "Season14Page",
   SeasonsFAQUrlByLocale: "SeasonsFAQUrlByLocale",
+  Season14HelpArticleUrlByLocale: "Season14HelpArticleUrlByLocale",
 } as const;

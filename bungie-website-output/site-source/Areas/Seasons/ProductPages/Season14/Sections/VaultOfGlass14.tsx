@@ -5,6 +5,7 @@ import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/Laz
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
 import { Localizer } from "@Global/Localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
@@ -22,8 +23,8 @@ interface ICalloutText {
   CalloutHeading?: string;
   CalloutBlurb?: string;
   CalloutDisclaimer?: string;
-  CalloutButtonTextAvailable?: string;
-  CalloutButtonTextUnavailable?: string;
+  CalloutBtnTextAvailable?: string;
+  CalloutBtnTextUnavailable?: string;
 }
 
 const fetchCalloutText = async () => {
@@ -66,6 +67,12 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
   );
   const [bgImages, setBgImages] = useState(null);
 
+  const emoteBtnAnalyticsId = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    "Season14EmoteBundleAnalyticsId",
+    ""
+  );
+
   useEffect(() => {
     // fetch emote block text from firehose
     fetchCalloutText().then((response) => {
@@ -80,41 +87,31 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
     });
   }, []);
 
-  // date silver bundles should be shown on the page
-  const silverBundleDate = ConfigUtils.GetParameter(
-    "Season14PageUpdate",
-    "ShowSilverBundles",
-    ""
-  );
-  // date silver bundle button should be active
-  const bundleBtnActiveDate = ConfigUtils.GetParameter(
-    "Season14PageUpdate",
+  // get date "buy now" btn becomes active and parse it with moment
+  const buyBtnLiveDate = ConfigUtils.GetParameter(
+    SystemNames.Season14PageUpdate,
     "UpdateSilverBundleBtn",
     ""
   );
-  // parsed dates using moment
-  const parsedBundleDate = moment(silverBundleDate);
-  const parsedBundleBtnDate = moment(bundleBtnActiveDate);
+  const parsedBtnLiveDate = moment(buyBtnLiveDate);
+  // get current date and time
   const now = moment();
-  // booleans to control whether or not to show silver bundle
-  const isSilverBundleLive = now.isAfter(parsedBundleDate);
-  const isBundleBtnActive = now.isAfter(parsedBundleBtnDate);
+  // check if current date and time is after date btn becomes active
+  const isBundleBtnActive = now.isAfter(parsedBtnLiveDate);
 
   const bundleBtnText = isBundleBtnActive
-    ? emoteBlockText?.CalloutButtonTextAvailable
-    : emoteBlockText?.CalloutButtonTextUnavailable;
+    ? emoteBlockText?.CalloutBtnTextAvailable
+    : emoteBlockText?.CalloutBtnTextUnavailable;
 
   // get bg image for section based on screen size
-  const bgImage = !isSilverBundleLive
-    ? ""
-    : Responsive.state.mobile
+  const bgImage = Responsive.state.mobile
     ? bgImages?.mobileBg
     : bgImages?.desktopBg;
 
   return (
     <div className={styles.raidSection}>
       <div
-        className={styles.sectionIdAnchor}
+        className={classNames(styles.sectionIdAnchor, styles.raidSectionAnchor)}
         id={"raid"}
         ref={props.inputRef}
       />
@@ -143,12 +140,10 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
       </div>
       <div className={styles.contentWrapperLarge}>
         <div
-          className={classNames(styles.emoteBundleBlock, {
-            [styles.showVideo]: !isSilverBundleLive || !emoteBlockText,
-          })}
+          className={classNames(styles.emoteBundleBlock)}
           style={{ backgroundImage: `url(${bgImage})` }}
         >
-          {(!isSilverBundleLive || !emoteBlockText) && (
+          {!emoteBlockText && (
             <video muted={true} autoPlay={true} playsInline={true} loop={true}>
               <source
                 src={"/7/ca/destiny/bgs/season14/s14_vog_coming_soon_web.mp4"}
@@ -157,7 +152,7 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
             </video>
           )}
 
-          {isSilverBundleLive && emoteBlockText && (
+          {emoteBlockText && (
             <div className={styles.contentWrapper}>
               <h4
                 dangerouslySetInnerHTML={{
@@ -174,6 +169,7 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
                 buttonType={"blue"}
                 className={styles.emoteBtn}
                 size={2}
+                analyticsId={emoteBtnAnalyticsId}
                 disabled={!isBundleBtnActive}
               >
                 {bundleBtnText}

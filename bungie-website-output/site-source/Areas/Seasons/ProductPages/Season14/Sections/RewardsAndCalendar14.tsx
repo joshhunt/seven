@@ -29,6 +29,7 @@ const fetchCalendar = async () => {
 
 interface RewardsAndCalendar14Props {
   inputRef: LegacyRef<HTMLDivElement>;
+  calendarInputRef: LegacyRef<HTMLDivElement>;
   toggleCalendarModal: () => void;
   calendarBtnTitle: string;
 }
@@ -112,6 +113,14 @@ const RewardsAndCalendar14: React.FC<RewardsAndCalendar14Props> = (props) => {
           oddRowBgColor={"rgba(22, 10, 20, 1)"}
           numberOfRows={10}
           logo={"/7/ca/destiny/bgs/season14/s14_season_icon.png"}
+        />
+        <div
+          id={"calendar"}
+          className={classNames(
+            styles.sectionIdAnchor,
+            styles.calendarIdAnchor
+          )}
+          ref={props.calendarInputRef}
         />
         <BlockPlusButton
           title={props.calendarBtnTitle}

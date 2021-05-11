@@ -1,6 +1,8 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
+import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import classNames from "classnames";
@@ -30,6 +32,7 @@ const Carousel14: React.FC<Carousel14Props> = (props) => {
     setPositionState(data);
     positionRef.current = data;
   };
+  const responsive = useDataStore(Responsive);
   // const currentScrollHeight = useRef<null | number>(null);
   // const touchStartPos = useRef<null | { x: number }>(null)
 
@@ -81,9 +84,12 @@ const Carousel14: React.FC<Carousel14Props> = (props) => {
   };
 
   const showImage = (imagePath: string) => {
-    Modal.open(<img src={`${imagePath}`} alt="" role="presentation" />, {
-      isFrameless: true,
-    });
+    // if screen is not "tiny", open image in modal
+    if (!responsive.tiny) {
+      Modal.open(<img src={`${imagePath}`} alt="" role="presentation" />, {
+        isFrameless: true,
+      });
+    }
   };
 
   return (

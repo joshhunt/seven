@@ -4,6 +4,7 @@
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
 import { Localizer } from "@Global/Localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
@@ -63,6 +64,12 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
   const [bundle, setBundle] = useState<null | ISilverBundleSC>(null);
   const [bgImages, setBgImages] = useState(null);
 
+  const buyBtnAnalyticsId = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    "Season14SilverBundleAnalyticsId",
+    ""
+  );
+
   useEffect(() => {
     // get section text
     fetchText().then((response) => {
@@ -77,18 +84,6 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
     });
   }, []);
 
-  // date silver bundle should be shown on the page
-  const silverBundleDate = ConfigUtils.GetParameter(
-    "Season14PageUpdate",
-    "ShowSilverBundles",
-    ""
-  );
-  // parsed date using moment
-  const parsedBundleDate = moment(silverBundleDate);
-  const now = moment();
-  // boolean to control whether or not to show silver bundle
-  const isSilverBundleLive = now.isAfter(parsedBundleDate);
-
   // get bg image for section based on screen size
   const bgImage = Responsive.state.mobile
     ? bgImages?.mobileBg
@@ -96,7 +91,7 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
 
   return (
     <>
-      {bundle && isSilverBundleLive && (
+      {bundle && (
         <div
           className={styles.silverBundle}
           id={"silver"}
@@ -121,7 +116,7 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
                 dangerouslySetInnerHTML={{ __html: bundle?.SectionBlurb }}
               />
               <BuyButton
-                data-analytics-id={""}
+                analyticsId={buyBtnAnalyticsId}
                 buttonType={"teal"}
                 url={RouteHelper.DestinyBuyDetail({
                   productFamilyTag: "silverbundle",

@@ -75,6 +75,12 @@ const SeasonOfTheSplicer: React.FC<SeasonOfTheSplicerProps> = (props) => {
     faqParamString,
     "https://help.bungie.net/hc/en-us/articles/360060130092-FAQ-for-Season-Pass-Purchases"
   );
+  const supportParamString = `help_${LocalizerUtils.currentCultureName}`;
+  const supportUrl = ConfigUtils.GetParameter(
+    SystemNames.Season14HelpArticleUrlByLocale,
+    supportParamString,
+    "https://help.bungie.net/hc/en-us/articles/360059443812"
+  );
 
   return (
     <div className={styles.all}>
@@ -127,6 +133,7 @@ const SeasonOfTheSplicer: React.FC<SeasonOfTheSplicerProps> = (props) => {
       />
       <RewardsAndCalendar14
         inputRef={(ref) => (idToElementsMapping["rewards"] = ref)}
+        calendarInputRef={(ref) => (idToElementsMapping["calendar"] = ref)}
         toggleCalendarModal={toggleExpungeModal}
         calendarBtnTitle={s14.CalendarBtnTitle}
       />
@@ -141,8 +148,8 @@ const SeasonOfTheSplicer: React.FC<SeasonOfTheSplicerProps> = (props) => {
           />
           <LearnMore14
             faqBgImage={"/7/ca/destiny/bgs/season14/s14_links_button_2.jpg"}
-            // supportBgImage={"/7/ca/destiny/bgs/season14/s14_links_button_1.jpg"}
-            // supportUrl={"/en/Profile/Rewards"}
+            supportBgImage={"/7/ca/destiny/bgs/season14/s14_links_button_1.jpg"}
+            supportUrl={supportUrl}
             faqUrl={faqUrl}
             smallHeaderText={s14.SectionHeaderSeasonText}
           />

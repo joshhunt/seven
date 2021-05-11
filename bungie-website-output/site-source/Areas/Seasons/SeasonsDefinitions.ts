@@ -181,13 +181,12 @@ class SeasonOfTheSplicer extends SeasonDefinition {
     return Localizer.Seasons.LearnMoreSeasonOfTheSplicer;
   }
 
-  public smallIcon = "7/ca/destiny/bgs/season13/s13_icon.svg";
+  public smallIcon = "7/ca/destiny/bgs/season14/s14_season_icon.png";
 }
 
 export class SeasonsDefinitions {
-  public static previousSeason = Season12.instance;
-  public static currentSeason = SeasonOfTheChosen.instance;
-  public static upcomingSeason = SeasonOfTheSplicer.instance;
+  public static previousSeason = SeasonOfTheChosen.instance;
+  public static currentSeason = SeasonOfTheSplicer.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -199,6 +198,7 @@ export class SeasonsDefinitions {
 }
 
 export const SeasonsArray = [
+  SeasonOfTheSplicer.instance,
   SeasonOfTheChosen.instance,
   Season12.instance,
   Season11.instance,

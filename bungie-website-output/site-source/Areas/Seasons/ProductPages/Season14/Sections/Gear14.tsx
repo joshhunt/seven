@@ -5,7 +5,6 @@ import Carousel14 from "@Areas/Seasons/ProductPages/Season14/Components/Carousel
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { __ } from "@Utilities/LocalLocWorkaround";
 import React, { LegacyRef } from "react";
 import styles from "./Gear14.module.scss";
 
@@ -45,7 +44,7 @@ const Gear14: React.FC<Gear14Props> = (props) => {
   ];
 
   return (
-    <div id={"exotics"} className={styles.gearSection}>
+    <div className={styles.gearSection}>
       <div className={styles.sectionBg} />
       <div className={styles.contentWrapperNormal}>
         <div className={styles.sectionBlurbFlex}>
@@ -79,7 +78,7 @@ const Gear14: React.FC<Gear14Props> = (props) => {
         </div>
         <div
           className={styles.sectionIdAnchor}
-          id={"forsaken_exotics"}
+          id={"exotics"}
           ref={props.inputRef}
         />
         <SectionHeader

@@ -4,12 +4,26 @@
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { LegacyRef, useState } from "react";
 import styles from "./SeasonPass14.module.scss";
+
+const trailerJsonParamToLocalizedValue = (paramName: string): string | null => {
+  const trailerString = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    paramName,
+    "{}"
+  ).replace(/'/g, '"');
+  const trailerData = JSON.parse(trailerString);
+
+  return trailerData[Localizer.CurrentCultureName] ?? trailerData["en"] ?? null;
+};
 
 interface SeasonPass14Props {
   inputRef: LegacyRef<HTMLDivElement>;
@@ -17,6 +31,14 @@ interface SeasonPass14Props {
 
 const SeasonPass14: React.FC<SeasonPass14Props> = (props) => {
   const s14 = Localizer.Season14;
+  const responsive = useDataStore(Responsive);
+
+  const seasonTrailerId = trailerJsonParamToLocalizedValue("SeasonPassTrailer");
+  const trailerBtnAnalyticsId = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    "season14PassTrailerAnalyticsId",
+    ""
+  );
 
   return (
     <div className={styles.seasonPassSection}>
@@ -41,15 +63,27 @@ const SeasonPass14: React.FC<SeasonPass14Props> = (props) => {
                 dangerouslySetInnerHTML={{ __html: s14.SeasonPassBlurb }}
               />
             </div>
-            {/*<div className={styles.trailerWrapper}>*/}
-            {/*	<div className={styles.trailerBtn}>*/}
-            {/*		<div className={styles.trailerBg}/>*/}
-            {/*		<div className={styles.iconWrapper}>*/}
-            {/*			<Icon className={styles.playIcon} iconType={"material"} iconName={"play_arrow"}/>*/}
-            {/*		</div>*/}
-            {/*	</div>*/}
-            {/*	<p>{s14.SeasonPassTrailerText}</p>*/}
-            {/*</div>*/}
+            {seasonTrailerId && (
+              <div className={styles.trailerWrapper}>
+                <div
+                  className={styles.trailerBtn}
+                  onClick={() =>
+                    YoutubeModal.show({ videoId: seasonTrailerId })
+                  }
+                  data-analytics-id={trailerBtnAnalyticsId}
+                >
+                  <div className={styles.trailerBg} />
+                  <div className={styles.iconWrapper}>
+                    <Icon
+                      className={styles.playIcon}
+                      iconType={"material"}
+                      iconName={"play_arrow"}
+                    />
+                  </div>
+                </div>
+                <p>{s14.SeasonPassTrailerText}</p>
+              </div>
+            )}
           </div>
         </LazyLoadWrapper>
         <div className={styles.infoBlocksWrapper}>
