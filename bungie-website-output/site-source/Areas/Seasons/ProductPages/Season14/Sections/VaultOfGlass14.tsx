@@ -170,6 +170,7 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
                 className={styles.emoteBtn}
                 size={2}
                 analyticsId={emoteBtnAnalyticsId}
+                url={"/silverbundle-atheon"}
                 disabled={!isBundleBtnActive}
               >
                 {bundleBtnText}

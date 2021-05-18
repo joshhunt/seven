@@ -102,6 +102,9 @@ export class DestinySkuUtils {
       collectorsEditionSkuTag:
         contentItem.properties["CollectorsEditionSkuTag"],
       saleInformation: contentItem.properties["saleInformation"],
+      landingPageCategory: contentItem.properties["LandingPageCategory"],
+      mobileCoverImage: contentItem.properties["MobileCoverImage"],
+      coverTitleHtml: contentItem.properties["CoverTitleHtml"],
     };
   }
 

@@ -1,94 +1,33 @@
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
 import { Localizer } from "@Global/Localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
-import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { MarketingOptInButton } from "@UI/User/MarketingOptInButton";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { Icon } from "@UIKit/Controls/Icon";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
-import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { StringUtils } from "@Utilities/StringUtils";
+import { __ } from "@Utilities/LocalLocWorkaround";
 import classNames from "classnames";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Redirect } from "react-router";
 import styles from "./RaidRace.module.scss";
-
-type TwitchUsers = { [key: string]: any }[];
-
-const fetchDisallowList = async () => {
-  let usernames: string[] = [];
-
-  try {
-    const sc = await Platform.ContentService.GetContentByTagAndType(
-      "raid-race-filter-list",
-      "StringCollection",
-      Localizer.CurrentCultureName,
-      false
-    );
-
-    const data = LocalizerUtils.stringCollectionToObject(sc);
-
-    usernames = Object.keys(data).map((k) => k.toLowerCase());
-  } catch (e) {
-    // ignore
-  }
-
-  return usernames;
-};
-
-// Polling function
-const fetchUsers = async () => {
-  let top9FilteredUsers: TwitchUsers = [];
-
-  try {
-    const disallowList = await fetchDisallowList();
-
-    const twitchResponse = await fetch(
-      `https://api.twitch.tv/kraken/streams/?game=Destiny%202`,
-      {
-        headers: {
-          "Client-ID": "g21b57iy7y50u7jjs9n7duw7nk6khn",
-          Accept: "application/vnd.twitchtv.v5+json",
-        },
-      }
-    );
-
-    const data = await twitchResponse.json();
-    const users = data?.streams as any[];
-
-    const filtered = users.filter(
-      (u) => !disallowList.includes(u.channel.name.toLowerCase())
-    );
-
-    // Limit to 9 users
-    top9FilteredUsers = filtered.slice(0, 9);
-  } catch (e) {
-    Modal.error(new Error("Failed to fetch streamers"));
-  }
-
-  return top9FilteredUsers;
-};
 
 /**
  * Wrapper for Worlds First
  * @constructor
  */
 const WorldsFirst: React.FC = () => {
+  // if webmaster system for page is disabled, redirect to season 14 product page
   const enabled = ConfigUtils.SystemStatus("DirectWorldsFirst");
   if (!enabled) {
-    return <Redirect to={RouteHelper.BeyondLight().url} />;
+    return <Redirect to={RouteHelper.SeasonOfTheSplicer().url} />;
   }
 
+  // get date and time race starts
   const liveTimeString = ConfigUtils.GetParameter(
     "DirectWorldsFirst",
     "WorldsFirstReleaseDateTime",
@@ -96,16 +35,22 @@ const WorldsFirst: React.FC = () => {
   );
   const liveTime = moment(liveTimeString);
   const now = moment();
-
+  // check if race is live
   const isLive = now.isAfter(liveTime);
 
-  const title = `${Localizer.Beyondlight.WatchTheRace} // ${Localizer.Beyondlight.RaidRaceLaunchDate}`;
+  const title = `${Localizer.Season14.WatchTheRace} // ${Localizer.Season14.RaidRaceLaunchDate}`;
+  const titleImg = `/7/ca/destiny/bgs/raidrace/vog_logo_${LocalizerUtils.currentCultureName}.svg`;
+  const destinyLogo =
+    LocalizerUtils.currentCultureName === "ko"
+      ? "/7/ca/destiny/bgs/raidrace/destiny_guardians_logo.svg"
+      : "/7/ca/destiny/bgs/raidrace/destiny_2_logo.svg";
+  const twitchBtnUrl = "https://www.twitch.tv/directory/game/Destiny%202";
 
   return (
-    <div className={styles.wrapper}>
+    <div className={classNames(styles.wrapper, { [styles.isLive]: isLive })}>
       <BungieHelmet
         title={title}
-        image={Img("/destiny/bgs/raidrace/raid_race_bg_desktop.jpg")}
+        image={Img("/destiny/bgs/raidrace/vog_venus_skull_metadata_16x9.jpg")}
       >
         <body
           className={classNames(
@@ -115,24 +60,62 @@ const WorldsFirst: React.FC = () => {
         />
       </BungieHelmet>
       <div>
-        <div className={styles.hero}>
-          <div className={styles.heroTop}>
-            <Anchor url={RouteHelper.BeyondLight()}>
-              <img
-                src={Img("/destiny/bgs/raidrace/beyond_light_horizontal.png")}
-              />
-            </Anchor>
-
-            <div className={styles.heroTitle}>
-              <h4>{Localizer.Beyondlight.AllNewRaid}</h4>
-              <h1>{Localizer.Beyondlight.deepStoneCryptTitle}</h1>
-            </div>
+        <div className={classNames(styles.hero, { [styles.isLive]: isLive })}>
+          <div className={styles.heroBg} />
+          <div className={styles.heroTitleContent}>
+            <div
+              className={styles.destinyLogo}
+              style={{ backgroundImage: `url(${destinyLogo})` }}
+            />
+            <div
+              className={styles.title}
+              style={{ backgroundImage: `url(${titleImg})` }}
+            />
+            <h2>{Localizer.Season14.RaidRaceTitle}</h2>
           </div>
         </div>
 
         {isLive && <LiveRaidReveal />}
 
         {!isLive && <PreReveal />}
+
+        <div className={styles.streamBtn}>
+          <a href={twitchBtnUrl}>{Localizer.Season14.WatchOnTwitch}</a>
+          <span>
+            <a href={twitchBtnUrl}>
+              <img src={"/7/ca/destiny/bgs/raidrace/twitch_logo.png"} />
+            </a>
+          </span>
+        </div>
+
+        <div className={styles.lowerContentWrapper}>
+          <div className={styles.raidIconFlexWrapper}>
+            <div className={styles.raidIcon} />
+          </div>
+          <div className={styles.contentFlexWrapper}>
+            <p
+              className={styles.mainBlurb}
+              dangerouslySetInnerHTML={{
+                __html: Localizer.Season14.RaidRaceBlurb,
+              }}
+            />
+            <p className={styles.freeForAll}>
+              {Localizer.Season14.RaidRaceFreeForAll}
+            </p>
+            <div className={styles.startTimes}>
+              <div className={styles.startTime}>
+                <h2>{Localizer.Season14.RaidRaceWatchPartyTime}</h2>
+                <p>{Localizer.Season14.RaidRaceWatchPartyText}</p>
+              </div>
+              <div className={styles.startTime}>
+                <h2>{Localizer.Season14.RaidRaceRaceBeginsTime}</h2>
+                <p>{Localizer.Season14.RaidRaceRaceBeginsText}</p>
+              </div>
+            </div>
+
+            {isLive && <BundleUpsell />}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -143,168 +126,78 @@ const WorldsFirst: React.FC = () => {
  * @constructor
  */
 const PreReveal = () => {
-  const locVideoId = ConfigUtils.GetParameter(
-    "DirectWorldsFirst",
-    `trailer_${Localizer.CurrentCultureName}`,
-    ""
-  );
-  const enVideoId = ConfigUtils.GetParameter(
-    "DirectWorldsFirst",
-    `trailer_en`,
-    ""
-  );
-  const videoId = locVideoId || enVideoId;
-  const trailerEnabled = !StringUtils.isNullOrWhiteSpace(videoId);
-
-  const onTrailerButtonClick = () => YoutubeModal.show({ videoId });
-
-  const twitch = "Twitch";
-
   return (
-    <Grid>
-      <GridCol cols={12}>
-        <div className={styles.revealDetails}>
-          <div>{Localizer.Beyondlight.WatchTheRace}</div>
-          <div className={styles.date}>
-            {Localizer.Beyondlight.RaidRaceLaunchDate}
-          </div>
-        </div>
-        <div className={styles.revealButtons}>
-          {trailerEnabled && (
-            <Button
-              buttonType={"gold"}
-              onClick={onTrailerButtonClick}
-              className={styles.trailerButton}
-            >
-              {Localizer.Beyondlight.RaidRaceTrailerButtonLabel}
-            </Button>
-          )}
-          <MarketingOptInButton />
-        </div>
-        <Anchor
-          url={"https://www.twitch.tv/directory/game/Destiny%202"}
-          className={styles.watchOnTwitch}
-        >
-          {Localizer.FormatReact(Localizer.Beyondlight.RaidRaceWatchTwitch, {
-            twitchLogo: (
-              <img
-                src={Img("destiny/bgs/raidrace/twitch_logo.png")}
-                alt={twitch}
-              />
-            ),
-          })}
-        </Anchor>
-        <Anchor
-          url={RouteHelper.DestinyBuyDetail({
-            productFamilyTag: "BeyondLight",
-          })}
-        >
-          <div className={styles.upsellContainer}>
-            <div className={styles.upsell}>
-              <div className={styles.textContent}>
-                <div
-                  className={styles.upsellTitle}
-                  style={{
-                    backgroundImage: `url("/7/ca/destiny/products/beyondlight/logo_${Localizer.CurrentCultureName}.png")`,
-                  }}
-                >
-                  {Localizer.Beyondlight.BeyondLight}
-                </div>
-                <div className={styles.availableNow}>
-                  {Localizer.Beyondlight.RaidRaceAvailableNow}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Anchor>
-      </GridCol>
-    </Grid>
+    <div className={styles.preReleaseContent}>
+      <p className={styles.dateText}>
+        {Localizer.Season14.RaidRaceBeginsDateText}
+      </p>
+      <p className={styles.date}>{Localizer.Season14.RaidRaceStartDate}</p>
+      <MarketingOptInButton />
+    </div>
   );
-};
-
-/**
- * Replace the items from the 1st array with new items in the 2nd array
- * @param existingOrderedUsers
- * @param newUsers
- */
-const updateStreamerArray = (
-  existingOrderedUsers: any[],
-  newUsers: any[]
-): TwitchUsers => {
-  if (newUsers && !existingOrderedUsers) {
-    return newUsers;
-  }
-
-  const novelUsers = newUsers.filter((u) => !existingOrderedUsers?.includes(u));
-  const reduced = existingOrderedUsers?.reduce((acc, item, i) => {
-    acc[i] = newUsers.includes(item) ? item : novelUsers.shift();
-
-    return acc;
-  }, []);
-
-  return reduced;
 };
 
 /**
  * Shown if the time for the Raid is in the past
  * @constructor
  */
-let interval = 0;
 const LiveRaidReveal = () => {
-  const [users, setUsers] = useState<TwitchUsers>(null);
+  const twitchChannelName = useRef("professorbroman");
+  const arrowsRef = useRef<null | HTMLDivElement>(null);
 
-  const intervalSeconds = ConfigUtils.GetParameter(
-    "DirectWorldsFirst",
-    "TwitchRefreshIntervalSeconds",
-    60
-  );
-
-  const doUserFetch = () => {
-    fetchUsers().then((rawUsers) => {
-      const top9 = rawUsers.slice(0, 9);
-
-      const sortedUsers = updateStreamerArray(users, top9);
-
-      setUsers(sortedUsers);
-    });
+  const scrollToStream = () => {
+    arrowsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  useEffect(() => {
-    doUserFetch();
+  return (
+    <div className={styles.liveRevealWrapper}>
+      <div ref={arrowsRef}>
+        <a className={styles.watchRaceText} onClick={scrollToStream}>
+          {Localizer.Beyondlight.WatchTheRaceToWorldFirst}
+        </a>
+        <DestinyArrows classes={{ root: styles.arrows }} />
+      </div>
+      <div className={styles.streamFrameWrapper}>
+        <div className={styles.aspectRatioWrapper}>
+          <TwitchFrame username={twitchChannelName.current} />
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    clearInterval(interval);
-    // Fetch every minute
-    interval = setInterval(doUserFetch, intervalSeconds * 1000);
-  }, []);
-
-  if (users === null) {
-    return <SpinnerContainer loading={true} />;
-  }
+/**
+ * Upsell shown at bottom of page if raid is live
+ * @constructor
+ */
+const BundleUpsell = () => {
+  const logo = `url("/7/ca/destiny/bgs/raidrace/vog_bundle_logo_${LocalizerUtils.currentCultureName}.svg")`;
+  const btnAnalyticsId = ConfigUtils.GetParameter(
+    SystemNames.DirectWorldsFirst,
+    "WorldsFirstUpsellBtnAnalyticsId",
+    ""
+  );
 
   return (
-    <Grid>
-      <GridCol cols={12}>
-        <div className={styles.scrollHeader}>
-          {Localizer.Beyondlight.WatchTheRaceToWorldFirst}
-          <DestinyArrows
-            classes={{
-              root: styles.arrows,
-            }}
+    <div className={styles.upsell}>
+      <div className={styles.aspectRatioWrapper} />
+      <div className={styles.bundleFlexWrapper}>
+        <div className={styles.contentWrapper}>
+          <div
+            className={styles.bundleLogo}
+            style={{ backgroundImage: logo }}
           />
+          <Button
+            className={styles.bundleBtn}
+            url={"/SilverBundle-Atheon"}
+            analyticsId={btnAnalyticsId}
+            buttonType={"clear"}
+          >
+            {Localizer.Season14.RaidRaceUpsellBtnText}
+          </Button>
         </div>
-      </GridCol>
-      {users?.map((user, i) => (
-        <GridCol
-          key={i}
-          cols={4}
-          large={6}
-          mobile={12}
-          className={styles.frame}
-        >
-          <TwitchFrame username={user.channel.name} />
-        </GridCol>
-      ))}
-    </Grid>
+      </div>
+    </div>
   );
 };
 
@@ -329,16 +222,6 @@ class TwitchFrame extends React.Component<{ username: string }> {
           scrolling="no"
           allowFullScreen={true}
         />
-
-        <div className={styles.buttonWrapper}>
-          <Button
-            buttonType={"text"}
-            size={BasicSize.Small}
-            url={`https://twitch.tv/${username}`}
-          >
-            {username}&nbsp; <Icon iconName={"external-link"} iconType={"fa"} />
-          </Button>
-        </div>
       </>
     );
   }

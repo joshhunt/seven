@@ -1,6 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
@@ -41,6 +42,7 @@ interface IDestinyBuyIndexState {
   skuConfig: IDestinySkuConfig;
   loading: boolean;
   carouselItem: IMarketingMediaAsset;
+  freeToPlayPopoutImg: string;
 }
 
 /**
@@ -65,6 +67,7 @@ export default class DestinyBuyInternal extends React.Component<
       skuConfig: DestinySkuConfigDataStore.state,
       loading: true,
       carouselItem: null,
+      freeToPlayPopoutImg: "",
     };
   }
 
@@ -96,6 +99,7 @@ export default class DestinyBuyInternal extends React.Component<
       this.loadProductFamilyContent(familySection.firehoseContentSetTag);
       this.loadSkuContent(skuSection.firehoseContentSetTag);
       this.carouselContent();
+      this.loadFreeToPlayPopoutImage("free-to-play-popout-image");
     }
   };
 
@@ -116,6 +120,20 @@ export default class DestinyBuyInternal extends React.Component<
         this.setState({
           productFamilies,
         });
+      }
+    });
+  }
+
+  private loadFreeToPlayPopoutImage(staticAssetTag: string) {
+    Platform.ContentService.GetContentByTagAndType(
+      staticAssetTag,
+      "StaticAsset",
+      Localizer.CurrentCultureName,
+      false
+    ).then((response) => {
+      const { Path: path } = response.properties;
+      if (path) {
+        this.setState({ freeToPlayPopoutImg: path });
       }
     });
   }
@@ -180,30 +198,21 @@ export default class DestinyBuyInternal extends React.Component<
     }
     const { productFamilies, skuConfig, carouselItem, skuItems } = this.state;
 
-    const GetStartedItem1ProductFamily = ConfigUtils.GetParameter(
-      "BuyFlowGetStartedContent",
-      "Item1",
-      ""
+    const getStartedCategoryName = "category1";
+    const expansionsCategoryName = "category2";
+    const bundlesCategoryName = "category3";
+
+    const getStartedProducts = productFamilies?.filter(
+      (product) => product.landingPageCategory === getStartedCategoryName
     );
-    const GetStartedItem2ProductFamily = ConfigUtils.GetParameter(
-      "BuyFlowGetStartedContent",
-      "Item2",
-      ""
+    const expansionProducts = productFamilies?.filter(
+      (product) => product.landingPageCategory === expansionsCategoryName
+    );
+    const bundleProducts = productFamilies?.filter(
+      (product) => product.landingPageCategory === bundlesCategoryName
     );
 
-    const item1 = productFamilies?.find(
-      (v) => v.productFamilyTag === GetStartedItem1ProductFamily
-    );
-    const item2 = productFamilies?.find(
-      (v) => v.productFamilyTag === GetStartedItem2ProductFamily
-    );
-
-    const otherProducts = productFamilies?.filter(
-      (product) =>
-        product.productFamilyTag !== GetStartedItem1ProductFamily &&
-        product.productFamilyTag !== GetStartedItem2ProductFamily
-    );
-    const metaImage = productFamilies.length > 0 ? item1?.imagePath : null;
+    const metaImage = "/7/ca/destiny/bgs/season14/buy_landing_cover_f2p.jpg";
 
     return (
       <SystemDisabledHandler systems={["BuyFlow"]}>
@@ -253,46 +262,44 @@ export default class DestinyBuyInternal extends React.Component<
           </div>
 
           <div className={styles.banner}>
-            {item1 && (
-              <Anchor
-                className={classNames(styles.bannerItem, {
-                  [styles.twoItems]: item1 && item2,
-                })}
-                style={{
-                  backgroundImage: `url(${item1.imagePath})`,
-                }}
-                url={RouteHelper.DestinyBuyDetail({
-                  productFamilyTag: item1.productFamilyTag,
-                })}
-              >
-                <div className={styles.floatOverGradient}>
+            {getStartedProducts.map((productFamily, i) => {
+              const isFreeToPlayItem =
+                productFamily.productFamilyTag === "playforfree";
+              const bgImage =
+                Responsive.state.mobile && productFamily.mobileCoverImage
+                  ? productFamily.mobileCoverImage
+                  : productFamily.imagePath;
+              const coverTitle =
+                productFamily.coverTitleHtml || productFamily.coverTitle;
+
+              return (
+                <Anchor
+                  className={classNames(
+                    classNames(styles.bannerItem, {
+                      [styles.freeToPlay]: isFreeToPlayItem,
+                    })
+                  )}
+                  key={i}
+                  style={{ backgroundImage: `url(${bgImage})` }}
+                  url={RouteHelper.DestinyBuyDetail({
+                    productFamilyTag: productFamily.productFamilyTag,
+                  })}
+                >
                   <ProductFamilyTitles
-                    subtitle={item1.smallCoverTitle}
-                    title={item1.coverTitle}
+                    titlesClassName={styles.getStartedTitles}
+                    title={coverTitle}
+                    subtitle={productFamily.smallCoverTitle}
                   />
-                </div>
-              </Anchor>
-            )}
-            {item2 && (
-              <Anchor
-                className={classNames(styles.bannerItem, {
-                  [styles.twoItems]: item1 && item2,
-                })}
-                style={{
-                  backgroundImage: `url(${item2.imagePath})`,
-                }}
-                url={RouteHelper.DestinyBuyDetail({
-                  productFamilyTag: item2.productFamilyTag,
-                })}
-              >
-                <div className={styles.floatOverGradient}>
-                  <ProductFamilyTitles
-                    subtitle={item2.smallCoverTitle}
-                    title={item2.coverTitle}
-                  />
-                </div>
-              </Anchor>
-            )}
+
+                  {isFreeToPlayItem && (
+                    <img
+                      src={this.state.freeToPlayPopoutImg}
+                      className={styles.popoutImg}
+                    />
+                  )}
+                </Anchor>
+              );
+            })}
           </div>
 
           <div className={styles.borderTop}>
@@ -302,7 +309,38 @@ export default class DestinyBuyInternal extends React.Component<
           </div>
 
           <div className={styles.coverCards}>
-            {otherProducts.map((productFamily, i) => {
+            {expansionProducts.map((productFamily, i) => {
+              const productIsOnSale =
+                skuConfig &&
+                productFamily?.skuList.some((st) =>
+                  DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
+                );
+              const saleInformation =
+                Localizer.Sales[productFamily.productFamilyTag];
+
+              return (
+                <GridCol cols={3} mobile={6} key={i}>
+                  <DestinyBuyCoverCard productFamily={productFamily}>
+                    <ProductFamilyTitles
+                      onSale={productIsOnSale}
+                      subtitle={productFamily.smallCoverTitle}
+                      title={productFamily.coverTitle}
+                      saleDetails={saleInformation}
+                    />
+                  </DestinyBuyCoverCard>
+                </GridCol>
+              );
+            })}
+          </div>
+
+          <div className={classNames(styles.borderTop, styles.bundlesTop)}>
+            <div className={styles.sectionTitle}>
+              {Localizer.Buyflow.Bundles}
+            </div>
+          </div>
+
+          <div className={classNames(styles.coverCards, styles.bundleCards)}>
+            {bundleProducts.map((productFamily, i) => {
               const productIsOnSale =
                 skuConfig &&
                 productFamily?.skuList.some((st) =>
@@ -336,19 +374,27 @@ interface IProductFamilyTitlesProps {
   subtitle: string;
   saleDetails?: string;
   onSale?: boolean;
+  titlesClassName?: string;
 }
 
 const ProductFamilyTitles = (props: IProductFamilyTitlesProps) => {
-  const { title, subtitle, saleDetails, onSale } = props;
+  const { title, subtitle, saleDetails, onSale, titlesClassName } = props;
 
   return (
     <div className={styles.saleTagCont}>
       {onSale && !StringUtils.isNullOrWhiteSpace(saleDetails) && (
         <p className={styles.discountString}>{saleDetails}</p>
       )}
-      <div className={styles.titles}>
+      <div
+        className={classNames(styles.titles, {
+          [titlesClassName]: titlesClassName,
+        })}
+      >
         <div className={styles.subtitle}>{subtitle}</div>
-        <div className={styles.title}>{title}</div>
+        <div
+          className={styles.title}
+          dangerouslySetInnerHTML={{ __html: title }}
+        />
       </div>
     </div>
   );

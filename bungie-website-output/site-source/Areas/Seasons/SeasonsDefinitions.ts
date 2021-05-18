@@ -167,7 +167,7 @@ class SeasonOfTheSplicer extends SeasonDefinition {
     return Localizer.Seasons.SeasonOfTheSplicer;
   }
 
-  public image = "/7/ca/destiny/bgs/season14/Season14_Key_Art.jpg";
+  public image = "/7/ca/destiny/bgs/season14/Season14_season_hub_bg.jpg";
   public progressPageImage =
     "/7/ca/destiny/bgs/season14/seasonbackground_14.jpg";
   public productPageLink = RouteHelper.SeasonOfTheSplicer();
