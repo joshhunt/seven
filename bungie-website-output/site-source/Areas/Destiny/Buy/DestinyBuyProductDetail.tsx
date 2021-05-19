@@ -541,17 +541,20 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   </>
                 )}
 
-                {this.state.destinyProductFamily.productFamilyTag !==
-                  "silverbundle" && (
-                  <>
-                    <div className={styles.borderTop}>
-                      <div className={styles.sectionTitle}>
-                        {Localizer.BeyondLight.NextGen}
+                {
+                  // show next gen section if product family is not a bundle (which is 'category3' in firehose)
+                  this.state.destinyProductFamily.landingPageCategory !==
+                    "category3" && (
+                    <>
+                      <div className={styles.borderTop}>
+                        <div className={styles.sectionTitle}>
+                          {Localizer.BeyondLight.NextGen}
+                        </div>
                       </div>
-                    </div>
-                    <NextGenBuyFlowModule />
-                  </>
-                )}
+                      <NextGenBuyFlowModule />
+                    </>
+                  )
+                }
                 {collectorsEdition && (
                   <>
                     <div className={styles.borderTop}>
