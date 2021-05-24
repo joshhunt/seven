@@ -328,7 +328,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
                 <body
                   className={classNames(
                     SpecialBodyClasses(BodyClasses.NoSpacer),
-                    SpecialBodyClasses(BodyClasses.HideServiceAlert)
+                    SpecialBodyClasses(BodyClasses.HideServiceAlert),
+                    styles.buyDetail
                   )}
                 />
               </BungieHelmet>

@@ -7,6 +7,7 @@ import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./MarketingContentBlock.module.scss";
+import { MarketingTextBox } from "@UI/Marketing/MarketingTextBox";
 
 export type ContentAlignments = "center" | "left" | "right" | "centerTop";
 
@@ -152,7 +153,6 @@ const ThreeMediaBoxes = (props: IThreeMediaBoxesProps) => {
 interface ISectionTitleProps extends IBasicDivProps {
   isSmall?: boolean;
 }
-
 const SectionTitle = (props: ISectionTitleProps) => {
   const { children, ...rest } = props;
 

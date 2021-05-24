@@ -8,6 +8,8 @@ import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
+import { Icon } from "@UIKit/Controls/Icon";
+import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
@@ -59,6 +61,17 @@ const fetchBgImages = async () => {
   }
 };
 
+const trailerJsonParamToLocalizedValue = (paramName: string): string | null => {
+  const trailerString = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    paramName,
+    "{}"
+  ).replace(/'/g, '"');
+  const trailerData = JSON.parse(trailerString);
+
+  return trailerData[Localizer.CurrentCultureName] ?? trailerData["en"] ?? null;
+};
+
 const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
   const s14 = Localizer.Season14;
 
@@ -71,6 +84,14 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
     SystemNames.Season14Page,
     "Season14EmoteBundleAnalyticsId",
     ""
+  );
+  const trailerBtnAnalyticsId = ConfigUtils.GetParameter(
+    SystemNames.Season14Page,
+    "Season14RaidTrailerAnalyticsId",
+    ""
+  );
+  const raidTrailerId = trailerJsonParamToLocalizedValue(
+    "Season14RaidTrailerId"
   );
 
   useEffect(() => {
@@ -128,13 +149,32 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
             className={styles.sectionHeader}
             isBold={true}
           />
-          <div className={styles.textContent}>
-            <p
-              className={classNames(styles.paragraphLarge, styles.blurbHeading)}
-            >
-              {s14.VOGBlurbHeading}
-            </p>
-            <p className={classNames(styles.paragraphLarge)}>{s14.VOGBlurb}</p>
+          <p className={classNames(styles.paragraphLarge, styles.blurbHeading)}>
+            {s14.VOGBlurbHeading}
+          </p>
+          <div className={styles.flexContentWrapper}>
+            <div className={styles.textContent}>
+              <p className={classNames(styles.paragraphLarge)}>
+                {s14.VOGBlurb}
+              </p>
+            </div>
+            <div className={styles.trailerWrapper}>
+              <div
+                className={styles.trailerBtn}
+                onClick={() => YoutubeModal.show({ videoId: raidTrailerId })}
+                data-analytics-id={trailerBtnAnalyticsId}
+              >
+                <div className={styles.trailerBg} />
+                <div className={styles.iconWrapper}>
+                  <Icon
+                    className={styles.playIcon}
+                    iconType={"material"}
+                    iconName={"play_arrow"}
+                  />
+                </div>
+              </div>
+              <p>{s14.VogRaidTrailerTitle}</p>
+            </div>
           </div>
         </LazyLoadWrapper>
       </div>

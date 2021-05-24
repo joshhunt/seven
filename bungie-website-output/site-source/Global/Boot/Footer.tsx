@@ -1,4 +1,5 @@
 import { SystemNames } from "@Global/SystemNames";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./Footer.module.scss";
@@ -261,6 +262,15 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                   title={Localizer.Community.BungieTwitch}
                 />
               </li>
+              {LocalizerUtils.currentCultureName === "ru" && (
+                <li className={styles.vk}>
+                  <a
+                    href={"https://vk.com/destinythegame"}
+                    className={"ir"}
+                    title={Localizer.Community.BungieVk}
+                  />
+                </li>
+              )}
             </ul>
           </div>
           <div className={classNames(styles.esrb)}>

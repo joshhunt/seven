@@ -17,7 +17,7 @@ interface Rewards14Props {}
 const Rewards14: React.FC<Rewards14Props> = (props) => {
   const s14 = Localizer.Season14;
 
-  const tempSlides = [
+  const slides = [
     {
       image: "/7/ca/destiny/bgs/season14/s14_rewards_carousel_1.jpg",
       title: s14.RewardsSlideTitle1,
@@ -66,7 +66,7 @@ const Rewards14: React.FC<Rewards14Props> = (props) => {
           </div>
         </LazyLoadWrapper>
         <Carousel14
-          slides={tempSlides}
+          slides={slides}
           arrowColor={"#fff"}
           activeIndicatorColor={"rgb(255, 255, 255)"}
           inactiveIndicatorColor={"rgba(255, 255, 255, .3)"}

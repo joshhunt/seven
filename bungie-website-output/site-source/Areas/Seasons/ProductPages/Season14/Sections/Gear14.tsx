@@ -16,11 +16,11 @@ const Gear14: React.FC<Gear14Props> = (props) => {
   const s14 = Localizer.Season14;
 
   const slides = [
-    // {
-    // 	image: "/7/ca/destiny/bgs/season14/s14_armaments_carousel_1.jpg",
-    // 	title: s14.ExoticSlideTitle1,
-    // 	blurb: s14.ExoticSlideBlurb1
-    // },
+    {
+      image: "/7/ca/destiny/bgs/season14/s14_armaments_carousel_1.jpg",
+      title: s14.ExoticSlideTitle1,
+      blurb: s14.ExoticSlideBlurb1,
+    },
     {
       image: "/7/ca/destiny/bgs/season14/s14_armaments_carousel_2.jpg",
       title: s14.ExoticSlideTitle2,

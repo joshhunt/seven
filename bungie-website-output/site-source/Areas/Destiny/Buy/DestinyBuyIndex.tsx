@@ -218,8 +218,11 @@ export default class DestinyBuyInternal extends React.Component<
       <SystemDisabledHandler systems={["BuyFlow"]}>
         <BungieHelmet image={metaImage} title={this.state.title}>
           <body
-            className={SpecialBodyClasses(
-              BodyClasses.HideServiceAlert | BodyClasses.NoSpacer
+            className={classNames(
+              SpecialBodyClasses(
+                BodyClasses.HideServiceAlert | BodyClasses.NoSpacer
+              ),
+              styles.buyIndex
             )}
           />
         </BungieHelmet>

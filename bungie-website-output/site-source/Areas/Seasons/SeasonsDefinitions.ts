@@ -181,7 +181,7 @@ class SeasonOfTheSplicer extends SeasonDefinition {
     return Localizer.Seasons.LearnMoreSeasonOfTheSplicer;
   }
 
-  public smallIcon = "7/ca/destiny/bgs/season14/s14_season_icon.png";
+  public smallIcon = "7/ca/destiny/bgs/season14/s14_season_icon_square.png";
 }
 
 export class SeasonsDefinitions {
