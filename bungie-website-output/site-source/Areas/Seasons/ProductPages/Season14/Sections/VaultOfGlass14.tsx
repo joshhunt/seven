@@ -108,17 +108,13 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
     });
   }, []);
 
-  // get date "buy now" btn becomes active and parse it with moment
-  const buyBtnLiveDate = ConfigUtils.GetParameter(
+  // check if bundle button should be disabled
+  const isBundleBtnActiveParam: string = ConfigUtils.GetParameter(
     SystemNames.Season14PageUpdate,
     "UpdateSilverBundleBtn",
-    ""
+    "false"
   );
-  const parsedBtnLiveDate = moment(buyBtnLiveDate);
-  // get current date and time
-  const now = moment();
-  // check if current date and time is after date btn becomes active
-  const isBundleBtnActive = now.isAfter(parsedBtnLiveDate);
+  const isBundleBtnActive = isBundleBtnActiveParam === "true";
 
   const bundleBtnText = isBundleBtnActive
     ? emoteBlockText?.CalloutBtnTextAvailable

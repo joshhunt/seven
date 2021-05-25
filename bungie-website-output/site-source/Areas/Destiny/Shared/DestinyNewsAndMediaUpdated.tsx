@@ -195,17 +195,32 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                 {this.props.showAll && <h2>{Localizer.Beyondlight.videos}</h2>}
                 <div className={classNames(styles.mediaContainer, styles.four)}>
                   {this.props.videos &&
-                    this.props.videos.map((a, i) => (
-                      <div key={i} className={styles.videoContainer}>
-                        <MediaButton
-                          isVideo={a.isVideo}
-                          onClick={() => this.showMedia(a)}
-                          thumbnail={a.thumbnail}
-                          index={i}
-                        />
-                        <div className={styles.videoTitle}>{a.title}</div>
-                      </div>
-                    ))}
+                    this.props.videos.map((a, i) => {
+                      // get position of thumbnail in flexbox row
+                      const isFourthInRow = (i + 1) % 4 === 0;
+                      const isSecondInRow = (i + 1) % 2 === 0;
+                      // check if thumbnail is at end of current row in flexbox
+                      const isEndOfRowThumbnail =
+                        (Responsive.state.mobile && isSecondInRow) ||
+                        (!Responsive.state.mobile && isFourthInRow);
+
+                      return (
+                        <div
+                          key={i}
+                          className={classNames(styles.videoContainer, {
+                            [styles.rowEndThumbnail]: isEndOfRowThumbnail,
+                          })}
+                        >
+                          <MediaButton
+                            isVideo={a.isVideo}
+                            onClick={() => this.showMedia(a)}
+                            thumbnail={a.thumbnail}
+                            index={i}
+                          />
+                          {/*<div className={styles.videoTitle}>{a.title}</div>*/}
+                        </div>
+                      );
+                    })}
                 </div>
               </>
             )}
