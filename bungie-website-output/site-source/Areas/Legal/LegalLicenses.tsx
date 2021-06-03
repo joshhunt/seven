@@ -12,7 +12,7 @@ export const LegalLicenses: React.FC = (props) => {
   return (
     <React.Fragment>
       <BungieHelmet
-        title={Localizer.Userpages.eulatitle}
+        title={Localizer.Pagetitles.Licenses}
         image={BungieHelmet.DefaultBoringMetaImage}
       />
       <InfoBlock
