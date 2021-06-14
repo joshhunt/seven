@@ -19,7 +19,6 @@ export interface IRegistrationContentItemProps {
   contentItem: Content.ContentItemPublicContract;
   noTitles?: boolean;
   definition?: RegistrationBlockTypeDefinition;
-  itemClassName?: string;
 }
 
 /**
@@ -89,11 +88,7 @@ export const RegistrationContentItem: React.FC<IRegistrationContentItemProps> = 
       }
 
       return (
-        <RegistrationItemContent
-          contentItem={contentItem}
-          definition={def}
-          itemClassName={props.itemClassName}
-        />
+        <RegistrationItemContent contentItem={contentItem} definition={def} />
       );
     }
 
@@ -192,11 +187,7 @@ export const RegistrationItemContent: React.FC<IRegistrationContentItemProps> = 
       : "";
 
   return (
-    <div
-      className={classNames(stylesRegistration[def.blockClassName], {
-        [props.itemClassName]: props.itemClassName,
-      })}
-    >
+    <div className={stylesRegistration[def.blockClassName]}>
       <div
         className={stylesRegistration.background}
         style={{ backgroundImage: `url(${contentItem.properties["Image"]})` }}
