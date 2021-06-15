@@ -45,9 +45,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const destinyMembership = useDataStore(DestinyMembershipDataStore);
 
   useEffect(() => {
-    DestinyMembershipDataStore.actions.getMemberships(
-      UserUtils.loggedInUserMembershipIdFromCookie
-    );
+    // DestinyMembershipDataStore.actions.getMemberships(UserUtils.loggedInUserMembershipIdFromCookie);
   }, []);
 
   // Initialize types

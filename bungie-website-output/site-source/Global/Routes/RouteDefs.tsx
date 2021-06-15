@@ -1,8 +1,10 @@
 /* tslint:disable member-ordering */
-import { ActionRoute } from "./ActionRoute";
-import { Area } from "./Area";
 import { SystemNames } from "@Global/SystemNames";
+import { AreaGroup } from "@Routes/AreaGroup";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import React from "react";
+import { ActionRoute } from "./ActionRoute";
+import { Area, IArea } from "./Area";
 import { createAsyncComponent } from "./AsyncRoute";
 
 export interface ILocaleParams {
@@ -248,25 +250,63 @@ export class RouteDefs {
       ),
       routes: [(area) => new ActionRoute(area, "SignIn")],
     }),
-  };
+  } as const;
+
+  public static AreaGroups = {
+    /**
+		User: new AreaGroup({
+			name: RouteDefs.AreaNames.User,
+			children: {
+				Profile: {
+					lazyComponent: createAsyncComponent(() => import("@Areas/User/UserArea")),
+					routes: [
+						urlPrefix => new ActionRoute(urlPrefix, "Marathon")
+					]
+				}
+			},
+			indexComponent: null
+		})
+		 */
+  } as const;
 
   /**
    * Returns all of the routes for all areas defined in RouteDefs
    */
   public static get AllAreaRoutes() {
-    const allAreas: Area[] = Object.keys(RouteDefs.Areas)
-      .map((key: keyof typeof RouteDefs.Areas) => RouteDefs.Areas[key])
-      .filter((area: Area) => {
-        let enabled = true;
-        if (area.params && area.params.webmasterSystem) {
-          enabled = ConfigUtils.SystemStatus(area.params.webmasterSystem);
-        }
+    const areas: IArea[] = Object.keys(RouteDefs.Areas).map(
+      (key: keyof typeof RouteDefs.Areas) => RouteDefs.Areas[key]
+    );
 
-        return enabled;
-      });
+    const areaGroups: AreaGroup<any>[] = Object.values(RouteDefs.AreaGroups);
 
-    const areaRoutes = allAreas.map((area) => area.areaRoute);
+    const areaGroupAreas = areaGroups.reduce(
+      (acc: IArea[], areaGroup: AreaGroup<any>) => {
+        acc.push(...Object.values(areaGroup.areas));
 
-    return areaRoutes;
+        return acc;
+      },
+      []
+    );
+
+    let allAreas = [...areas, ...areaGroupAreas];
+
+    allAreas = allAreas.filter((area: IArea) => {
+      let enabled = true;
+      if (area.webmasterSystem) {
+        enabled = ConfigUtils.SystemStatus(area.webmasterSystem);
+      }
+
+      return enabled;
+    });
+
+    const areaRoutes = allAreas.map((area) => area.render());
+    const areaGroupIndexComponents = areaGroups.map((ag) => ag.render());
+
+    return (
+      <>
+        {areaRoutes}
+        {areaGroupIndexComponents}
+      </>
+    );
   }
 }

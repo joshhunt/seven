@@ -1,3 +1,5 @@
+import { AreaUtils } from "@Routes/AreaUtils";
+import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { ActionRoute, IActionRouteParams } from "./ActionRoute";
 import { Route } from "react-router-dom";
 import React from "react";
@@ -18,10 +20,25 @@ export interface IAreaParams {
   indexParams?: IActionRouteParams;
 }
 
-export class Area {
+export interface IArea {
+  readonly render: () => JSX.Element;
+  readonly routes: ActionRoute[];
+  webmasterSystem?: ValidSystemNames;
+
+  getAction(actionName?: string): ActionRoute;
+
+  resolve<T extends any>(
+    actionName?: string,
+    params?: Pick<T, any>
+  ): IMultiSiteLink;
+}
+
+export class Area implements IArea {
   public readonly routes: ActionRoute[] = [];
+  public readonly webmasterSystem?: ValidSystemNames;
 
   constructor(public readonly params: IAreaParams) {
+    // Add the Index route by default
     this.routes.push(
       new ActionRoute(params.name, undefined, params.indexParams)
     );
@@ -29,12 +46,14 @@ export class Area {
     params.routes.forEach((route) => {
       this.routes.push(route(params.name));
     });
+
+    this.webmasterSystem = params.webmasterSystem;
   }
 
   /**
    * Gets the <Route> component predefined for this area
    */
-  public get areaRoute() {
+  public render() {
     const path = this.getAction().path;
 
     return (
@@ -43,26 +62,15 @@ export class Area {
   }
 
   public getAction(actionName = "Index"): ActionRoute {
-    const matchingAction = this.routes.find((route) =>
-      StringUtils.equals(
-        route.action,
-        actionName,
-        StringCompareOptions.IgnoreCase
-      )
-    );
-    if (matchingAction) {
-      return matchingAction;
-    }
-
-    throw new DetailedError(
-      "Action Not Found",
-      `Action "${actionName}" requested for area "${this.params.name}", but none was found.`
-    );
+    return AreaUtils.getAction(this.params.name, this.routes, actionName);
   }
 
   public resolve<T = any>(actionName = "Index", params?: Pick<T, any>) {
-    const action = this.getAction(actionName);
-
-    return action.resolve<T>(params);
+    return AreaUtils.resolveAction(
+      this.params.name,
+      this.routes,
+      actionName,
+      params
+    );
   }
 }

@@ -133,17 +133,22 @@ export class Companion extends React.Component<
                 </div>
               </div>
             </div>
-            {contentSet.properties["ContentItems"].map((contentItem: any) => (
-              <GridCol
-                cols={4}
-                medium={6}
-                mobile={12}
-                key={`${contentItem.contentId}-${Date.UTC}`}
-                className={styles.feature}
-              >
-                <RegistrationContentItem contentItem={contentItem} />
-              </GridCol>
-            ))}
+            <div className={styles.features}>
+              {contentSet.properties["ContentItems"].map((contentItem: any) => (
+                <GridCol
+                  cols={4}
+                  medium={6}
+                  mobile={12}
+                  key={`${contentItem.contentId}-${Date.UTC}`}
+                  className={styles.feature}
+                >
+                  <RegistrationContentItem
+                    contentItem={contentItem}
+                    itemClassName={styles.featureContent}
+                  />
+                </GridCol>
+              ))}
+            </div>
           </Grid>
         </>
       )
