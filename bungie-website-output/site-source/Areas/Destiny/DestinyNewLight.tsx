@@ -112,7 +112,7 @@ class DestinyNewLightInternal extends React.Component<
   public render() {
     const heroLogo =
       Localizer.CurrentCultureName === "ko"
-        ? Img("/destiny/logos/destiny_guardians_hero_logo.svg")
+        ? Img("/destiny/logos/destiny_guardians_logo.svg")
         : Img("/destiny/bgs/new_light/destiny2_logo_en_light.svg");
 
     return (
