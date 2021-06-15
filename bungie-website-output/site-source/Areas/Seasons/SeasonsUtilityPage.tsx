@@ -11,8 +11,10 @@ import {
 import { Localizer } from "@Global/Localization/Localizer";
 import { Actions, Platform, Responses, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
+import {
+  DestinyAccountWrapper,
+  IAccountFeatures,
+} from "@UI/Destiny/DestinyAccountWrapper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
@@ -234,22 +236,19 @@ class SeasonsUtilityPage extends React.Component<
                   </Button>
                 )}
 
-              {charactersLoaded && this.state.memberships !== null && (
-                <DestinyPlatformSelector
-                  userMembershipData={this.state.memberships}
-                  onChange={(value: string) => this.updatePlatform(value)}
-                  defaultValue={this.state.currentMembershipType}
-                  crossSavePairingStatus={
-                    this.props.globalState.crossSavePairingStatus
-                  }
-                />
-              )}
-
               {charactersLoaded && (
-                <DestinyCharacterSelector
-                  characterComponent={this.characters}
-                  onChange={(value: string) => this.updateCharacter(value)}
-                />
+                <DestinyAccountWrapper>
+                  {({
+                    platformSelector,
+                    characterSelector,
+                    bnetProfile,
+                  }: IAccountFeatures) => (
+                    <div className={styles.dropdownFlexWrapper}>
+                      {platformSelector}
+                      {characterSelector}
+                    </div>
+                  )}
+                </DestinyAccountWrapper>
               )}
             </div>
 

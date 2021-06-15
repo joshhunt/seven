@@ -3,7 +3,7 @@
 
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { DataStore } from "@Global/DataStore";
-import { Characters, GroupsV2, Platform, User } from "@Platform";
+import { Characters, GroupsV2, Platform, Responses, User } from "@Platform";
 import React from "react";
 import { EnumUtils } from "@Utilities/EnumUtils";
 
@@ -13,6 +13,7 @@ interface DestinyMembershipDataStorePayload {
   selectedMembership: GroupsV2.GroupUserInfoCard;
   characters: { [key: string]: Characters.DestinyCharacterComponent };
   selectedCharacter: Characters.DestinyCharacterComponent;
+  initialDataLoaded: boolean;
 }
 
 class DestinyMembershipDataStoreGeneral extends DataStore<
@@ -24,80 +25,149 @@ class DestinyMembershipDataStoreGeneral extends DataStore<
     selectedMembership: null,
     characters: {},
     selectedCharacter: null,
+    initialDataLoaded: false,
   });
 
   public actions = this.createActions({
     /**
-     * Get all memberships for user and update data store fields
+     * Refresh state with all valid destiny memberships for user, accounting for cross save
      */
-    getMemberships: (membershipId: string) => {
-      return Platform.UserService.GetMembershipDataById(
-        membershipId,
-        BungieMembershipType.BungieNext
-      ).then((data) => {
-        const isCrossSaved = typeof data.primaryMembershipId !== "undefined";
+    loadUserData: async () => {
+      let membershipData = this.state.membershipData;
 
-        const memberships = isCrossSaved
-          ? [
-              data.destinyMemberships.find(
-                (dm) => dm.membershipId === data.primaryMembershipId
-              ),
-            ]
-          : data.destinyMemberships;
+      if (!membershipData) {
+        membershipData = await Platform.UserService.GetMembershipDataForCurrentUser();
+      }
 
-        /* If memberships is empty, it will update the value to be [], so if [] is empty, they are either logged out or have no destiny account */
-        return {
-          membershipData: data,
-          memberships: memberships.length > 0 ? memberships : [],
-          selectedMembership: memberships[0],
-        };
-      });
+      const isCrossSaved =
+        typeof membershipData.primaryMembershipId !== "undefined";
+
+      let memberships = membershipData.destinyMemberships;
+
+      if (isCrossSaved) {
+        memberships = [
+          membershipData.destinyMemberships.find(
+            (a) => a.membershipId === membershipData.primaryMembershipId
+          ),
+        ];
+      }
+
+      let profileResponse: Responses.DestinyProfileResponse = null;
+      let membershipToUse;
+
+      if (memberships.length === 0) {
+        // rare instance of bnet users without destiny membership, show the anonymous view
+        return;
+      } else {
+        membershipToUse = this.state.selectedMembership || memberships[0];
+      }
+
+      let characters: {
+        [x: string]: Characters.DestinyCharacterComponent;
+      } = {};
+
+      try {
+        profileResponse = await Platform.Destiny2Service.GetProfile(
+          membershipToUse.membershipType,
+          membershipToUse.membershipId,
+          [
+            DestinyComponentType.Profiles,
+            DestinyComponentType.CharacterProgressions,
+            DestinyComponentType.Characters,
+          ]
+        );
+
+        const hasCharacterData =
+          typeof profileResponse.characters !== "undefined" &&
+          typeof profileResponse.characters.data !== "undefined";
+
+        if (hasCharacterData) {
+          characters = profileResponse.characters.data;
+        }
+      } catch {
+        console.error(
+          `There was an error getting Destiny info for ${membershipToUse.displayName}(${membershipToUse.membershipId}): ${membershipToUse.membershipType}`
+        );
+      }
+
+      const selectedCharacter = characters[Object.keys(characters)[0]] ?? null;
+
+      return {
+        membershipData,
+        memberships,
+        characters,
+        selectedCharacter,
+        selectedMembership: membershipToUse,
+        initialDataLoaded: true,
+      };
     },
-    updatePlatform: (value: string) => {
+    /**
+     * Change selected platform in state and update characters in state with characters on selected platform
+     */
+    updatePlatform: async (platformName: string) => {
+      if (!this.state.initialDataLoaded) {
+        throw new Error(
+          "actions.loadUserData must be called to initialize the data before any other action can be accessed"
+        );
+      }
+
       const membershipToUse = this.state.memberships.find((m) =>
-        EnumUtils.looseEquals(m.membershipType, value, BungieMembershipType)
+        EnumUtils.looseEquals(
+          m.membershipType,
+          platformName,
+          BungieMembershipType
+        )
       );
 
-      return Platform.Destiny2Service.GetProfile(
-        membershipToUse.membershipType,
-        membershipToUse.membershipId,
-        [
-          DestinyComponentType.Profiles,
-          DestinyComponentType.CharacterProgressions,
-          DestinyComponentType.Characters,
-        ]
-      ).then((profileResponse) => {
-        return {
-          selectedMembership: membershipToUse,
-          characters: profileResponse?.characters?.data,
-          selectedCharacter: this._getMostRecentlyPlayedCharacter(
-            profileResponse?.characters?.data
-          ),
-          initialDataLoaded: true,
-        };
-      });
-    },
-    updateCharacter: (value: string) => ({
-      selectedCharacter: this.state.characters[value],
-    }),
-  });
+      let profileResponse: Responses.DestinyProfileResponse = null;
+      let characters: {
+        [x: string]: Characters.DestinyCharacterComponent;
+      } = {};
 
-  private readonly _getMostRecentlyPlayedCharacter = (characters: {
-    [key: string]: Characters.DestinyCharacterComponent;
-  }) => {
-    const charIds = Object.keys(characters);
-    let mostRecentDate = characters[charIds[0]].dateLastPlayed;
-    let mostRecentCharId = charIds[0];
+      try {
+        profileResponse = await Platform.Destiny2Service.GetProfile(
+          membershipToUse.membershipType,
+          membershipToUse.membershipId,
+          [
+            DestinyComponentType.Profiles,
+            DestinyComponentType.CharacterProgressions,
+            DestinyComponentType.Characters,
+          ]
+        );
 
-    charIds.splice(1).forEach((id) => {
-      if (characters[id].dateLastPlayed > mostRecentDate) {
-        mostRecentDate = characters[id].dateLastPlayed;
-        mostRecentCharId = id;
+        const hasCharacterData =
+          typeof profileResponse.characters !== "undefined" &&
+          typeof profileResponse.characters.data !== "undefined";
+
+        if (hasCharacterData) {
+          characters = profileResponse.characters.data;
+        }
+      } catch {
+        console.error(
+          `There was an error getting Destiny info for ${membershipToUse.displayName}(${membershipToUse.membershipId}): ${membershipToUse.membershipType}`
+        );
       }
-    });
 
-    return characters[mostRecentCharId];
-  };
+      /* Note that on selecting a platform, if there are no characters for that destiny platform, it will return {} for characters and null for selected character */
+      return {
+        selectedMembership: membershipToUse,
+        characters: characters,
+        selectedCharacter: characters[Object.keys(characters)[0]] ?? null,
+      };
+    },
+    /**
+     * Change selected character in state
+     */
+    updateCharacter: (value: string) => {
+      if (!this.state.initialDataLoaded) {
+        throw new Error(
+          "actions.loadUserData must be called to initialize the data before any other action can be accessed"
+        );
+      }
+
+      return { selectedCharacter: this.state.characters[value] };
+    },
+  });
 }
 
 export const DestinyMembershipDataStore =
