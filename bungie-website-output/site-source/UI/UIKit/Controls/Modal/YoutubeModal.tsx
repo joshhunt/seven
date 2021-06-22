@@ -93,9 +93,7 @@ export default createCustomModal<IYoutubeModalProps>(
     contentClassName: styles.content,
   },
   (props) => {
-    const responsive = useDataStore(Responsive);
-
-    if (responsive.mobile) {
+    if (Responsive.state.mobile) {
       window.location.href = `https://www.youtube.com/watch?v=${props.videoId}`;
 
       return false;
