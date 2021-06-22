@@ -1,6 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { useDataStore } from "@Global/DataStore";
 import * as React from "react";
 import { InvalidPropsError } from "@CustomErrors";
 import YouTube, { Options } from "react-youtube";
@@ -92,7 +93,9 @@ export default createCustomModal<IYoutubeModalProps>(
     contentClassName: styles.content,
   },
   (props) => {
-    if (Responsive.state.mobile) {
+    const responsive = useDataStore(Responsive);
+
+    if (responsive.mobile) {
       window.location.href = `https://www.youtube.com/watch?v=${props.videoId}`;
 
       return false;

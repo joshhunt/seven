@@ -59,10 +59,10 @@ export class Broadcaster<
     return Object.values(this.observers);
   }
 
-  public broadcast(data: TDataType) {
+  public broadcast(data: Partial<TDataType>, state: TDataType = null) {
     const broadcastTo = this.getObserversToUpdate(data);
 
-    broadcastTo.forEach((observer) => observer.update(data));
+    broadcastTo.forEach((observer) => observer.update(state));
   }
 
   protected buildObserver(
@@ -120,7 +120,7 @@ export class Broadcaster<
    * @param data
    * @protected
    */
-  protected getObserversToUpdate(data: TDataType) {
+  protected getObserversToUpdate(data: Partial<TDataType>) {
     return this.allObservers;
   }
 

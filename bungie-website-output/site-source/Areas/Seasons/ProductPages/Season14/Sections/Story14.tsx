@@ -5,6 +5,7 @@ import HelmBlock from "@Areas/Seasons/ProductPages/Season14/Components/HelmBlock
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import classNames from "classnames";
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
@@ -24,6 +25,7 @@ interface Season14StoryProps {
 }
 
 const Season14Story: React.FC<Season14StoryProps> = (props) => {
+  const responsive = useDataStore(Responsive);
   const s14 = Localizer.Season14;
 
   // elements wrapping parallax elements, used to calculate parallax amount
@@ -54,7 +56,7 @@ const Season14Story: React.FC<Season14StoryProps> = (props) => {
   // handle parallax effects on scroll
   const handleScroll = () => {
     // return early if on mobile
-    if (Responsive.state.mobile) {
+    if (responsive.mobile) {
       return;
     }
 
@@ -127,9 +129,7 @@ const Season14Story: React.FC<Season14StoryProps> = (props) => {
   };
 
   // add a scale transform to transform string for background parallax image
-  const backgroundTransforms = `${
-    Responsive.state.mobile ? "" : " scale(1.3)"
-  }`;
+  const backgroundTransforms = `${responsive.mobile ? "" : " scale(1.3)"}`;
 
   return (
     <div className={styles.storySection}>

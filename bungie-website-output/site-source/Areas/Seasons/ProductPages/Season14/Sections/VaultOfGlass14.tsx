@@ -4,6 +4,7 @@
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
@@ -73,6 +74,8 @@ const trailerJsonParamToLocalizedValue = (paramName: string): string | null => {
 };
 
 const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
+  const responsive = useDataStore(Responsive);
+
   const s14 = Localizer.Season14;
 
   const [emoteBlockText, setEmoteBlockText] = useState<null | ICalloutText>(
@@ -121,9 +124,7 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
     : emoteBlockText?.CalloutBtnTextUnavailable;
 
   // get bg image for section based on screen size
-  const bgImage = Responsive.state.mobile
-    ? bgImages?.mobileBg
-    : bgImages?.desktopBg;
+  const bgImage = responsive.mobile ? bgImages?.mobileBg : bgImages?.desktopBg;
 
   return (
     <div className={styles.raidSection}>

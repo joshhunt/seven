@@ -499,7 +499,7 @@ class SeasonOfTheUndyingInternal extends React.Component<
                   </p>
                 }
               >
-                {Responsive.state.mobile ? mobileRankRows : rankRows}
+                {this.state.responsive.mobile ? mobileRankRows : rankRows}
               </SeasonCarousel>
             </div>
 

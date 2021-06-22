@@ -1,5 +1,7 @@
 import { Respond } from "@Boot/Respond";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { UrlUtils } from "@Utilities/UrlUtils";
@@ -41,12 +43,24 @@ interface ISubNavState {
  * @returns
  */
 export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
+  private readonly destroys: DestroyCallback[] = [];
+
   constructor(props: ISubNavProps) {
     super(props);
 
     this.state = {
       responsive: Responsive.state,
     };
+  }
+
+  public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   private renderLink(link: ISubNavLink, index: number) {

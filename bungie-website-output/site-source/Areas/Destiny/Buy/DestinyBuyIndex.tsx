@@ -1,8 +1,9 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { Responsive } from "@Boot/Responsive";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -43,6 +44,7 @@ interface IDestinyBuyIndexState {
   loading: boolean;
   carouselItem: IMarketingMediaAsset;
   freeToPlayPopoutImg: string;
+  responsive: IResponsiveState;
 }
 
 /**
@@ -55,7 +57,7 @@ export default class DestinyBuyInternal extends React.Component<
   IDestinyBuyIndexProps,
   IDestinyBuyIndexState
 > {
-  private destroyConfigMonitor: DestroyCallback;
+  private readonly destroys: DestroyCallback[] = [];
 
   constructor(props: IDestinyBuyIndexProps) {
     super(props);
@@ -68,22 +70,21 @@ export default class DestinyBuyInternal extends React.Component<
       loading: true,
       carouselItem: null,
       freeToPlayPopoutImg: "",
+      responsive: Responsive.state,
     };
   }
 
   public componentDidMount() {
-    this.destroyConfigMonitor = DestinySkuConfigDataStore.observe((skuConfig) =>
-      this.setState(
-        {
-          skuConfig,
-        },
-        this.onSkuConfigLoaded
-      )
+    this.destroys.push(
+      DestinySkuConfigDataStore.observe((skuConfig) =>
+        this.setState({ skuConfig }, this.onSkuConfigLoaded)
+      ),
+      Responsive.observe((responsive) => this.setState({ responsive }))
     );
   }
 
   public componentWillUnmount() {
-    this.destroyConfigMonitor && this.destroyConfigMonitor();
+    this.destroys.forEach((d) => d && d());
   }
 
   private readonly onSkuConfigLoaded = () => {
@@ -269,7 +270,7 @@ export default class DestinyBuyInternal extends React.Component<
               const isFreeToPlayItem =
                 productFamily.productFamilyTag === "playforfree";
               const bgImage =
-                Responsive.state.mobile && productFamily.mobileCoverImage
+                this.state.responsive.mobile && productFamily.mobileCoverImage
                   ? productFamily.mobileCoverImage
                   : productFamily.imagePath;
               const coverTitle =

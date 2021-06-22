@@ -1,7 +1,9 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { Responsive } from "@Boot/Responsive";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore, useDataStore } from "@Global/DataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
@@ -45,6 +47,7 @@ interface IDestinyNewsAndMediaUpdatedProps
 interface IDestinyNewsAndMediaState {
   selectedMediaTab: MediaTab;
   supportsWebp: boolean;
+  responsive: IResponsiveState;
 }
 
 /**
@@ -59,6 +62,7 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
   IDestinyNewsAndMediaState
 > {
   private readonly idToElementsMapping: { [key: string]: HTMLDivElement } = {};
+  private readonly destroys: DestroyCallback[] = [];
 
   constructor(props: IDestinyNewsAndMediaUpdatedProps) {
     super(props);
@@ -66,13 +70,22 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
     this.state = {
       selectedMediaTab: props.defaultTab || "videos",
       supportsWebp: false,
+      responsive: Responsive.state,
     };
   }
 
   public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+
     BrowserUtils.supportsWebp().then((supportsWebp) =>
       this.setState({ supportsWebp })
     );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   private showImage(imageName: string) {
@@ -201,8 +214,8 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                       const isSecondInRow = (i + 1) % 2 === 0;
                       // check if thumbnail is at end of current row in flexbox
                       const isEndOfRowThumbnail =
-                        (Responsive.state.mobile && isSecondInRow) ||
-                        (!Responsive.state.mobile && isFourthInRow);
+                        (this.state.responsive.mobile && isSecondInRow) ||
+                        (!this.state.responsive.mobile && isFourthInRow);
 
                       return (
                         <div
@@ -362,11 +375,13 @@ interface IMediaButtonProps {
 }
 
 const MediaButton = (props: IMediaButtonProps) => {
+  const responsive = useDataStore(Responsive);
+
   const isFourthInRow = (props.index + 1) % 4 === 0;
   const isSecondInRow = (props.index + 1) % 2 === 0;
   const isEndOfRowThumbnail =
-    (Responsive.state.mobile && isSecondInRow) ||
-    (!Responsive.state.mobile && isFourthInRow);
+    (responsive.mobile && isSecondInRow) ||
+    (!responsive.mobile && isFourthInRow);
 
   const buttonClasses = classNames(
     styles.thumbnail,

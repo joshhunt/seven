@@ -4,6 +4,7 @@
 import BlockPlusButton from "@Areas/Seasons/ProductPages/Season14/Components/BlockPlusButton";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import classNames from "classnames";
 import React, {
@@ -33,6 +34,7 @@ interface Season14ActivitiesProps {
 }
 
 const Activities14: React.FC<Season14ActivitiesProps> = (props) => {
+  const responsive = useDataStore(Responsive);
   const s14 = Localizer.Season14;
   // refs of wrapping anchors for each parallax element
   const block1Ref = useRef<HTMLDivElement | null>(null);
@@ -155,9 +157,9 @@ const Activities14: React.FC<Season14ActivitiesProps> = (props) => {
             smallTitle={s14.OverrideBtnSmallHeading}
             toggleModalFunc={props.toggleOverrideModal}
             className={styles.blockBtn}
-            isHalfWidth={!Responsive.state.mobile}
-            hasRightMargin={!Responsive.state.mobile}
-            hasBottomMargin={Responsive.state.mobile}
+            isHalfWidth={!responsive.mobile}
+            hasRightMargin={!responsive.mobile}
+            hasBottomMargin={responsive.mobile}
             backgroundImage={
               "/7/ca/destiny/bgs/season14/s14_activities_modal_button_1.jpg"
             }
@@ -167,7 +169,7 @@ const Activities14: React.FC<Season14ActivitiesProps> = (props) => {
             smallTitle={s14.ExpungeBtnSmallHeading}
             toggleModalFunc={props.toggleExpungeModal}
             className={styles.blockBtn}
-            isHalfWidth={!Responsive.state.mobile}
+            isHalfWidth={!responsive.mobile}
             backgroundImage={
               "/7/ca/destiny/bgs/season14/s14_activities_modal_button_2.jpg"
             }

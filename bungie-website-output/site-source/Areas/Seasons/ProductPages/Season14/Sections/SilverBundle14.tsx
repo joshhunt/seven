@@ -3,6 +3,7 @@
 
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
@@ -59,6 +60,7 @@ interface SilverBundle14Props {
 }
 
 export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
+  const responsive = useDataStore(Responsive);
   const s14 = Localizer.Season14;
   // section strings
   const [bundle, setBundle] = useState<null | ISilverBundleSC>(null);
@@ -85,9 +87,7 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
   }, []);
 
   // get bg image for section based on screen size
-  const bgImage = Responsive.state.mobile
-    ? bgImages?.mobileBg
-    : bgImages?.desktopBg;
+  const bgImage = responsive.mobile ? bgImages?.mobileBg : bgImages?.desktopBg;
 
   return (
     <>

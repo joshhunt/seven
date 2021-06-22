@@ -11,29 +11,30 @@ import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Util
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Responsive } from "@Boot/Responsive";
 
-const ShowImageModal = (imagePath: string, alt: string) => {
-  if (!Responsive.state.mobile) {
-    Modal.open(
-      <img
-        src={imagePath}
-        alt={alt}
-        style={{ display: "block", maxWidth: "100%" }}
-      />,
-      {
-        isFrameless: true,
-      }
-    );
-  } else {
-    window.open(imagePath);
-  }
-};
-
 interface Season11GearProps {
   inputRef: LegacyRef<HTMLDivElement>;
 }
 
 export const Season11Gear: React.FC<Season11GearProps> = (props) => {
   const season11Data = useDataStore(Season11DataStore);
+  const responsive = useDataStore(Responsive);
+
+  const ShowImageModal = (imagePath: string, alt: string) => {
+    if (!responsive.mobile) {
+      Modal.open(
+        <img
+          src={imagePath}
+          alt={alt}
+          style={{ display: "block", maxWidth: "100%" }}
+        />,
+        {
+          isFrameless: true,
+        }
+      );
+    } else {
+      window.open(imagePath);
+    }
+  };
 
   return (
     <div id={"gear"} ref={props.inputRef}>

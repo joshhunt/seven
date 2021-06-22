@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./SeasonModal.module.scss";
@@ -18,6 +19,7 @@ interface Season14ModalProps {
 }
 
 const Season14Modal: React.FC<Season14ModalProps> = (props) => {
+  const responsive = useDataStore(Responsive);
   const [isShowing, setIsShowing] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
   const transitionDuration = useRef(200);
@@ -50,7 +52,7 @@ const Season14Modal: React.FC<Season14ModalProps> = (props) => {
     }
   };
 
-  const bgImage = Responsive.state.mobile
+  const bgImage = responsive.mobile
     ? props.backgroundImageMobile
     : props.backgroundImage;
 
@@ -73,7 +75,7 @@ const Season14Modal: React.FC<Season14ModalProps> = (props) => {
           className={styles.bgWrapper}
           style={{
             backgroundImage: `url(${
-              Responsive.state.mobile
+              responsive.mobile
                 ? props.backgroundImageMobile
                 : props.backgroundImage
             })`,

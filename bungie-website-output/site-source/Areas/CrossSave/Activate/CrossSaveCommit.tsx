@@ -1,7 +1,9 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Responsive } from "@Boot/Responsive";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
 import { PlatformError } from "@CustomErrors";
 import * as Globals from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
@@ -47,6 +49,7 @@ interface ICrossSaveReviewState {
   show: boolean;
   commitLoading: boolean;
   showSilverWarning: boolean;
+  responsive: IResponsiveState;
 }
 
 const transition = {
@@ -101,10 +104,17 @@ class CrossSaveCommit extends React.Component<
       show: false,
       commitLoading: false,
       showSilverWarning: false,
+      responsive: Responsive.state,
     };
   }
 
+  private readonly destroys: DestroyCallback[] = [];
+
   public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+
     this.setState({
       showSilverWarning: this.showSilverWarning(),
     });
@@ -116,6 +126,10 @@ class CrossSaveCommit extends React.Component<
         }),
       250
     );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   private readonly showSilverWarning = () => {
@@ -464,7 +478,7 @@ class CrossSaveCommit extends React.Component<
         })}
       >
         <div className={styles.commitDetails}>
-          {this.state.commitLoading && !Responsive.state.medium && (
+          {this.state.commitLoading && !this.state.responsive.medium && (
             <div className={styles.spinnerOverlay}>
               <h2>{Localizer.Crosssave.ActivatingCrossSave}</h2>
               <Spinner />

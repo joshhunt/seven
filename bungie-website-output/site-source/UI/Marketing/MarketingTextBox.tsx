@@ -1,6 +1,8 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import * as React from "react";
 import styles from "./MarketingTextBox.module.scss";
 import {
@@ -34,12 +36,24 @@ export class MarketingTextBoxInternal extends React.Component<
   IMarketingTextBoxProps,
   IMarketingTextBoxState
 > {
+  private readonly destroys: DestroyCallback[] = [];
+
   constructor(props: IMarketingTextBoxProps) {
     super(props);
 
     this.state = {
       responsive: Responsive.state,
     };
+  }
+
+  public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   public render() {

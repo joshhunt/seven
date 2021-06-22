@@ -4,6 +4,7 @@
 import BlockPlusButton from "@Areas/Seasons/ProductPages/Season14/Components/BlockPlusButton";
 import { SeasonPassRewardsList } from "@Areas/Seasons/ProductPages/Season14/Components/SeasonPassRewardsList";
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Platform } from "@Platform";
 import { ScrollingSeasonCarousel } from "@UI/Destiny/ScrollingSeasonCarousel";
@@ -35,6 +36,7 @@ interface RewardsAndCalendar14Props {
 }
 
 const RewardsAndCalendar14: React.FC<RewardsAndCalendar14Props> = (props) => {
+  const responsive = useDataStore(Responsive);
   const [calendarImages, setCalendarImages] = useState(null);
 
   useEffect(() => {
@@ -77,7 +79,7 @@ const RewardsAndCalendar14: React.FC<RewardsAndCalendar14Props> = (props) => {
     );
   });
 
-  const bgImage = Responsive.state.mobile
+  const bgImage = responsive.mobile
     ? "/7/ca/destiny/bgs/season14/s14_rewards_bg_mobile.jpg"
     : "/7/ca/destiny/bgs/season14/s14_rewards_bg_desktop.jpg";
 
@@ -103,7 +105,7 @@ const RewardsAndCalendar14: React.FC<RewardsAndCalendar14Props> = (props) => {
             </p>
           }
         >
-          {Responsive.state.mobile ? mobileRankRows : rankRows}
+          {responsive.mobile ? mobileRankRows : rankRows}
         </ScrollingSeasonCarousel>
       </div>
       <div className={styles.contentWrapperNormal}>

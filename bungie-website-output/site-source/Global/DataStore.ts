@@ -98,7 +98,7 @@ export abstract class DataStore<
       ...data,
     } as TDataType;
 
-    this.broadcast(this._internalState);
+    this.broadcast(data, this._internalState);
 
     return true;
   }
@@ -111,7 +111,7 @@ export abstract class DataStore<
    */
   public observe(
     callback: (newData: TDataType) => void,
-    props?: any,
+    props?: TObserverProps,
     updateImmediately = true
   ): DestroyCallback {
     const { destroy, observer } = this.saveObserver(callback, props);

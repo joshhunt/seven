@@ -161,7 +161,7 @@ export const SeasonPass13: React.FC<SeasonPass13Props> = (props) => {
               </p>
             }
           >
-            {Responsive.state.mobile ? mobileRankRows : rankRows}
+            {responsive.mobile ? mobileRankRows : rankRows}
           </SeasonCarousel>
         </div>
       </div>

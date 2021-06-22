@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
+import { useDataStore } from "@Global/DataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
@@ -18,10 +19,11 @@ interface Season14HeroProps {
 }
 
 export const Season14Hero: React.FC<Season14HeroProps> = (props) => {
+  const responsive = useDataStore(Responsive);
   const s14 = Localizer.Season14;
 
   const showVideo = (trailerId: string) => {
-    if (Responsive.state.medium) {
+    if (responsive.medium) {
       window.location.href = `https://www.youtube.com/watch?v=${trailerId}`;
     } else {
       YoutubeModal.show({ videoId: trailerId });

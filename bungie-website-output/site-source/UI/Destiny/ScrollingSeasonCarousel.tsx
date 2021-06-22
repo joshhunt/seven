@@ -2,7 +2,9 @@
 // Copyright Bungie, Inc.
 
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
-import { Responsive } from "@Boot/Responsive";
+import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore, useDataStore } from "@Global/DataStore";
 import * as React from "react";
 import styles from "./ScrollingSeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
@@ -22,6 +24,7 @@ interface ISeasonCarouselState {
   position: number;
   sliding: boolean;
   direction: "next" | "prev";
+  responsive: IResponsiveState;
 }
 
 interface DefaultProps {}
@@ -49,7 +52,20 @@ export class ScrollingSeasonCarousel extends React.Component<
           : 0,
       sliding: false,
       direction: null,
+      responsive: Responsive.state,
     };
+  }
+
+  private readonly destroys: DestroyCallback[] = [];
+
+  public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   public componentDidUpdate(prevProps: IScrollingSeasonCarouselProps) {
@@ -167,13 +183,15 @@ interface ICarouselContainerProps {
 }
 
 const CarouselContainer = (props: ICarouselContainerProps) => {
+  const responsive = useDataStore(Responsive);
+
   const transition = props.sliding ? "none" : "transform .5s ease";
   let transform = "";
 
   const slideNext = (-100 / props.length).toString() + "%";
   const slidePrev = (-200 / props.length).toString() + "%";
 
-  if (Responsive.state.mobile) {
+  if (responsive.mobile) {
     transform = "";
   } else if (!props.sliding) {
     transform = `translateX(${slideNext})`;
@@ -185,7 +203,7 @@ const CarouselContainer = (props: ICarouselContainerProps) => {
 
   const width = `calc(${props.length * 100}% - ${props.length / 2}rem)`;
 
-  const padding = Responsive.state.mobile ? "0 3rem" : null;
+  const padding = responsive.mobile ? "0 3rem" : null;
 
   return (
     <LazyLoadWrapper
@@ -206,8 +224,10 @@ interface IWrapperProps {
 }
 
 const Wrapper = (props: IWrapperProps) => {
-  const overflow = Responsive.state.mobile ? "auto" : "hidden";
-  const width = Responsive.state.mobile ? "100%" : "calc(100% - 6rem)";
+  const responsive = useDataStore(Responsive);
+
+  const overflow = responsive.mobile ? "auto" : "hidden";
+  const width = responsive.mobile ? "100%" : "calc(100% - 6rem)";
 
   return (
     <div
@@ -229,13 +249,13 @@ interface ICarouselSlotProps {
 }
 
 const CarouselSlot = (props: ICarouselSlotProps) => {
-  const adjustedOrder = Responsive.state.mobile
+  const responsive = useDataStore(Responsive);
+
+  const adjustedOrder = responsive.mobile
     ? null
     : (props.order + 1) % props.length;
-  const width = Responsive.state.mobile
-    ? "100%"
-    : `calc(100% / ${props.length})`;
-  const margin = Responsive.state.mobile ? "0 0.04%" : "0 0.5rem";
+  const width = responsive.mobile ? "100%" : `calc(100% / ${props.length})`;
+  const margin = responsive.mobile ? "0 0.04%" : "0 0.5rem";
 
   return (
     <div

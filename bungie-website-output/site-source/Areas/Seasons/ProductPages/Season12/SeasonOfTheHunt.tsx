@@ -44,6 +44,7 @@ const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
  * @returns
  */
 const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
+  const responsive = useDataStore(Responsive);
   const [haveShownToast, setHaveShownToast] = useState(false);
   const [calendarImage, setCalendarImage] = useState<string>(
     Img(
@@ -581,7 +582,7 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
                 </p>
               }
             >
-              {Responsive.state.mobile ? mobileRankRows : rankRows}
+              {responsive.mobile ? mobileRankRows : rankRows}
             </SeasonCarousel>
           </div>
         </div>

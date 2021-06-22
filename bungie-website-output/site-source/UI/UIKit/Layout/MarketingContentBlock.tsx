@@ -2,6 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
 import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import classNames from "classnames";
@@ -59,6 +61,7 @@ export class MarketingContentBlock extends React.Component<
   private readonly sectionRef: React.RefObject<
     HTMLDivElement
   > = React.createRef();
+  private readonly destroys: DestroyCallback[] = [];
 
   constructor(props: IMarketingContentBlockProps) {
     super(props);
@@ -66,6 +69,16 @@ export class MarketingContentBlock extends React.Component<
     this.state = {
       responsive: Responsive.state,
     };
+  }
+
+  public componentDidMount() {
+    this.destroys.push(
+      Responsive.observe((responsive) => this.setState({ responsive }))
+    );
+  }
+
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroys);
   }
 
   public render() {
