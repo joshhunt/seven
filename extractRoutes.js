@@ -139,34 +139,38 @@ async function getRoutesFromRouteDefs() {
   const areasAst = classAst.body.find((node) => node.key.name === "Areas");
   const areasObjectAst = areasAst.value;
 
-  const areasObject = areasObjectAst.properties.map((objectPropertyAst) => {
-    const isExpected =
-      objectPropertyAst.value.type === "NewExpression" &&
-      objectPropertyAst.value.callee.name === "Area";
+  console.log(areasObjectAst);
 
-    if (!isExpected) {
-      throw new Error(
-        "The value of a member in the public static Areas object is not `new Area()`"
+  const areasObject = areasObjectAst.expression.properties.map(
+    (objectPropertyAst) => {
+      const isExpected =
+        objectPropertyAst.value.type === "NewExpression" &&
+        objectPropertyAst.value.callee.name === "Area";
+
+      if (!isExpected) {
+        throw new Error(
+          "The value of a member in the public static Areas object is not `new Area()`"
+        );
+      }
+
+      const newAreaArg = objectPropertyAst.value.arguments[0];
+
+      const { areaName, areaObjectName } = getStringValueOfAreaName(
+        areaNames,
+        newAreaArg
       );
+      const routes = getRoutesFromAreaObject(newAreaArg);
+      const componentImportPath = getComponentImportPath(newAreaArg);
+
+      if (!areaName) {
+        throw new Error(
+          "Could not find area name in " + generator(objectPropertyAst).code
+        );
+      }
+
+      return { areaName, areaObjectName, componentImportPath, routes };
     }
-
-    const newAreaArg = objectPropertyAst.value.arguments[0];
-
-    const { areaName, areaObjectName } = getStringValueOfAreaName(
-      areaNames,
-      newAreaArg
-    );
-    const routes = getRoutesFromAreaObject(newAreaArg);
-    const componentImportPath = getComponentImportPath(newAreaArg);
-
-    if (!areaName) {
-      throw new Error(
-        "Could not find area name in " + generator(objectPropertyAst).code
-      );
-    }
-
-    return { areaName, areaObjectName, componentImportPath, routes };
-  });
+  );
 
   const routes = areasObject.flatMap(
     ({ areaName, areaObjectName, componentImportPath, routes }) =>
