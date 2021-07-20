@@ -31,7 +31,7 @@ export class ActionRoute {
     this.areaName = areaName;
     this.action = action;
     this.path = `/:locale/${areaName}`;
-    if (action && action !== "Index") {
+    if (action && action.toLowerCase() !== "index") {
       this.path = `/:locale/${areaName}/${action}`;
     }
 

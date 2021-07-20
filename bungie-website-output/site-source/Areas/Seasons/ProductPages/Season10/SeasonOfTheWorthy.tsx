@@ -746,7 +746,11 @@ class SeasonOfTheWorthyInner extends React.Component<
         {/* Season Pass */}
         <div
           className={styles.seasonPassSection}
-          style={{ backgroundImage: `url(${progressionVideoBackground})` }}
+          style={{
+            backgroundImage:
+              progressionVideoBackground &&
+              `url(${progressionVideoBackground})`,
+          }}
         >
           <div
             id={"rewards"}

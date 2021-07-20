@@ -17,7 +17,9 @@ import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import * as React from "react";
 import Helmet from "react-helmet";
+import { RelayEnvironmentProvider } from "react-relay";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import ContentStackRelayEnvironment from "./Platform/ContentStack/ContentStackRelayEnvironment";
 
 interface IAppProps {}
 
@@ -62,28 +64,30 @@ export class App extends React.Component<IAppProps, IAppState> {
     const AppBaseUrl = UrlUtils.AppBaseUrl;
 
     return (
-      <Router basename={AppBaseUrl}>
-        <BasicErrorBoundary>
-          <AppLayout>
-            <Helmet titleTemplate="%s | Bungie.net" />
-            {this.state.globalState.coreSettings && (
-              <React.Fragment>
-                <FullPageLoadingBar />
-                <SwitchWithErrors>
-                  <Route exact={true} path="/version">
-                    {
-                      /* tslint:disable-next-line: jsx-use-translation-function */
-                      <span>Build Version: {BuildVersion}</span>
-                    }
-                  </Route>
-                  {RouteDefs.AllAreaRoutes}
-                </SwitchWithErrors>
-              </React.Fragment>
-            )}
-          </AppLayout>
-          <GlobalElements />
-        </BasicErrorBoundary>
-      </Router>
+      <RelayEnvironmentProvider environment={ContentStackRelayEnvironment}>
+        <Router basename={AppBaseUrl}>
+          <BasicErrorBoundary>
+            <AppLayout>
+              <Helmet titleTemplate="%s | Bungie.net" />
+              {this.state.globalState.coreSettings && (
+                <React.Fragment>
+                  <FullPageLoadingBar />
+                  <SwitchWithErrors>
+                    <Route exact={true} path="/version">
+                      {
+                        /* tslint:disable-next-line: jsx-use-translation-function */
+                        <span>Build Version: {BuildVersion}</span>
+                      }
+                    </Route>
+                    {RouteDefs.AllAreaRoutes}
+                  </SwitchWithErrors>
+                </React.Fragment>
+              )}
+            </AppLayout>
+            <GlobalElements />
+          </BasicErrorBoundary>
+        </Router>
+      </RelayEnvironmentProvider>
     );
   }
 }

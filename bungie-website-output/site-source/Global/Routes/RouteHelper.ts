@@ -1,3 +1,4 @@
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import * as H from "history";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
@@ -87,7 +88,9 @@ export class RouteHelper {
   public static CrossSaveActivate = BasicReactPath<ICrossSaveActivateParams>(
     RouteDefs.Areas.CrossSave.getAction("Activate")
   );
-  public static Rewards = LegacyPathWithQuery("/Profile/Rewards");
+  public static Rewards = BasicReactPath(
+    RouteDefs.Areas.Direct.getAction("Rewards")
+  );
   public static Join = LegacyPathWithQuery(`/User/JoinUp`);
   public static SignIn = (title?: string, bru?: string) => {
     const encodedBru = encodeURIComponent(bru);
@@ -287,7 +290,12 @@ export class RouteHelper {
   public static Forums = LegacyPathWithQuery("/Forum/Topics");
   public static BungieStore = (subPath = "") =>
     `https://bungiestore.com/${subPath}`;
-  public static PressKits = () => "https://presskits.bungie.com";
+  public static PressKits = () =>
+    ConfigUtils.GetParameter(
+      "WebRenderer",
+      "PressKitUrl",
+      "https://press.bungie.com"
+    );
   public static Search = LegacyPathWithQuery("/Search");
   public static Foundation = (subPath = "") =>
     `https://bungiefoundation.org/${subPath}`;

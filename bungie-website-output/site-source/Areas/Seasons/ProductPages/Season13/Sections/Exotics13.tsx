@@ -50,6 +50,12 @@ export const Exotics13: React.FC<Exotics13Props> = (props) => {
     }
   };
 
+  const exoticBlockBgImage =
+    exoticQuestItem &&
+    (responsive.tiny
+      ? `url(${exoticQuestItem?.imageThumbnail})`
+      : `url(${exoticQuestItem?.largeImage})`);
+
   return (
     <div id={"exoticsGear"} ref={props.inputRef} className={styles.container}>
       <MarketingTitles
@@ -62,11 +68,7 @@ export const Exotics13: React.FC<Exotics13Props> = (props) => {
           cols={6}
           mobile={12}
           className={styles.exoticBlock}
-          style={{
-            backgroundImage: responsive.tiny
-              ? `url(${exoticQuestItem?.imageThumbnail})`
-              : `url(${exoticQuestItem?.largeImage})`,
-          }}
+          style={{ backgroundImage: exoticBlockBgImage }}
         >
           <div
             className={!isRedacted ? styles.clickable : null}

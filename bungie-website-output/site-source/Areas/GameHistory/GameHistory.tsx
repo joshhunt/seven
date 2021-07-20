@@ -1,6 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { GameHistoryDestinyMembershipDataStore } from "@Areas/GameHistory/DataStores/GameHistoryDestinyMembershipDataStore";
 import { GameHistoryEvent } from "@Areas/GameHistory/GameHistoryEvent";
 import {
   D2DatabaseComponentProps,
@@ -8,7 +9,6 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyActivityModeType } from "@Enum";
 import { useDataStore } from "@Global/DataStore";
-import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
 import { Img } from "@Helpers";
@@ -21,10 +21,9 @@ import DestinyActivityModesSelector from "@UI/Destiny/DestinyActivityModeSelecto
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
-import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./GameHistory.module.scss";
 
 interface GameHistoryProps
@@ -42,7 +41,7 @@ interface GameHistoryProps
  */
 const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembership = useDataStore(DestinyMembershipDataStore);
+  const destinyMembership = useDataStore(GameHistoryDestinyMembershipDataStore);
 
   useEffect(() => {
     // DestinyMembershipDataStore.actions.getMemberships(UserUtils.loggedInUserMembershipIdFromCookie);
@@ -104,7 +103,10 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
       <Grid>
         <GridCol cols={12}>
           <RequiresAuth>
-            <DestinyAccountWrapper onCharacterChange={onCharacterChange}>
+            <DestinyAccountWrapper
+              onCharacterChange={onCharacterChange}
+              membershipDataStore={GameHistoryDestinyMembershipDataStore}
+            >
               {({
                 platformSelector,
                 characterSelector,

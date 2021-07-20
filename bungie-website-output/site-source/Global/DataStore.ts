@@ -111,7 +111,7 @@ export abstract class DataStore<
    */
   public observe(
     callback: (newData: TDataType) => void,
-    props?: TObserverProps,
+    props?: any,
     updateImmediately = true
   ): DestroyCallback {
     const { destroy, observer } = this.saveObserver(callback, props);
@@ -148,21 +148,3 @@ export const useDataStore = <
 
   return current;
 };
-
-class PizzaPayload {
-  public count: number;
-}
-
-interface IEatable<TData> {
-  eat: () => TData;
-}
-
-class PizzaDataStore
-  extends DataStore<PizzaPayload>
-  implements IEatable<PizzaPayload> {
-  public eat() {
-    return {
-      count: this.state.count - 1,
-    };
-  }
-}

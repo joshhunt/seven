@@ -94,7 +94,6 @@ export class UserUtils {
    * Converts BungieMembershipType to BungieCredentialType
    * @param membershipType
    */
-
   public static getCredentialTypeFromMembershipType(
     membershipType: Globals.BungieMembershipType
   ) {
@@ -145,6 +144,29 @@ export class UserUtils {
           "Only Destiny credential types are allowed in this component"
         );
     }
+  }
+
+  /**
+   * converts platform string in to
+   * @param platform
+   */
+  public static getCredentialTypeFromPlatformString(platform: string) {
+    switch (platform) {
+      case "xbox":
+      case "msstore":
+        return Globals.BungieCredentialType.Xuid;
+      case "psn":
+      case "playstation":
+        return Globals.BungieCredentialType.Psnid;
+      case "steam":
+        return Globals.BungieCredentialType.SteamId;
+      case "stadia":
+        return Globals.BungieCredentialType.StadiaId;
+      case "twitch":
+        return Globals.BungieCredentialType.TwitchId;
+    }
+
+    return null;
   }
 
   /**

@@ -99,12 +99,15 @@ export class VideoSlider extends React.Component<
   public render() {
     const { currentIndex } = this.state;
 
+    const sliderBgImage =
+      this.props.backgroundCandy && `url(${this.props.backgroundCandy})`;
+
     return (
       <>
         <div
           className={styles.slider}
           style={{
-            backgroundImage: `url(${this.props.backgroundCandy})`,
+            backgroundImage: sliderBgImage,
             backgroundPosition: `${this.getBackgroundPosition(
               this.state.currentIndex
             )}`,

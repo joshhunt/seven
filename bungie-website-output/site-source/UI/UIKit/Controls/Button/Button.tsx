@@ -20,7 +20,7 @@ export type ButtonTypes =
   | "teal"
   | "slateblue";
 
-export type ButtonProps = IButtonProps & Partial<DefaultProps>;
+export type ButtonProps = IButtonProps & Partial<DefaultButtonProps>;
 
 export interface IButtonProps extends DOMAttributes<HTMLElement> {
   /** Children */
@@ -41,7 +41,7 @@ export interface IButtonProps extends DOMAttributes<HTMLElement> {
   analyticsId?: string;
 }
 
-interface DefaultProps {
+export interface DefaultButtonProps {
   /** Button type */
   buttonType: ButtonTypes | ButtonTypes[];
   /** If true, shows a loading spinner */

@@ -2,14 +2,18 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
 import { PlatformError } from "@CustomErrors";
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
+import { DestinyComponentType } from "@Enum";
+import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DataStore } from "@Global/DataStore";
+import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@Global/Localization/Localizer";
-import { Actions, Platform, Responses, User } from "@Platform";
+import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
   DestinyAccountWrapper,
@@ -21,7 +25,6 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import * as React from "react";
 import SeasonCalendar from "./Progress/SeasonCalendar";
@@ -45,16 +48,10 @@ interface ISeasonsUtilityPageProps
 // Default props - these will have values set in SeasonsUtilityPage.defaultProps
 interface DefaultProps {}
 
-type Props = ISeasonsUtilityPageProps & DefaultProps;
+type Props = ISeasonsUtilityPageProps;
 
 interface ISeasonsUtilityPageState {
-  memberships: User.UserMembershipData;
-  profileResponse: Responses.DestinyProfileResponse;
-
-  isLoading: boolean;
-  characterId: string;
-  currentMembershipType: BungieMembershipType;
-
+  destinyMembershipData: DestinyMembershipDataStorePayload;
   itemDetailCanClaim: boolean;
   itemDetailModalOpen: boolean;
   itemDetailLoading: boolean;
@@ -63,6 +60,7 @@ interface ISeasonsUtilityPageState {
   itemDetailRewardIndex: number;
   itemDetailClaiming: boolean;
   itemClaimed: IClaimedReward;
+  characterProgressions: Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent;
 }
 
 /**
@@ -75,12 +73,10 @@ class SeasonsUtilityPage extends React.Component<
   Props,
   ISeasonsUtilityPageState
 > {
+  private readonly destroy: DestroyCallback[] = [];
+
   private static readonly InitialState: ISeasonsUtilityPageState = {
-    memberships: null,
-    profileResponse: null,
-    characterId: "",
-    isLoading: false,
-    currentMembershipType: null,
+    destinyMembershipData: SeasonsDestinyMembershipDataStore.state,
     itemDetailCanClaim: false,
     itemDetailModalOpen: false,
     itemDetailLoading: false,
@@ -92,29 +88,56 @@ class SeasonsUtilityPage extends React.Component<
       itemHash: 0,
       rewardIndex: 0,
     },
+    characterProgressions: null,
   };
 
   constructor(props: Props) {
     super(props);
 
     this.state = SeasonsUtilityPage.InitialState;
-
-    this.closeItemDetailModal = this.closeItemDetailModal.bind(this);
   }
-
-  public static defaultProps: DefaultProps = {};
 
   public componentDidMount() {
-    this.loadUserData();
+    this.destroy.push(
+      SeasonsDestinyMembershipDataStore.observe((destinyMembershipData) => {
+        this.setState({
+          destinyMembershipData,
+        });
+      })
+    );
+
+    SeasonsDestinyMembershipDataStore.actions.loadUserData();
   }
 
-  public componentDidUpdate(prevProps: Props) {
+  public componentDidUpdate(
+    prevProps: Props,
+    prevState: ISeasonsUtilityPageState
+  ) {
     const wasAuthed = UserUtils.isAuthenticated(prevProps.globalState);
     const isNowAuthed = UserUtils.isAuthenticated(this.props.globalState);
 
+    if (
+      this.state.destinyMembershipData?.selectedMembership &&
+      prevState.destinyMembershipData?.selectedMembership?.membershipId !==
+        this.state.destinyMembershipData?.selectedMembership?.membershipId
+    ) {
+      const {
+        membershipId,
+        membershipType,
+      } = this.state.destinyMembershipData.selectedMembership;
+
+      Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
+        DestinyComponentType.CharacterProgressions,
+      ]).then((data) => {
+        this.setState({
+          characterProgressions: data.characterProgressions,
+        });
+      });
+    }
+
     // if user logs in then need to load everything
     if (!wasAuthed && isNowAuthed) {
-      this.loadUserData(true);
+      SeasonsDestinyMembershipDataStore.actions.loadUserData(undefined, true);
     }
 
     //user logs out
@@ -123,34 +146,37 @@ class SeasonsUtilityPage extends React.Component<
     }
   }
 
-  private get characters() {
-    return (
-      this.state.profileResponse &&
-      this.state.profileResponse.characters &&
-      this.state.profileResponse.characters.data
-    );
+  public componentWillUnmount() {
+    DataStore.destroyAll(...this.destroy);
   }
 
   public render() {
     const isAnonymous = !UserUtils.isAuthenticated(this.props.globalState);
 
-    if (this.state.isLoading) {
+    if (!this.state.destinyMembershipData.loaded) {
       return (
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );
     }
 
+    const { characterProgressions } = this.state;
+
+    const {
+      loaded,
+      membershipData,
+      memberships,
+      characters,
+      selectedCharacter,
+      selectedMembership,
+      isCrossSaved,
+    } = this.state.destinyMembershipData;
+
     const charactersLoaded =
-      !isAnonymous &&
-      this.state.profileResponse &&
-      this.characters &&
-      typeof this.state.profileResponse.characterProgressions !== "undefined";
+      !isAnonymous && loaded && characters && characterProgressions;
 
     const forCharacter =
-      this.state.characterId !== ""
-        ? this.state.profileResponse.characterProgressions.data[
-            this.state.characterId
-          ]
+      selectedCharacter?.characterId !== ""
+        ? characterProgressions?.data[selectedCharacter?.characterId]
         : null;
 
     const seasonHash = this.props.seasonHash;
@@ -198,24 +224,19 @@ class SeasonsUtilityPage extends React.Component<
           <GridCol cols={12}>
             <SystemDisabledHandler systems={["Destiny2"]}>
               {UserUtils.isAuthenticated(this.props.globalState) &&
-                this.state.memberships !== null &&
+                memberships !== null &&
                 charactersLoaded && (
                   <SeasonsPageNav
-                    characterId={this.state.characterId}
+                    characterId={selectedCharacter?.characterId}
                     seasonHash={seasonHash}
-                    characterProgressions={forCharacter.progressions}
-                    platformProgression={
-                      this.state.profileResponse.characterProgressions
-                    }
-                    membershipType={
-                      this.state.profileResponse.profile.data.userInfo
-                        .membershipType
-                    }
+                    characterProgressions={forCharacter?.progressions}
+                    platformProgression={characterProgressions}
+                    membershipType={selectedMembership?.membershipType}
                   />
                 )}
             </SystemDisabledHandler>
             {UserUtils.isAuthenticated(this.props.globalState) &&
-              (this.state.memberships === null || !charactersLoaded) && (
+              (memberships === null || !charactersLoaded) && (
                 <SeasonsPageNav seasonHash={seasonHash} />
               )}
             <div className={styles.seasonInfoContainer}>
@@ -224,7 +245,7 @@ class SeasonsUtilityPage extends React.Component<
               <RequiresAuth />
 
               {UserUtils.isAuthenticated(this.props.globalState) &&
-                this.state.memberships === null && (
+                memberships === null && (
                   <Button
                     buttonType={"gold"}
                     url={RouteHelper.ProfileSettings(
@@ -237,11 +258,12 @@ class SeasonsUtilityPage extends React.Component<
                 )}
 
               {charactersLoaded && (
-                <DestinyAccountWrapper>
+                <DestinyAccountWrapper
+                  membershipDataStore={SeasonsDestinyMembershipDataStore}
+                >
                   {({
                     platformSelector,
                     characterSelector,
-                    bnetProfile,
                   }: IAccountFeatures) => (
                     <div className={styles.dropdownFlexWrapper}>
                       {platformSelector}
@@ -257,7 +279,7 @@ class SeasonsUtilityPage extends React.Component<
                 seasonHash={seasonHash}
                 characterClassHash={
                   charactersLoaded
-                    ? this.characters[this.state.characterId].classHash
+                    ? characters[selectedCharacter?.characterId].classHash
                     : 0
                 }
                 characterProgressions={
@@ -272,16 +294,11 @@ class SeasonsUtilityPage extends React.Component<
 
             {charactersLoaded && !isCurrentSeason && (
               <RedeemSeasonRewards
-                characterId={this.state.characterId}
+                characterId={selectedCharacter?.characterId}
                 seasonHash={seasonHash}
-                platformProgressions={
-                  this.state.profileResponse.characterProgressions
-                }
+                platformProgressions={characterProgressions}
                 characterProgressions={forCharacter.progressions}
-                membershipType={
-                  this.state.profileResponse.profile.data.userInfo
-                    .membershipType
-                }
+                membershipType={selectedMembership?.membershipType}
                 handleClick={(itemHash, rewardIndex, canClaim) =>
                   this.openItemDetailModal(itemHash, rewardIndex, canClaim)
                 }
@@ -296,119 +313,6 @@ class SeasonsUtilityPage extends React.Component<
         {isCurrentSeason && <SeasonCalendar seasonHash={seasonHash} />}
       </React.Fragment>
     );
-  }
-
-  private async loadUserData(forceReload = false) {
-    let memberships = this.state.memberships;
-    if (!memberships || forceReload) {
-      memberships = await Platform.UserService.GetMembershipDataForCurrentUser();
-    }
-
-    const isCrossSaved =
-      typeof this.props.globalState.crossSavePairingStatus !== "undefined" &&
-      typeof this.props.globalState.crossSavePairingStatus
-        .primaryMembershipType !== "undefined";
-
-    let membership = memberships.destinyMemberships[0];
-
-    if (isCrossSaved) {
-      membership = memberships.destinyMemberships.find(
-        (a) =>
-          a.membershipType ===
-          this.props.globalState.crossSavePairingStatus.primaryMembershipType
-      );
-    } else if (this.state.currentMembershipType) {
-      membership = memberships.destinyMemberships.find(
-        (a) => a.membershipType === this.state.currentMembershipType
-      );
-    }
-
-    let profileResponse: Responses.DestinyProfileResponse = null;
-    let targetCharacterId = "";
-
-    if (typeof membership === "undefined") {
-      // rare instance of bnet users without destiny membership, show the anonymous view
-
-      this.setState({
-        isLoading: false,
-      });
-
-      return;
-    }
-
-    try {
-      profileResponse = await Platform.Destiny2Service.GetProfile(
-        membership.membershipType,
-        membership.membershipId,
-        [
-          DestinyComponentType.Profiles,
-          DestinyComponentType.CharacterProgressions,
-          DestinyComponentType.Characters,
-        ]
-      );
-
-      const hasCharacterData =
-        typeof profileResponse.characters !== "undefined" &&
-        typeof profileResponse.characters.data !== "undefined";
-
-      if (hasCharacterData) {
-        targetCharacterId = Object.keys(profileResponse.characters.data)[0];
-      }
-    } catch {
-      this.setState({
-        isLoading: false,
-      });
-
-      console.log(
-        `There was an error getting Destiny info for ${membership.displayName}(${membership.membershipId}): ${membership.membershipType}`
-      );
-    }
-
-    this.setState({
-      currentMembershipType: membership.membershipType,
-      memberships,
-      isLoading: false,
-      profileResponse,
-      characterId: targetCharacterId,
-    });
-  }
-
-  private updateCharacter(characterId: string) {
-    this.setState({
-      characterId: characterId,
-    });
-  }
-
-  private async updatePlatform(platform: string) {
-    if (
-      platform !==
-      EnumUtils.getStringValue(
-        this.state.currentMembershipType,
-        BungieMembershipType
-      )
-    ) {
-      this.setState({
-        isLoading: true,
-      });
-
-      const matchingAccount = this.state.memberships.destinyMemberships.find(
-        (value) =>
-          EnumUtils.looseEquals(
-            value.membershipType,
-            platform,
-            BungieMembershipType
-          )
-      );
-
-      //set the new membership, and clear out the outdated profileResponse so that it will update
-      this.setState(
-        {
-          currentMembershipType: matchingAccount.membershipType,
-          characterId: "",
-        },
-        () => this.loadUserData()
-      );
-    }
   }
 
   private async openItemDetailModal(
@@ -440,12 +344,17 @@ class SeasonsUtilityPage extends React.Component<
   }
 
   private claimFromModal() {
+    const {
+      selectedCharacter,
+      selectedMembership,
+    } = this.state.destinyMembershipData;
+
     if (!this.state.itemDetailClaiming) {
       this.setState({ itemDetailClaiming: true });
 
       const input: Actions.DestinyClaimSeasonPassRewardActionRequest = {
-        characterId: this.state.characterId,
-        membershipType: this.state.currentMembershipType,
+        characterId: selectedCharacter?.characterId,
+        membershipType: selectedMembership?.membershipType,
         rewardIndex: this.state.itemDetailRewardIndex,
         seasonHash: this.props.seasonHash,
       };
@@ -489,7 +398,7 @@ class SeasonsUtilityPage extends React.Component<
     }
   }
 
-  private closeItemDetailModal() {
+  private readonly closeItemDetailModal = () => {
     this.setState({
       itemDetailModalOpen: false,
       itemDetailElement: null,
@@ -497,7 +406,7 @@ class SeasonsUtilityPage extends React.Component<
       itemDetailHash: 0,
       itemDetailCanClaim: false,
     });
-  }
+  };
 }
 
 export default withGlobalState(SeasonsUtilityPage, [

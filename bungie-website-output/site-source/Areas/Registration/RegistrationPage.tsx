@@ -1,78 +1,31 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import styles from "./RegistrationPage.module.scss";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
-import { Spinner, SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { Redirect } from "react-router-dom";
-import { UserUtils, AuthChangeStatus } from "@Utilities/UserUtils";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { UrlUtils } from "@Utilities/UrlUtils";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { BungieCredentialType } from "@Enum";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@Global/Localization/Localizer";
+import { Content, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
+import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { JoinUpButton } from "@UI/User/JoinUpButton";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { UrlUtils } from "@Utilities/UrlUtils";
+import { AuthChangeStatus, UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
 import { RouteComponentProps } from "react-router";
+import { Redirect } from "react-router-dom";
+import styles from "./RegistrationPage.module.scss";
 import { RegistrationContentItem } from "./Shared/RegistrationContentItem";
-
-export enum PlatformType {
-  none,
-  psn,
-  xbox,
-  steam,
-  stadia,
-  blizzard,
-  twitch,
-}
-
-interface PlatformTypeToCredential {
-  platformType: PlatformType;
-  credential: BungieCredentialType;
-}
-
-const PlatformTypeToCredentialType: PlatformTypeToCredential[] = [
-  {
-    platformType: PlatformType.none,
-    credential: BungieCredentialType.None,
-  },
-  {
-    platformType: PlatformType.xbox,
-    credential: BungieCredentialType.Xuid,
-  },
-  {
-    platformType: PlatformType.blizzard,
-    credential: BungieCredentialType.BattleNetId,
-  },
-  {
-    platformType: PlatformType.psn,
-    credential: BungieCredentialType.Psnid,
-  },
-  {
-    platformType: PlatformType.stadia,
-    credential: BungieCredentialType.StadiaId,
-  },
-  {
-    platformType: PlatformType.steam,
-    credential: BungieCredentialType.SteamId,
-  },
-  {
-    platformType: PlatformType.twitch,
-    credential: BungieCredentialType.TwitchId,
-  },
-];
 
 // Required props
 interface IRegistrationPageProps
@@ -86,7 +39,7 @@ type Props = IRegistrationPageProps & DefaultProps;
 
 interface IRegistrationPageState {
   contentRenderable: Content.ContentItemPublicContract;
-  platform: PlatformType;
+  platform: BungieCredentialType | null;
 }
 
 /**
@@ -101,7 +54,7 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
 
     this.state = {
       contentRenderable: null,
-      platform: PlatformType.none,
+      platform: null,
     };
   }
 
@@ -117,12 +70,14 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
 
       const queryString = UrlUtils.QueryToObject(window.location.search);
 
-      const platform = queryString["platform"];
+      const platformType = queryString["platform"];
 
-      if (queryString["platform"]?.length && platform in PlatformType) {
-        this.setState({
-          platform: PlatformType[platform as keyof typeof PlatformType],
-        });
+      const bungieCredential = UserUtils.getCredentialTypeFromPlatformString(
+        platformType
+      );
+
+      if (platformType?.length > 0) {
+        this.setState({ platform: bungieCredential });
       }
 
       //load the content set
@@ -203,14 +158,14 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
         <div className={styles.header}>
           <h2>{joinUp}</h2>
           <p>{joinUpDesc}</p>
-          <Button
+          <JoinUpButton
+            targetCredential={this.state.platform}
             buttonType={"gold"}
             size={BasicSize.Large}
-            onClick={() => this.openTheJoinModal()}
             analyticsId={"RegistrationPageJoinButton"}
           >
             {btnJoin}
-          </Button>
+          </JoinUpButton>
         </div>
         <Grid className={styles.bodyContent}>
           <GridCol cols={12}>
@@ -225,32 +180,6 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
         </Grid>
       </React.Fragment>
     );
-  }
-
-  private openSpecificPlatformSignIn(platform: PlatformType) {
-    const credential = PlatformTypeToCredentialType.find(
-      (p) => p.platformType === platform
-    )?.credential;
-
-    if (typeof credential !== "undefined") {
-      const href = `${Localizer.CurrentCultureName}/User/SignIn/${BungieCredentialType[credential]}/?flowStart=1`;
-
-      BrowserUtils.openWindow(href, "loginui", () => {
-        window.location.reload();
-      });
-    } else {
-      const signInModal = Modal.signIn(() => {
-        signInModal.current.close();
-      });
-    }
-  }
-
-  private openTheJoinModal() {
-    if (this.state.platform !== PlatformType.none) {
-      this.openSpecificPlatformSignIn(this.state.platform);
-    } else {
-      UserUtils.SignIn(this.props.history, location.pathname);
-    }
   }
 }
 

@@ -29,6 +29,7 @@ export interface IAccountFeatures {
 
 // Required props
 interface IDestinyAccountWrapperProps extends GlobalStateComponentProps<any> {
+  membershipDataStore: DestinyMembershipDataStore;
   /** Default subtitle is currently selected platform, can be overwritten or pass in a blank string to have this field blank */
   bnetProfileSubtitle?: string;
   /** Enables a parent to do something with the value returned when a different platform is selected */
@@ -53,6 +54,7 @@ export type Props = IDestinyAccountWrapperProps & DefaultProps;
  */
 export const DestinyAccountWrapper: React.FC<Props> = ({
   children,
+  membershipDataStore,
   onPlatformChange,
   onCharacterChange,
   bnetProfileSubtitle,
@@ -60,11 +62,11 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
   //check for changes in auth status
 
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembership = useDataStore(DestinyMembershipDataStore);
+  const destinyMembership = useDataStore(membershipDataStore);
 
   useEffect(() => {
-    if (!destinyMembership.initialDataLoaded) {
-      DestinyMembershipDataStore.actions.loadUserData();
+    if (!destinyMembership.loaded) {
+      membershipDataStore.actions.loadUserData();
     }
   }, []);
 
@@ -99,7 +101,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
               <DestinyPlatformSelector
                 userMembershipData={destinyMembership.membershipData}
                 onChange={(value: string) => {
-                  DestinyMembershipDataStore.actions.updatePlatform(value);
+                  membershipDataStore.actions.updatePlatform(value);
                   onPlatformChange?.(value);
                 }}
                 defaultValue={destinyMembership.memberships[0].membershipType}
@@ -115,7 +117,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
                       destinyMembership.selectedCharacter.characterId
                     }
                     onChange={(value: string) => {
-                      DestinyMembershipDataStore.actions.updateCharacter(value);
+                      membershipDataStore.actions.updateCharacter(value);
                       onCharacterChange?.(value);
                     }}
                   />

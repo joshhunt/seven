@@ -87,7 +87,9 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
   }, []);
 
   // get bg image for section based on screen size
-  const bgImage = responsive.mobile ? bgImages?.mobileBg : bgImages?.desktopBg;
+  const bgImage =
+    bgImages &&
+    (responsive.mobile ? `${bgImages?.mobileBg}` : `${bgImages?.desktopBg}`);
 
   return (
     <>
@@ -96,7 +98,7 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
           className={styles.silverBundle}
           id={"silver"}
           ref={props.inputRef}
-          style={{ backgroundImage: `url(${bgImage})` }}
+          style={{ backgroundImage: bgImage }}
         >
           <div className={styles.contentWrapperNormal}>
             <div

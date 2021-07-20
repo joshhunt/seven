@@ -42,7 +42,10 @@ const BlockPlusButton: React.FC<BlockPlusButtonProps> = (props) => {
     <div className={btnClasses} onClick={handleBtnClick}>
       <div
         className={styles.btnBg}
-        style={{ backgroundImage: `url(${props.backgroundImage})` }}
+        style={{
+          backgroundImage:
+            props.backgroundImage && `url(${props.backgroundImage})`,
+        }}
       />
       {props.link && (
         <img

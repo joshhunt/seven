@@ -311,6 +311,14 @@
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "Rewards",
+    "params": {},
+    "path": "/7/en/Direct/Rewards"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
     "action": "Video",
     "params": {
       "path": ":videoContentId"

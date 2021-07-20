@@ -124,7 +124,11 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
     : emoteBlockText?.CalloutBtnTextUnavailable;
 
   // get bg image for section based on screen size
-  const bgImage = responsive.mobile ? bgImages?.mobileBg : bgImages?.desktopBg;
+  const bgImage =
+    bgImages &&
+    (responsive.mobile
+      ? `url${bgImages?.mobileBg}`
+      : `url${bgImages?.desktopBg}`);
 
   return (
     <div className={styles.raidSection}>
@@ -178,7 +182,7 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
       <div className={styles.contentWrapperLarge}>
         <div
           className={classNames(styles.emoteBundleBlock)}
-          style={{ backgroundImage: `url(${bgImage})` }}
+          style={{ backgroundImage: bgImage }}
         >
           {!emoteBlockText && (
             <video muted={true} autoPlay={true} playsInline={true} loop={true}>

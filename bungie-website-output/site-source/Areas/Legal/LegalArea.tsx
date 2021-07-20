@@ -1,28 +1,28 @@
 // import {LegalPaymentServicesAct} from "@Areas/Legal/LegalPaymentServicesAct";
+import { LegalAreaV2 } from "@Areas/Legal/LegalAreaV2";
 import { LegalPaymentServicesAct } from "@Areas/Legal/LegalPaymentServicesAct";
 import { LegalTrademarks } from "@Areas/Legal/LegalTrademarks";
+import { Localizer } from "@Global/Localization/Localizer";
 import { RouteDefs } from "@Global/Routes/RouteDefs";
-import { Platform } from "@Platform";
-import { MainNavAffix } from "@UI/Navigation/MainNavAffix";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { SystemNames } from "@Global/SystemNames";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
+import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { ISubNavLink, SubNav } from "@UI/UIKit/Controls/SubNav";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import React from "react";
 import { Route, RouteComponentProps } from "react-router-dom";
 import styles from "./LegalArea.module.scss";
 import { LegalCodeOfConduct } from "./LegalCodeOfConduct";
+import { LegalCookiePolicy } from "./LegalCookiePolicy";
+import { LegalLicenses } from "./LegalLicenses";
 import { LegalPrivacyPolicy } from "./LegalPrivacyPolicy";
 import { LegalSLA } from "./LegalSLA";
 import { LegalTerms } from "./LegalTerms";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { Localizer } from "@Global/Localization/Localizer";
-import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
-import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { LegalLicenses } from "./LegalLicenses";
-import { LegalCookiePolicy } from "./LegalCookiePolicy";
-import { UrlUtils } from "@Utilities/UrlUtils";
 
 interface LegalAreaState {}
 
@@ -48,6 +48,11 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
     const trademarks = RouteDefs.Areas.Legal.getAction(
       "IntellectualPropertyTrademarks"
     );
+
+    // Check if the new system is enabled and show that instead if it is
+    if (ConfigUtils.SystemStatus(SystemNames.LegalContentStackPages)) {
+      return <LegalAreaV2 />;
+    }
 
     const links: ISubNavLink[] = [
       {

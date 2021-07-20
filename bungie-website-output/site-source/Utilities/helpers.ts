@@ -1,3 +1,6 @@
+import { SystemNames } from "@Global/SystemNames";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UrlUtils } from ".//UrlUtils";
 
 declare var __BUILDHASH__: string;
@@ -26,4 +29,29 @@ export const EnumKey = <TEnum>(enumVal: any, enumObj: TEnum) => {
  */
 export const Img = (path: string) => {
   return `${UrlUtils.AppBaseUrl}/ca/${path}`;
+};
+
+export const HelpArticle = (articleId: string) => {
+  const articleTemplateUrl: string | null = ConfigUtils.GetParameter(
+    SystemNames.ZendeskHelpArticleUrl,
+    "TemplateUrl",
+    ""
+  );
+
+  if (!articleTemplateUrl) {
+    return null;
+  }
+
+  const currentLoc = LocalizerUtils.currentCultureName;
+  // if zendesk locale is different from bnet locale, get it from webmaster, else current locale is same as zendesk's
+  const zendeskLoc = ConfigUtils.GetParameter(
+    SystemNames.ZendeskArticleLocales,
+    currentLoc,
+    currentLoc
+  );
+
+  // return article url with replaced locale and article id
+  return articleTemplateUrl
+    .replace("{locale}", zendeskLoc)
+    .replace("{articleId}", articleId);
 };

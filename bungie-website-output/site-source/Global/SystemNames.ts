@@ -19,8 +19,6 @@ export const SystemNames = {
   Clans: "Clans",
   CodeRedemptionReact: "CodeRedemptionReact",
   CompanionFeaturePage: "CompanionFeaturePage",
-  Contentful: "Contentful",
-  ContentfulEventPage: "ContentfulEventPage",
   CoreAreaSeasons: "CoreAreaSeasons",
   CoreDestinyBuy: "CoreDestinyBuy",
   CrossSave: "CrossSave",
@@ -92,4 +90,8 @@ export const SystemNames = {
   Season14Page: "Season14Page",
   SeasonsFAQUrlByLocale: "SeasonsFAQUrlByLocale",
   Season14HelpArticleUrlByLocale: "Season14HelpArticleUrlByLocale",
+  WebRenderer: "WebRenderer",
+  MagentoStore: "MagentoStore",
+  ZendeskHelpArticleUrl: "ZendeskHelpArticleUrl",
+  ZendeskArticleLocales: "ZendeskArticleLocales",
 } as const;
