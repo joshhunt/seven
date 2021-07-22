@@ -89,7 +89,9 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
   // get bg image for section based on screen size
   const bgImage =
     bgImages &&
-    (responsive.mobile ? `${bgImages?.mobileBg}` : `${bgImages?.desktopBg}`);
+    (responsive.mobile
+      ? `url(${bgImages?.mobileBg})`
+      : `url(${bgImages?.desktopBg})`);
 
   return (
     <>

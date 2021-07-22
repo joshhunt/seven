@@ -127,8 +127,8 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
   const bgImage =
     bgImages &&
     (responsive.mobile
-      ? `url${bgImages?.mobileBg}`
-      : `url${bgImages?.desktopBg}`);
+      ? `url(${bgImages?.mobileBg})`
+      : `url(${bgImages?.desktopBg})`);
 
   return (
     <div className={styles.raidSection}>
