@@ -306,10 +306,12 @@ class DestinyBuyProductDetailInternal extends React.Component<
           (sku) => sku.skuTag === editionSelectorSkus[selectedSkuIndex].skuTag
         )?.edition;
 
+      // gradient needs to be slightly darker on mobile to make logo stand out more
+      const bgGradientColor = `rgba(17,36,59, ${mobileSize ? "0.32" : "0.15"})`;
       const backgroundGradient =
         destinyProductFamily.productFamilyTag ===
         DestinyProductFamilies.BeyondLight
-          ? "linear-gradient(rgba(17,36,59, 0.15), rgba(17,36,59, 0.15)),"
+          ? `linear-gradient(${bgGradientColor}, ${bgGradientColor}),`
           : "";
       const backgroundImage = mobileSize
         ? destinyProductFamily.heroBackgroundMobile
@@ -356,7 +358,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   style={{
                     backgroundImage: `${backgroundGradient} url(${backgroundImage})`,
                     paddingTop: mobileSize
-                      ? `calc(149px + (74px * ${editionSelectorSkus.length}))`
+                      ? `calc(549px + (74px * ${editionSelectorSkus.length}))`
                       : "unset",
                   }}
                 >
