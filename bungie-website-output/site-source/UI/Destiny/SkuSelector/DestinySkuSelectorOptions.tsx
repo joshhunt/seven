@@ -220,8 +220,19 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                     store.key === "StadiaFree"
                       ? "stadia"
                       : store.key.toLowerCase();
-                  const storeKeyForTitle =
-                    store.key === "StadiaFree" ? "Stadia" : store.key;
+
+                  let storeKeyForTitle = store.key;
+                  switch (store.key) {
+                    case "StadiaFree":
+                      storeKeyForTitle = "Stadia";
+                      break;
+                    case "BungieStore":
+                      storeKeyForTitle = "Bungie Store";
+                      break;
+                    case "Playstation":
+                      storeKeyForTitle = "PlayStation";
+                      break;
+                  }
 
                   return (
                     <div
