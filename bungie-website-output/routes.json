@@ -303,6 +303,14 @@
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "DestinyShowcase",
+    "params": {},
+    "path": "/7/en/Direct/DestinyShowcase"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
     "action": "RaidRace",
     "params": {},
     "path": "/7/en/Direct/RaidRace"

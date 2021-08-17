@@ -5,6 +5,7 @@
 import { ConcreteRequest } from "relay-runtime";
 export type LegalV2DetailQueryVariables = {
   url: string;
+  locale: string;
 };
 export type LegalV2DetailQueryResponse = {
   readonly all_legal_page: {
@@ -23,8 +24,9 @@ export type LegalV2DetailQuery = {
 /*
 query LegalV2DetailQuery(
   $url: String!
+  $locale: String!
 ) {
-  all_legal_page(where: {url: $url}) {
+  all_legal_page(where: {url: $url}, locale: $locale, fallback_locale: true) {
     items {
       title
       content
@@ -35,17 +37,30 @@ query LegalV2DetailQuery(
 */
 
 const node: ConcreteRequest = (function () {
-  var v0 = [
-      {
-        defaultValue: null,
-        kind: "LocalArgument",
-        name: "url",
-      } as any,
-    ],
-    v1 = [
+  var v0 = {
+      defaultValue: null,
+      kind: "LocalArgument",
+      name: "locale",
+    } as any,
+    v1 = {
+      defaultValue: null,
+      kind: "LocalArgument",
+      name: "url",
+    } as any,
+    v2 = [
       {
         alias: null,
         args: [
+          {
+            kind: "Literal",
+            name: "fallback_locale",
+            value: true,
+          },
+          {
+            kind: "Variable",
+            name: "locale",
+            variableName: "locale",
+          },
           {
             fields: [
               {
@@ -101,31 +116,31 @@ const node: ConcreteRequest = (function () {
     ];
   return {
     fragment: {
-      argumentDefinitions: v0 /*: any*/,
+      argumentDefinitions: [v0 /*: any*/, v1 /*: any*/],
       kind: "Fragment",
       metadata: null,
       name: "LegalV2DetailQuery",
-      selections: v1 /*: any*/,
+      selections: v2 /*: any*/,
       type: "Query",
       abstractKey: null,
     },
     kind: "Request",
     operation: {
-      argumentDefinitions: v0 /*: any*/,
+      argumentDefinitions: [v1 /*: any*/, v0 /*: any*/],
       kind: "Operation",
       name: "LegalV2DetailQuery",
-      selections: v1 /*: any*/,
+      selections: v2 /*: any*/,
     },
     params: {
-      cacheID: "c7a1199b90aecd14ee8f4e529f466797",
+      cacheID: "21df225cef0fe47b51213b8baceb3c7f",
       id: null,
       metadata: {},
       name: "LegalV2DetailQuery",
       operationKind: "query",
       text:
-        "query LegalV2DetailQuery(\n  $url: String!\n) {\n  all_legal_page(where: {url: $url}) {\n    items {\n      title\n      content\n      last_updated_date\n    }\n  }\n}\n",
+        "query LegalV2DetailQuery(\n  $url: String!\n  $locale: String!\n) {\n  all_legal_page(where: {url: $url}, locale: $locale, fallback_locale: true) {\n    items {\n      title\n      content\n      last_updated_date\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "c3c78d9839b2ed5bf3863b41b5becf8a";
+(node as any).hash = "58c26fdcd611dc4006bc27a7bb12ecfe";
 export default node;

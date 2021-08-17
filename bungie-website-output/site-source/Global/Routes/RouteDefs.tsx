@@ -139,6 +139,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Analyze"),
         (area) => new ActionRoute(area, "RaidRace"),
         (area) => new ActionRoute(area, "Rewards"),
+        (area) => new ActionRoute(area, "DestinyShowcase"),
       ],
     }),
     GameHistory: new Area({

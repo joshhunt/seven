@@ -406,7 +406,7 @@ export const ConvertToPlatformError: (
         };
 
         if ("ErrorCode" in error) {
-          platformError = error as PlatformResponse;
+          platformError = (error as unknown) as PlatformResponse;
           reject(new PlatformError(platformError));
         } else {
           reject(error);

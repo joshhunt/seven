@@ -3,7 +3,9 @@
 // @ts-nocheck
 
 import { ConcreteRequest } from "relay-runtime";
-export type LegalV2SubnavQueryVariables = {};
+export type LegalV2SubnavQueryVariables = {
+  locale: string;
+};
 export type LegalV2SubnavQueryResponse = {
   readonly all_legal_page: {
     readonly items: ReadonlyArray<{
@@ -19,8 +21,10 @@ export type LegalV2SubnavQuery = {
 };
 
 /*
-query LegalV2SubnavQuery {
-  all_legal_page {
+query LegalV2SubnavQuery(
+  $locale: String!
+) {
+  all_legal_page(locale: $locale, fallback_locale: true) {
     items {
       title
       url
@@ -32,77 +36,95 @@ query LegalV2SubnavQuery {
 
 const node: ConcreteRequest = (function () {
   var v0 = [
-    {
-      alias: null,
-      args: null,
-      concreteType: "AllLegalPage",
-      kind: "LinkedField",
-      name: "all_legal_page",
-      plural: false,
-      selections: [
-        {
-          alias: null,
-          args: null,
-          concreteType: "LegalPage",
-          kind: "LinkedField",
-          name: "items",
-          plural: true,
-          selections: [
-            {
-              alias: null,
-              args: null,
-              kind: "ScalarField",
-              name: "title",
-              storageKey: null,
-            },
-            {
-              alias: null,
-              args: null,
-              kind: "ScalarField",
-              name: "url",
-              storageKey: null,
-            },
-            {
-              alias: null,
-              args: null,
-              kind: "ScalarField",
-              name: "order",
-              storageKey: null,
-            },
-          ],
-          storageKey: null,
-        },
-      ],
-      storageKey: null,
-    } as any,
-  ];
+      {
+        defaultValue: null,
+        kind: "LocalArgument",
+        name: "locale",
+      } as any,
+    ],
+    v1 = [
+      {
+        alias: null,
+        args: [
+          {
+            kind: "Literal",
+            name: "fallback_locale",
+            value: true,
+          },
+          {
+            kind: "Variable",
+            name: "locale",
+            variableName: "locale",
+          },
+        ],
+        concreteType: "AllLegalPage",
+        kind: "LinkedField",
+        name: "all_legal_page",
+        plural: false,
+        selections: [
+          {
+            alias: null,
+            args: null,
+            concreteType: "LegalPage",
+            kind: "LinkedField",
+            name: "items",
+            plural: true,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "title",
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "url",
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "order",
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+        ],
+        storageKey: null,
+      } as any,
+    ];
   return {
     fragment: {
-      argumentDefinitions: [],
+      argumentDefinitions: v0 /*: any*/,
       kind: "Fragment",
       metadata: null,
       name: "LegalV2SubnavQuery",
-      selections: v0 /*: any*/,
+      selections: v1 /*: any*/,
       type: "Query",
       abstractKey: null,
     },
     kind: "Request",
     operation: {
-      argumentDefinitions: [],
+      argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "LegalV2SubnavQuery",
-      selections: v0 /*: any*/,
+      selections: v1 /*: any*/,
     },
     params: {
-      cacheID: "6ae29e54adb8b2940ac2560021ee6442",
+      cacheID: "dc88c671596dabe3e5866ca871900584",
       id: null,
       metadata: {},
       name: "LegalV2SubnavQuery",
       operationKind: "query",
       text:
-        "query LegalV2SubnavQuery {\n  all_legal_page {\n    items {\n      title\n      url\n      order\n    }\n  }\n}\n",
+        "query LegalV2SubnavQuery(\n  $locale: String!\n) {\n  all_legal_page(locale: $locale, fallback_locale: true) {\n    items {\n      title\n      url\n      order\n    }\n  }\n}\n",
     },
   } as any;
 })();
-(node as any).hash = "29c76f55e4d29369c44dd2b30f4abe53";
+(node as any).hash = "9c4ef66b8b52469d6e9d1ff3630bfb90";
 export default node;

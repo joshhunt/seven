@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { LegalV2DetailQuery } from "@Areas/Legal/__generated__/LegalV2DetailQuery.graphql";
+import { TempGetContentStackLocale } from "@Areas/Legal/TempContentStackLocaleMap";
 import { NotFoundError } from "@CustomErrors";
 import { Localizer } from "@Global/Localization/Localizer";
 import { LegalRouteParams } from "@Routes/RouteParams";
@@ -28,10 +29,15 @@ interface LegalV2DetailProps {
 export const LegalV2Detail: React.FC<LegalV2DetailProps> = ({ bannerRef }) => {
   const params = useParams<LegalRouteParams>();
 
+  const locale = TempGetContentStackLocale(Localizer.CurrentCultureName);
   const data = useLazyLoadQuery<LegalV2DetailQuery>(
     graphql`
-      query LegalV2DetailQuery($url: String!) {
-        all_legal_page(where: { url: $url }) {
+      query LegalV2DetailQuery($url: String!, $locale: String!) {
+        all_legal_page(
+          where: { url: $url }
+          locale: $locale
+          fallback_locale: true
+        ) {
           items {
             title
             content
@@ -42,6 +48,7 @@ export const LegalV2Detail: React.FC<LegalV2DetailProps> = ({ bannerRef }) => {
     `,
     {
       url: `/${params.url}`,
+      locale,
     }
   );
 

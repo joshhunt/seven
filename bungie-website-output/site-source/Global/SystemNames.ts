@@ -94,4 +94,6 @@ export const SystemNames = {
   MagentoStore: "MagentoStore",
   ZendeskHelpArticleUrl: "ZendeskHelpArticleUrl",
   ZendeskArticleLocales: "ZendeskArticleLocales",
+  DestinyShowcase: "DestinyShowcase",
+  EmbeddedTwitchStreams: "EmbeddedTwitchStreams",
 } as const;

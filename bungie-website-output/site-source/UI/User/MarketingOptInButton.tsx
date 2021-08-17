@@ -31,6 +31,7 @@ interface MarketingOptInButtonProps {
    * By default, this button has the analytics ID "marketing-opt-in", but you can replace it if you like.
    */
   analyticsIdOverride?: string;
+  className?: string;
 }
 
 const aggregateEmailSetting =
@@ -74,7 +75,7 @@ const updateEmailSettings = (membershipId: string, onSuccess: () => void) => {
 export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
   props
 ) => {
-  const { children, alreadySignedUplabel, notSignedUpLabel } = props;
+  const { children, alreadySignedUplabel, notSignedUpLabel, className } = props;
 
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [settingsUpdating, setSettingsUpdating] = useState(false);
@@ -161,6 +162,7 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
       onClick={setEmailSettings}
       loading={settingsUpdating}
       disabled={userAlreadySignedUpUpdates}
+      className={className}
     >
       {label}
     </Button>
