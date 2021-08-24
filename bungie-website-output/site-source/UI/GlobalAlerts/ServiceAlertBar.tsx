@@ -5,7 +5,11 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -86,6 +90,8 @@ const GlobalAlert = (props: IGlobalAlertProps) => {
     ? alert.AlertLevel
     : GlobalAlertLevel[alert.AlertLevel];
 
+  document.documentElement.classList.add("service-alert-shown");
+
   if (alertLevelString === "Unknown") {
     alertLevelString = GlobalAlertLevel[3];
   }
@@ -143,7 +149,7 @@ const AlertMessage = (props: IAlertMessageProps) => {
     props.customHTML !== "<br>";
 
   return useCustomHtml ? (
-    <div dangerouslySetInnerHTML={{ __html: props.customHTML }} />
+    <div dangerouslySetInnerHTML={sanitizeHTML(props.customHTML)} />
   ) : (
     <div> {Localizer.Globals[backupMessage]} </div>
   );

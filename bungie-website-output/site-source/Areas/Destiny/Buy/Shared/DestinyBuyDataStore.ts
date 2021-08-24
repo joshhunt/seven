@@ -1,4 +1,4 @@
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export interface IDestinyBuyDataState {
   // ok, so I know you want to just use the skuTag here, it's cleaner, it's more reusable, we all do.

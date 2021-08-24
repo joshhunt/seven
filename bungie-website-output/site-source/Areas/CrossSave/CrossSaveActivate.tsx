@@ -1,10 +1,10 @@
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Logger } from "@Global/Logger";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";

@@ -2,13 +2,14 @@
 // Copyright Bungie, Inc.
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore, useDataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
@@ -42,6 +43,11 @@ interface IDestinyNewsAndMediaUpdatedProps
   sectionTitleNews?: string;
   showAll?: boolean;
   smallSeasonText: string;
+  classes?: {
+    tabBtn?: string;
+    selectedTab?: string;
+    sectionTitle?: string;
+  };
 }
 
 interface IDestinyNewsAndMediaState {
@@ -151,20 +157,30 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
             {!this.props.showAll && (
               <TextContainer>
                 <div className={styles.sectionTitlesWrapper}>
-                  <SectionTitle isSmall={this.props.titleIsSmall || false}>
+                  <SectionTitle
+                    className={this.props.classes?.sectionTitle}
+                    isSmall={this.props.titleIsSmall || false}
+                  >
                     {Localizer.Destiny.Media}
                   </SectionTitle>
-                  <div className={classNames(styles.smallSectionHeading)}>
-                    <p>{this.props.smallSeasonText}</p>
-                    <p>{Localizer.Destiny.Media}</p>
-                  </div>
+                  {this.props.smallSeasonText && (
+                    <div className={classNames(styles.smallSectionHeading)}>
+                      <p>{this.props.smallSeasonText}</p>
+                      <p>{Localizer.Destiny.Media}</p>
+                    </div>
+                  )}
                 </div>
                 <div className={classNames(styles.tabs, styles.media)}>
                   {this.props.screenshots && (
                     <a
-                      className={classNames(styles.mediaTab3, {
-                        [styles.selected]: selectedMediaTab === "screenshots",
-                      })}
+                      className={classNames(
+                        styles.mediaTab3,
+                        this.props.classes?.tabBtn,
+                        {
+                          [this.props.classes?.selectedTab ?? styles.selected]:
+                            selectedMediaTab === "screenshots",
+                        }
+                      )}
                       onClick={() => this.selectMediaTab("screenshots")}
                     >
                       {Localizer.Shadowkeep.MediaTab3}
@@ -172,9 +188,14 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                   )}
                   {this.props.videos && (
                     <a
-                      className={classNames(styles.mediaTab2, {
-                        [styles.selected]: selectedMediaTab === "videos",
-                      })}
+                      className={classNames(
+                        styles.mediaTab2,
+                        this.props.classes?.tabBtn,
+                        {
+                          [this.props.classes?.selectedTab ?? styles.selected]:
+                            selectedMediaTab === "videos",
+                        }
+                      )}
                       onClick={() => this.selectMediaTab("videos")}
                     >
                       {Localizer.Destiny.Trailers}
@@ -182,9 +203,14 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                   )}
                   {this.props.lore && (
                     <a
-                      className={classNames(styles.mediaTab1, {
-                        [styles.selected]: selectedMediaTab === "lore",
-                      })}
+                      className={classNames(
+                        styles.mediaTab1,
+                        this.props.classes?.tabBtn,
+                        {
+                          [this.props.classes?.selectedTab ?? styles.selected]:
+                            selectedMediaTab === "lore",
+                        }
+                      )}
                       onClick={() => this.selectMediaTab("lore")}
                     >
                       {Localizer.Shadowkeep.MediaTab1}
@@ -192,9 +218,14 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                   )}
                   {this.props.wallpapers && (
                     <a
-                      className={classNames(styles.mediaTab4, {
-                        [styles.selected]: selectedMediaTab === "wallpapers",
-                      })}
+                      className={classNames(
+                        styles.mediaTab4,
+                        this.props.classes?.tabBtn,
+                        {
+                          [this.props.classes?.selectedTab ?? styles.selected]:
+                            selectedMediaTab === "wallpapers",
+                        }
+                      )}
                       onClick={() => this.selectMediaTab("wallpapers")}
                     >
                       {Localizer.Destiny.Wallpapers}
@@ -313,14 +344,19 @@ interface IBasicDivProps extends React.HTMLProps<HTMLDivElement> {
 
 interface ISectionTitleProps extends IBasicDivProps {
   isSmall?: boolean;
+  className?: string;
 }
 
 const SectionTitle = (props: ISectionTitleProps) => {
-  const { children, isSmall, ...rest } = props;
+  const { children, isSmall, className, ...rest } = props;
 
   return (
     <div
-      className={classNames(styles.sectionTitle, { [styles.small]: isSmall })}
+      className={classNames(
+        styles.sectionTitle,
+        { [styles.small]: isSmall },
+        className
+      )}
       {...rest}
     >
       {children}

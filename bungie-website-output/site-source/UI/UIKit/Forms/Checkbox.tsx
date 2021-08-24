@@ -1,3 +1,4 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
 import styles from "./Checkbox.module.scss";
 import classNames from "classnames";
@@ -87,10 +88,12 @@ export class Checkbox extends React.Component<ICheckboxProps, ICheckboxState> {
             <Icon iconType={"material"} iconName={"done"} />
           </div>
         </div>
-        <div
-          className={styles.label}
-          dangerouslySetInnerHTML={{ __html: label.toString() }}
-        />
+        {label && (
+          <div
+            className={styles.label}
+            dangerouslySetInnerHTML={sanitizeHTML(label.toString())}
+          />
+        )}
       </div>
     );
   }

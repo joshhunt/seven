@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { RouteComponentProps } from "react-router";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Modal, ModalOverflowTypes } from "@UI/UIKit/Controls/Modal/Modal";
 import {
   withGlobalState,

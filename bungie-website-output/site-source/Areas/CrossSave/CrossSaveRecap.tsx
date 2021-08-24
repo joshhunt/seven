@@ -2,12 +2,12 @@
 // Copyright Bungie, Inc.
 
 import { BungieMembershipType, DestinyGameVersions } from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";

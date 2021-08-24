@@ -21,7 +21,7 @@ import {
 } from "./SeasonPassRewardStep";
 import { Tooltip } from "@UI/UIKit/Controls/Tooltip";
 import { DestinyTooltip } from "@UI/Destiny/Tooltips/DestinyTooltip";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { DestinyDefinitions } from "@Definitions";
 import { DestinyClass } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";

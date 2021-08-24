@@ -1,4 +1,4 @@
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 export class CrossSaveIndexDefinitions {
   // Page

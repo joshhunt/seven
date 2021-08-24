@@ -5,9 +5,9 @@ import {
   DestinyWorldDefinitionsTypeMap,
 } from "@Definitions";
 import { RendererLogLevel } from "@Enum";
-import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
+import { Localizer } from "@bungie/localization";
 import { Logger } from "@Global/Logger";
 import { Config, Platform } from "@Platform";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";

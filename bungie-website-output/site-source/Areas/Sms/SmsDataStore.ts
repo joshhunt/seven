@@ -1,7 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export type SmsVerificationPhases = "PhoneEntry" | "CodeEntry" | "Verified";
 
@@ -34,4 +34,4 @@ class SmsDataStoreInternal extends DataStore<SmsDataStorePayload> {
 
 export const SmsDataStore = SmsDataStoreInternal.Instance;
 
-SmsDataStore.actions.updateLastDigits("asdf");
+SmsDataStore.actions.updateLastDigits("");

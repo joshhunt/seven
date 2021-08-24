@@ -1,8 +1,9 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import possibleStyles from "./InfoBlock.module.scss";
 import { Platform, Renderable } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { PageDoesNotExistError, NotFoundError } from "@CustomErrors";
 
 interface IContentItemProps {
@@ -132,7 +133,9 @@ export class InfoBlock extends React.Component<
 
     if (this.state.contentRendered) {
       rendered = (
-        <div dangerouslySetInnerHTML={{ __html: this.state.contentRendered }} />
+        <div
+          dangerouslySetInnerHTML={sanitizeHTML(this.state.contentRendered)}
+        />
       );
     } else {
       if (
@@ -145,9 +148,9 @@ export class InfoBlock extends React.Component<
 
         renderable = (
           <div
-            dangerouslySetInnerHTML={{
-              __html: content.properties["CustomHTML"],
-            }}
+            dangerouslySetInnerHTML={sanitizeHTML(
+              content.properties["CustomHTML"]
+            )}
           />
         );
 
@@ -158,9 +161,9 @@ export class InfoBlock extends React.Component<
       rendered = (
         <React.Fragment>
           <h3>
-            <span dangerouslySetInnerHTML={{ __html: title }} />
+            <span dangerouslySetInnerHTML={sanitizeHTML(title)} />
             <time
-              dangerouslySetInnerHTML={{ __html: lastUpdated }}
+              dangerouslySetInnerHTML={sanitizeHTML(lastUpdated)}
               style={{ marginLeft: "1rem" }}
             />
           </h3>

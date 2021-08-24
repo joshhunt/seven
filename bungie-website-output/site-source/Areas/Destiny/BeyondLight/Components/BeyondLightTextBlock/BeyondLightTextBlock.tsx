@@ -1,6 +1,7 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
 import styles from "./BeyondLightTextBlock.module.scss";
 import classNames from "classnames";
@@ -37,7 +38,7 @@ const TextBlock: React.FC<IBeyondLightTextBlock> = ({
       {title && (
         <h2
           className={styles.title}
-          dangerouslySetInnerHTML={{ __html: title }}
+          dangerouslySetInnerHTML={sanitizeHTML(title)}
         />
       )}
       <span className={styles.shortBorder} />

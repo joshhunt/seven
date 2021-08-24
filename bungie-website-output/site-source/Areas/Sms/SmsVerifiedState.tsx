@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { Button } from "@UIKit/Controls/Button/Button";

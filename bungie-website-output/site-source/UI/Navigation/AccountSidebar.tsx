@@ -1,11 +1,12 @@
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./Sidebar.module.scss";
 import { AuthTrigger } from "./AuthTrigger";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "./Anchor";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
@@ -53,17 +54,21 @@ export class AccountSidebar extends React.Component<
   ): boolean {
     const className = "account-sidebar-open";
     if (nextProps.open) {
-      document.addEventListener("click", this.onBodyClick);
+      requestAnimationFrame(() => {
+        document.addEventListener("click", this.onBodyClick);
 
-      if (!document.documentElement.classList.contains(className)) {
-        document.documentElement.classList.add(className);
-      }
+        if (!document.documentElement.classList.contains(className)) {
+          document.documentElement.classList.add(className);
+        }
+      });
     } else {
-      document.removeEventListener("click", this.onBodyClick);
+      requestAnimationFrame(() => {
+        document.removeEventListener("click", this.onBodyClick);
 
-      if (document.documentElement.classList.contains(className)) {
-        document.documentElement.classList.remove(className);
-      }
+        if (document.documentElement.classList.contains(className)) {
+          document.documentElement.classList.remove(className);
+        }
+      });
     }
 
     return true;
@@ -166,7 +171,7 @@ export class AccountSidebar extends React.Component<
 
         <div className={styles.divider} />
 
-        <Anchor url={RouteHelper.Profile()}>
+        <Anchor url={RouteHelper.NewProfile()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
@@ -176,7 +181,7 @@ export class AccountSidebar extends React.Component<
           />
         </Anchor>
 
-        <Anchor url={RouteHelper.Settings()}>
+        <Anchor url={RouteHelper.NewSettings()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
@@ -203,11 +208,15 @@ export class AccountSidebar extends React.Component<
   }
 
   private readonly onBodyClick = (e: MouseEvent) => {
-    if (this.wrapperRef.contains(e.target as Node)) {
-      return;
-    }
+    if (this.wrapperRef) {
+      if (this.wrapperRef.contains(e.target as Node)) {
+        return;
+      }
 
-    this.props.onClickOutside && this.props.open && this.props.onClickOutside();
+      this.props.onClickOutside &&
+        this.props.open &&
+        this.props.onClickOutside();
+    }
   };
 
   private getProfileThemePath() {
@@ -245,7 +254,10 @@ export class AccountSidebar extends React.Component<
           />
           <div className={styles.textContent}>
             <div className={styles.userDisplayName}>
-              {loggedInUser.user.displayName}
+              {
+                UserUtils.getBungieNameFromBnetGeneralUser(loggedInUser?.user)
+                  ?.bungieGlobalName
+              }
             </div>
             <div className={styles.userClans}>{clanNames.join(", ")}</div>
           </div>

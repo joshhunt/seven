@@ -6,7 +6,7 @@ import * as React from "react";
 import styles from "./DestinyPlatformSelector.module.scss";
 import { User, CrossSave } from "@Platform";
 import { IDropdownOption, Dropdown } from "@UI/UIKit/Forms/Dropdown";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BungieMembershipType } from "@Enum";
 
 // Required props
@@ -50,21 +50,15 @@ export class DestinyPlatformSelector extends React.Component<
   public static defaultProps: DefaultProps = {};
 
   public render() {
-    // if cross saved only show the cross saved one
+    const primaryMembershipType =
+      this.props.crossSavePairingStatus?.primaryMembershipType ??
+      BungieMembershipType.None;
     const crossSavePlatform =
-      typeof this.props.crossSavePairingStatus !== "undefined" &&
-      typeof this.props.userMembershipData.destinyMemberships.find(
-        (value) =>
-          value.membershipType ===
-          this.props.crossSavePairingStatus.primaryMembershipType
-      ) !== "undefined"
-        ? this.props.userMembershipData.destinyMemberships.find(
-            (value) =>
-              value.membershipType ===
-              this.props.crossSavePairingStatus.primaryMembershipType
-          )
-        : null;
+      this.props.userMembershipData.destinyMemberships?.find(
+        (v) => v.membershipType === primaryMembershipType
+      ) ?? null;
 
+    // if cross saved only show the cross saved one
     const platformOptions: IDropdownOption[] =
       crossSavePlatform !== null
         ? [

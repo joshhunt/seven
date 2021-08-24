@@ -7,7 +7,7 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { RouteHelper } from "@Routes/RouteHelper";
 import classNames from "classnames";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 // Required props
 interface IBeyondLightNavProps {

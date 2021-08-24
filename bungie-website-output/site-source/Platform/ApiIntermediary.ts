@@ -3,7 +3,7 @@ import { PromiseUtils } from "@Utilities/PromiseUtils";
 import * as Globals from "@Enum";
 import { DetailedError, PlatformError } from "@CustomErrors";
 import { Logger, ILogger } from "@Global/Logger";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import {
   FirehoseDebuggerDataStore,
   IFirehoseDebuggerItemData,
@@ -174,7 +174,7 @@ export class ApiIntermediary {
     const settings = ApiIntermediary.PlatformSettings;
 
     const url = settings.platformUrl + path;
-    let queryString = `?lc=${LocalizerUtils.currentCultureName}&fmt=true&lcin=${LocalizerUtils.locInherit}`;
+    let queryString = `?lc=${Localizer.CurrentCultureName}&fmt=true&lcin=${Localizer.locInherit}`;
 
     if (requiredParameters) {
       queryString += "&" + requiredParameters;

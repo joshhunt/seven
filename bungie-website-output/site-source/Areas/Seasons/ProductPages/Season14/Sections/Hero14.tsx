@@ -2,8 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { Icon } from "@UIKit/Controls/Icon";

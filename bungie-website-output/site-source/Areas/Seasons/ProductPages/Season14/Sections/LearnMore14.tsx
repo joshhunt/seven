@@ -3,7 +3,7 @@
 
 import BlockPlusButton from "@Areas/Seasons/ProductPages/Season14/Components/BlockPlusButton";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import React from "react";
 import styles from "./LearnMore14.module.scss";
 

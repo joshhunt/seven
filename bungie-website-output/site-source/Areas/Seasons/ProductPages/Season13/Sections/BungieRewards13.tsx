@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import styles from "./BungieRewards13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import React from "react";
 

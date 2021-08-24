@@ -2,8 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import classNames from "classnames";

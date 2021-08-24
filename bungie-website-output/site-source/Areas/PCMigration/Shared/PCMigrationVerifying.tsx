@@ -1,8 +1,9 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import React from "react";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./PCMigrationModal.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
   IPCMigrationStageBaseState,
@@ -87,7 +88,7 @@ export class PCMigrationVerifying extends PCMigrationStageBase<
           </div>
           <div className={styles.emailInfo}>
             <p>{Localizer.Messages.UserEmailVerificationSent}</p>
-            <p dangerouslySetInnerHTML={{ __html: body }} />
+            <p dangerouslySetInnerHTML={sanitizeHTML(body)} />
           </div>
           <div className={styles.buttonContainer}>
             <Button onClick={this.closeModal} buttonType={"white"}>

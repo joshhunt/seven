@@ -4,11 +4,11 @@ import {
 } from "../Components/Season11OverlapItem";
 import React, { LegacyRef } from "react";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import styles from "./Season11Dungeon.module.scss";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11PotentialVideo } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PotentialVideo";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 import { Season11AvailableToAll } from "@Areas/Seasons/ProductPages/Season11/Components/Season11AvailableToAll";
 import { Anchor } from "@UI/Navigation/Anchor";

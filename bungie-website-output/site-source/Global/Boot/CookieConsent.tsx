@@ -1,8 +1,8 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localization/Localizer";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 // @ts-ignore
 import inEU from "@segment/in-eu";

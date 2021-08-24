@@ -1,8 +1,8 @@
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import React from "react";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SystemNames } from "@Global/SystemNames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 export interface Season11DataStorePayload {
   idToElementsMapping: { [key: string]: HTMLElement };

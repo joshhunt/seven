@@ -44,6 +44,29 @@ export class EnumUtils {
   }
 
   /**
+   * Returns the number value from an enum, whether or not that value is already a number value
+   * @param enumValue The value from the enum (e.g. BungieMembershipType.TigerXbox)
+   * @param enumType The enum itself (e.g. BungieMembershipType)
+   * @returns The number value of the enum in question (e.g. BungieMembershipType.TigerXbox => 1);
+   */
+  public static getNumberValue<T extends object>(
+    enumValue: string | number,
+    enumType: T
+  ): number {
+    if (!(enumValue in enumType)) {
+      throw new Error(
+        `${enumValue} is not a valid value of the given enum type ${JSON.stringify(
+          enumType
+        )}`
+      );
+    }
+
+    return isNaN(parseInt(enumValue as string))
+      ? ((enumType as any)[enumValue] as number)
+      : (enumValue as number);
+  }
+
+  /**
    * Returns true if both enum values equate to the same value in the given enum
    * @param enumValue1
    * @param enumValue2
@@ -54,6 +77,10 @@ export class EnumUtils {
     enumValue2: string | number,
     enumType: T
   ): boolean {
+    if (!enumValue1 || !enumValue2) {
+      return false;
+    }
+
     const val1AsString = EnumUtils.getStringValue(enumValue1, enumType);
     const val2AsString = EnumUtils.getStringValue(enumValue2, enumType);
 

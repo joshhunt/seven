@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import React, { LegacyRef } from "react";
 import styles from "./ArmorSynthesis14.module.scss";
 

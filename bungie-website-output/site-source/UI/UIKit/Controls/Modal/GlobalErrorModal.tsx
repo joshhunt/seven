@@ -5,7 +5,7 @@ import React, { useRef } from "react";
 
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 

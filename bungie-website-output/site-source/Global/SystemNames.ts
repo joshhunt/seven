@@ -96,4 +96,7 @@ export const SystemNames = {
   ZendeskArticleLocales: "ZendeskArticleLocales",
   DestinyShowcase: "DestinyShowcase",
   EmbeddedTwitchStreams: "EmbeddedTwitchStreams",
+  Season15Page: "Season15Page",
+  Season15HelpArticleUrlByLocale: "Season15HelpArticleUrlByLocale",
+  WitchQueen: "WitchQueen",
 } as const;

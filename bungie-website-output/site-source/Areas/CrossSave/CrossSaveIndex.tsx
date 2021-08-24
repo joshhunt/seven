@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { Button, ButtonTypes } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteDefs } from "@Routes/RouteDefs";
 import styles from "./CrossSaveIndex.module.scss";
 import {

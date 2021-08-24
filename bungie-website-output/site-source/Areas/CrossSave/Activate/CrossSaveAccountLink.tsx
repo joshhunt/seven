@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import styles from "../CrossSaveActivate.module.scss";
 import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
 import { Icon } from "@UI/UIKit/Controls/Icon";

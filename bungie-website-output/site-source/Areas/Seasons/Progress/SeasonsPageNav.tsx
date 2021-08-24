@@ -5,13 +5,12 @@ import * as React from "react";
 import styles from "./SeasonsPageNav.module.scss";
 import { World, Components } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Anchor } from "@UI/Navigation/Anchor";
 import {
   withDestinyDefinitions,
   D2DatabaseComponentProps,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { DestinyDefinitions } from "@Definitions";
 import {
   GlobalStateComponentProps,
   withGlobalState,
@@ -21,7 +20,6 @@ import classNames from "classnames";
 import SeasonProgressUtils from "./SeasonProgressUtils";
 import { BungieMembershipType } from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
 
 // Required props
 interface ISeasonsPageNavProps

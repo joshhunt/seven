@@ -2,13 +2,13 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
 import { SmsError } from "@Areas/Sms/SmsError";
 import styles from "@Areas/Sms/SmsPage.module.scss";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { PlatformError } from "@CustomErrors";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { BasicSize } from "@UIKit/UIKitUtils";
-import { useDataStore } from "@Utilities/ReactUtils";
 import classNames from "classnames";
 import React, { useState } from "react";
 import PhoneInput from "react-phone-input-2";
@@ -97,7 +97,6 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
             inputProps={{
               name: "phone",
               required: true,
-              autoFocus: true,
             }}
             onKeyDown={(e) =>
               e.key === "Enter" && enableSubmit && handleSubmit()

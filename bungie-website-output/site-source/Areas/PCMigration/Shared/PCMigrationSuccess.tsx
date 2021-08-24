@@ -9,7 +9,7 @@ import {
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";

@@ -29,6 +29,9 @@
       ],
       "@src/*": [
         "./bungie-website-output/site-source/src/*"
+      ],
+      "@webpack:/*": [
+        "./bungie-website-output/site-source/webpack:/*"
       ]
     }
   },

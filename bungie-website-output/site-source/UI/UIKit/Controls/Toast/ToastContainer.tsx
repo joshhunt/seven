@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./ToastContainer.module.scss";
 import { IGlobalElement } from "@Global/DataStore/GlobalElementDataStore";
-import { ToastPosition, ToastProps } from "./Toast";
+import { ToastContent, ToastPosition, ToastProps } from "./Toast";
 import classNames from "classnames";
 
 // Required props
@@ -68,8 +68,8 @@ export class ToastContainer extends React.Component<
       <div className={styles.container}>
         {
           // Render each bucket with the toasts inside
-          Object.keys(toastsByPosition).map((pos: ToastPosition) => (
-            <div key={pos} className={classNames(styles.toaster, styles[pos])}>
+          Object.keys(toastsByPosition).map((pos: ToastPosition, i) => (
+            <div key={i} className={classNames(styles.toaster, styles[pos])}>
               {toastsByPosition[pos]}
             </div>
           ))

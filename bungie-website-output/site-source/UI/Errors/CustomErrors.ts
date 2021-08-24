@@ -3,7 +3,7 @@
 
 import { PlatformResponse } from "@ApiIntermediary";
 import { PlatformErrorCodes, SpamReductionLevel } from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 /**
  * A special error with a title and a message

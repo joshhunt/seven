@@ -2,16 +2,15 @@ import {
   DestinyDefinitions,
   ManifestPayload,
 } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import {
   GlobalState,
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
-import { StringFetcher } from "@Global/Localization/StringFetcher";
+import { Localizer, StringFetcher } from "@bungie/localization";
 import { Environment } from "@Helpers";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
@@ -86,8 +85,6 @@ class AppLayout extends React.Component<
   }
 
   public componentDidMount() {
-    GlobalStateDataStore.initialize();
-
     this.unsubscribers.push(
       RouteDataStore.Instance.observe((routeData) => {
         this.setState({

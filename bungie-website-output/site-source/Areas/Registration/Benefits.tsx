@@ -16,7 +16,7 @@ import { EmailValidationStatus } from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";
 import { Redirect } from "react-router";
 import { Platform, Content, Contract } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Spinner, SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
 import { Icon } from "@UI/UIKit/Controls/Icon";
@@ -113,7 +113,9 @@ class Benefits extends React.Component<Props, IBenefitsState> {
 
     const avatarPath = this.props.globalState.loggedInUser.user
       .profilePicturePath;
-    const displayName = this.props.globalState.loggedInUser.user.displayName;
+    const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
+      this.props?.globalState?.loggedInUser?.user
+    )?.bungieGlobalName;
 
     const headerDesc =
       Localizer.Registrationbenefits.WelcomeToBungieTakeAMinute;
@@ -165,9 +167,7 @@ class Benefits extends React.Component<Props, IBenefitsState> {
           <img className={styles.avatar} src={avatarPath} />
           <div className={styles.displayName}>{displayName}</div>
           <Anchor
-            url={RouteHelper.Settings({
-              category: "Notifications",
-            })}
+            url={RouteHelper.NewSettings("index")}
             className={styles.linkToSettings}
           >
             {accountSettings}

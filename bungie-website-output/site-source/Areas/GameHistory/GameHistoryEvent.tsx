@@ -2,26 +2,28 @@
 // Copyright Bungie, Inc.
 
 import styles from "@Areas/GameHistory/GameHistoryEvent.module.scss";
-import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { AclEnum, DestinyActivityModeType } from "@Enum";
-import { Definitions, HistoricalStats, Platform } from "@Platform";
-import { PermissionsGate } from "@UI/User/PermissionGate";
+import Pgcr from "@Areas/GameHistory/Pgcr/Pgcr";
+import {
+  D2DatabaseComponentProps,
+  withDestinyDefinitions,
+} from "@Database/DestinyDefinitions/WithDestinyDefinitions";
+import { DestinyActivityModeType } from "@Enum";
+import { HistoricalStats } from "@Platform";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
-import { UserUtils } from "@Utilities/UserUtils";
-import React, { useEffect } from "react";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import React from "react";
 
-interface GameHistoryEventProps {
-  historyItem: HistoricalStats.DestinyHistoricalStatsPeriodGroup;
-  definitions: Pick<
-    AllDefinitionsFetcherized,
+interface GameHistoryEventProps
+  extends D2DatabaseComponentProps<
     | "DestinyActivityModeDefinition"
     | "DestinyActivityTypeDefinition"
     | "DestinyActivityDefinition"
-  >;
+  > {
+  historyItem: HistoricalStats.DestinyHistoricalStatsPeriodGroup;
 }
 
-export const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
+const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
   const allActivityModes = props.definitions.DestinyActivityModeDefinition.all();
 
   const _getHashFromModeType = (modeType: DestinyActivityModeType) => {
@@ -45,6 +47,24 @@ export const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
     activityHash
   ).displayProperties;
   const eventValues = props.historyItem.values;
+
+  const onClick = () => {
+    Modal.open(
+      <Pgcr
+        activityId={props.historyItem.activityDetails.instanceId}
+        basicActivityData={{
+          icon: activityModeDisplayProperties.icon,
+          activityName: activityModeDisplayProperties.name,
+          location: activityDisplayProperties.name,
+          timestamp: props.historyItem.period,
+          standing: eventValues.standing?.basic?.displayValue,
+        }}
+      />,
+      {
+        isFrameless: true,
+      }
+    );
+  };
 
   return (
     <div>
@@ -72,7 +92,16 @@ export const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
             </div>
           </div>
         }
+        onClick={onClick}
       />
     </div>
   );
 };
+
+export default withDestinyDefinitions(GameHistoryEvent, {
+  types: [
+    "DestinyActivityModeDefinition",
+    "DestinyActivityTypeDefinition",
+    "DestinyActivityDefinition",
+  ],
+});

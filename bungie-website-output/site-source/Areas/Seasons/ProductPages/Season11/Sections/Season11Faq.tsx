@@ -1,5 +1,5 @@
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { Button } from "@UIKit/Controls/Button/Button";

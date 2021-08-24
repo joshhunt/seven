@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import {
   Characters,
@@ -12,6 +12,7 @@ import {
   User,
   Components,
 } from "@Platform";
+import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -26,7 +27,7 @@ export interface DestinyMembershipDataStorePayload {
   isCrossSaved: boolean;
 }
 
-interface MembershipPair {
+export interface MembershipPair {
   membershipId: string;
   membershipType: BungieMembershipType;
 }
@@ -54,13 +55,23 @@ export abstract class DestinyMembershipDataStore extends DataStore<
      * Loads current user by default, unless membership info is provided
      */
     loadUserData: async (user?: MembershipPair, force = false) => {
+      const isSameMembershipType =
+        user &&
+        user?.membershipType === this.state.selectedMembership?.membershipType;
+      const isSameBungieMembershipId =
+        user &&
+        user?.membershipId ===
+          this.state.membershipData?.bungieNetUser?.membershipId;
+      const isNewMembershipIdIncludedInCurrentDestinyMemberships = this.state.membershipData?.destinyMemberships?.some(
+        (u) => user && u.membershipId === user?.membershipId
+      );
+
       const isSameUser =
+        user &&
         user?.membershipId &&
-        (user?.membershipId ===
-          this.state.membershipData?.bungieNetUser?.membershipId || // Check for same Bungie.net ID
-          this.state.membershipData?.destinyMemberships?.find(
-            (u) => u.membershipId === user?.membershipId
-          )); // Check for same Destiny ID
+        isSameMembershipType && //Check for same platform/membershipType
+        (isSameBungieMembershipId || // Check for same Bungie.net ID
+          isNewMembershipIdIncludedInCurrentDestinyMemberships); // Check for same Destiny ID
 
       if (!force) {
         if (isSameUser && this.isInitialized) {
@@ -68,7 +79,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         }
       }
 
-      const loadSpecificUser = !!user;
+      const loadSpecificUser = user !== undefined;
 
       if (
         !loadSpecificUser &&
@@ -83,7 +94,8 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       this.isInitialized = true;
 
-      let membershipData = this.state.membershipData;
+      // if we were given a new user, or logged out or in then we don't have up-to-date membershipdata, otherwise we don't need to fetch it again
+      let membershipData = !isSameUser ? null : this.state.membershipData;
 
       if (!membershipData) {
         membershipData = loadSpecificUser
@@ -117,11 +129,43 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       if (memberships.length === 0) {
         // rare instance of bnet users without destiny membership, show the anonymous view
-        return;
+        return {
+          membershipData,
+          memberships,
+          characters: {},
+          selectedCharacter: null,
+          selectedMembership: null,
+          isCrossSaved: false,
+          loaded: true,
+        };
       }
 
       let profileResponse: Responses.DestinyProfileResponse = null;
-      const membershipToUse = this.state.selectedMembership || memberships[0];
+
+      //use the first membership by default;
+      let membershipToUse = memberships[0];
+
+      if (isSameUser) {
+        // if we have a membership type saved, use it
+        this.state.selectedMembership &&
+          (membershipToUse = this.state.selectedMembership);
+      }
+      // if we were given a user and the membership is not the type of the one provided
+      else if (loadSpecificUser) {
+        if (
+          !EnumUtils.looseEquals(
+            user?.membershipType,
+            membershipToUse.membershipType,
+            BungieMembershipType
+          )
+        ) {
+          //membershipType does not match get a different one
+          membershipToUse = this.getRequestedMembership(
+            memberships,
+            user.membershipType
+          );
+        }
+      }
 
       let characters: {
         [x: string]: Characters.DestinyCharacterComponent;
@@ -167,6 +211,12 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         throw new Error(
           "actions.loadUserData must be called to initialize the data before any other action can be accessed"
         );
+      }
+
+      if (StringUtils.isNullOrWhiteSpace(platformName)) {
+        console.error("tried to update platform but none was supplied");
+
+        return;
       }
 
       const membershipToUse = this.state.memberships.find((m) =>
@@ -232,4 +282,20 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       return { selectedCharacter: this.state.characters[value] };
     },
   });
+
+  private getRequestedMembership(
+    memberships: GroupsV2.GroupUserInfoCard[],
+    membershipType: BungieMembershipType
+  ) {
+    //get the requested membership if available
+    return (
+      memberships.find((m) =>
+        EnumUtils.looseEquals(
+          m.membershipType,
+          membershipType,
+          BungieMembershipType
+        )
+      ) ?? memberships[0]
+    );
+  }
 }

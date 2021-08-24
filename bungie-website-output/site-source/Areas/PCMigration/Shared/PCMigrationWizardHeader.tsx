@@ -1,3 +1,4 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import React, { DOMAttributes, ReactElement } from "react";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
 import classNames from "classnames";
@@ -53,7 +54,7 @@ export class PCMigrationWizardHeader extends React.Component<
         {this.props.description && (
           <p
             className={styles.platformDescription}
-            dangerouslySetInnerHTML={{ __html: this.props.description }}
+            dangerouslySetInnerHTML={sanitizeHTML(this.props.description)}
           />
         )}
       </div>

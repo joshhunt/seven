@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DetailedError } from "@CustomErrors";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import { BuildVersion } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { FetchUtils } from "@Utilities/FetchUtils";

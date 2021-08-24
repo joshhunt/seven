@@ -1,12 +1,12 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Content, Platform } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import * as React from "react";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export interface BeyondLightUpdateDataStorePayload {
   phaseOneActive: boolean;

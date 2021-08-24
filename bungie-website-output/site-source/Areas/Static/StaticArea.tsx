@@ -1,8 +1,9 @@
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import * as Mustache from "mustache";
 import React from "react";
-import { Route, RouteComponentProps } from "react-router-dom";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { RouteComponentProps } from "react-router-dom";
 
 interface IStaticAreaState {
   renderableHtml: string;
@@ -26,7 +27,7 @@ class StaticArea extends React.Component<
 
   public componentDidMount() {
     const pageName = this.props.match.params.page;
-    const locale = LocalizerUtils.currentCultureName;
+    const locale = Localizer.CurrentCultureName;
 
     const pageRootFolder = `/7/StaticPages/${pageName}`;
     const requireHtml = location.origin + `${pageRootFolder}/${pageName}.html`;
@@ -80,7 +81,9 @@ class StaticArea extends React.Component<
   public render() {
     return (
       <div>
-        <div dangerouslySetInnerHTML={{ __html: this.state.renderableHtml }} />
+        <div
+          dangerouslySetInnerHTML={sanitizeHTML(this.state.renderableHtml)}
+        />
       </div>
     );
   }

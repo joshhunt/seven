@@ -4,8 +4,9 @@
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -60,7 +61,7 @@ const SeasonPass14: React.FC<SeasonPass14Props> = (props) => {
             <div className={styles.seasonBlurb}>
               <p
                 className={styles.paragraphLarge}
-                dangerouslySetInnerHTML={{ __html: s14.SeasonPassBlurb }}
+                dangerouslySetInnerHTML={sanitizeHTML(s14.SeasonPassBlurb)}
               />
             </div>
             {seasonTrailerId && (

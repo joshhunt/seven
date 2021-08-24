@@ -2,7 +2,7 @@ import {
   IPCMigrationUserData,
   PCMigrationUserDataStore,
 } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import React, { ReactElement } from "react";
 import { PCMigrationLinkAccount } from "./PCMigrationLinkAccount";
 import { PCMigrationTransferAgreement } from "./PCMigrationTransferAgreement";
@@ -13,7 +13,7 @@ import { PCMigrationVerified } from "./PCMigrationVerified";
 import { PCMigrationTransferDetails } from "./PCMigrationTransferDetails";
 import { PCMigrationSuccess } from "./PCMigrationSuccess";
 import { EmailVerificationState } from "./PCMigrationModalStagePage";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import * as Globals from "@Enum";
 import { PCMigrationTransfer } from "./PCMigrationTransfer";
 import {

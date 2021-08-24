@@ -1,9 +1,10 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { IDestinyProductDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
@@ -43,8 +44,10 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
   const productFamilyTag = props.title.replace(/\s/g, "");
-  const strangerEditionSelected =
-    props.strangerEdition?.skuTag === selectedSkuTag;
+  const wqCollectorsEditionSelected =
+    props.collectorsEdition?.skuTag === selectedSkuTag;
+  const wqCollectorsUrl =
+    wqCollectorsEditionSelected && props.collectorsEdition?.relatedPage;
 
   React.useEffect(() => {
     subs.push(
@@ -140,13 +143,9 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
           buttonType={"gold"}
           className={styles.button}
           size={BasicSize.Medium}
-          url={
-            strangerEditionSelected
-              ? props.strangerEdition.relatedPage
-              : undefined
-          }
+          url={wqCollectorsEditionSelected ? wqCollectorsUrl : undefined}
           onClick={() =>
-            !strangerEditionSelected &&
+            !wqCollectorsEditionSelected &&
             DestinySkuUtils.showStoreModal(selectedSkuTag)
           }
           analyticsId={selectedSkuTag}
@@ -162,7 +161,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
             iconName={"error"}
             className={styles.icon}
           />
-          <div dangerouslySetInnerHTML={{ __html: props.disclaimer }} />
+          <div dangerouslySetInnerHTML={sanitizeHTML(props.disclaimer)} />
         </div>
       ) : (
         <div className={styles.spacer} />

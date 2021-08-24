@@ -3,8 +3,8 @@ import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
 import {
   BroadcasterObserver,
   DestroyCallback,
-} from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+} from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import { EventMux } from "@Global/EventMux/EventMuxBase";
 import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";

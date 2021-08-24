@@ -1,4 +1,4 @@
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 class AppLoadingDataStoreInternal extends DataStore<{ loading: boolean }> {
   constructor() {

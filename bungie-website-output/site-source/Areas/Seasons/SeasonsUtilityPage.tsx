@@ -5,14 +5,15 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
 import { PlatformError } from "@CustomErrors";
 import { DestinyComponentType } from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
@@ -197,11 +198,11 @@ class SeasonsUtilityPage extends React.Component<
           >
             <div
               className={styles.itemModal}
-              dangerouslySetInnerHTML={{
-                __html: this.state.itemDetailElement
+              dangerouslySetInnerHTML={sanitizeHTML(
+                this.state.itemDetailElement
                   .getElementsByTagName("template")
-                  .item(0).innerHTML,
-              }}
+                  .item(0).innerHTML
+              )}
             />
             {charactersLoaded &&
               !isCurrentSeason &&

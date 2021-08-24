@@ -4,11 +4,12 @@
 // Copyright Bungie, Inc.
 
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
 import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import styles from "./SeasonOfTheWorthy.module.scss";
@@ -19,7 +20,7 @@ import {
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { InfoBlock } from "@UI/Content/InfoBlock";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -811,9 +812,9 @@ class SeasonOfTheWorthyInner extends React.Component<
                     {Localizer.Seasonoftheworthy.ListTitleSeasonPass}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasonoftheworthy.SeasonPassRewards,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasonoftheworthy.SeasonPassRewards
+                    )}
                   />
                 </div>
                 <div className={styles.freeRewardsList}>
@@ -828,9 +829,9 @@ class SeasonOfTheWorthyInner extends React.Component<
                     {Localizer.Seasonoftheworthy.AvailableToAll}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasonoftheworthy.FreeRewards,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasonoftheworthy.FreeRewards
+                    )}
                   />
                 </div>
               </div>

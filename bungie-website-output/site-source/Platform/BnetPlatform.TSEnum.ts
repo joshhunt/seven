@@ -118,6 +118,14 @@ export enum ApplicationScopes {
 		Can user the partner offer api to claim rewards defined for a partner
 		*/
   PartnerOfferGrant = 4096,
+  /**
+		Allows an app to query sensitive information like unlock flags and values not available through normal methods.
+		*/
+  DestinyUnlockValueQuery = 8192,
+  /**
+		Allows an app to query sensitive user PII, most notably email information.
+		*/
+  UserPiiRead = 16384,
 }
 
 export enum OAuthApplicationType {
@@ -688,6 +696,8 @@ export enum PlatformErrorCodes {
   UserEmailMustBeVerified = 233,
   UserMustAllowCustomerServiceEmails = 234,
   NonTransactionalEmailSendFailure = 235,
+  UnknownErrorSettingGlobalDisplayName = 236,
+  DuplicateGlobalDisplayName = 237,
   MessagingUnknownError = 300,
   MessagingSelfError = 301,
   MessagingSendThrottle = 302,
@@ -896,6 +906,7 @@ export enum PlatformErrorCodes {
   ClanRequiresExistingDestinyAccount = 750,
   ClanNameRestricted = 751,
   ClanCreationBan = 752,
+  ClanCreationTenureRequirementsNotMet = 753,
   ItemAlreadyFollowed = 801,
   ItemNotFollowed = 802,
   CannotFollowSelf = 803,
@@ -1212,6 +1223,8 @@ export enum PlatformErrorCodes {
   AwaWriteRequestTokenUsageLimitReached = 2806,
   SteamWebApiError = 2900,
   SteamWebNullResponseError = 2901,
+  SteamAccountRequired = 2902,
+  SteamNotAuthorized = 2903,
   ClanFireteamNotFound = 3000,
   ClanFireteamAddNoAlternatesForImmediate = 3001,
   ClanFireteamFull = 3002,
@@ -1241,6 +1254,10 @@ export enum PlatformErrorCodes {
   ClanFireteamExpired = 3026,
   ClanFireteamInvalidAuthProvider = 3027,
   ClanFireteamInvalidAuthProviderXuid = 3028,
+  ClanFireteamThrottle = 3029,
+  ClanFireteamTooManyOpenScheduledFireteams = 3030,
+  ClanFireteamCannotReopenScheduledFireteams = 3031,
+  ClanFireteamJoinNoAccountSpecified = 3032,
   CrossSaveOverriddenAccountNotFound = 3200,
   CrossSaveTooManyOverriddenPlatforms = 3201,
   CrossSaveNoOverriddenPlatforms = 3202,
@@ -1285,6 +1302,25 @@ export enum PlatformErrorCodes {
   ErrorPhoneValidationNoAssociatedPhone = 3703,
   ErrorPhoneValidationCodeInvalid = 3705,
   ErrorPhoneValidationBanned = 3706,
+  ErrorPhoneValidationCodeTooRecentlySent = 3707,
+  ErrorPhoneValidationCodeExpired = 3708,
+  ErrorPhoneValidationInvalidNumberType = 3709,
+  ErrorPhoneValidationCodeTooRecentlyChecked = 3710,
+  ApplePushErrorUnknown = 3800,
+  ApplePushErrorNull = 3801,
+  ApplePushErrorTimeout = 3802,
+  ApplePushBadRequest = 3803,
+  ApplePushFailedAuth = 3804,
+  ApplePushThrottled = 3805,
+  ApplePushServiceUnavailable = 3806,
+  NotAnImageOrVideo = 3807,
+  ErrorBungieFriendsBlockFailed = 3900,
+  ErrorBungieFriendsAutoReject = 3901,
+  ErrorBungieFriendsNoRequestFound = 3902,
+  ErrorBungieFriendsAlreadyFriends = 3903,
+  ErrorBungieFriendsUnableToRemoveRequest = 3904,
+  ErrorBungieFriendsUnableToRemove = 3905,
+  ErrorBungieFriendsIdenticalSourceTarget = 3906,
 }
 
 export enum PhoneValidationStatusEnum {
@@ -1877,6 +1913,10 @@ export enum DestinyComponentType {
 		Returns summary status information about all "Metrics" (also known in the game as "Stat Trackers").
 		*/
   Metrics = 1100,
+  /**
+		Returns a mapping of localized string variable hashes to values, on a per-account or per-character basis.
+		*/
+  StringVariables = 1200,
 }
 
 /**
@@ -2156,6 +2196,40 @@ export enum DestinyTalentNodeState {
 }
 
 /**
+	This enumeration represents the most restrictive type of gating that is being performed
+	by an entity.  This is useful as a shortcut to avoid a lot of lookups when determining
+	whether the gating on an Entity applies to everyone equally, or to their specific Profile
+	or Character states.
+	
+	None = There is no gating on this item.
+	
+	Global = The gating on this item is based entirely on global game state.  It will be gated the same for everyone.
+	
+	Clan = The gating on this item is at the Clan level.  For instance, if you're gated by Clan level this will be the case.
+	
+	Profile = The gating includes Profile-specific checks, but not on the Profile's characters.  An example of this might be when you acquire an Emblem: the Emblem will be available in your Kiosk for all characters in your Profile from that point onward.
+	
+	Character = The gating includes Character-specific checks, including character level restrictions.  An example of this might be an item that you can't purchase from a Vendor until you reach a specific Character Level.
+	
+	Item = The gating includes item-specific checks.  For BNet, this generally implies that we'll show this data only on a character level or deeper.
+	
+	AssumedWorstCase = The unlocks and checks being used for this calculation are of an unknown type and are used for unknown purposes.
+	For instance, if some great person decided that an unlock value should be globally scoped, but then the game changes it using
+	character-specific data in a way that BNet doesn't know about.  Because of the open-ended potential for this to occur, many unlock checks
+	for "globally" scoped unlock data may be assumed as the worst case unless it has been specifically whitelisted as otherwise.  That sucks, but
+	them's the breaks.
+	*/
+export enum DestinyGatingScope {
+  None = 0,
+  Global = 1,
+  Clan = 2,
+  Profile = 3,
+  Character = 4,
+  Item = 5,
+  AssumedWorstCase = 6,
+}
+
+/**
 	Indicates the type of filter to apply to Vendor results.
 	*/
 export enum DestinyVendorFilter {
@@ -2254,6 +2328,14 @@ export enum DestinyVendorItemState {
 		This indicates that the item has a seasonal reward expiration.
 		*/
   SeasonalRewardExpiration = 16384,
+  /**
+		This indicates that the sale item is the best deal among different choices.
+		*/
+  BestDeal = 32768,
+  /**
+		This indicates that the sale item is popular.
+		*/
+  Popular = 65536,
 }
 
 export enum TierType {
@@ -2264,40 +2346,6 @@ export enum TierType {
   Rare = 4,
   Superior = 5,
   Exotic = 6,
-}
-
-/**
-	This enumeration represents the most restrictive type of gating that is being performed
-	by an entity.  This is useful as a shortcut to avoid a lot of lookups when determining
-	whether the gating on an Entity applies to everyone equally, or to their specific Profile
-	or Character states.
-	
-	None = There is no gating on this item.
-	
-	Global = The gating on this item is based entirely on global game state.  It will be gated the same for everyone.
-	
-	Clan = The gating on this item is at the Clan level.  For instance, if you're gated by Clan level this will be the case.
-	
-	Profile = The gating includes Profile-specific checks, but not on the Profile's characters.  An example of this might be when you acquire an Emblem: the Emblem will be available in your Kiosk for all characters in your Profile from that point onward.
-	
-	Character = The gating includes Character-specific checks, including character level restrictions.  An example of this might be an item that you can't purchase from a Vendor until you reach a specific Character Level.
-	
-	Item = The gating includes item-specific checks.  For BNet, this generally implies that we'll show this data only on a character level or deeper.
-	
-	AssumedWorstCase = The unlocks and checks being used for this calculation are of an unknown type and are used for unknown purposes.
-	For instance, if some great person decided that an unlock value should be globally scoped, but then the game changes it using
-	character-specific data in a way that BNet doesn't know about.  Because of the open-ended potential for this to occur, many unlock checks
-	for "globally" scoped unlock data may be assumed as the worst case unless it has been specifically whitelisted as otherwise.  That sucks, but
-	them's the breaks.
-	*/
-export enum DestinyGatingScope {
-  None = 0,
-  Global = 1,
-  Clan = 2,
-  Profile = 3,
-  Character = 4,
-  Item = 5,
-  AssumedWorstCase = 6,
 }
 
 /**
@@ -3230,12 +3278,6 @@ export enum AwaResponseReason {
   Replaced = 3,
 }
 
-export enum FriendOnlineStatus {
-  Offline = 0,
-  Online = 1,
-  Idle = 2,
-}
-
 export enum OfferRedeemMode {
   Off = 0,
   Unlock = 1,
@@ -3704,7 +3746,7 @@ export enum FireteamDateRange {
 }
 
 export enum FireteamPlatform {
-  Unknown = 0,
+  Any = 0,
   Playstation4 = 1,
   XboxOne = 2,
   Blizzard = 3,
@@ -3922,6 +3964,31 @@ export enum DestinyMilestoneType {
 		events.
 		*/
   Special = 5,
+}
+
+export enum PresenceStatus {
+  OfflineOrUnknown = 0,
+  Online = 1,
+}
+
+export enum PresenceOnlineStateFlags {
+  None = 0,
+  Destiny1 = 1,
+  Destiny2 = 2,
+}
+
+export enum FriendRelationshipState {
+  Unknown = 0,
+  Friend = 1,
+  IncomingRequest = 2,
+  OutgoingRequest = 3,
+}
+
+export enum PlatformFriendType {
+  Unknown = 0,
+  Xbox = 1,
+  PSN = 2,
+  Steam = 3,
 }
 
 export enum GlobalAlertLevel {

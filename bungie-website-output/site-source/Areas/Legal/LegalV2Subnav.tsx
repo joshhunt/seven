@@ -2,8 +2,9 @@
 // Copyright Bungie, Inc.
 
 import { LegalV2SubnavQuery } from "@Areas/Legal/__generated__/LegalV2SubnavQuery.graphql";
-import { TempGetContentStackLocale } from "@Areas/Legal/TempContentStackLocaleMap";
-import { Localizer } from "@Global/Localization/Localizer";
+import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
+import { Localizer } from "@bungie/localization";
+import { ResponsiveSize } from "@bungie/responsive";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { LegalRouteParams } from "@Routes/RouteParams";
 import { ISubNavLink, SubNav } from "@UIKit/Controls/SubNav";
@@ -15,7 +16,7 @@ export const LegalV2Subnav: React.FC = () => {
   const history = useHistory();
   const params = useParams<LegalRouteParams>();
 
-  const locale = TempGetContentStackLocale(Localizer.CurrentCultureName);
+  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
 
   const data = useLazyLoadQuery<LegalV2SubnavQuery>(
     graphql`
@@ -43,5 +44,12 @@ export const LegalV2Subnav: React.FC = () => {
       to: RouteHelper.LegalPage({ url: p.url.substr(1) }),
     }));
 
-  return <SubNav history={history} links={links} vertical={true} />;
+  return (
+    <SubNav
+      history={history}
+      links={links}
+      vertical={true}
+      mobileDropdownBreakpoint={ResponsiveSize.medium}
+    />
+  );
 };

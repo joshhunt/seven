@@ -35,6 +35,8 @@ export interface IDropdownOption<T = any> {
   metadata?: T;
   /** Mobile text only label if label is not a simple string **/
   mobileLabel?: string;
+  /** Set as disabled */
+  disabled?: boolean;
 }
 
 interface IDropdownState {
@@ -80,6 +82,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
           {this.props.options.map((a, i) => (
             <option
               aria-selected={a.value === this.state.currentValue}
+              disabled={a.disabled}
               key={i}
               value={a.value}
             >
@@ -126,8 +129,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
 
   private readonly close = () => this.toggle(false);
 
-  private readonly closeOnClick = (e: MouseEvent) => {
-    this.close();
+  private readonly closeOnOutsideClick = (e: MouseEvent) => {
     try {
       const rootNode = ReactDOM.findDOMNode(this);
       if (
@@ -136,6 +138,8 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
           this.containerRef?.current?.contains(e.target as Node))
       ) {
         return false;
+      } else {
+        this.close();
       }
     } catch (e) {
       // ignore
@@ -151,9 +155,9 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
       },
       () => {
         if (this.state.isOpen) {
-          document.addEventListener("click", this.closeOnClick);
+          document.addEventListener("click", this.closeOnOutsideClick);
         } else {
-          document.removeEventListener("click", this.closeOnClick);
+          document.removeEventListener("click", this.closeOnOutsideClick);
         }
       }
     );

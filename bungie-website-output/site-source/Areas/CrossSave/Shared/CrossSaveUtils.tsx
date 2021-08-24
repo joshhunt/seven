@@ -8,7 +8,7 @@ import {
   CrossSaveActivateSteps,
   ICrossSaveActivateParams,
 } from "../CrossSaveActivate";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { CrossSave, Responses, GroupsV2, Platforms, Contract } from "@Platform";
 import { RouteDefs } from "@Routes/RouteDefs";
 import moment from "moment/moment";

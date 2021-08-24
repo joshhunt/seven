@@ -1,110 +1,9 @@
-import { Content } from "@Platform";
-import Cookies from "js-cookie";
-import moment from "moment";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { DetailedError } from "@CustomErrors";
-import { BungieMembershipType } from "@Enum";
-import { CookieUtils } from "./CookieUtils";
-import { ConfigUtils } from "./ConfigUtils";
-import { ObjectUtils } from "./ObjectUtils";
+import { BungieCredentialType, BungieMembershipType } from "@Enum";
+import { Content } from "@Platform";
 
 export class LocalizerUtils {
-  public static urlLocaleRegex = /.*\/7\/([a-zA-Z\-]{2,6}).*/gi;
-
-  private static cachedCurrentCultureName: string = null;
-
-  /** Get the current culture name */
-  public static get currentCultureName() {
-    if (!this.cachedCurrentCultureName) {
-      this.setCurrentCultureName();
-    }
-
-    if (
-      this.cachedCurrentCultureName === undefined ||
-      this.cachedCurrentCultureName !== this.locCookie?.lc
-    ) {
-      this.setCurrentCultureName();
-    }
-
-    return this.cachedCurrentCultureName;
-  }
-
-  public static get currentCultureSpecific() {
-    return Localizer.validLocales.find(
-      (a) => a.name === this.currentCultureName
-    ).specific;
-  }
-
-  /** Clear the in-memory cache of the current cookie locale value */
-  public static invalidateCookieCache() {
-    this.cachedCurrentCultureName = null;
-  }
-
-  private static setCurrentCultureName() {
-    const defaultLocale = "en";
-    const locale = this.cookieLocale || this.urlLocale || defaultLocale;
-    this.cachedCurrentCultureName = locale;
-  }
-
-  /** Get the value of the loc cookie */
-  public static get locCookie(): { lc: string; lcin: string } {
-    let locCookie = null;
-    const cookie = Cookies.get("bungleloc");
-    if (cookie) {
-      locCookie = CookieUtils.ParseCookiePairs(cookie);
-    }
-
-    return locCookie;
-  }
-
-  /** Get the current locale directly from the cookie */
-  public static get cookieLocale() {
-    const cookie = this.locCookie;
-
-    return cookie ? cookie.lc : null;
-  }
-
-  /** Get the current value of the loc inherit */
-  public static get locInherit() {
-    if (ConfigUtils.EnvironmentIsProduction) {
-      return true;
-    }
-
-    const cookie = this.locCookie;
-    let lcin = false;
-    if (cookie) {
-      lcin = cookie.lcin === "true";
-    }
-
-    return lcin;
-  }
-
-  /** Get the locale from the currently location */
-  public static get urlLocale() {
-    const matches = new RegExp(this.urlLocaleRegex).exec(location.href);
-
-    return matches && matches.length > 1 ? matches[1] : "";
-  }
-
-  /**
-   * Set the cookie locale
-   * @param locale The locale to use
-   */
-  public static updateCookieLocale(locale: string) {
-    Cookies.set(
-      "bungleloc",
-      ObjectUtils.objectToKvpString({
-        lc: locale,
-        lcin: String(this.locInherit),
-      }),
-      {
-        expires: moment().add(7, "years").toDate(),
-      }
-    );
-
-    this.invalidateCookieCache();
-  }
-
   /**
    * Returns the string name of a membership type
    * @param membershipType
@@ -145,6 +44,34 @@ export class LocalizerUtils {
     return Localizer.Registration[
       `MembershipAbbreviation${BungieMembershipType[membershipType]}`
     ];
+  }
+
+  /**
+   * Returns the string name of a credential type
+   * @param credentialType
+   */
+  public static getPlatformNameFromCredentialType(
+    credentialType: BungieCredentialType
+  ) {
+    switch (credentialType) {
+      case BungieCredentialType.Psnid:
+        return Localizer.Registration.networksigninoptionplaystation;
+      case BungieCredentialType.Xuid:
+        return Localizer.Registration.networksigninoptionxbox;
+      case BungieCredentialType.BattleNetId:
+        return Localizer.Registration.networksigninoptionblizzard;
+      case BungieCredentialType.SteamId:
+        return Localizer.Registration.NetworkSignInOptionSteam;
+      case BungieCredentialType.StadiaId:
+        return Localizer.Registration.NetworkSignInOptionStadia;
+      case BungieCredentialType.TwitchId:
+        return Localizer.Registration.NetworkSignInOptionTwitch;
+      default:
+        throw new DetailedError(
+          "Localizer",
+          `The credentialType '${BungieCredentialType[credentialType]}' is not a valid Destiny platform.`
+        );
+    }
   }
 
   /**

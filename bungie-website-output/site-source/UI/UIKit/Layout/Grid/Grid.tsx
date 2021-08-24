@@ -68,6 +68,23 @@ export class GridCol extends React.Component<IGridColProps> {
   private static readonly GRID_COLS_MIN = 0;
   private static readonly GRID_COLS_MAX = 12;
 
+  private static getGridColClass(prefix: string, cols?: number) {
+    if (
+      cols !== undefined &&
+      (cols > GridCol.GRID_COLS_MAX || cols < GridCol.GRID_COLS_MIN)
+    ) {
+      throw new Error(
+        `Column count must be between ${GridCol.GRID_COLS_MIN} and ${GridCol.GRID_COLS_MAX}`
+      );
+    }
+
+    if (cols === 0) {
+      return styles[`gridColsHide${prefix}`];
+    }
+
+    return cols ? styles[`gridCol${cols}${prefix}`] : "";
+  }
+
   public render() {
     const {
       cols,
@@ -107,21 +124,34 @@ export class GridCol extends React.Component<IGridColProps> {
       </div>
     );
   }
+}
 
-  private static getGridColClass(prefix: string, cols?: number) {
-    if (
-      cols !== undefined &&
-      (cols > GridCol.GRID_COLS_MAX || cols < GridCol.GRID_COLS_MIN)
-    ) {
-      throw new Error(
-        `Column count must be between ${GridCol.GRID_COLS_MIN} and ${GridCol.GRID_COLS_MAX}`
-      );
-    }
+export class GridDivider extends GridCol {
+  public render() {
+    const {
+      className,
+      cols,
+      pico,
+      tiny,
+      mobile,
+      medium,
+      large,
+      gridmax,
+    } = this.props;
 
-    if (cols === 0) {
-      return styles[`gridColsHide${prefix}`];
-    }
-
-    return cols ? styles[`gridCol${cols}${prefix}`] : "";
+    return (
+      <GridCol
+        cols={cols}
+        className={className}
+        pico={pico}
+        tiny={tiny}
+        mobile={mobile}
+        medium={medium}
+        large={large}
+        gridmax={gridmax}
+      >
+        <hr />
+      </GridCol>
+    );
   }
 }

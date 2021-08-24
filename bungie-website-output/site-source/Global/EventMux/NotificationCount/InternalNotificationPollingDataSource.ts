@@ -40,21 +40,23 @@ export class InternalNotificationPollingDataSource {
 
       Platform.UserService.GetCountsForCurrentUser()
         .then((result: Contract.UserCounts) => {
-          const friendCount: BnetNotification = {
-            source: this.notificationSource,
-            notificationType: NotificationTypes.OnlineFriendCount,
-            onlineFriendCount: result.onlineFriendCount,
-          };
+          //const friendCount: BnetNotification =
+          //{
+          //	source: this.notificationSource,
+          //	notificationType: NotificationTypes.OnlineFriendCount,
+          //	onlineFriendCount: result.onlineFriendCount,
+          //};
 
-          this.distributor.broadcast(friendCount);
+          //this.distributor.broadcast(friendCount);
 
-          const reauth: BnetNotification = {
-            source: this.notificationSource,
-            notificationType: NotificationTypes.ProviderNeedsReauth,
-            providersNeedingReauth: result.providersNeedingReauth,
-          };
+          //const reauth: BnetNotification =
+          //{
+          //	source: this.notificationSource,
+          //	notificationType: NotificationTypes.ProviderNeedsReauth,
+          //	providersNeedingReauth: result.providersNeedingReauth,
+          //};
 
-          this.distributor.broadcast(reauth);
+          //this.distributor.broadcast(reauth);
 
           const notificationCount: BnetNotification = {
             source: this.notificationSource,

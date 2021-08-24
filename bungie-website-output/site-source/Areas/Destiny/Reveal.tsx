@@ -12,7 +12,7 @@ import { RouteDefs } from "@Routes/RouteDefs";
 import { OptInFlags, EmailValidationStatus } from "@Enum";
 import { Contract, Platform } from "@Platform";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import {
   withGlobalState,
@@ -65,7 +65,7 @@ class Reveal extends React.Component<Props, IRevealState> {
     location: this.url,
   };
 
-  private readonly aggrgateEmailSetting =
+  private readonly aggregateEmailSetting =
     OptInFlags.Newsletter |
     OptInFlags.Marketing |
     OptInFlags.Social |
@@ -132,7 +132,7 @@ class Reveal extends React.Component<Props, IRevealState> {
       this.props.globalState.loggedInUser.emailStatus ===
         EmailValidationStatus.VALID &&
       (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
-        this.aggrgateEmailSetting) !==
+        this.aggregateEmailSetting) !==
         0;
 
     const signUpEmailButton = userAlreadySignedUpUpdates
@@ -145,7 +145,7 @@ class Reveal extends React.Component<Props, IRevealState> {
         this.props.globalState.loggedInUser.emailStatus ===
           EmailValidationStatus.VALID &&
         (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
-          this.aggrgateEmailSetting) ===
+          this.aggregateEmailSetting) ===
           0);
 
     return (
@@ -265,7 +265,7 @@ class Reveal extends React.Component<Props, IRevealState> {
             temporaryGlobalState.loggedInUser?.emailStatus ===
               EmailValidationStatus.VALID &&
             (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
-              this.aggrgateEmailSetting) ===
+              this.aggregateEmailSetting) ===
               0
           ) {
             this.updateEmailSettings();
@@ -282,14 +282,13 @@ class Reveal extends React.Component<Props, IRevealState> {
       settingsUpdating: true,
     });
 
-    const addedOptIns = this.aggrgateEmailSetting.toString();
+    const addedOptIns = this.aggregateEmailSetting.toString();
 
     const input: Contract.UserEditRequest = {
       membershipId: this.props.globalState.loggedInUser.user.membershipId,
       addedOptIns: addedOptIns,
       removedOptIns: null,
       displayName: null,
-      uniqueName: null,
       about: null,
       locale: null,
       emailAddress: null,

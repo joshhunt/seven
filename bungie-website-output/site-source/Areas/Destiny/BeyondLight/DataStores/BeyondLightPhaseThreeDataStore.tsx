@@ -2,11 +2,11 @@
 // Copyright Bungie, Inc.
 
 import React from "react";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Content, Platform } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export interface BeyondLightPhaseThreeDataStorePayload {
   phaseThreeActive: boolean;

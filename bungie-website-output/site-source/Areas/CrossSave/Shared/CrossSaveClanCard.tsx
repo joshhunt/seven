@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./CrossSaveClanCard.module.scss";
 import { GroupsV2 } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface ICrossSaveClanCardProps {
   clan: GroupsV2.GroupMembership;

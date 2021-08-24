@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { TwitchStreamFrame } from "@UI/Marketing/TwitchStreamFrame";
@@ -55,7 +55,7 @@ const DestinyShowcase: React.FC = (props) => {
   };
 
   const heroLogoImg = showcaseImgPath(
-    `logos/witch_queen_tune_in_logo_${LocalizerUtils.currentCultureName}.png`
+    `logos/witch_queen_tune_in_logo_${Localizer.CurrentCultureName}.png`
   );
 
   return (

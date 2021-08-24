@@ -2,7 +2,7 @@ import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateD
 import { CrossSaveHeader } from "@Areas/CrossSave/Shared/CrossSaveHeader";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { CrossSave } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UI/UIKit/Controls/Button/Button";

@@ -1,13 +1,13 @@
 import { Respond } from "@Boot/Respond";
 import { ResponsiveSize } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
   GlobalState,
   GlobalStateComponentProps,
   GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { AccountSidebar } from "@UI/Navigation/AccountSidebar";
 import { MenuItem } from "@UI/Navigation/MenuItem";
@@ -248,8 +248,8 @@ class MainNavigationInternal extends React.Component<
           <div className={styles.signIn}>
             <UserMenu
               globalState={this.props.globalState}
-              onToggleUserMenu={this.toggleAccountSidebar}
-              onToggleNotifications={this.toggleNotificationSidebar}
+              onToggleUserMenu={() => this.toggleAccountSidebar()}
+              onToggleNotifications={() => this.toggleNotificationSidebar()}
             />
           </div>
 

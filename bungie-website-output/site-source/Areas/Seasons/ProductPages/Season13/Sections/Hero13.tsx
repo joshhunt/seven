@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -13,7 +13,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React, { LegacyRef, useEffect, useState } from "react";
 import styles from "./Hero13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 type LayerName = "backgroundTwo" | "backgroundThree" | "backgroundFour";
 type HeroLayerPos = {

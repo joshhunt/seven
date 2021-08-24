@@ -4,7 +4,7 @@ import {
   PCMigrationTransferStageBase,
   IPCMigrationStageBaseState,
 } from "./PCMigrationModalStagePage";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import React from "react";
 import classNames from "classnames";

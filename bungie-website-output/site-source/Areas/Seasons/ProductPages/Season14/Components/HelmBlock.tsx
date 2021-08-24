@@ -1,7 +1,7 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React from "react";
 import styles from "./HelmBlock.module.scss";

@@ -4,8 +4,9 @@
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -196,9 +197,9 @@ const VaultOfGlass14: React.FC<VaultOfGlass14Props> = (props) => {
           {emoteBlockText && (
             <div className={styles.contentWrapper}>
               <h4
-                dangerouslySetInnerHTML={{
-                  __html: emoteBlockText?.CalloutHeading,
-                }}
+                dangerouslySetInnerHTML={sanitizeHTML(
+                  emoteBlockText?.CalloutHeading
+                )}
               />
               <p className={classNames(styles.paragraph, styles.emoteBlurb)}>
                 {emoteBlockText?.CalloutBlurb}

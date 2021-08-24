@@ -1,6 +1,7 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import classNames from "classnames";
 import React from "react";
 import styles from "./SectionHeader.module.scss";
@@ -28,7 +29,7 @@ export const SectionHeader: React.FC<SectionHeaderProps> = (props) => {
           { [styles.mobileCenterText]: props.centerHeadingAtMobile },
           { [styles.bold]: props.isBold }
         )}
-        dangerouslySetInnerHTML={{ __html: props.title }}
+        dangerouslySetInnerHTML={sanitizeHTML(props.title)}
       />
       <div
         className={classNames(styles.smallTitles, {

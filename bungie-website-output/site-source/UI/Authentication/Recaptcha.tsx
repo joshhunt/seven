@@ -3,7 +3,7 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
-import { Broadcaster } from "@Global/Broadcaster/Broadcaster";
+import { Broadcaster } from "@bungie/datastore/Broadcaster";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
 import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
@@ -14,6 +14,7 @@ import makeAsyncScriptLoader from "react-async-script";
 import React, { useEffect, useRef } from "react";
 // @ts-ignore
 import ReCAPTCHA from "react-google-recaptcha";
+import { Localizer } from "@bungie/localization/Localizer";
 
 interface RecaptchaProps {
   onSuccess: () => void;
@@ -80,7 +81,7 @@ export const Recaptcha = (props: RecaptchaProps) => {
         size={"invisible"}
         ref={reRef}
         theme={"dark"}
-        hl={recaptchaLocEquivalents[LocalizerUtils.currentCultureName]}
+        hl={recaptchaLocEquivalents[Localizer.CurrentCultureName]}
       />
     </>
   );

@@ -1,3 +1,4 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
 import { DetailedError } from "@CustomErrors";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
@@ -35,7 +36,7 @@ export class ErrorDisplay extends React.Component<
     let detail = null;
     if (error instanceof DetailedError) {
       title = error.title;
-      message = <p dangerouslySetInnerHTML={{ __html: error.message }} />;
+      message = <p dangerouslySetInnerHTML={sanitizeHTML(error.message)} />;
 
       if (!ConfigUtils.EnvironmentIsProduction) {
         detail = error.detail.map((a, i) => {
@@ -73,9 +74,9 @@ const Monospace = (props: { message: string }) => {
   return (
     <pre
       style={{ whiteSpace: "pre-wrap", textAlign: "left" }}
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(props.message, null, 2),
-      }}
+      dangerouslySetInnerHTML={sanitizeHTML(
+        JSON.stringify(props.message, null, 2)
+      )}
     />
   );
 };

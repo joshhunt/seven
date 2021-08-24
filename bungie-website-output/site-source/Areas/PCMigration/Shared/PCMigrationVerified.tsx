@@ -2,7 +2,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { IPCMigrationUserData } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { PlatformError } from "@CustomErrors";
 import * as Globals from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -209,7 +209,6 @@ export class PCMigrationVerified extends PCMigrationStageBase<
       statusText: null,
       about: null,
       displayName: null,
-      uniqueName: null,
       emailAddress: null,
       addedSubscriptions: null,
       addedOptIns: updatedValue.toString(),

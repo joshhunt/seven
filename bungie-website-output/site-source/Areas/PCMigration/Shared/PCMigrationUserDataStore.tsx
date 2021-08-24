@@ -15,7 +15,7 @@ import {
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { PlatformError } from "@CustomErrors";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import * as Globals from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";
 

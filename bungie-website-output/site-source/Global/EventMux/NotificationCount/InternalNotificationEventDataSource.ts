@@ -1,6 +1,6 @@
 import * as Globals from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { Notifications } from "@Platform";
 import { EventMux } from "../EventMuxBase";
 import {

@@ -3,7 +3,7 @@
 
 import moment from "moment";
 import React from "react";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface TimestampProps {
   time: string;

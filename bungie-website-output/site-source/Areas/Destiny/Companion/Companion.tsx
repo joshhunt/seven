@@ -4,7 +4,7 @@
 import * as React from "react";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";

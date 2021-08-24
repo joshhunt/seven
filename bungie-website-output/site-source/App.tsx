@@ -1,12 +1,11 @@
 import AppLayout from "@Boot/AppLayout";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore, useDataStore } from "@Global/DataStore";
+import { RelayEnvironmentFactory } from "@bungie/contentstack";
+import BungieNetRelayEnvironmentPreset from "@bungie/contentstack/presets/BungieNet/BungieNetRelayEnvironmentPreset";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
-import {
-  GlobalState,
-  GlobalStateDataStore,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { BuildVersion } from "@Helpers";
+import { Models } from "@Platform";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
@@ -15,18 +14,21 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { ToastContent } from "@UI/UIKit/Controls/Toast/Toast";
 import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "react-helmet";
-import { RelayEnvironmentProvider } from "react-relay";
+import { Environment, RelayEnvironmentProvider } from "react-relay";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import ContentStackRelayEnvironment from "./Platform/ContentStack/ContentStackRelayEnvironment";
 
-interface IAppProps {}
+const createRelayEnvironment = async (
+  coreSettings: Models.CoreSettingsConfiguration
+) => {
+  const preset = await BungieNetRelayEnvironmentPreset({
+    cachedSettingsObject: coreSettings,
+  });
+  const relayEnvironmentFactory = new RelayEnvironmentFactory(preset);
 
-interface IAppState {
-  globalState: GlobalState<any>;
-  isLoading: boolean;
-}
+  return relayEnvironmentFactory.create();
+};
 
 /**
  * The wrapper component for the rest of the application
@@ -34,63 +36,56 @@ interface IAppState {
  * @param {IAppProps} props
  * @returns
  */
-export class App extends React.Component<IAppProps, IAppState> {
-  private readonly monitors: DestroyCallback[] = [];
+export const App: React.FC = () => {
+  const AppBaseUrl = UrlUtils.AppBaseUrl;
+  const { coreSettings } = useDataStore(GlobalStateDataStore, []);
+  const [relayEnvironment, setRelayEnvironment] = useState<Environment | null>(
+    null
+  );
 
-  constructor(props: IAppProps) {
-    super(props);
+  useEffect(() => {
+    GlobalStateDataStore.initialize();
+  }, []);
 
-    this.state = {
-      isLoading: false,
-      globalState: GlobalStateDataStore.state,
-    };
+  useEffect(() => {
+    if (coreSettings) {
+      createRelayEnvironment(coreSettings)
+        .then(setRelayEnvironment)
+        .catch(console.error);
+    }
+  }, [coreSettings]);
+
+  if (!relayEnvironment) {
+    return null;
   }
 
-  public componentDidMount() {
-    this.monitors.push(
-      GlobalStateDataStore.observe((globalState) => {
-        this.setState({
-          globalState,
-        });
-      }, [])
-    );
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.monitors);
-  }
-
-  public render() {
-    const AppBaseUrl = UrlUtils.AppBaseUrl;
-
-    return (
-      <RelayEnvironmentProvider environment={ContentStackRelayEnvironment}>
-        <Router basename={AppBaseUrl}>
-          <BasicErrorBoundary>
-            <AppLayout>
-              <Helmet titleTemplate="%s | Bungie.net" />
-              {this.state.globalState.coreSettings && (
-                <React.Fragment>
-                  <FullPageLoadingBar />
-                  <SwitchWithErrors>
-                    <Route exact={true} path="/version">
-                      {
-                        /* tslint:disable-next-line: jsx-use-translation-function */
-                        <span>Build Version: {BuildVersion}</span>
-                      }
-                    </Route>
-                    {RouteDefs.AllAreaRoutes}
-                  </SwitchWithErrors>
-                </React.Fragment>
-              )}
-            </AppLayout>
-            <GlobalElements />
-          </BasicErrorBoundary>
-        </Router>
-      </RelayEnvironmentProvider>
-    );
-  }
-}
+  return (
+    <RelayEnvironmentProvider environment={relayEnvironment}>
+      <Router basename={AppBaseUrl}>
+        <BasicErrorBoundary>
+          <AppLayout>
+            <Helmet titleTemplate="%s | Bungie.net" />
+            {coreSettings && (
+              <React.Fragment>
+                <FullPageLoadingBar />
+                <SwitchWithErrors>
+                  <Route exact={true} path="/version">
+                    {
+                      /* tslint:disable-next-line: jsx-use-translation-function */
+                      <span>Build Version: {BuildVersion}</span>
+                    }
+                  </Route>
+                  {RouteDefs.AllAreaRoutes}
+                </SwitchWithErrors>
+              </React.Fragment>
+            )}
+          </AppLayout>
+          <GlobalElements />
+        </BasicErrorBoundary>
+      </Router>
+    </RelayEnvironmentProvider>
+  );
+};
 
 const GlobalElements = () => {
   const globalElements = useDataStore(GlobalElementDataStore);

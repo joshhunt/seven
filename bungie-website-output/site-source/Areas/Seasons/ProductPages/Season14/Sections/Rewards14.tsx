@@ -4,7 +4,7 @@
 import Carousel14 from "@Areas/Seasons/ProductPages/Season14/Components/Carousel14";
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
@@ -32,7 +32,7 @@ const Rewards14: React.FC<Rewards14Props> = (props) => {
     },
   ];
 
-  const learnMoreUrl = `/${LocalizerUtils.currentCultureName}/Profile/Rewards`;
+  const learnMoreUrl = `/${Localizer.CultureName}/Profile/Rewards`;
   const learnMoreAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.Season14Page,
     "Season14RewardsLearnMoreAnalyticsId",

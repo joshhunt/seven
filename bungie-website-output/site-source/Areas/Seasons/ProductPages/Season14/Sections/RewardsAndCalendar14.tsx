@@ -4,8 +4,8 @@
 import BlockPlusButton from "@Areas/Seasons/ProductPages/Season14/Components/BlockPlusButton";
 import { SeasonPassRewardsList } from "@Areas/Seasons/ProductPages/Season14/Components/SeasonPassRewardsList";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
 import { ScrollingSeasonCarousel } from "@UI/Destiny/ScrollingSeasonCarousel";
 import { Modal } from "@UIKit/Controls/Modal/Modal";

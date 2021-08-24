@@ -4,7 +4,7 @@ import {
   GroupsForMemberFilter,
   GroupType,
 } from "@Enum";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import React from "react";
 import { Renderer, Platform, CrossSave, GroupsV2 } from "@Platform";
 import { CrossSaveUtils } from "./CrossSaveUtils";
@@ -100,7 +100,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
      */
     updateAcknowledged: (acknowledged: boolean) => {
       CrossSaveFlowStateDataStoreInternal.updateAckStorage(
-        this._internalState.acknowledged
+        this.state.acknowledged
       );
 
       return {
@@ -124,7 +124,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
         const stateIdentifier =
           this.state.stateIdentifier || Math.ceil(Math.random() * 1000000);
 
-        const userClansPromise = !this._internalState.userClans
+        const userClansPromise = !this.state.userClans
           ? Platform.GroupV2Service.GetGroupsForMember(
               BungieMembershipType.BungieNext,
               membershipId,
@@ -149,7 +149,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
 
         const includedMembershipTypes = CrossSaveUtils.getPresetPairingDecision(
           pairingStatus,
-          this._internalState.mode
+          this.state.mode
         );
         const primaryMembershipType =
           pairingStatus.primaryMembershipType !== undefined
@@ -169,7 +169,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
           includedMembershipTypes,
           primaryMembershipType,
           validation,
-          userClans: this._internalState.userClans || userClans.results,
+          userClans: this.state.userClans || userClans.results,
           acknowledged: this.state.acknowledged || isActive,
           loaded: true,
         };

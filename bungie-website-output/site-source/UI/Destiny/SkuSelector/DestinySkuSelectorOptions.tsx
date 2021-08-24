@@ -6,7 +6,7 @@ import { Img } from "@Helpers";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as React from "react";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SquareButton } from "@UI/UIKit/Controls/Button/SquareButton";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Dropdown, IDropdownOption } from "@UI/UIKit/Forms/Dropdown";

@@ -7,9 +7,9 @@ import styles from "@Areas/Codes/History/CodesHistoryForm.module.scss";
 import { CodesPlatformSelector } from "@Areas/Codes/History/CodesPlatformSelector";
 import { PlatformError } from "@CustomErrors";
 import { AclEnum, BungieMembershipType, OfferRedeemMode } from "@Enum";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -85,18 +85,13 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
         settings: (
           <Anchor
             url={RouteHelper.Settings({ category: "Accounts" })}
-            className={styles.link}
             sameTab={false}
           >
             {Localizer.Coderedemption.settingsLinkLabel}
           </Anchor>
         ),
         codeHistory: (
-          <Anchor
-            url={RouteHelper.CodeHistoryReact()}
-            className={styles.link}
-            sameTab={false}
-          >
+          <Anchor url={RouteHelper.CodeHistoryReact()} sameTab={false}>
             {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
           </Anchor>
         ),
@@ -106,11 +101,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
       Localizer.Coderedemption.HelpForumsMessage,
       {
         helpLink: (
-          <Anchor
-            url={RouteHelper.Help()}
-            className={styles.link}
-            sameTab={false}
-          >
+          <Anchor url={RouteHelper.Help()} sameTab={false}>
             {Localizer.Coderedemption.helpLinkLabel}
           </Anchor>
         ),

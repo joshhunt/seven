@@ -3,9 +3,9 @@
 
 import * as React from "react";
 import styles from "./BeyondLightAccordion.module.scss";
-import { AccordionPanel } from "./BeyondLightAccordionPanel";
+import { BeyondLightAccordionPanel } from "./BeyondLightAccordionPanel";
 
-interface IAccordionDefinition {
+interface IBeyondLightAccordionDefinition {
   title: string;
   eyebrow: string;
   summary?: string;
@@ -22,32 +22,33 @@ interface IAccordionDefinition {
 }
 
 // Required props
-interface IAccordionProps {
-  accordionData: IAccordionDefinition[];
+interface IBeyondLightAccordionProps {
+  accordionData: IBeyondLightAccordionDefinition[];
 }
 
 // Default props - these will have values set in Component.defaultProps
 interface DefaultProps {}
 
-export type AccordionProps = IAccordionProps & DefaultProps;
+export type BeyondLightAccordionProps = IBeyondLightAccordionProps &
+  DefaultProps;
 
-interface IAccordionState {
+interface IBeyondLightAccordionState {
   activePanel: number;
   isActive: boolean;
 }
 
 /**
- * Accordion - Renders an accordion component,
- * horizontle on desktop - vertically stacked medium and lower
+ * BeyondLightAccordion - Renders an accordion component,
+ * horizontal on desktop - vertically stacked medium and lower
  *  *
- * @param {IAccordionProps} props
+ * @param {IBeyondLightAccordionProps} props
  * @returns
  */
-export class Accordion extends React.Component<
-  AccordionProps,
-  IAccordionState
+export class BeyondLightAccordion extends React.Component<
+  BeyondLightAccordionProps,
+  IBeyondLightAccordionState
 > {
-  constructor(props: AccordionProps) {
+  constructor(props: BeyondLightAccordionProps) {
     super(props);
 
     this.state = {
@@ -67,7 +68,7 @@ export class Accordion extends React.Component<
     return (
       <section className={styles.accordionWrapper}>
         {this.props.accordionData.map((e, i) => (
-          <AccordionPanel
+          <BeyondLightAccordionPanel
             key={e.title}
             title={e.title}
             eyebrow={e.eyebrow}

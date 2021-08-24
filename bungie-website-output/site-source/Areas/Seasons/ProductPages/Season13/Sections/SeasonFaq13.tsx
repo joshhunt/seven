@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import styles from "./SeasonFaq13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";

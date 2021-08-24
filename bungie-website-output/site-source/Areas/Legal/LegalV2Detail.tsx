@@ -2,9 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { LegalV2DetailQuery } from "@Areas/Legal/__generated__/LegalV2DetailQuery.graphql";
-import { TempGetContentStackLocale } from "@Areas/Legal/TempContentStackLocaleMap";
+import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
 import { NotFoundError } from "@CustomErrors";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { LegalRouteParams } from "@Routes/RouteParams";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
@@ -29,7 +30,7 @@ interface LegalV2DetailProps {
 export const LegalV2Detail: React.FC<LegalV2DetailProps> = ({ bannerRef }) => {
   const params = useParams<LegalRouteParams>();
 
-  const locale = TempGetContentStackLocale(Localizer.CurrentCultureName);
+  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const data = useLazyLoadQuery<LegalV2DetailQuery>(
     graphql`
       query LegalV2DetailQuery($url: String!, $locale: String!) {
@@ -89,7 +90,7 @@ export const LegalV2Detail: React.FC<LegalV2DetailProps> = ({ bannerRef }) => {
           <span>{title}</span>
           <time>{lastUpdatedLabel}</time>
         </h3>
-        <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div dangerouslySetInnerHTML={sanitizeHTML(content)} />
       </div>
     </>
   );

@@ -1,6 +1,6 @@
 import * as Globals from "@Enum";
-import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { EventMuxStorage } from "@Global/EventMux/EventMuxStorage";
 import { Logger } from "@Global/Logger";
 import { Notifications, RealTimeEventing } from "@Platform";
@@ -33,13 +33,13 @@ export class EventMuxSubManager extends DataStore<
     super(null, EventMuxMonitor);
 
     EventMux.storage.addCallback(() => {
-      this.broadcast();
+      this.sendUpdates();
     });
   }
 
   public actions = this.createActions({});
 
-  public broadcast(): any[] {
+  public sendUpdates(): any[] {
     const storedResponseString = EventMux.storage.getItem(
       EventMuxStorage.storageKeys.StoredResponse
     );

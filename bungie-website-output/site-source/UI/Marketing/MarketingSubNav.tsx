@@ -16,7 +16,8 @@ export type NavPrimaryColors =
   | "ash"
   | "purple"
   | "darkgray"
-  | "splicerBlue";
+  | "splicerBlue"
+  | "queenPurple";
 export type NavAccentColors = "gold" | "teal" | "s11green";
 
 interface IMarketingSubNavProps {

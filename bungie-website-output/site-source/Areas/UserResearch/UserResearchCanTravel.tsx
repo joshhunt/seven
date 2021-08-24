@@ -17,7 +17,7 @@ import { FullPageLoadingBar } from "@UI/UIKit/Controls/FullPageLoadingBar";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteComponentProps } from "react-router-dom";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 
 // Required props
@@ -108,7 +108,6 @@ class UserResearchCanTravel extends React.Component<
       addedOptIns: addedOptIns,
       removedOptIns: null,
       displayName: null,
-      uniqueName: null,
       about: null,
       locale: null,
       emailAddress: null,

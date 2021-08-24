@@ -1,7 +1,8 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import {
   withGlobalState,
@@ -78,7 +79,7 @@ class DirectVideoInternal extends React.Component<
       const videoThumbnail = content.VideoThumbnail;
       const autoplay = content.AutoPlay === "true" ? 1 : 0;
       const description = (
-        <div dangerouslySetInnerHTML={{ __html: content.Description }} />
+        <div dangerouslySetInnerHTML={sanitizeHTML(content.Description)} />
       );
       const thumbnailOne = content.LinkThumbnailOne;
       const thumbnailOneTitle = content.LinkThumbnailOneTitle;

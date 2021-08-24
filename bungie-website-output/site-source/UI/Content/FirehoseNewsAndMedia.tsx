@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import {
   IDestinyNewsMedia,
@@ -20,6 +20,11 @@ interface IFirehoseNewsAndMediaProps {
   useUpdatedComponent?: boolean;
   smallSeasonText?: string;
   selectedTab?: MediaTab;
+  classes?: {
+    tabBtn?: string;
+    selectedTab?: string;
+    sectionTitle?: string;
+  };
 }
 
 interface IFirehoseNewsAndMediaState {
@@ -160,6 +165,7 @@ export class FirehoseNewsAndMedia extends React.Component<
               wallpapers={wallpapers}
               sectionTitleNews={sectionTitleNews}
               smallSeasonText={this.props.smallSeasonText}
+              classes={this.props.classes}
             />
           ) : (
             <DestinyNewsAndMedia

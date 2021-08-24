@@ -5,7 +5,7 @@ import { ISubNavLink, SubNav } from "@UI/UIKit/Controls/SubNav";
 import React from "react";
 import { Route, RouteComponentProps } from "react-router-dom";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";

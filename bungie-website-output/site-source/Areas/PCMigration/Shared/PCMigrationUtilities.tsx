@@ -1,6 +1,6 @@
 import { EmailVerificationState } from "./PCMigrationModalStagePage";
 import { Contract, User } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Anchor } from "@UI/Navigation/Anchor";
 import React from "react";
 import { BungieCredentialType } from "@Enum";

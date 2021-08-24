@@ -1,7 +1,7 @@
 import styles from "@Areas/Legal/LegalArea.module.scss";
 import { LegalV2Detail } from "@Areas/Legal/LegalV2Detail";
 import { LegalV2Subnav } from "@Areas/Legal/LegalV2Subnav";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";

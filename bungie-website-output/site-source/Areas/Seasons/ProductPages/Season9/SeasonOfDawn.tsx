@@ -5,13 +5,14 @@ import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Img } from "@Helpers";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -441,9 +442,9 @@ class SeasonOfDawnInternal extends React.Component<
                 </p>
                 <h1
                   className={styles.title}
-                  dangerouslySetInnerHTML={{
-                    __html: Localizer.Seasons.DawnArtifactTitle,
-                  }}
+                  dangerouslySetInnerHTML={sanitizeHTML(
+                    Localizer.Seasons.DawnArtifactTitle
+                  )}
                 />
                 <p className={styles.blurb}>
                   {Localizer.Seasons.DawnArtifactBlurb}
@@ -613,9 +614,9 @@ class SeasonOfDawnInternal extends React.Component<
                     {Localizer.Seasons.SeasonPassRewardTitle}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasons.SeasonPassRewardListDawn,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasons.SeasonPassRewardListDawn
+                    )}
                   />
                 </div>
                 <div className={styles.freeRewardsList}>
@@ -631,9 +632,9 @@ class SeasonOfDawnInternal extends React.Component<
                     {Localizer.Seasons.ShortAllMarker}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasons.AllPlayersRewardListDawn,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasons.AllPlayersRewardListDawn
+                    )}
                   />
                 </div>
               </div>

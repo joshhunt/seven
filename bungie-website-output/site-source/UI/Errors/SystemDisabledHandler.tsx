@@ -4,7 +4,7 @@
 import classNames from "classnames";
 import * as React from "react";
 import { ValidSystemNames, SystemNames } from "@Global/SystemNames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import styles from "./SystemDisabledHandler.module.scss";
 

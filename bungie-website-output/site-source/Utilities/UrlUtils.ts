@@ -1,3 +1,4 @@
+import { Localizer } from "@bungie/localization/Localizer";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import * as H from "history";
 import * as pathToRegexp from "ptr620";
@@ -87,7 +88,7 @@ export class UrlUtils {
     const paramsWithLocale =
       allParams && "locale" in allParams
         ? allParams
-        : { ...allParams, locale: LocalizerUtils.currentCultureName };
+        : { ...allParams, locale: Localizer.CurrentCultureName };
 
     return toPath(paramsWithLocale) + query;
   }
@@ -139,9 +140,7 @@ export class UrlUtils {
    */
   public static GetUrlForLocale(path: string, localeOverride: string = null) {
     const locale =
-      localeOverride !== null
-        ? localeOverride
-        : LocalizerUtils.currentCultureName;
+      localeOverride !== null ? localeOverride : Localizer.CurrentCultureName;
     const fixedPath = path.substr(0, 1) === "/" ? path : `/${path}`;
 
     return `/${locale}${fixedPath}`;

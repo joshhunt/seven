@@ -8,13 +8,13 @@ import {
 } from "@Areas/Destiny/BeyondLight/Components";
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";

@@ -4,7 +4,7 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { RegistrationContentItem } from "@Areas/Registration/Shared/RegistrationContentItem";
 import { PlatformError } from "@CustomErrors";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import { Content, Platform } from "@Platform";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";

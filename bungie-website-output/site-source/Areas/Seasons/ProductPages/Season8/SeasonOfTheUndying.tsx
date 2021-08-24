@@ -4,13 +4,14 @@
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -532,9 +533,9 @@ class SeasonOfTheUndyingInternal extends React.Component<
                     {Localizer.Seasons.SeasonPassRewardTitle}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasons.SeasonPassRewardList,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasons.SeasonPassRewardList
+                    )}
                   />
                 </div>
                 <div className={styles.freeRewardsList}>
@@ -550,9 +551,9 @@ class SeasonOfTheUndyingInternal extends React.Component<
                     {Localizer.Seasons.ArtifactItalicCallout}
                   </h2>
                   <ul
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Seasons.AllPlayersRewardList,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Seasons.AllPlayersRewardList
+                    )}
                   />
                 </div>
               </div>

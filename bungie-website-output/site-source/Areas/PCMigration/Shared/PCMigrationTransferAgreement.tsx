@@ -1,3 +1,4 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import React, { ChangeEvent, ReactElement } from "react";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./PCMigrationModal.module.scss";
@@ -8,7 +9,7 @@ import {
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import { PCMigrationWarning } from "./PCMigrationWarning";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
 import { Platform, User } from "@Platform";
@@ -182,7 +183,7 @@ export class PCMigrationTransferAgreement extends PCMigrationStageBase<
         <Icon iconName="warning" iconType="material" />
         <h2 className="section-header">{errorHeader}</h2>
         <p>{transferDesc}</p>
-        <p dangerouslySetInnerHTML={{ __html: supportMessage }} />
+        <p dangerouslySetInnerHTML={sanitizeHTML(supportMessage)} />
         {this.showTransferrringInProgress()}
         <Button buttonType={"gold"} onClick={this.beginTransfer}>
           {retryButton}

@@ -6,12 +6,12 @@ import {
   BeyondLightPhaseTwoDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseTwoDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Spinner } from "@UIKit/Controls/Spinner";

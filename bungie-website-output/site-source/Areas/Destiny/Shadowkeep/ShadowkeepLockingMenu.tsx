@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import styles from "./ShadowkeepLockingMenu.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { MainNavAffix } from "@UI/Navigation/MainNavAffix";

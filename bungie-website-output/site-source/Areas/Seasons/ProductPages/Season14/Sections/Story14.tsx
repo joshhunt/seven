@@ -5,8 +5,9 @@ import HelmBlock from "@Areas/Seasons/ProductPages/Season14/Components/HelmBlock
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import classNames from "classnames";
 import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import styles from "./Story14.module.scss";
@@ -156,7 +157,7 @@ const Season14Story: React.FC<Season14StoryProps> = (props) => {
               />
               <p
                 className={styles.paragraph}
-                dangerouslySetInnerHTML={{ __html: s14.StoryMainBlurb }}
+                dangerouslySetInnerHTML={sanitizeHTML(s14.StoryMainBlurb)}
               />
             </LazyLoadWrapper>
           </div>
@@ -181,7 +182,7 @@ const Season14Story: React.FC<Season14StoryProps> = (props) => {
               />
               <p
                 className={styles.paragraph}
-                dangerouslySetInnerHTML={{ __html: s14.StorySecondBlurb }}
+                dangerouslySetInnerHTML={sanitizeHTML(s14.StorySecondBlurb)}
               />
             </div>
           </LazyLoadWrapper>

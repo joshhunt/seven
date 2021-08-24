@@ -1,9 +1,9 @@
+import { Localizer } from "@bungie/localization";
+import { BungieCredentialType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
 import * as React from "react";
 import styles from "./MenuItem.module.scss";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { BungieCredentialType } from "@Enum";
 
 interface ISignInTriggerProps extends React.HTMLProps<HTMLDivElement> {
   /** If this is a sign-in trigger, you must specify the type of trigger */
@@ -60,7 +60,7 @@ export class AuthTrigger extends React.Component<
 
     if (this.props.isSignOut) {
       const redirect = encodeURIComponent(
-        `/${LocalizerUtils.currentCultureName}/User/CloseJsWindow`
+        `/${Localizer.CurrentCultureName}/User/CloseJsWindow`
       );
       link = `/en/User/SignOut?bru=${redirect}&autoClose=true`;
     }

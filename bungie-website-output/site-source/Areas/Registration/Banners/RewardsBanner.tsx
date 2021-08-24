@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./RewardsBanner.module.scss";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
 

@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import styles from "./Season11.module.scss";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { Season11DataStore } from "./Season11DataStore";
 import { Season11Hero } from "./Sections/Season11Hero";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Season11Story } from "./Sections/Season11Story";
 import { Season11Dungeon } from "./Sections/Season11Dungeon";
 import { Season11Exotics } from "./Sections/Season11Exotics";

@@ -6,7 +6,7 @@ import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface IPCMigrationCharactersProps {
   characterDisplays: IPCMigrationCharacterDisplay[];

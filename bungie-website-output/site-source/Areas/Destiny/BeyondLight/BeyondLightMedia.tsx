@@ -17,7 +17,7 @@ import {
   BeyondLightUpdateDataStore,
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import * as React from "react";
 import styles from "./BeyondLightMedia.module.scss";
@@ -25,7 +25,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { DestinyNewsAndMedia } from "../Shared/DestinyNewsAndMedia";
 import { Img } from "@Helpers";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SystemNames } from "@Global/SystemNames";
 

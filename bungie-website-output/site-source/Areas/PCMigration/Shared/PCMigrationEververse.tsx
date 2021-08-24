@@ -4,7 +4,7 @@ import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 
 interface IPCMigrationEververseProps {

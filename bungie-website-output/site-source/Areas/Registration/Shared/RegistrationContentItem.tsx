@@ -4,7 +4,7 @@ import { UrlUtils } from "@Utilities/UrlUtils";
 import React from "react";
 import stylesRegistration from "./ContentItemRegistration.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Anchor } from "@UI/Navigation/Anchor";
 import classNames from "classnames";
 import {

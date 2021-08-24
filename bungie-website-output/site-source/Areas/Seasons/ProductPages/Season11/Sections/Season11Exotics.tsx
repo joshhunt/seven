@@ -4,7 +4,7 @@ import {
 } from "../Components/Season11OverlapItem";
 import React, { LegacyRef } from "react";
 import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import styles from "./Season11Exotics.module.scss";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";

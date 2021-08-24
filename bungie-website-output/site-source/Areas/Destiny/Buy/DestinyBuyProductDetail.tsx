@@ -2,7 +2,11 @@ import {
   NextGenBuyFlowModule,
   NextGenModule,
 } from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import {
   DestinyProductFamilies,
   DestinySkuTags,
@@ -13,7 +17,7 @@ import {
 } from "@UI/UIKit/Controls/Spinner";
 import * as React from "react";
 import { Platform, Content } from "@Platform";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import {
   withGlobalState,
@@ -30,8 +34,11 @@ import {
   IDestinyProductFamilyDefinition,
   IDestinyProductDefinition,
 } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
-import { DestinyBuyDetailItem } from "./Shared/DestinyBuyDetailItem";
-import { DataStore } from "@Global/DataStore";
+import {
+  DestinyBuyDetailItem,
+  PotentialSkuButton,
+} from "./Shared/DestinyBuyDetailItem";
+import { DataStore } from "@bungie/datastore";
 import { useParams, Redirect } from "react-router";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ContentUtils } from "@Utilities/ContentUtils";
@@ -63,6 +70,7 @@ interface IDestinyBuyProductDetailState {
   menuLocked: boolean;
   showStickyNav: boolean;
   strangerEdition: IDestinyProductDefinition;
+  collectorsEdition: IDestinyProductDefinition;
 }
 
 /**
@@ -92,6 +100,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
       selectedSkuIndex: DestinyBuyDataStore.state.selectedSkuIndex || 0,
       showStickyNav: false,
       strangerEdition: null,
+      collectorsEdition: null,
     };
   }
 
@@ -201,6 +210,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
           /* Here we are getting the query param containing the SKU */
           const params = new URLSearchParams(location.search);
           const skuFromQuery = params.get("productSku");
+          const openModal = params.get("open");
 
           /* This is where we are taking the SKU, comparing it and finding the index to update the Buy Data Store with 
 					  -- defaulting to 0 in case of oddities */
@@ -220,14 +230,20 @@ class DestinyBuyProductDetailInternal extends React.Component<
             DestinyBuyDataStore.actions.setSelectedSkuIndex(
               indexOfQueryParamSku
             );
+
+            if (openModal === "1") {
+              DestinySkuUtils.showStoreModal(
+                editionSelectorSkus[indexOfQueryParamSku].skuTag
+              );
+            }
           }
         }
       })
-      .finally(() =>
+      .finally(() => {
         this.setState({
           loading: false,
-        })
-      );
+        });
+      });
   }
 
   private readonly onMenuLock = (fixed: boolean) => {
@@ -316,6 +332,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
       const backgroundImage = mobileSize
         ? destinyProductFamily.heroBackgroundMobile
         : destinyProductFamily.heroBackground;
+      const collectorsIsSelected =
+        editionSelectorSkus[selectedSkuIndex] === collectorsEdition;
 
       const icon = "keyboard_arrow_up";
 
@@ -419,18 +437,23 @@ class DestinyBuyProductDetailInternal extends React.Component<
                           </div>
                         </div>
                       )}
-                      <Button
+                      <PotentialSkuButton
                         className={styles.CTAButton}
+                        url={
+                          collectorsIsSelected
+                            ? collectorsEdition.relatedPage
+                            : null
+                        }
+                        sku={
+                          !collectorsIsSelected
+                            ? editionSelectorSkus[selectedSkuIndex].skuTag
+                            : null
+                        }
                         buttonType={"gold"}
                         size={BasicSize.Medium}
-                        onClick={() =>
-                          DestinySkuUtils.showStoreModal(
-                            editionSelectorSkus[selectedSkuIndex].skuTag
-                          )
-                        }
                       >
                         {destinyProductFamily.expansionSelectorButtonLabel}
-                      </Button>
+                      </PotentialSkuButton>
                     </div>
                   </div>
                 </StickySubNav>
@@ -441,9 +464,9 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   {destinyProductFamily.bannerText && (
                     <div
                       className={styles.bannerText}
-                      dangerouslySetInnerHTML={{
-                        __html: destinyProductFamily.bannerText,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        destinyProductFamily.bannerText
+                      )}
                     />
                   )}
                   {mobileSize && (
@@ -481,9 +504,9 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   >
                     <div
                       className={styles.preorderText}
-                      dangerouslySetInnerHTML={{
-                        __html: destinyProductFamily.preorderText,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        destinyProductFamily.preorderText
+                      )}
                     />
                   </GridCol>
                 )}
@@ -544,20 +567,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
                   </>
                 )}
 
-                {
-                  // show next gen section if product family is not a bundle (which is 'category3' in firehose)
-                  this.state.destinyProductFamily.landingPageCategory !==
-                    "category3" && (
-                    <>
-                      <div className={styles.borderTop}>
-                        <div className={styles.sectionTitle}>
-                          {Localizer.BeyondLight.NextGen}
-                        </div>
-                      </div>
-                      <NextGenBuyFlowModule />
-                    </>
-                  )
-                }
                 {collectorsEdition && (
                   <>
                     <div className={styles.borderTop}>

@@ -38,72 +38,69 @@ const lowOrderMatrix = {
     minutes: { seconds: 60, milliseconds: 60 * 1000 },
     seconds: { milliseconds: 1000 },
   },
-  casualMatrix = Object.assign(
-    {
-      years: {
-        quarters: 4,
-        months: 12,
-        weeks: 52,
-        days: 365,
-        hours: 365 * 24,
-        minutes: 365 * 24 * 60,
-        seconds: 365 * 24 * 60 * 60,
-        milliseconds: 365 * 24 * 60 * 60 * 1000,
-      },
-      quarters: {
-        months: 3,
-        weeks: 13,
-        days: 91,
-        hours: 91 * 24,
-        minutes: 91 * 24 * 60,
-        seconds: 91 * 24 * 60 * 60,
-        milliseconds: 91 * 24 * 60 * 60 * 1000,
-      },
-      months: {
-        weeks: 4,
-        days: 30,
-        hours: 30 * 24,
-        minutes: 30 * 24 * 60,
-        seconds: 30 * 24 * 60 * 60,
-        milliseconds: 30 * 24 * 60 * 60 * 1000,
-      },
+  casualMatrix = {
+    years: {
+      quarters: 4,
+      months: 12,
+      weeks: 52,
+      days: 365,
+      hours: 365 * 24,
+      minutes: 365 * 24 * 60,
+      seconds: 365 * 24 * 60 * 60,
+      milliseconds: 365 * 24 * 60 * 60 * 1000,
     },
-    lowOrderMatrix
-  ),
+    quarters: {
+      months: 3,
+      weeks: 13,
+      days: 91,
+      hours: 91 * 24,
+      minutes: 91 * 24 * 60,
+      seconds: 91 * 24 * 60 * 60,
+      milliseconds: 91 * 24 * 60 * 60 * 1000,
+    },
+    months: {
+      weeks: 4,
+      days: 30,
+      hours: 30 * 24,
+      minutes: 30 * 24 * 60,
+      seconds: 30 * 24 * 60 * 60,
+      milliseconds: 30 * 24 * 60 * 60 * 1000,
+    },
+
+    ...lowOrderMatrix,
+  },
   daysInYearAccurate = 146097.0 / 400,
   daysInMonthAccurate = 146097.0 / 4800,
-  accurateMatrix = Object.assign(
-    {
-      years: {
-        quarters: 4,
-        months: 12,
-        weeks: daysInYearAccurate / 7,
-        days: daysInYearAccurate,
-        hours: daysInYearAccurate * 24,
-        minutes: daysInYearAccurate * 24 * 60,
-        seconds: daysInYearAccurate * 24 * 60 * 60,
-        milliseconds: daysInYearAccurate * 24 * 60 * 60 * 1000,
-      },
-      quarters: {
-        months: 3,
-        weeks: daysInYearAccurate / 28,
-        days: daysInYearAccurate / 4,
-        hours: (daysInYearAccurate * 24) / 4,
-        minutes: (daysInYearAccurate * 24 * 60) / 4,
-        seconds: (daysInYearAccurate * 24 * 60 * 60) / 4,
-        milliseconds: (daysInYearAccurate * 24 * 60 * 60 * 1000) / 4,
-      },
-      months: {
-        weeks: daysInMonthAccurate / 7,
-        days: daysInMonthAccurate,
-        hours: daysInMonthAccurate * 24,
-        minutes: daysInMonthAccurate * 24 * 60,
-        seconds: daysInMonthAccurate * 24 * 60 * 60,
-        milliseconds: daysInMonthAccurate * 24 * 60 * 60 * 1000,
-      },
+  accurateMatrix = {
+    years: {
+      quarters: 4,
+      months: 12,
+      weeks: daysInYearAccurate / 7,
+      days: daysInYearAccurate,
+      hours: daysInYearAccurate * 24,
+      minutes: daysInYearAccurate * 24 * 60,
+      seconds: daysInYearAccurate * 24 * 60 * 60,
+      milliseconds: daysInYearAccurate * 24 * 60 * 60 * 1000,
     },
-    lowOrderMatrix
-  );
+    quarters: {
+      months: 3,
+      weeks: daysInYearAccurate / 28,
+      days: daysInYearAccurate / 4,
+      hours: (daysInYearAccurate * 24) / 4,
+      minutes: (daysInYearAccurate * 24 * 60) / 4,
+      seconds: (daysInYearAccurate * 24 * 60 * 60) / 4,
+      milliseconds: (daysInYearAccurate * 24 * 60 * 60 * 1000) / 4,
+    },
+    months: {
+      weeks: daysInMonthAccurate / 7,
+      days: daysInMonthAccurate,
+      hours: daysInMonthAccurate * 24,
+      minutes: daysInMonthAccurate * 24 * 60,
+      seconds: daysInMonthAccurate * 24 * 60 * 60,
+      milliseconds: daysInMonthAccurate * 24 * 60 * 60 * 1000,
+    },
+    ...lowOrderMatrix,
+  };
 
 // units ordered by size
 const orderedUnits = [
@@ -124,9 +121,7 @@ const reverseUnits = orderedUnits.slice(0).reverse();
 function clone(dur, alts, clear = false) {
   // deep merge for vals
   const conf = {
-    values: clear
-      ? alts.values
-      : Object.assign({}, dur.values, alts.values || {}),
+    values: clear ? alts.values : { ...dur.values, ...(alts.values || {}) },
     loc: dur.loc.clone(alts.loc),
     conversionAccuracy: alts.conversionAccuracy || dur.conversionAccuracy,
   };
@@ -171,10 +166,10 @@ function normalizeValues(matrix, vals) {
  * Here is a brief overview of commonly used methods and getters in Duration:
  *
  * * **Creation** To create a Duration, use {@link Duration.fromMillis}, {@link Duration.fromObject}, or {@link Duration.fromISO}.
- * * **Unit values** See the {@link Duration.years}, {@link Duration.months}, {@link Duration.weeks}, {@link Duration.days}, {@link Duration.hours}, {@link Duration.minutes}, {@link Duration.seconds}, {@link Duration.milliseconds} accessors.
- * * **Configuration** See  {@link Duration.locale} and {@link Duration.numberingSystem} accessors.
- * * **Transformation** To create new Durations out of old ones use {@link Duration.plus}, {@link Duration.minus}, {@link Duration.normalize}, {@link Duration.set}, {@link Duration.reconfigure}, {@link Duration.shiftTo}, and {@link Duration.negate}.
- * * **Output** To convert the Duration into other representations, see {@link Duration.as}, {@link Duration.toISO}, {@link Duration.toFormat}, and {@link Duration.toJSON}
+ * * **Unit values** See the {@link Duration#years}, {@link Duration.months}, {@link Duration#weeks}, {@link Duration#days}, {@link Duration#hours}, {@link Duration#minutes}, {@link Duration#seconds}, {@link Duration#milliseconds} accessors.
+ * * **Configuration** See  {@link Duration#locale} and {@link Duration#numberingSystem} accessors.
+ * * **Transformation** To create new Durations out of old ones use {@link Duration#plus}, {@link Duration#minus}, {@link Duration#normalize}, {@link Duration#set}, {@link Duration#reconfigure}, {@link Duration#shiftTo}, and {@link Duration#negate}.
+ * * **Output** To convert the Duration into other representations, see {@link Duration#as}, {@link Duration#toISO}, {@link Duration#toFormat}, and {@link Duration#toJSON}
  *
  * There's are more methods documented below. In addition, for more information on subtler topics like internationalization and validity, see the external documentation.
  */
@@ -220,11 +215,11 @@ export default class Duration {
    * @return {Duration}
    */
   static fromMillis(count, opts) {
-    return Duration.fromObject(Object.assign({ milliseconds: count }, opts));
+    return Duration.fromObject({ milliseconds: count }, opts);
   }
 
   /**
-   * Create a Duration from a JavaScript object with keys like 'years' and 'hours.
+   * Create a Duration from a JavaScript object with keys like 'years' and 'hours'.
    * If this object is empty then a zero milliseconds duration is returned.
    * @param {Object} obj - the object to create the DateTime from
    * @param {number} obj.years
@@ -236,12 +231,13 @@ export default class Duration {
    * @param {number} obj.minutes
    * @param {number} obj.seconds
    * @param {number} obj.milliseconds
-   * @param {string} [obj.locale='en-US'] - the locale to use
-   * @param {string} obj.numberingSystem - the numbering system to use
-   * @param {string} [obj.conversionAccuracy='casual'] - the conversion system to use
+   * @param {Object} [opts=[]] - options for creating this Duration
+   * @param {string} [opts.locale='en-US'] - the locale to use
+   * @param {string} opts.numberingSystem - the numbering system to use
+   * @param {string} [opts.conversionAccuracy='casual'] - the conversion system to use
    * @return {Duration}
    */
-  static fromObject(obj) {
+  static fromObject(obj, opts = {}) {
     if (obj == null || typeof obj !== "object") {
       throw new InvalidArgumentError(
         `Duration.fromObject: argument expected to be an object, got ${
@@ -250,14 +246,9 @@ export default class Duration {
       );
     }
     return new Duration({
-      values: normalizeObject(obj, Duration.normalizeUnit, [
-        "locale",
-        "numberingSystem",
-        "conversionAccuracy",
-        "zone", // a bit of debt; it's super inconvenient internally not to be able to blindly pass this
-      ]),
-      loc: Locale.fromObject(obj),
-      conversionAccuracy: obj.conversionAccuracy,
+      values: normalizeObject(obj, Duration.normalizeUnit),
+      loc: Locale.fromObject(opts),
+      conversionAccuracy: opts.conversionAccuracy,
     });
   }
 
@@ -277,8 +268,7 @@ export default class Duration {
   static fromISO(text, opts) {
     const [parsed] = parseISODuration(text);
     if (parsed) {
-      const obj = Object.assign(parsed, opts);
-      return Duration.fromObject(obj);
+      return Duration.fromObject(parsed, opts);
     } else {
       return Duration.invalid(
         "unparsable",
@@ -305,8 +295,7 @@ export default class Duration {
   static fromISOTime(text, opts) {
     const [parsed] = parseISOTimeOnly(text);
     if (parsed) {
-      const obj = Object.assign(parsed, opts);
-      return Duration.fromObject(obj);
+      return Duration.fromObject(parsed, opts);
     } else {
       return Duration.invalid(
         "unparsable",
@@ -416,9 +405,10 @@ export default class Duration {
    */
   toFormat(fmt, opts = {}) {
     // reverse-compat since 1.2; we always round down now, never up, and we do it by default
-    const fmtOpts = Object.assign({}, opts, {
+    const fmtOpts = {
+      ...opts,
       floor: opts.round !== false && opts.floor !== false,
-    });
+    };
     return this.isValid
       ? Formatter.create(this.loc, fmtOpts).formatDurationFromString(this, fmt)
       : INVALID;
@@ -426,22 +416,12 @@ export default class Duration {
 
   /**
    * Returns a JavaScript object with this Duration's values.
-   * @param opts - options for generating the object
-   * @param {boolean} [opts.includeConfig=false] - include configuration attributes in the output
    * @example Duration.fromObject({ years: 1, days: 6, seconds: 2 }).toObject() //=> { years: 1, days: 6, seconds: 2 }
    * @return {Object}
    */
-  toObject(opts = {}) {
+  toObject() {
     if (!this.isValid) return {};
-
-    const base = Object.assign({}, this.values);
-
-    if (opts.includeConfig) {
-      base.conversionAccuracy = this.conversionAccuracy;
-      base.numberingSystem = this.loc.numberingSystem;
-      base.locale = this.loc.locale;
-    }
-    return base;
+    return { ...this.values };
   }
 
   /**
@@ -503,15 +483,13 @@ export default class Duration {
     const millis = this.toMillis();
     if (millis < 0 || millis >= 86400000) return null;
 
-    opts = Object.assign(
-      {
-        suppressMilliseconds: false,
-        suppressSeconds: false,
-        includePrefix: false,
-        format: "extended",
-      },
-      opts
-    );
+    opts = {
+      suppressMilliseconds: false,
+      suppressSeconds: false,
+      includePrefix: false,
+      format: "extended",
+      ...opts,
+    };
 
     const value = this.shiftTo("hours", "minutes", "seconds", "milliseconds");
 
@@ -620,9 +598,9 @@ export default class Duration {
   /**
    * Get the value of unit.
    * @param {string} unit - a unit such as 'minute' or 'day'
-   * @example Duration.fromObject({years: 2, days: 3}).years //=> 2
-   * @example Duration.fromObject({years: 2, days: 3}).months //=> 0
-   * @example Duration.fromObject({years: 2, days: 3}).days //=> 3
+   * @example Duration.fromObject({years: 2, days: 3}).get('years') //=> 2
+   * @example Duration.fromObject({years: 2, days: 3}).get('months') //=> 0
+   * @example Duration.fromObject({years: 2, days: 3}).get('days') //=> 3
    * @return {number}
    */
   get(unit) {
@@ -639,10 +617,10 @@ export default class Duration {
   set(values) {
     if (!this.isValid) return this;
 
-    const mixed = Object.assign(
-      this.values,
-      normalizeObject(values, Duration.normalizeUnit, [])
-    );
+    const mixed = {
+      ...this.values,
+      ...normalizeObject(values, Duration.normalizeUnit),
+    };
     return clone(this, { values: mixed });
   }
 

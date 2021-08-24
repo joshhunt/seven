@@ -2,13 +2,13 @@
 // Copyright Bungie, Inc.
 
 import { BungieMembershipType } from "@Enum";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";

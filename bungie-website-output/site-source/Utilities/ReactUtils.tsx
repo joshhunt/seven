@@ -1,6 +1,6 @@
 import isEqual from "react-fast-compare";
 import { useEffect, useState, useRef } from "react";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export class ReactUtils {
   /**
@@ -29,28 +29,6 @@ export class ReactUtils {
     return !pairs.every((pair) => isEqual(pair[0], pair[1]));
   }
 }
-
-/**
- * A hook for React FCs that gives you the current DataStore state at all times
- * e.g. {
- *		const globalState = useDataStore(GlobalStateDataStore);
- * }
- * @param ds The DataStore in question
- */
-export const useDataStore = <T extends object>(ds: DataStore<T>) => {
-  // create get/set DataStore state
-  const [state, setState] = useState(ds.state);
-
-  // Observe the DataStore, and destroy when useEffect is destroyed
-  useEffect(() => {
-    const destroy = ds.observe(setState);
-
-    return () => destroy();
-  });
-
-  // Return the current state
-  return state;
-};
 
 /**
  * A hook for using the previous value of a variable.

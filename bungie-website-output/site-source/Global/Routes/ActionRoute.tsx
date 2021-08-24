@@ -14,25 +14,29 @@ export interface IActionRouteParams {
  * */
 export class ActionRoute {
   public readonly path: string;
-  public readonly areaName: string;
+  public readonly urlPrefix: string;
   public get areaPath() {
-    return `/${this.areaName}`;
+    return `/${this.urlPrefix}`;
   }
   public readonly action: string;
 
   /**
    * Creates a new ActionRoute
-   * @param areaName The area for which this route is defined
+   * @param urlPrefix The start of the URL for which this route is defined
    * @param action The action inside the area
    * @param path Additional path parameters
    * @param pathIsOverride If you want to override the entire path using the path parameter, set this to true
    */
-  constructor(areaName: string, action = "Index", params?: IActionRouteParams) {
-    this.areaName = areaName;
+  constructor(
+    urlPrefix: string,
+    action = "Index",
+    params?: IActionRouteParams
+  ) {
+    this.urlPrefix = urlPrefix;
     this.action = action;
-    this.path = `/:locale/${areaName}`;
+    this.path = `/:locale/${urlPrefix}`;
     if (action && action.toLowerCase() !== "index") {
-      this.path = `/:locale/${areaName}/${action}`;
+      this.path = `/:locale/${urlPrefix}/${action}`;
     }
 
     if (params && params.path) {
@@ -40,7 +44,7 @@ export class ActionRoute {
     }
 
     if (params && params.isOverride) {
-      this.path = `/:locale/${areaName}/${params.path}`;
+      this.path = `/:locale/${urlPrefix}/${params.path}`;
     }
   }
 

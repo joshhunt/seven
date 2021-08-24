@@ -1,6 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import * as React from "react";
 import {
@@ -8,7 +9,7 @@ import {
   ButtonProps,
   ButtonTypes,
 } from "@UI/UIKit/Controls/Button/Button";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -64,6 +65,11 @@ export class DestinyBuyDetailItem extends React.Component<
       strangerEdition,
     } = this.props;
 
+    let buttonLabel = item ? item.buttonLabel : skuItem?.buttonLabel;
+    if (!item && skuItem && skuItem.buyButtonDisabled) {
+      buttonLabel = skuItem.soldOutButtonLabel;
+    }
+
     return item || skuItem ? (
       <div className={classNames(styles.container, styles[orientation])}>
         <MediaSection
@@ -81,17 +87,12 @@ export class DestinyBuyDetailItem extends React.Component<
           title={item ? item.title : skuItem.edition}
           blurb={
             <div
-              dangerouslySetInnerHTML={{
-                __html: item ? item.textBlock : skuItem.blurb,
-              }}
+              dangerouslySetInnerHTML={sanitizeHTML(
+                item ? item.textBlock : skuItem.blurb
+              )}
             />
           }
-          buttonLabel={
-            item
-              ? item.buttonLabel
-              : skuItem?.soldOutButtonLabel ||
-                (item?.buttonLink && skuItem?.buttonLabel)
-          }
+          buttonLabel={buttonLabel}
           buttonSku={item ? item.buttonSku : null}
           buttonUrl={
             item
@@ -131,7 +132,7 @@ const TextSection = (props: ITextSectionProps) => {
     <div className={classNames(styles.textSection, styles[orientation])}>
       <div className={styles.textTitle}>{title}</div>
       <div className={styles.textBlurb}>{blurb}</div>
-      {buttonLabel && (
+      {((buttonLabel && buttonUrl) || buttonSku) && (
         <PotentialSkuButton
           className={styles.button}
           url={buttonUrl}

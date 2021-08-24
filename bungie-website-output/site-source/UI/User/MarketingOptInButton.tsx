@@ -3,9 +3,9 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { EmailValidationStatus, OptInFlags } from "@Enum";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -46,7 +46,6 @@ const updateEmailSettings = (membershipId: string, onSuccess: () => void) => {
     addedOptIns: aggregateEmailSetting.toString(),
     removedOptIns: null,
     displayName: null,
-    uniqueName: null,
     about: null,
     locale: null,
     emailAddress: null,

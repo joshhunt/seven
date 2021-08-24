@@ -14,7 +14,7 @@ import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
 import { SeasonsDefinitions } from "./SeasonsDefinitions";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 // Required props
 interface ISeasonsProgressProps extends GlobalStateComponentProps<any> {}

@@ -3,7 +3,7 @@
 
 import { Apps } from "@Areas/Registration/Apps";
 import * as React from "react";
-import { RouteComponentProps, Route, Redirect } from "react-router-dom";
+import { RouteComponentProps, Route } from "react-router-dom";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import Benefits from "./Benefits";
@@ -12,7 +12,6 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface IRegistrationAreaProps

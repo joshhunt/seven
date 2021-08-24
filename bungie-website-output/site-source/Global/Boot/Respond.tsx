@@ -1,7 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import * as React from "react";
 import { ResponsiveSize, Responsive, IResponsiveState } from "./Responsive";
 

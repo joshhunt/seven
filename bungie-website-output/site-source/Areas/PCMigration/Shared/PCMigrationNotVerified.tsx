@@ -1,3 +1,4 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Platform } from "@Platform";
 import React from "react";
 import styles from "./PCMigrationModal.module.scss";
@@ -14,7 +15,7 @@ import {
   IPCMigrationStageGated,
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface IPCMigrationNotVerifiedState extends IPCMigrationStageGated {
   isSendingRequest: boolean;
@@ -86,7 +87,7 @@ export class PCMigrationNotVerified extends PCMigrationStageBase<
           globalState={this.props.globalState}
         />
         <div className={styles.wizardBody}>
-          <p dangerouslySetInnerHTML={{ __html: body }} />
+          <p dangerouslySetInnerHTML={sanitizeHTML(body)} />
           <input placeholder={placeholder} />
           <Checkbox
             name={checkboxPropertiesAgreeSystem.name}

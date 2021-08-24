@@ -1,6 +1,6 @@
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import * as React from "react";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 
 interface ILegalSLAState {}

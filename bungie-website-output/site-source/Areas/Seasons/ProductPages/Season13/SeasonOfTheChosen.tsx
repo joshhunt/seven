@@ -14,7 +14,7 @@ import { SilverBundle13 } from "@Areas/Seasons/ProductPages/Season13/Sections/Si
 import { Story13 } from "@Areas/Seasons/ProductPages/Season13/Sections/Story13";
 import { Strikes13 } from "@Areas/Seasons/ProductPages/Season13/Sections/Strikes13";
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";

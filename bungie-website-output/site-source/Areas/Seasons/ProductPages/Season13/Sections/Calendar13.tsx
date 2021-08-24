@@ -4,7 +4,7 @@
 import { Platform } from "@Platform";
 import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import styles from "./Calendar13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React, { LegacyRef, useEffect, useState } from "react";
 

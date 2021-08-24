@@ -2,7 +2,8 @@
 import { LegalAreaV2 } from "@Areas/Legal/LegalAreaV2";
 import { LegalPaymentServicesAct } from "@Areas/Legal/LegalPaymentServicesAct";
 import { LegalTrademarks } from "@Areas/Legal/LegalTrademarks";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { ResponsiveSize } from "@bungie/responsive";
 import { RouteDefs } from "@Global/Routes/RouteDefs";
 import { SystemNames } from "@Global/SystemNames";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -145,6 +146,7 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
                 history={this.props.history}
                 links={links}
                 vertical={true}
+                mobileDropdownBreakpoint={ResponsiveSize.medium}
               />
             </GridCol>
           </Grid>

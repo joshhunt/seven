@@ -10,7 +10,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { RouteHelper } from "@Routes/RouteHelper";
 

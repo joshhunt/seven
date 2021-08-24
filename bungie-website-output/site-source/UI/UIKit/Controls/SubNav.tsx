@@ -1,7 +1,7 @@
 import { Respond } from "@Boot/Respond";
 import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { UrlUtils } from "@Utilities/UrlUtils";
@@ -10,6 +10,7 @@ import { History } from "history";
 import * as React from "react";
 import { Dropdown, IDropdownOption } from "../Forms/Dropdown";
 import styles from "./SubNav.module.scss";
+import defaultStyles from "./SubNavDefaults.module.scss";
 
 interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
   /** Requires the history object from the page's props (this.props.history). Required to redirect when using mobile dropdown. */
@@ -18,18 +19,25 @@ interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
   renderAsSpans?: boolean;
   /** Array of links to display in subnav */
   links: ISubNavLink[];
-  /** If true, disables the dropdown in mobile mode */
-  mobileDropdownDisabled?: boolean;
   /** Choose the breakpoint for it to switch to dropdown view */
-  mobileDropdownBreakpoint?: ResponsiveSize;
+  mobileDropdownBreakpoint?: ResponsiveSize | "none";
   /** SubNav will show vertically and on the left side if larger than mobileDropdownBreakpoint */
   vertical?: boolean;
+  /** If classes are not passed in, there is default styling that underlines links on hover */
+  classes?: ISubNavClasses;
+}
+
+export interface ISubNavClasses {
+  span: string;
+  clickableLink: string;
+  current: string;
 }
 
 export interface ISubNavLink {
   to?: IMultiSiteLink;
   label: string;
   current?: boolean;
+  render?: (label: string) => React.ReactNode;
 }
 
 interface ISubNavState {
@@ -63,59 +71,48 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
     DataStore.destroyAll(...this.destroys);
   }
 
-  private renderLink(link: ISubNavLink, index: number) {
-    const classes = classNames(styles.subNavLink, {
-      [styles.current]: link.current,
-    });
-
-    return (
-      <Anchor key={index} className={classes} url={link.to}>
-        {link.label}
-      </Anchor>
-    );
-  }
-
-  private renderSpan(link: ISubNavLink, index: number) {
-    return (
-      <span data-href={link.to} key={index}>
-        {link.label}
-      </span>
-    );
-  }
-
   public render() {
     const {
       renderAsSpans,
       links,
       mobileDropdownBreakpoint,
-      mobileDropdownDisabled,
       vertical,
     } = this.props;
 
-    const linksRendered = links.map((link, i) => {
-      return renderAsSpans
-        ? this.renderSpan(link, i)
-        : this.renderLink(link, i);
-    });
-
     const breakpoint = mobileDropdownBreakpoint || ResponsiveSize.medium;
-    const classes = classNames(styles.subNav, {
-      [styles.useMobileDropdown]: !mobileDropdownDisabled,
-    });
-    const linkClasses = classNames(styles.subNavItems, {
-      [styles.vertical]: vertical,
-    });
+    const linkClasses = classNames({ [styles.vertical]: vertical });
+
+    const LinkList = () => {
+      return (
+        <div>
+          <div className={linkClasses}>
+            {links.map((link, index) => (
+              <SubNavLink
+                key={index}
+                link={link}
+                classes={this.props.classes}
+                isSpan={renderAsSpans}
+              />
+            ))}
+          </div>
+        </div>
+      );
+    };
 
     return (
-      <div className={classes}>
-        <Respond at={breakpoint} hide={true} responsive={null}>
-          <div className={styles.subNavWrapper}>
-            <div className={linkClasses}>{linksRendered}</div>
-          </div>
-        </Respond>
-        <Respond at={breakpoint} responsive={null}>
-          {this.renderDropdown()}
-        </Respond>
+      <div className={styles.subNav}>
+        {breakpoint === "none" ? (
+          <LinkList />
+        ) : (
+          <>
+            <Respond at={breakpoint} hide={true} responsive={null}>
+              <LinkList />
+            </Respond>
+            <Respond at={breakpoint} responsive={null}>
+              {this.renderDropdown()}
+            </Respond>
+          </>
+        )}
       </div>
     );
   }
@@ -124,17 +121,21 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
     const options: IDropdownOption[] = this.props.links.map((a) => {
       const resolvedUrl = UrlUtils.resolveUrlFromMultiLink(a.to);
 
+      const isLabel = !a.to;
+      const label = isLabel ? `[--- ${a.label} ---]` : a.label;
+
       return {
-        label: a.label,
+        label,
+        mobileLabel: label,
         value: resolvedUrl,
+        disabled: isLabel,
       } as IDropdownOption;
     });
 
     let selectedValue = null;
     const current = this.props.links.find((a) => a.current);
     if (current) {
-      const resolvedUrl = UrlUtils.resolveUrlFromMultiLink(current.to);
-      selectedValue = resolvedUrl;
+      selectedValue = UrlUtils.resolveUrlFromMultiLink(current.to);
     }
 
     return (
@@ -148,10 +149,12 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
 
   private redirect(value: string) {
     const matchingLink = this.props.links.find((a) => {
-      const anchor = UrlUtils.getHrefAsLocation(a.to.url);
-      const resolvedUrl = UrlUtils.resolveUrl(anchor, a.to.legacy, true);
+      if (a?.to?.url) {
+        const anchor = UrlUtils.getHrefAsLocation(a.to.url);
+        const resolvedUrl = UrlUtils.resolveUrl(anchor, a.to.legacy, true);
 
-      return resolvedUrl === value;
+        return resolvedUrl === value;
+      }
     });
 
     if (matchingLink.to.legacy) {
@@ -161,3 +164,42 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
     }
   }
 }
+
+interface SubNavLinkProps {
+  link: ISubNavLink;
+  classes?: ISubNavClasses;
+  isSpan: boolean;
+}
+
+export const SubNavLink: React.FC<SubNavLinkProps> = ({
+  link,
+  classes,
+  isSpan,
+}) => {
+  const linkClasses: ISubNavClasses = {
+    span: classes?.span ?? defaultStyles.span,
+    clickableLink: classes?.clickableLink ?? defaultStyles.clickableLink,
+    current: classes?.current ?? defaultStyles.current,
+  };
+
+  const clickableLinkClass = link.to
+    ? linkClasses?.clickableLink
+    : linkClasses?.span;
+
+  const renderedLabel = link.render ? link.render(link.label) : link.label;
+
+  return isSpan ? (
+    <span data-href={link.to} className={classNames(linkClasses?.span)}>
+      {link.label}
+    </span>
+  ) : (
+    <Anchor
+      className={classNames(clickableLinkClass, {
+        [linkClasses?.current]: link.current,
+      })}
+      url={link.to ?? ""}
+    >
+      {renderedLabel}
+    </Anchor>
+  );
+};

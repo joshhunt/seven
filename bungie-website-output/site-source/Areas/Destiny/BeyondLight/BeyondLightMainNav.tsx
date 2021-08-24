@@ -1,18 +1,18 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import * as React from "react";
 import styles from "./BeyondLightMainNav.module.scss";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import classNames from "classnames";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
-import LocaleSwitcher from "@UI/Navigation/LocaleSwitcher";
 import * as H from "history";
+import LocaleSwitcher from "@UI/Navigation/LocaleSwitcher";
 
 export type BeyondLightPage =
   | "index"

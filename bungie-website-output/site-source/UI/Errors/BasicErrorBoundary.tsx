@@ -1,6 +1,7 @@
 import * as Globals from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localization/Localizer";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Logger } from "@Global/Logger";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -74,7 +75,7 @@ class BasicErrorBoundaryInner extends React.Component<
     if (this.state.error instanceof DetailedError) {
       title = this.state.error.title;
       message = (
-        <p dangerouslySetInnerHTML={{ __html: this.state.error.message }} />
+        <p dangerouslySetInnerHTML={sanitizeHTML(this.state.error.message)} />
       );
     }
 

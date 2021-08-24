@@ -1,9 +1,12 @@
+import { IProfileParams } from "@Areas/User/Profile";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import * as H from "history";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
 import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
-import { BungieCredentialType } from "@Enum";
+import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import {
   BuyDetailRouteParams,
@@ -70,6 +73,27 @@ export class RouteHelper {
       : LegacyPath(`/Profile`);
   };
 
+  public static NewProfile = BasicReactPath<IProfileParams>(
+    RouteDefs.AreaGroups.User.areas.Profile.getAction("Index")
+  );
+
+  public static TargetProfile = (
+    membershipId: string,
+    membershipType: BungieMembershipType
+  ) => {
+    const profileUrlCreator = BasicReactPath<IProfileParams>(
+      RouteDefs.AreaGroups.User.areas.Profile.getAction("Index")
+    );
+
+    return profileUrlCreator({
+      mid: membershipId,
+      mtype: EnumUtils.getNumberValue(
+        membershipType,
+        BungieMembershipType
+      ).toString(),
+    });
+  };
+
   public static ProfilePage = (action: string) => {
     return LegacyPath(`/Profile/${action}`);
   };
@@ -80,7 +104,26 @@ export class RouteHelper {
     );
   };
 
+  public static Gear = (
+    membershipId: string,
+    membershipType: BungieMembershipType,
+    characterId: string
+  ) => {
+    return LegacyPath(`/Gear/${membershipType}/${membershipId}/${characterId}`);
+  };
+
   public static Settings = LegacyPathWithQuery("/Profile/Settings");
+
+  public static NewSettings = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("index")
+  );
+  public static BlockedUsers = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("BlockedUsers")
+  );
+  public static BungieFriends = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("BungieFriends")
+  );
+
   public static ReferAFriend = LegacyPathWithQuery("/Profile/ReferAFriend");
   public static CrossSave = BasicReactPath(
     RouteDefs.Areas.CrossSave.getAction()
@@ -97,7 +140,9 @@ export class RouteHelper {
 
     const resultBru =
       bru && title ? `?title=${title}&bru=${encodedBru}` : `?bru=${encodedBru}`;
-    const resolved = BasicReactPath(RouteDefs.Areas.User.getAction("SignIn"))();
+    const resolved = BasicReactPath(
+      RouteDefs.AreaGroups.User.areas.SignIn.getAction()
+    )();
     resolved.url += bru ? `${resultBru}` : "";
 
     if (title && !bru) {
@@ -127,6 +172,16 @@ export class RouteHelper {
       `/User/Link/${BungieCredentialType[cr]}/?flowStart=${flowStart}&force=${force}&stateIdentifier=${stateIdentifier}`
     );
 
+  public static GetAccountUnlink = (
+    cr: BungieCredentialType,
+    stateIdentifier: number,
+    flowStart: 0 | 1 = 1,
+    force: 0 | 1 = 0
+  ) =>
+    LegacyPath(
+      `/User/Unlink/${BungieCredentialType[cr]}/?flowStart=${flowStart}&force=${force}&stateIdentifier=${stateIdentifier}`
+    );
+
   public static GetAccountAuthVerify = (
     cr: BungieCredentialType,
     stateIdentifier: number,
@@ -136,6 +191,24 @@ export class RouteHelper {
       `/User/VerifyAuth/${BungieCredentialType[cr]}/?flowStart=1&force=0&stateIdentifier=${stateIdentifier}&resetAuth=${resetAuth}`
     );
 
+  public static GetReauthLink = (cr: BungieCredentialType) => {
+    const stringCredValue = EnumUtils.getStringValue(cr, BungieCredentialType);
+
+    return LegacyPath(`/User/Reauth/${stringCredValue}`);
+  };
+
+  public static GameHistory = (
+    membershipId?: string,
+    membershipType?: BungieMembershipType
+  ) => {
+    let params = "";
+
+    if (membershipId && membershipType) {
+      params = `/${membershipType}/${membershipId}`;
+    }
+
+    return LegacyPath(`/Profile/GameHistory${params}`);
+  };
   public static Triumphs = LegacyPathWithQuery("/Triumphs");
   public static Collections = LegacyPathWithQuery("/Collections");
 
@@ -167,6 +240,12 @@ export class RouteHelper {
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );
   public static Groups = LegacyPathWithQuery("/Groups");
+  public static Group = (groupId: string) =>
+    LegacyPath(`/Groups/Chat?groupId=${groupId}`);
+  public static GroupsPost = (groupId: string, postId: string) =>
+    LegacyPath(`Groups/Post?groupId=${groupId}&postId=${postId}&sort=0&page=0`);
+  public static CreationsDetail = (creationId: string) =>
+    LegacyPath(`/Community/Detail?itemId=${creationId}`);
   public static DestinyCredits = LegacyPathWithQuery("/Destiny/Credits");
   public static Help = LegacyPathWithQuery("/Support");
   public static HelpArticle = (articleId: number) =>
@@ -230,6 +309,15 @@ export class RouteHelper {
 
     return resolved;
   };
+  public static WitchQueen = BasicReactPath(
+    RouteDefs.Areas.Destiny.getAction("WitchQueen")
+  );
+  public static PurchaseHistory = LegacyPathWithQuery(
+    "/Profile/PurchaseHistory"
+  );
+  public static ApplicationHistory = LegacyPathWithQuery(
+    "/Profile/ApplicationHistory"
+  );
 
   //Seasons
   public static SeasonOfDrifterLink = LegacyPath("/pub/SeasonOfTheDrifter");
@@ -254,6 +342,9 @@ export class RouteHelper {
   );
   public static SeasonOfTheSplicer = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheSplicer")
+  );
+  public static SeasonOfTheLost = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheLost")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
@@ -288,6 +379,10 @@ export class RouteHelper {
     `https://careers.bungie.com/${subPath}`;
   public static About = LegacyPathWithQuery("/AboutUs");
   public static Forums = LegacyPathWithQuery("/Forum/Topics");
+  public static ForumsTag = (tag: string) =>
+    LegacyPath(`/Forum/Topics/0/${tag}`);
+  public static Post = (postId: string) =>
+    LegacyPath(`/Forums/Post/${postId}?sort=0&page=0`);
   public static BungieStore = (subPath = "") =>
     `https://bungiestore.com/${subPath}`;
   public static PressKits = () =>
@@ -336,4 +431,6 @@ export class RouteHelper {
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
   public static Applications = LegacyPathWithQuery("/Application");
+  public static ApplicationDetail = (applicationId: string) =>
+    LegacyPath(`/Application/Detail/${applicationId}`);
 }

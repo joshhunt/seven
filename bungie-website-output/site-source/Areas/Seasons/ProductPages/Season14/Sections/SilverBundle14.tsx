@@ -3,8 +3,9 @@
 
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -117,7 +118,7 @@ export const SilverBundle14: React.FC<SilverBundle14Props> = (props) => {
               />
               <p
                 className={classNames(styles.paragraph, styles.blurb)}
-                dangerouslySetInnerHTML={{ __html: bundle?.SectionBlurb }}
+                dangerouslySetInnerHTML={sanitizeHTML(bundle?.SectionBlurb)}
               />
               <BuyButton
                 analyticsId={buyBtnAnalyticsId}

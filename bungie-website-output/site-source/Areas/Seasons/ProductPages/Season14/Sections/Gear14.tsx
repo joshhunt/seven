@@ -3,7 +3,8 @@
 
 import Carousel14 from "@Areas/Seasons/ProductPages/Season14/Components/Carousel14";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React, { LegacyRef } from "react";
 import styles from "./Gear14.module.scss";
@@ -55,7 +56,7 @@ const Gear14: React.FC<Gear14Props> = (props) => {
           <div className={styles.blurb}>
             <p
               className={styles.paragraphLarge}
-              dangerouslySetInnerHTML={{ __html: s14.GearSectionBlurb }}
+              dangerouslySetInnerHTML={sanitizeHTML(s14.GearSectionBlurb)}
             />
           </div>
         </div>
@@ -133,7 +134,7 @@ const InfoBlock14: React.FC<IInfoBlock14> = (props) => {
       />
       <p
         className={styles.paragraph}
-        dangerouslySetInnerHTML={{ __html: props.blurb }}
+        dangerouslySetInnerHTML={sanitizeHTML(props.blurb)}
       />
     </div>
   );

@@ -1,8 +1,8 @@
-import { BroadcasterObserver } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { createContext } from "react";
 
-export interface ResponsiveUpdatedDat {
+export interface ResponsiveUpdatedData {
   ResponsiveSize: ResponsiveSize;
   mediaQueryTest: boolean;
 }

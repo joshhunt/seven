@@ -1,4 +1,4 @@
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import { Content } from "@Platform";
 
 export interface IFirehoseDebuggerItemData

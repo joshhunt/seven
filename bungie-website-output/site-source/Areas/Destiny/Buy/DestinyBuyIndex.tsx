@@ -2,9 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
@@ -237,7 +238,7 @@ export default class DestinyBuyInternal extends React.Component<
               <div className={styles.carouselTitle}>{carouselItem.title}</div>
               <div
                 className={styles.carouselBlurb}
-                dangerouslySetInnerHTML={{ __html: carouselItem.textBlock }}
+                dangerouslySetInnerHTML={sanitizeHTML(carouselItem.textBlock)}
               />
               <Button
                 buttonType={"gold"}
@@ -308,7 +309,7 @@ export default class DestinyBuyInternal extends React.Component<
 
           <div className={styles.borderTop}>
             <div className={styles.sectionTitle}>
-              {Localizer.Buyflow.Expansions}
+              {Localizer.Buyflow.Releases}
             </div>
           </div>
 
@@ -397,7 +398,7 @@ const ProductFamilyTitles = (props: IProductFamilyTitlesProps) => {
         <div className={styles.subtitle}>{subtitle}</div>
         <div
           className={styles.title}
-          dangerouslySetInnerHTML={{ __html: title }}
+          dangerouslySetInnerHTML={sanitizeHTML(title)}
         />
       </div>
     </div>

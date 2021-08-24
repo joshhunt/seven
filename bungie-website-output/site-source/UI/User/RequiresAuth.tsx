@@ -1,4 +1,4 @@
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
   GlobalState,
   GlobalStateDataStore,

@@ -4,7 +4,7 @@ import { SmsError } from "@Areas/Sms/SmsError";
 import styles from "@Areas/Sms/SmsPage.module.scss";
 import { PlatformError } from "@CustomErrors";
 import { PhoneValidationStatusEnum } from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
 import { Recaptcha } from "@UI/Authentication/Recaptcha";
 import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
@@ -13,7 +13,7 @@ import { Spinner } from "@UIKit/Controls/Spinner";
 import { SubmitButton } from "@UIKit/Forms/SubmitButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { useDataStore } from "@Utilities/ReactUtils";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface SmsCodeFormProps {}

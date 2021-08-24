@@ -1,12 +1,10 @@
-import { StringFetcher } from "@Global/Localization/StringFetcher";
-import * as React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Localizer } from "@Global/Localization/Localizer";
-import styles from "./LocaleSwitcher.module.scss";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { Localizer, StringFetcher } from "@bungie/localization";
+import LocalizationState from "@bungie/localization/LocalizationState";
 import classNames from "classnames";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
+import * as React from "react";
+import { MdLanguage } from "react-icons/all";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import styles from "./LocaleSwitcher.module.scss";
 
 interface ILocaleSwitcherClassNames {
   /** The Switcher wrapper */
@@ -15,11 +13,15 @@ interface ILocaleSwitcherClassNames {
   trigger?: string;
   /** The options portion of the menu */
   options?: string;
+  /** Present if the wrapper is visible */
+  wrapperOpen?: string;
 }
 
 interface ILocaleSwitcherProps extends RouteComponentProps {
   /** Optional classnames for the toast components */
   classes?: ILocaleSwitcherClassNames;
+
+  onLocaleSwitch?: (newLocale: string | null) => void;
 }
 
 interface ILocaleSwitcherState {
@@ -63,7 +65,11 @@ class LocaleSwitcher extends React.Component<
   }
 
   private readonly onBodyClick = (e: MouseEvent) => {
-    if (this.wrapperRef.current.contains(e.target as Node)) {
+    const clickTargetInsideSwitcher = this.wrapperRef.current?.contains(
+      e.target as Node
+    );
+
+    if (clickTargetInsideSwitcher) {
       return;
     }
 
@@ -81,28 +87,34 @@ class LocaleSwitcher extends React.Component<
   public render() {
     const validLocales = Localizer.validLocales;
 
-    const options = validLocales.map((a) => {
+    const options = validLocales.map((locale, i) => {
       const optionClasses = classNames(styles.option, {
-        [styles.current]: LocalizerUtils.currentCultureName === a.name,
+        [styles.current]: LocalizationState.currentCultureName === locale.name,
       });
 
       return (
         <div
-          key={a.name}
+          key={i}
           className={optionClasses}
-          onClick={() => this.onChange(a.name)}
+          onClick={() => this.onChange(locale.name)}
+          data-locale={locale.name}
         >
-          {Localizer.Languages[a.locKey]}
+          {Localizer.Languages[locale.locKey]}
         </div>
       );
     });
 
+    const wrapperOpenClass = this.props.classes?.wrapperOpen
+      ? { [this.props.classes.wrapperOpen]: this.state.open }
+      : null;
+
     const wrapperClasses = classNames(
       styles.wrapper,
+      this.props.classes?.wrapper,
       {
         [styles.open]: this.state.open,
       },
-      this.props.classes?.wrapper
+      wrapperOpenClass
     );
 
     const triggerClasses = classNames(
@@ -121,7 +133,7 @@ class LocaleSwitcher extends React.Component<
         onClick={() => this.toggleOpen()}
       >
         <div className={triggerClasses}>
-          <Icon iconType="material" iconName="language" />
+          <MdLanguage />
         </div>
         <div className={optionsClasses}>{options}</div>
       </div>
@@ -129,13 +141,17 @@ class LocaleSwitcher extends React.Component<
   }
 
   private reconcileCookieAndUrlLocales() {
-    const cookieLocale = LocalizerUtils.cookieLocale;
-    const urlLocale = LocalizerUtils.urlLocale;
+    const cookieLocale = LocalizationState.cookieLocale;
+    const urlLocale = LocalizationState.urlLocale;
 
-    if (urlLocale && !cookieLocale) {
-      LocalizerUtils.updateCookieLocale(urlLocale);
-    } else if (cookieLocale && urlLocale !== cookieLocale) {
-      this.redirectToLocale(urlLocale, cookieLocale);
+    if (urlLocale !== cookieLocale) {
+      this.props.onLocaleSwitch?.(cookieLocale);
+
+      if (cookieLocale) {
+        this.redirectToLocale(urlLocale, cookieLocale);
+      } else if (urlLocale) {
+        LocalizationState.setLocale(urlLocale);
+      }
     }
   }
 
@@ -144,7 +160,6 @@ class LocaleSwitcher extends React.Component<
     const newPath = oldPath.replace(`/${urlLocale}/`, `/${locale}/`);
     if (newPath !== oldPath) {
       this.props.history.push(newPath);
-      BrowserUtils.scrollTo(0);
       StringFetcher.fetch(true);
     }
   }
@@ -152,7 +167,7 @@ class LocaleSwitcher extends React.Component<
   private readonly onChange = (value: string) => {
     this.toggleOpen(false);
 
-    LocalizerUtils.updateCookieLocale(value);
+    LocalizationState.setLocale(value);
 
     // Rather than set the locale here, we set another property. That way, we can compare the current cookie value to the dropdown's value.
     // If they are different, we reload/redirect.

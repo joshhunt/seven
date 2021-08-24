@@ -7,7 +7,7 @@ import { Definitions } from "@Platform";
 import * as Globals from "@Enum";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
 import { DestinyConstants } from "@Utilities/DestinyConstants";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { EnumKey } from "@Helpers";
 

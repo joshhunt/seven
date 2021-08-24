@@ -2,9 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Img } from "@Helpers";
 import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -171,7 +172,7 @@ export const BeyondLightWinBackTextContainer: React.FC<BeyondLightWinBackTextCon
   return (
     <div className={styles.textBlock}>
       <div className={styles.eyebrow}>{props.eyebrow}</div>
-      <h2 dangerouslySetInnerHTML={{ __html: props.title }} />
+      <h2 dangerouslySetInnerHTML={sanitizeHTML(props.title)} />
       <p className={styles.blurb}>{props.description}</p>
       {props.link}
     </div>

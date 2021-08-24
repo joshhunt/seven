@@ -4,7 +4,7 @@
 import * as React from "react";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { InfoBlock } from "@UI/Content/InfoBlock";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 /**
  * LegalCookiePolicy - Replace this description

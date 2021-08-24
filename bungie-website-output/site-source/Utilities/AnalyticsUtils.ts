@@ -1,5 +1,5 @@
 import BungieAnalytics from "@bungie/analytics";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Logger } from "@Global/Logger";
 import { SystemNames } from "@Global/SystemNames";

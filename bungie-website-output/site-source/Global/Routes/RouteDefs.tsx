@@ -1,8 +1,11 @@
 /* tslint:disable member-ordering */
 import { SystemNames } from "@Global/SystemNames";
 import { AreaGroup } from "@Routes/AreaGroup";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
+import { Route } from "react-router";
+import { Redirect } from "react-router-dom";
 import { ActionRoute } from "./ActionRoute";
 import { Area, IArea } from "./Area";
 import { createAsyncComponent } from "./AsyncRoute";
@@ -40,7 +43,6 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) =>
           new ActionRoute(area, "Activate", { path: ":step?/:skuName?" }),
         (area) => new ActionRoute(area, "Confirmation"),
@@ -57,7 +59,6 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) =>
           new ActionRoute(area, "Activate", { path: ":step?/:skuName?" }),
         (area) => new ActionRoute(area, "Confirmation"),
@@ -83,7 +84,6 @@ export class RouteDefs {
           import("@Areas/Destiny/DestinyArea" /* webpackChunkName: "Destiny" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "ProductPage"),
         (area) => new ActionRoute(area, "Buy"),
         (area) =>
@@ -127,6 +127,7 @@ export class RouteDefs {
           }),
         (area) => new ActionRoute(area, "Reveal"),
         (area) => new ActionRoute(area, "Info", { path: ":eventTag" }),
+        (area) => new ActionRoute(area, "WitchQueen"),
       ],
     }),
     Direct: new Area({
@@ -140,6 +141,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "RaidRace"),
         (area) => new ActionRoute(area, "Rewards"),
         (area) => new ActionRoute(area, "DestinyShowcase"),
+        (area) => new ActionRoute(area, "Anniversary"),
       ],
     }),
     GameHistory: new Area({
@@ -183,7 +185,6 @@ export class RouteDefs {
           import("@Areas/Seasons/SeasonsArea" /* webpackChunkName: "Seasons" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "SeasonOfTheUndying"),
         (area) => new ActionRoute(area, "SeasonOfDawn"),
         (area) => new ActionRoute(area, "SeasonOfTheWorthy"),
@@ -191,6 +192,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheHunt"),
         (area) => new ActionRoute(area, "SeasonOfTheChosen"),
         (area) => new ActionRoute(area, "SeasonOfTheSplicer"),
+        (area) => new ActionRoute(area, "SeasonOfTheLost"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),
@@ -216,7 +218,6 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "UserResearch"),
         (area) => new ActionRoute(area, "UserResearchCanTravel"),
       ],
@@ -239,36 +240,61 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "RegistrationPage"),
         (area) => new ActionRoute(area, "Benefits"),
         (area) => new ActionRoute(area, "Apps"),
       ],
     }),
-    User: new Area({
-      name: RouteDefs.AreaNames.User,
-      lazyComponent: createAsyncComponent(
-        () => import("@Areas/User/UserArea" /* webpackChunkName: "User" */)
-      ),
-      routes: [(area) => new ActionRoute(area, "SignIn")],
-    }),
   } as const;
 
   public static AreaGroups = {
-    /**
-		User: new AreaGroup({
-			name: RouteDefs.AreaNames.User,
-			children: {
-				Profile: {
-					lazyComponent: createAsyncComponent(() => import("@Areas/User/UserArea")),
-					routes: [
-						urlPrefix => new ActionRoute(urlPrefix, "Marathon")
-					]
-				}
-			},
-			indexComponent: null
-		})
-		 */
+    User: new AreaGroup({
+      name: RouteDefs.AreaNames.User,
+      children: {
+        SignIn: {
+          lazyComponent: createAsyncComponent(
+            () =>
+              import("@Areas/User/SignIn" /* webpackChunkName: "UserSignIn" */)
+          ),
+          routes: [],
+        },
+        Profile: {
+          lazyComponent: createAsyncComponent(
+            () =>
+              import(
+                "@Areas/User/Profile" /* webpackChunkName: "UserProfile" */
+              )
+          ),
+          routes: [
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, "index", { path: ":mtype?/:mid?" }),
+          ],
+        },
+        Account: {
+          lazyComponent: createAsyncComponent(
+            () =>
+              import(
+                "@Areas/User/Account" /* webpackChunkName: "UserAccount" */
+              )
+          ),
+          routes: [
+            (urlPrefix) => new ActionRoute(urlPrefix, "IdentitySettings"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "BungieFriends"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "EmailSms"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "Notifications"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "AccountLinking"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "Privacy"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "LanguageRegion"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "BlockedUsers"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "CrossSave"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "EververseHistory"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "SilverBalanceHistory"),
+            (urlPrefix) => new ActionRoute(urlPrefix, "AppHistory"),
+          ],
+        },
+      },
+      indexComponent: () => <Redirect to={RouteHelper.SignIn().url} />,
+    }),
   } as const;
 
   /**
@@ -302,7 +328,11 @@ export class RouteDefs {
     });
 
     const areaRoutes = allAreas.map((area) => area.render());
-    const areaGroupIndexComponents = areaGroups.map((ag) => ag.render());
+    const areaGroupIndexComponents = areaGroups.map((ag, i) => (
+      <Route key={i} exact path={ag.resolve()}>
+        {ag.render()}
+      </Route>
+    ));
 
     return (
       <>

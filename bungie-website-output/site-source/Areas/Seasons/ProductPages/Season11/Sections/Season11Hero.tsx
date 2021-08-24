@@ -4,7 +4,7 @@ import {
   Season11DataStore,
   Season11DataStorePayload,
 } from "@Areas/Seasons/ProductPages/Season11/Season11DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { Season11PlayButton } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PlayButton";

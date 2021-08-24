@@ -14,7 +14,7 @@ import SeasonPass14 from "@Areas/Seasons/ProductPages/Season14/Sections/SeasonPa
 import { SilverBundle14 } from "@Areas/Seasons/ProductPages/Season14/Sections/SilverBundle14";
 import VaultOfGlass14 from "@Areas/Seasons/ProductPages/Season14/Sections/VaultOfGlass14";
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
@@ -69,13 +69,13 @@ const SeasonOfTheSplicer: React.FC<SeasonOfTheSplicerProps> = (props) => {
 
   const heroTrailer = trailerJsonParamToLocalizedValue("HeroTrailer");
 
-  const faqParamString = `faq_${LocalizerUtils.currentCultureName}`;
+  const faqParamString = `faq_${Localizer.CurrentCultureName}`;
   const faqUrl = ConfigUtils.GetParameter(
     "SeasonsFAQUrlByLocale",
     faqParamString,
     "https://help.bungie.net/hc/en-us/articles/360060130092-FAQ-for-Season-Pass-Purchases"
   );
-  const supportParamString = `help_${LocalizerUtils.currentCultureName}`;
+  const supportParamString = `help_${Localizer.CurrentCultureName}`;
   const supportUrl = ConfigUtils.GetParameter(
     SystemNames.Season14HelpArticleUrlByLocale,
     supportParamString,

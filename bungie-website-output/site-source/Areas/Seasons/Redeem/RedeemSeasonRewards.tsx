@@ -1,6 +1,7 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
 import styles from "./RedeemSeasonRewards.module.scss";
 import {
@@ -13,7 +14,7 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { World, Platform, Renderer, Components } from "@Platform";
 import { DestinyDefinitions } from "@Definitions";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";
@@ -119,7 +120,7 @@ class RedeemSeasonRewards extends React.Component<
             <h4 className={styles.titleUnclaimedRewards}>{title}</h4>
             <p
               className={styles.descUnclaimedRewards}
-              dangerouslySetInnerHTML={{ __html: desc }}
+              dangerouslySetInnerHTML={sanitizeHTML(desc)}
             />
             <div className={styles.listUnClaimed}>
               {this.state.rewardItems.map((value) => (

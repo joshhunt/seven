@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Season11GridBoundary } from "@Areas/Seasons/ProductPages/Season11/Components/Season11GridBoundary";
 import { ResponsiveContext } from "@Boot/Responsive";
 import { Season11MobileSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface DefaultProps {
   size?: "large" | "small";

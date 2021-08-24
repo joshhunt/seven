@@ -1,10 +1,11 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./Footer.module.scss";
 import { RouteHelper, IMultiSiteLink } from "@Global/Routes/RouteHelper";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import moment from "moment";
 import { Models } from "@Platform";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -221,7 +222,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
         <div className={classNames(styles.navBottom, styles.lower)}>
           <p
             className={styles.copyright}
-            dangerouslySetInnerHTML={{ __html: copyright }}
+            dangerouslySetInnerHTML={sanitizeHTML(copyright)}
           />
 
           <div className={styles.followUs}>
@@ -262,7 +263,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                   title={Localizer.Community.BungieTwitch}
                 />
               </li>
-              {LocalizerUtils.currentCultureName === "ru" && (
+              {Localizer.CurrentCultureName === "ru" && (
                 <li className={styles.vk}>
                   <a
                     href={"https://vk.com/destinythegame"}

@@ -5,7 +5,7 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 import styles from "./TwoLineItem.module.scss";
 
-interface ITwoLineItemProps extends React.HTMLProps<HTMLDivElement> {
+export interface ITwoLineItemProps extends React.HTMLProps<HTMLDivElement> {
   /** Item title */
   itemTitle: ReactNode;
   /** Item subtitle */
@@ -40,10 +40,15 @@ export class TwoLineItem extends React.Component<
       flair,
       size,
       clickable,
+      className,
       ...rest
     } = this.props;
 
     const classes = [styles.twoLineItem];
+
+    if (typeof className !== "undefined") {
+      classes.push(this.props.className);
+    }
 
     if (size !== undefined) {
       classes.push(styles[`basicSize${BasicSize[size]}`]);

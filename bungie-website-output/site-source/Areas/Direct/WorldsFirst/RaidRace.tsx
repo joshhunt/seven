@@ -1,5 +1,6 @@
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -39,9 +40,9 @@ const WorldsFirst: React.FC = () => {
   const isLive = now.isAfter(liveTime);
 
   const title = `${Localizer.Season14.WatchTheRace} // ${Localizer.Season14.RaidRaceLaunchDate}`;
-  const titleImg = `/7/ca/destiny/bgs/raidrace/vog_logo_${LocalizerUtils.currentCultureName}.svg`;
+  const titleImg = `/7/ca/destiny/bgs/raidrace/vog_logo_${Localizer.CurrentCultureName}.svg`;
   const destinyLogo =
-    LocalizerUtils.currentCultureName === "ko"
+    Localizer.CurrentCultureName === "ko"
       ? "/7/ca/destiny/bgs/raidrace/destiny_guardians_logo.svg"
       : "/7/ca/destiny/bgs/raidrace/destiny_2_logo.svg";
   const twitchBtnUrl = "https://www.twitch.tv/directory/game/Destiny%202";
@@ -95,9 +96,9 @@ const WorldsFirst: React.FC = () => {
           <div className={styles.contentFlexWrapper}>
             <p
               className={styles.mainBlurb}
-              dangerouslySetInnerHTML={{
-                __html: Localizer.Season14.RaidRaceBlurb,
-              }}
+              dangerouslySetInnerHTML={sanitizeHTML(
+                Localizer.Season14.RaidRaceBlurb
+              )}
             />
             <p className={styles.freeForAll}>
               {Localizer.Season14.RaidRaceFreeForAll}
@@ -171,7 +172,7 @@ const LiveRaidReveal = () => {
  * @constructor
  */
 const BundleUpsell = () => {
-  const logo = `url("/7/ca/destiny/bgs/raidrace/vog_bundle_logo_${LocalizerUtils.currentCultureName}.svg")`;
+  const logo = `url("/7/ca/destiny/bgs/raidrace/vog_bundle_logo_${Localizer.CurrentCultureName}.svg")`;
   const btnAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.DirectWorldsFirst,
     "WorldsFirstUpsellBtnAnalyticsId",

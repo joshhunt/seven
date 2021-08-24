@@ -4,8 +4,8 @@
 import BlockPlusButton from "@Areas/Seasons/ProductPages/Season14/Components/BlockPlusButton";
 import { SectionHeader } from "@Areas/Seasons/ProductPages/Season14/Components/SectionHeader";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import React, {
   LegacyRef,

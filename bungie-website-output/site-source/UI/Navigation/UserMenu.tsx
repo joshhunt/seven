@@ -1,6 +1,7 @@
+import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
 import { BungieCredentialType } from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
 import {
   GlobalState,
   GlobalStateComponentProps,
@@ -8,10 +9,10 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import { NotificationCounts } from "@Global/EventMux/NotificationCount/InternalNotificationViewModel";
 import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
-import { Localizer } from "@Global/Localization/Localizer";
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { SystemNames } from "@Global/SystemNames";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
+import { BungieFriendsNavIcon } from "@UI/Navigation/BungieFriendsNavIcon";
 import {
   INavigationTopLink,
   NavigationConfigLegacy,
@@ -97,7 +98,8 @@ class UserMenuInternal extends React.Component<
       background = "";
 
     if (loggedInUser && loggedInUser.user) {
-      title = loggedInUser.user.displayName;
+      title = UserUtils.getBungieNameFromBnetGeneralUser(loggedInUser?.user)
+        ?.bungieGlobalName;
       background = loggedInUser.user.profilePicturePath;
     }
 
@@ -136,6 +138,8 @@ class UserMenuInternal extends React.Component<
         )}
 
         <LocaleSwitcher classes={{ trigger: styles.trigger }} />
+
+        <BungieFriendsNavIcon />
 
         {isAuthed && (
           <a

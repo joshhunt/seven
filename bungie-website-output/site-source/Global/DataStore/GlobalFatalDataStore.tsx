@@ -1,7 +1,7 @@
 // Created by a-tmorris, 2020
 // Copyright Bungie, Inc.
 
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 
 export interface IGlobalFatalDataStorePayload {
   error: string[];

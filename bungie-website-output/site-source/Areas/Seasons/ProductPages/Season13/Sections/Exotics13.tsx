@@ -2,8 +2,9 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Platform } from "@Platform";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
@@ -80,7 +81,7 @@ export const Exotics13: React.FC<Exotics13Props> = (props) => {
             <div className={styles.exoticTitle}>{exoticQuestItem?.title}</div>
             <p
               className={styles.blurb}
-              dangerouslySetInnerHTML={{ __html: exoticQuestItem?.textBlock }}
+              dangerouslySetInnerHTML={sanitizeHTML(exoticQuestItem?.textBlock)}
             />
           </div>
         </GridCol>

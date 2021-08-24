@@ -1,8 +1,8 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import * as React from "react";
 import styles from "./MarketingTextBox.module.scss";
 import {

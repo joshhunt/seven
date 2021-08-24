@@ -1,7 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { Broadcaster } from "@Global/Broadcaster/Broadcaster";
+import { Broadcaster } from "@bungie/datastore/Broadcaster";
 
 type RecaptchaActions = "EXECUTE_ASYNC";
 

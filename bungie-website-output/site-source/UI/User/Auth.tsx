@@ -2,10 +2,10 @@ import {
   GlobalStateDataStore,
   GlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import * as Globals from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import styles from "./RequiresAuth.module.scss";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
@@ -48,6 +48,10 @@ interface DefaultProps {
    * If true, the user will be able to close the auth modal
    */
   preventModalClose: boolean;
+  /**
+   * If you want to do something when the modal is closed
+   */
+  onClose?: () => void;
 }
 
 type Props = IAuthProps & Partial<DefaultProps>;
@@ -64,6 +68,7 @@ export const ShowAuthModal = (
       isFrameless: true,
       preventUserClose: authProps.preventModalClose,
       className: styles.authModal,
+      onClose: () => authProps.onClose?.(),
     },
     modalRef
   );

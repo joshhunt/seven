@@ -3,13 +3,14 @@
 
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Img } from "@Helpers";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -755,30 +756,30 @@ class ForsakenPageInternal extends React.Component<
               {this.state.forsakenIsShowing ? (
                 <div className={styles.buyMainContent}>
                   <div
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Destiny.ForsakenEditionDesc1,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Destiny.ForsakenEditionDesc1
+                    )}
                   />
                   <div className={styles.descBottom}>
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.BuyUpgradeDesc3,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        Localizer.Destiny.BuyUpgradeDesc3
+                      )}
                     />
                   </div>
                 </div>
               ) : (
                 <div className={styles.buyMainContent}>
                   <div
-                    dangerouslySetInnerHTML={{
-                      __html: Localizer.Destiny.legendaryEditionDesc1,
-                    }}
+                    dangerouslySetInnerHTML={sanitizeHTML(
+                      Localizer.Destiny.legendaryEditionDesc1
+                    )}
                   />
                   <div className={styles.descBottom}>
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.legendaryEditionDesc2,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        Localizer.Destiny.legendaryEditionDesc2
+                      )}
                     />
                   </div>
                 </div>

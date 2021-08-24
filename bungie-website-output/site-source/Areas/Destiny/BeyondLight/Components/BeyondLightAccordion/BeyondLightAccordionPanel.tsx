@@ -6,7 +6,7 @@ import classNames from "classnames";
 import styles from "./BeyondLightAccordion.module.scss";
 
 // Required props
-interface IAccordionPanelProps {
+interface IBeyondLightAccordionPanelProps {
   title: string;
   eyebrow: string;
   summary?: string;
@@ -28,26 +28,27 @@ interface IAccordionPanelProps {
 // Default props - these will have values set in Component.defaultProps
 interface DefaultProps {}
 
-export type AccordionPanelProps = IAccordionPanelProps & DefaultProps;
+export type BeyondLightAccordionPanelProps = IBeyondLightAccordionPanelProps &
+  DefaultProps;
 
-interface IAccordionPanelState {
+interface IBeyondLightAccordionPanelState {
   foldHeight: number;
   isActive: boolean;
 }
 
 /**
- * AccordionPanel - This is the panel inside of the Accordion
+ * BeyondLightAccordionPanel - This is the panel inside of the BeyondLightAccordion
  *  *
- * @param {AccordionPanelProps} props
+ * @param {BeyondLightAccordionPanelProps} props
  * @returns
  */
-export class AccordionPanel extends React.Component<
-  AccordionPanelProps,
-  IAccordionPanelState
+export class BeyondLightAccordionPanel extends React.Component<
+  BeyondLightAccordionPanelProps,
+  IBeyondLightAccordionPanelState
 > {
   private readonly foldRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  constructor(props: AccordionPanelProps) {
+  constructor(props: BeyondLightAccordionPanelProps) {
     super(props);
     this.state = {
       foldHeight: 0,

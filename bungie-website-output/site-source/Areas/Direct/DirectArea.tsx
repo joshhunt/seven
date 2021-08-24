@@ -34,6 +34,11 @@ class DirectArea extends React.Component<IDirectRouterProps> {
             path={RouteDefs.Areas.Direct.getAction("DestinyShowcase").path}
             component={() => import("./DestinyShowcase/DestinyShowcase")}
           />
+
+          <AsyncRoute
+            path={RouteDefs.Areas.Direct.getAction("Anniversary").path}
+            component={() => import("./BungieAnniversary/BungieAnniversary")}
+          />
         </AnimatedRouter>
       </React.Fragment>
     );

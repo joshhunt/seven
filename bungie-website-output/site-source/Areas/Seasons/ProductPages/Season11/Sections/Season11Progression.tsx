@@ -1,9 +1,10 @@
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import React, { LegacyRef } from "react";
 import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Responsive } from "@Boot/Responsive";
 import classNames from "classnames";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -117,9 +118,9 @@ export const Season11Progression: React.FC<Season11ProgressionProps> = (
                   {Localizer.Seasonoftheworthy.ListTitleSeasonPass}
                 </h2>
                 <ul
-                  dangerouslySetInnerHTML={{
-                    __html: Localizer.Season11.SeasonPassRewards,
-                  }}
+                  dangerouslySetInnerHTML={sanitizeHTML(
+                    Localizer.Season11.SeasonPassRewards
+                  )}
                 />
               </div>
               <div className={styles.freeRewardsList}>
@@ -134,9 +135,9 @@ export const Season11Progression: React.FC<Season11ProgressionProps> = (
                   {Localizer.Seasonoftheworthy.AvailableToAll}
                 </h2>
                 <ul
-                  dangerouslySetInnerHTML={{
-                    __html: Localizer.Season11.FreeRewards,
-                  }}
+                  dangerouslySetInnerHTML={sanitizeHTML(
+                    Localizer.Season11.FreeRewards
+                  )}
                 />
               </div>
             </div>

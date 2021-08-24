@@ -2,8 +2,8 @@ import * as Globals from "@Enum";
 import {
   Broadcaster,
   BroadcasterObserver,
-} from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+} from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { User } from "@Platform";
 
 export enum NotificationTypes {

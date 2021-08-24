@@ -81,6 +81,10 @@ export declare namespace User {
     stadiaDisplayName: string;
 
     twitchDisplayName: string;
+
+    cachedBungieGlobalDisplayName: string;
+
+    cachedBungieGlobalDisplayNameCode?: number;
   }
 
   export interface UserToUserContext {
@@ -119,6 +123,10 @@ export declare namespace User {
     membershipId: string;
 
     displayName: string;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
   }
 
   export interface UserAuthContextResponse {
@@ -273,6 +281,24 @@ export declare namespace User {
     lastDigits: string;
   }
 
+  export interface UserSearchResponse {
+    searchResults: User.UserSearchResponseDetail[];
+
+    page: number;
+
+    hasMore: boolean;
+  }
+
+  export interface UserSearchResponseDetail {
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
+
+    bungieNetMembershipId?: string;
+
+    destinyMemberships: User.UserInfoCard[];
+  }
+
   /**
 	Very basic info about a user as returned by the Account server.
 	*/
@@ -292,6 +318,16 @@ export declare namespace User {
 		the data type is used as input to a platform API.
 		*/
     displayName: string;
+
+    /**
+		The bungie global display name, if set.
+		*/
+    bungieGlobalDisplayName: string;
+
+    /**
+		The bungie global display name code, if set.
+		*/
+    bungieGlobalDisplayNameCode?: number;
   }
 
   export interface UserBanState {
@@ -520,6 +556,16 @@ export declare namespace Ignores {
     ignoreFlags: Globals.IgnoreStatus;
   }
 
+  export interface IgnoredPlayer {
+    membershipId: string;
+
+    bungieName: string;
+
+    bungieNameCode?: number;
+
+    dateBlocked: string;
+  }
+
   export interface ReportContextResponse {
     reportId: string;
 
@@ -683,6 +729,11 @@ export declare namespace Applications {
 		the application owner.
 		*/
     team: Applications.ApplicationDeveloper[];
+
+    /**
+		An optional override for the Authorize view name.
+		*/
+    overrideAuthorizeViewName: string;
   }
 
   export interface ApplicationDeveloper {
@@ -1058,20 +1109,6 @@ export declare namespace Queries {
     useTotalResults: boolean;
   }
 
-  export interface SearchResultFriend {
-    results: Friends.Friend[];
-
-    totalResults: number;
-
-    hasMore: boolean;
-
-    query: Queries.PagedQuery;
-
-    replacementContinuationToken: string;
-
-    useTotalResults: boolean;
-  }
-
   export interface SearchResultGroupMember {
     results: GroupsV2.GroupMember[];
 
@@ -1297,12 +1334,12 @@ export declare namespace Contract {
 
     privacyVersion: number;
 
+    rejectAllFriendRequests: boolean;
+
     isUltrabanned: boolean;
   }
 
   export interface CreateBungieProfileRequest {
-    displayName: string;
-
     email: string;
 
     emailUsage?: string;
@@ -1337,8 +1374,6 @@ export declare namespace Contract {
     membershipId: string;
 
     displayName: string;
-
-    uniqueName: string;
 
     profilePicture?: number;
 
@@ -1376,6 +1411,8 @@ export declare namespace Contract {
 
     pmToastsEnabled?: boolean;
 
+    rejectAllFriendRequests?: boolean;
+
     showGamertagPublic?: boolean;
 
     showFacebookPublic?: boolean;
@@ -1396,8 +1433,6 @@ export declare namespace Contract {
   }
 
   export interface UserCounts {
-    onlineFriendCount: number;
-
     notificationCount: number;
 
     messageCount: number;
@@ -2133,22 +2168,6 @@ export declare namespace Contracts {
     message: string;
   }
 
-  export interface LegacyFriendSearchResponse {
-    users: User.GeneralUser[];
-
-    results: Friends.LegacyFriend[];
-
-    totalResults: number;
-
-    hasMore: boolean;
-
-    query: Queries.PagedQuery;
-
-    replacementContinuationToken: string;
-
-    useTotalResults: boolean;
-  }
-
   export interface IgnoreSearchResult {
     tags: Contracts.IgnoreDetailResponseTag[];
 
@@ -2573,6 +2592,10 @@ export declare namespace GroupsV2 {
     membershipId: string;
 
     displayName: string;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
   }
 
   export interface GroupV2 {
@@ -3346,6 +3369,10 @@ export declare namespace Responses {
     membershipId: string;
 
     displayName: string;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
   }
 
   /**
@@ -3494,6 +3521,11 @@ export declare namespace Responses {
     metrics: Components.SingleComponentResponseDestinyMetricsComponent;
 
     /**
+		COMPONENT TYPE: StringVariables
+		*/
+    profileStringVariables: Components.SingleComponentResponseDestinyStringVariablesComponent;
+
+    /**
 		Basic information about each character, keyed by the CharacterId.
 		
 		COMPONENT TYPE: Characters
@@ -3606,6 +3638,11 @@ export declare namespace Responses {
 		COMPONENT TYPE: Collectibles
 		*/
     characterCollectibles: Components.DictionaryComponentResponseInt64DestinyCollectiblesComponent;
+
+    /**
+		COMPONENT TYPE: StringVariables
+		*/
+    characterStringVariables: Components.DictionaryComponentResponseInt64DestinyStringVariablesComponent;
 
     /**
 		Information about instanced items across all returned characters, keyed by the item's instance ID.
@@ -3724,6 +3761,26 @@ export declare namespace Responses {
 		COMPONENT TYPE: CurrencyLookups
 		*/
     currencyLookups: Components.SingleComponentResponseDestinyCurrenciesComponent;
+  }
+
+  export interface DestinyQueryUnlocksResponse {
+    membershipType: Globals.BungieMembershipType;
+
+    destinyMembershipId: string;
+
+    AggregateUnlockFlagDictionary: { [key: number]: boolean };
+
+    ProfileUnlockValueDictionary: { [key: number]: number };
+
+    CharacterUnlockValueDictionary: {
+      [key: number]: Responses.DestinyQueryUnlockValueCharacterResponse[];
+    };
+  }
+
+  export interface DestinyQueryUnlockValueCharacterResponse {
+    CharacterId: string;
+
+    UnlockValue: number;
   }
 
   /**
@@ -3871,6 +3928,13 @@ export declare namespace Responses {
 		COMPONENT TYPE: CurrencyLookups
 		*/
     currencyLookups: Components.SingleComponentResponseDestinyCurrenciesComponent;
+
+    /**
+		A map of string variable values by hash for this character context.
+		
+		COMPONENT TYPE: StringVariables
+		*/
+    stringVariables: Components.SingleComponentResponseDestinyStringVariablesComponent;
   }
 
   export interface PersonalDestinyVendorSaleItemSetComponent {
@@ -3916,6 +3980,13 @@ export declare namespace Responses {
 		COMPONENT TYPE: CurrencyLookups
 		*/
     currencyLookups: Components.SingleComponentResponseDestinyCurrenciesComponent;
+
+    /**
+		A map of string variable values by hash for this character context.
+		
+		COMPONENT TYPE: StringVariables
+		*/
+    stringVariables: Components.SingleComponentResponseDestinyStringVariablesComponent;
   }
 
   /**
@@ -3963,6 +4034,13 @@ export declare namespace Responses {
 		COMPONENT TYPE: VendorSales
 		*/
     sales: Components.DictionaryComponentResponseUInt32PublicDestinyVendorSaleItemSetComponent;
+
+    /**
+		A set of string variable values by hash for a public vendors context.
+		
+		COMPONENT TYPE: StringVariables
+		*/
+    stringVariables: Components.SingleComponentResponseDestinyStringVariablesComponent;
   }
 
   export interface PublicDestinyVendorSaleItemSetComponent {
@@ -4210,6 +4288,12 @@ export declare namespace World {
 		The amount of the item needed/available depending on the context of where DestinyItemQuantity is being used.
 		*/
     quantity: number;
+
+    /**
+		Indicates that this item quantity may be conditionally shown or hidden, based on various sources of state.
+		For example: server flags, account state, or character progress.
+		*/
+    hasConditionalVisibility: boolean;
   }
 
   export interface DyeReference {
@@ -4581,6 +4665,12 @@ export declare namespace Requests {
     subject: string;
 
     body: string;
+  }
+
+  export interface DestinyQueryUnlocksRequest {
+    UnlockFlagsToQuery: number[];
+
+    UnlockValuesToQuery: number[];
   }
 
   export interface DestinyItemTransferRequest {
@@ -5427,55 +5517,6 @@ export declare namespace Activities {
   }
 }
 
-export declare namespace Friends {
-  export interface LegacyFriend {
-    credentialType: Globals.BungieCredentialType;
-
-    platform: string;
-
-    platformDisplayName: string;
-
-    bungieNetMembershipId: string;
-
-    statusCode: Globals.FriendOnlineStatus;
-
-    status: string;
-
-    imagePath: string;
-
-    destinyMembershipId: string;
-  }
-
-  export interface Friend {
-    friendType: Globals.BungieCredentialType;
-
-    /**
-		The user info card of this Friend entry.  Tiger memberships with hard links to relevant credentials will be populated here.
-		*/
-    platformUserInfo: User.UserInfoCard;
-
-    /**
-		If public, the bungie.net membership details for this Friend entry
-		*/
-    bungieNetUserInfo: User.GeneralUser;
-
-    /**
-		The presence status of this friend
-		*/
-    onlineStatus: Globals.FriendOnlineStatus;
-
-    /**
-		The presence string (usually, what game they are currently playing)
-		*/
-    presenceString: string;
-
-    /**
-		More details info about the game the friend is playing if available.
-		*/
-    gameStatus: string;
-  }
-}
-
 export declare namespace Core {
   /**
 	Use when you need to send a date and string together across the wire.
@@ -6192,6 +6233,28 @@ export declare namespace Definitions {
 		*/
     omitFromRequirements: boolean;
   }
+
+  /**
+	Where the sausage gets made.  Unlock Expressions are the foundation of the game's gating
+	mechanics and investment-related restrictions.  They can test Unlock Flags and Unlock Values
+	for certain states, using a sufficient amount of logical operators such that
+	unlock expressions are effectively Turing complete.
+	
+	Use UnlockExpressionParser to evaluate expressions using an IUnlockContext parsed from Babel.
+	*/
+  export interface DestinyUnlockExpressionDefinition {
+    /**
+		A shortcut for determining the most restrictive gating that this expression performs.
+		See the DestinyGatingScope enum's documentation for more details.
+		*/
+    scope: Globals.DestinyGatingScope;
+  }
+
+  /**
+	An individual step represents either a single operation in the stack of operations,
+	or an unlock flag/value/mapping/constant value to be evaluated.
+	*/
+  export interface DestinyUnlockExpressionStepDefinition {}
 
   export interface DestinyHistoricalStatsDefinition {
     /**
@@ -7764,6 +7827,8 @@ export declare namespace Definitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
   }
 
   /**
@@ -8361,22 +8426,6 @@ export declare namespace Definitions {
   }
 
   /**
-	Where the sausage gets made.  Unlock Expressions are the foundation of the game's gating
-	mechanics and investment-related restrictions.  They can test Unlock Flags and Unlock Values
-	for certain states, using a sufficient amount of logical operators such that
-	unlock expressions are effectively Turing complete.
-	
-	Use UnlockExpressionParser to evaluate expressions using an IUnlockContext parsed from Babel.
-	*/
-  export interface DestinyUnlockExpressionDefinition {
-    /**
-		A shortcut for determining the most restrictive gating that this expression performs.
-		See the DestinyGatingScope enum's documentation for more details.
-		*/
-    scope: Globals.DestinyGatingScope;
-  }
-
-  /**
 	The definition for an Activity Type.
 	
 	In Destiny 2, an Activity Type represents a conceptual categorization of Activities.
@@ -8497,7 +8546,7 @@ export declare namespace Definitions {
 	terms: but an actual instance of an item can vary widely from these generic definitions.
 	*/
   export interface DestinyInventoryItemDefinition {
-    displayProperties: Definitions.DestinyItemDisplayPropertiesDefinition;
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
     /**
 		Tooltips that only come up conditionally for the item.  Check the live data 
@@ -8566,6 +8615,8 @@ export declare namespace Definitions {
 		of consistency between items.
 		*/
     itemTypeDisplayName: string;
+
+    flavorText: string;
 
     /**
 		A string identifier that the game's UI uses to determine how the item should be rendered in inventory screens and the like.
@@ -8904,27 +8955,16 @@ export declare namespace Definitions {
 		*/
     traitIds: string[];
 
+    /**
+		These are the corresponding trait definition hashes for the entries in traitIds.
+		*/
+    traitHashes: number[];
+
     hash: number;
 
     index: number;
 
     redacted: boolean;
-  }
-
-  export interface DestinyItemDisplayPropertiesDefinition {
-    flavorText: string;
-
-    description: string;
-
-    name: string;
-
-    icon: string;
-
-    iconSequences: Common.DestinyIconSequenceDefinition[];
-
-    highResIcon: string;
-
-    hasIcon: boolean;
   }
 
   export interface DestinyItemTooltipNotification {
@@ -10483,6 +10523,8 @@ export declare namespace Definitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
   }
 
   /**
@@ -11197,12 +11239,6 @@ export declare namespace Definitions {
   }
 
   /**
-	An individual step represents either a single operation in the stack of operations,
-	or an unlock flag/value/mapping/constant value to be evaluated.
-	*/
-  export interface DestinyUnlockExpressionStepDefinition {}
-
-  /**
 	When we parse Unlock Definitions, sometimes we can predict the date ranges when they will be
 	locked or unlocked.  In those cases, we turn that information into DestinyCalendarEventDefinitions,
 	which gives us an easy and non-CPU intensive way to check the predicted state of an unlock in the future
@@ -11652,6 +11688,11 @@ export declare namespace Items {
 		The version of this item, used to index into the versions list in the item definition quality block.
 		*/
     versionNumber?: number;
+
+    /**
+		If available, a list that describes which item values (rewards) should be shown (true) or hidden (false).
+		*/
+    itemValueVisibility: boolean[];
   }
 
   /**
@@ -13223,6 +13264,11 @@ export declare namespace Vendors {
 		*/
     augments: Globals.DestinyVendorItemState;
 
+    /**
+		If available, a list that describes which item values (rewards) should be shown (true) or hidden (false).
+		*/
+    itemValueVisibility: boolean[];
+
     vendorItemIndex: number;
 
     itemHash: number;
@@ -13387,6 +13433,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface SingleComponentResponseDestinyStringVariablesComponent {
+    data: StringVariables.DestinyStringVariablesComponent;
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface DictionaryComponentResponseInt64DestinyCharacterComponent {
     data: { [key: string]: Characters.DestinyCharacterComponent };
 
@@ -13469,6 +13523,14 @@ export declare namespace Components {
 
   export interface DictionaryComponentResponseInt64DestinyCollectiblesComponent {
     data: { [key: string]: Collectibles.DestinyCollectiblesComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
+  export interface DictionaryComponentResponseInt64DestinyStringVariablesComponent {
+    data: { [key: string]: StringVariables.DestinyStringVariablesComponent };
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -14576,6 +14638,18 @@ export declare namespace Records {
     intervalObjectives: Quests.DestinyObjectiveProgress[];
 
     intervalsRedeemedCount: number;
+
+    /**
+		If available, this is the number of times this record has been completed.
+		For example, the number of times a seal title has been gilded.
+		*/
+    completedCount?: number;
+
+    /**
+		If available, a list that describes which reward rewards should be shown (true) or hidden (false).
+		This property is for regular record rewards, and not for interval objective rewards.
+		*/
+    rewardVisibilty: boolean[];
   }
 
   export interface DestinyCharacterRecordsComponent {
@@ -14854,6 +14928,12 @@ export declare namespace Metrics {
     index: number;
 
     redacted: boolean;
+  }
+}
+
+export declare namespace StringVariables {
+  export interface DestinyStringVariablesComponent {
+    integerValuesByHash: { [key: number]: number };
   }
 }
 
@@ -15813,6 +15893,8 @@ export declare namespace Milestones {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
   }
 
   /**
@@ -16204,6 +16286,48 @@ export declare namespace Perks {
 		perk should be shown in your UI.
 		*/
     visible: boolean;
+  }
+}
+
+export declare namespace ClanBanner {
+  export interface ClanBannerSource {
+    clanBannerDecals: { [key: number]: ClanBanner.ClanBannerDecal };
+
+    clanBannerDecalPrimaryColors: { [key: number]: Utilities.PixelDataARGB };
+
+    clanBannerDecalSecondaryColors: { [key: number]: Utilities.PixelDataARGB };
+
+    clanBannerGonfalons: { [key: number]: string };
+
+    clanBannerGonfalonColors: { [key: number]: Utilities.PixelDataARGB };
+
+    clanBannerGonfalonDetails: { [key: number]: string };
+
+    clanBannerGonfalonDetailColors: { [key: number]: Utilities.PixelDataARGB };
+
+    clanBannerDecalsSquare: { [key: number]: ClanBanner.ClanBannerDecal };
+
+    clanBannerGonfalonDetailsSquare: { [key: number]: string };
+  }
+
+  export interface ClanBannerDecal {
+    identifier: string;
+
+    foregroundPath: string;
+
+    backgroundPath: string;
+  }
+}
+
+export declare namespace Utilities {
+  export interface PixelDataARGB {
+    blue: number;
+
+    green: number;
+
+    red: number;
+
+    alpha: number;
   }
 }
 
@@ -17092,10 +17216,6 @@ export declare namespace Fireteam {
 
     FireteamMembershipType: Globals.BungieMembershipType;
 
-    FireteamPlatformProfileUrl: string;
-
-    FireteamPlatformUniqueIdentifier: string;
-
     supplementalDisplayName: string;
 
     iconPath: string;
@@ -17111,6 +17231,10 @@ export declare namespace Fireteam {
     membershipId: string;
 
     displayName: string;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
   }
 
   export interface FireteamCreationRequest {
@@ -17133,6 +17257,8 @@ export declare namespace Fireteam {
     ownerHasMicrophone: boolean;
 
     locale: string;
+
+    preferNativePlatform: boolean;
   }
 
   export interface FireteamEditRequest {
@@ -17839,9 +17965,15 @@ export declare namespace Seasons {
     description: string;
 
     /**
-		A localized link to learn more about the season.
+		A relative path to learn more about the season. Web browsers should be automatically redirected to the user's Bungie.net locale.
+		For example: "/SeasonOfTheChosen" will redirect to "/7/en/Seasons/SeasonOfTheChosen" for English users.
 		*/
-    link: string;
+    linkPath: string;
+
+    /**
+		An optional link to a localized video, probably YouTube.
+		*/
+    videoLink: string;
 
     /**
 		A list of images to preview the seasonal content. Should have at least three to show.
@@ -17854,19 +17986,14 @@ export declare namespace Seasons {
 	*/
   export interface DestinySeasonPreviewImageDefinition {
     /**
-		Path to a thumbnail icon to preview seasonal content.
+		A thumbnail icon path to preview seasonal content, probably 480x270.
 		*/
-    thumbnailIcon: string;
+    thumbnailImage: string;
 
     /**
-		Optional path to a high-res image.
+		An optional path to a high-resolution image, probably 1920x1080.
 		*/
     highResImage: string;
-
-    /**
-		Optional link to a localized video, probably YouTube.
-		*/
-    videoLink: string;
   }
 
   export interface DestinySeasonPassDefinition {
@@ -18915,6 +19042,62 @@ export declare namespace Recaptcha {
   }
 }
 
+export declare namespace Friends {
+  export interface BungieFriendListResponse {
+    friends: Friends.BungieFriend[];
+  }
+
+  export interface BungieFriend {
+    lastSeenAsMembershipId: string;
+
+    lastSeenAsBungieMembershipType: Globals.BungieMembershipType;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
+
+    onlineStatus: Globals.PresenceStatus;
+
+    onlineTitle: Globals.PresenceOnlineStateFlags;
+
+    relationship: Globals.FriendRelationshipState;
+
+    bungieNetUser: User.GeneralUser;
+  }
+
+  export interface BungieFriendRequestListResponse {
+    incomingRequests: Friends.BungieFriend[];
+
+    outgoingRequests: Friends.BungieFriend[];
+  }
+
+  export interface PlatformFriendResponse {
+    itemsPerPage: number;
+
+    currentPage: number;
+
+    hasMore: boolean;
+
+    platformFriends: Friends.PlatformFriend[];
+  }
+
+  export interface PlatformFriend {
+    platformDisplayName: string;
+
+    friendPlatform: Globals.PlatformFriendType;
+
+    destinyMembershipId?: string;
+
+    destinyMembershipType?: Globals.BungieMembershipType;
+
+    bungieNetMembershipId?: string;
+
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
+  }
+}
+
 class JsonpServiceInternal {
   /**
    * Gets the signed-in user.
@@ -19603,7 +19786,7 @@ class UserServiceInternal {
     );
 
   /**
-   * Returns a list of possible users based on the search string
+   * Obsolete User Search function - no longer returns results.
    * @param q The search string.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -19624,7 +19807,7 @@ class UserServiceInternal {
     );
 
   /**
-   * Returns a list of possible users based on the search string, and the given page.
+   * Obsolete - This user search function is no longer supported.
    * @param searchString The search string.
    * @param currentPage
    * @param itemsPerPage The number of users per page to return (capped at 50) DEPRECATED - we'll give you what we've configured to be a reasonable # of results.
@@ -20133,6 +20316,29 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "GetSmsValidationStatus",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Given the prefix of a global display name, returns all users who share that name.
+   * @param displayNamePrefix The display name prefix you're looking for.
+   * @param page The zero-based page of results you desire.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SearchByGlobalNamePrefix = (
+    displayNamePrefix: string,
+    page: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserSearchResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/User/Search/Prefix/${e(displayNamePrefix)}/${e(page)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "SearchByGlobalNamePrefix",
       undefined,
       clientState
     );
@@ -22588,69 +22794,6 @@ class ActivityServiceInternal {
     );
 
   /**
-   * Gets the first page of your cross-platform friends for any platform you've registered.  This service is likely not what you want to call for friends.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetFriends = (
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<Contracts.LegacyFriendSearchResponse> =>
-    ApiIntermediary.doGetRequest(
-      `/Activity/Friends/`,
-      [],
-      optionalQueryAppend,
-      "Activity",
-      "GetFriends",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Get the Bungie.net membership IDs for all Platform Friends whom you can see on Bungie.net.
-   * @param credentialType The type of friend platform to use.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetFriendsAllNoPresence = (
-    credentialType: Globals.BungieCredentialType,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<Queries.SearchResultFriend> =>
-    ApiIntermediary.doGetRequest(
-      `/Activity/Friends/AllNoPresence/${e(credentialType)}/`,
-      [],
-      optionalQueryAppend,
-      "Activity",
-      "GetFriendsAllNoPresence",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Get your paged set of Friends and their presence info, per credential for which you have friends.
-   * @param credentialType The type of friend platform to use.
-   * @param currentPage The one based page to access
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetFriendsPaged = (
-    credentialType: Globals.BungieCredentialType,
-    currentPage: number,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<Queries.SearchResultFriend> =>
-    ApiIntermediary.doGetRequest(
-      `/Activity/Friends/Paged/${e(credentialType)}/${e(currentPage)}/`,
-      [],
-      optionalQueryAppend,
-      "Activity",
-      "GetFriendsPaged",
-      undefined,
-      clientState
-    );
-
-  /**
    * Logs activities.
    * @param product The 'key' of the product being purchased as dictated by SkuDestinationsConfig.
    * @param store The 'key' of the store for the product being purchased as dictated by SkuDestinationsConfig (not a BungieMembershipType enum value)
@@ -23635,17 +23778,19 @@ class IgnoreServiceInternal {
   /**
    * Search for Group Ignores.
    * @param membershipId
+   * @param globalignore Optional - if false, will not check for global ignore status on bnet membership ids, increasing call efficiency
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static GetIgnoreStatusForUser = (
     membershipId: string,
+    globalignore: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Globals.IgnoreStatus> =>
     ApiIntermediary.doGetRequest(
       `/Ignore/MyIgnores/Users/${e(membershipId)}/`,
-      [],
+      [["globalignore", globalignore]],
       optionalQueryAppend,
       "Ignore",
       "GetIgnoreStatusForUser",
@@ -23654,7 +23799,7 @@ class IgnoreServiceInternal {
     );
 
   /**
-   * Search for User Ignores.
+   * Search for non-user ignores made by caller (tags, posts, groups). Cannot be used to return ignored users.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -23670,6 +23815,65 @@ class IgnoreServiceInternal {
       "Ignore",
       "GetIgnoresForUser",
       input,
+      clientState
+    );
+
+  /**
+   * Returns information about the users currently being ignored by the passed in membership id.  Will not return all available memberships of a blocked user, just one of them.
+   * @param membershipId The owner of the ignore list to load.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ManageIgnoresForUser = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Ignores.IgnoredPlayer[]> =>
+    ApiIntermediary.doGetRequest(
+      `/Ignore/MyIgnores/Users/Manage/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Ignore",
+      "ManageIgnoresForUser",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Imports old-style bungie.net profile ignores into the new global ignore system within the limits of that system.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ImportToGlobal = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Ignore/MyIgnores/ImportToGlobal/`,
+      [],
+      optionalQueryAppend,
+      "Ignore",
+      "ImportToGlobal",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns a count of the the number of global ignores available for import.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GlobalIgnoreImportsAvailable = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doGetRequest(
+      `/Ignore/MyIgnores/GlobalIgnoreImportsAvailable/`,
+      [],
+      optionalQueryAppend,
+      "Ignore",
+      "GlobalIgnoreImportsAvailable",
+      undefined,
       clientState
     );
 
@@ -25050,23 +25254,21 @@ class Destiny2ServiceInternal {
     );
 
   /**
-   * Returns a list of Destiny memberships given a full Gamertag or PSN ID.  Unless you pass returnOriginalProfile=true, this will return membership information for the users' Primary Cross Save Profile if they are engaged in cross save rather than any original Destiny profile that is now being overridden.
-   * @param membershipType A valid non-BungieNet membership type, or All.
-   * @param displayName The full gamertag or PSN id of the player. Spaces and case are ignored.
-   * @param returnOriginalProfile (optional) If passed in and set to true, we will return the original Destiny Profile(s) linked to that gamertag, and not their currently active Destiny Profile.
+   * Returns a list of Destiny memberships given a global Bungie Display Name. This method will hide overridden memberships due to cross save.
+   * @param membershipType A valid non-BungieNet membership type, or All. Indicates which memberships to return.  You probably want this set to All.
+   * @param displayName The full bungie global display name to look up, include the # and the code at the end. This is an exact match lookup.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static SearchDestinyPlayer = (
     membershipType: Globals.BungieMembershipType,
     displayName: string,
-    returnOriginalProfile: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<User.UserInfoCard[]> =>
     ApiIntermediary.doGetRequest(
       `/Destiny2/SearchDestinyPlayer/${e(membershipType)}/${e(displayName)}/`,
-      [["returnOriginalProfile", returnOriginalProfile]],
+      [],
       optionalQueryAppend,
       "Destiny2",
       "SearchDestinyPlayer",
@@ -25177,6 +25379,32 @@ class Destiny2ServiceInternal {
     );
 
   /**
+   * Given a json of unlock flag/value hashes as input, returns the current state of each flag/value.
+   * @param membershipType A valid non-BungieNet membership type.
+   * @param destinyMembershipId Destiny membership ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static QueryUnlocks = (
+    input: Requests.DestinyQueryUnlocksRequest,
+    membershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Responses.DestinyQueryUnlocksResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/${e(membershipType)}/Profile/${e(
+        destinyMembershipId
+      )}/Unlocks/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "QueryUnlocks",
+      input,
+      clientState
+    );
+
+  /**
    * Returns information on the weekly clan rewards and if the clan has earned them or not. Note that this will always report rewards as not redeemed.
    * @param groupId A valid group id of clan.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -25193,6 +25421,25 @@ class Destiny2ServiceInternal {
       optionalQueryAppend,
       "Destiny2",
       "GetClanWeeklyRewardState",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns the dictionary of values for the Clan Banner
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetClanBannerSource = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ClanBanner.ClanBannerSource> =>
+    ApiIntermediary.doGetRequest(
+      `/Destiny2/Clan/ClanBannerDictionary/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "GetClanBannerSource",
       undefined,
       clientState
     );
@@ -26398,7 +26645,7 @@ class FireteamServiceInternal {
     );
 
   /**
-   * Gets a listing of all clan fireteams that caller is an applicant, a member, or an alternate of.
+   * Gets a listing of all fireteams that caller is an applicant, a member, or an alternate of.
    * @param groupId The group id of the clan.  (This parameter is ignored unless the optional query parameter groupFilter is true).
    * @param platform The platform filter.
    * @param includeClosed If true, return fireteams that have been closed.
@@ -26434,7 +26681,7 @@ class FireteamServiceInternal {
     );
 
   /**
-   * Gets a specific clan fireteam.
+   * Gets a specific fireteam.
    * @param groupId The group id of the clan.
    * @param fireteamId The unique id of the fireteam.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -26457,7 +26704,7 @@ class FireteamServiceInternal {
     );
 
   /**
-   * Allows a user to create a new clan fireteam. Note that any scheduled datetimes are considered to be UTC.
+   * Allows a user to create a new fireteam. Note that any scheduled datetimes are considered to be UTC.
    * @param groupId The group id of the clan.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -26554,6 +26801,7 @@ class FireteamServiceInternal {
    * @param fireteamId The unique id of the fireteam.
    * @param characterId The unique id of the preferred character to use for display.
    * @param hasMicrophone Indicates whether or not the user has a microphone.
+   * @param joiningAsPlatform An optional account selector when joiner is not cross saved or has more than one membership
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -26562,6 +26810,7 @@ class FireteamServiceInternal {
     fireteamId: string,
     characterId: string,
     hasMicrophone: boolean,
+    joiningAsPlatform: Globals.FireteamPlatform,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<boolean> =>
@@ -26569,7 +26818,7 @@ class FireteamServiceInternal {
       `/Fireteam/Clan/${e(groupId)}/Join/${e(fireteamId)}/Character/${e(
         characterId
       )}/${e(hasMicrophone)}/`,
-      [],
+      [["joiningAsPlatform", joiningAsPlatform]],
       optionalQueryAppend,
       "Fireteam",
       "JoinClanFireteam",
@@ -26583,6 +26832,7 @@ class FireteamServiceInternal {
    * @param fireteamId The unique id of the fireteam.
    * @param characterId The unique id of the preferred character to use for display.
    * @param hasMicrophone Indicates whether or not the user has a microphone.
+   * @param joiningAsPlatform An optional account selector when joiner is not cross saved or has more than one membership
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -26591,6 +26841,7 @@ class FireteamServiceInternal {
     fireteamId: string,
     characterId: string,
     hasMicrophone: boolean,
+    joiningAsPlatform: Globals.FireteamPlatform,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<boolean> =>
@@ -26598,7 +26849,7 @@ class FireteamServiceInternal {
       `/Fireteam/Clan/${e(groupId)}/JoinAlternate/${e(
         fireteamId
       )}/Character/${e(characterId)}/${e(hasMicrophone)}/`,
-      [],
+      [["joiningAsPlatform", joiningAsPlatform]],
       optionalQueryAppend,
       "Fireteam",
       "JoinClanFireteamAsAlternate",
@@ -27089,6 +27340,174 @@ class RecaptchaServiceInternal {
     );
 }
 
+class SocialServiceInternal {
+  /**
+   * Returns your Bungie Friend list
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetFriendList = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Friends.BungieFriendListResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Social/Friends/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "GetFriendList",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns your friend request queue.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetFriendRequestList = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Friends.BungieFriendRequestListResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Social/Friends/Requests/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "GetFriendRequestList",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Requests a friend relationship with the target user. Any of the target user's linked membership ids are valid inputs.
+   * @param membershipId The membership id of the user you wish to add.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static IssueFriendRequest = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Social/Friends/Add/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "IssueFriendRequest",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Accepts a friend relationship with the target user. The user must be on your incoming friend request list, though no error will occur if they are not.
+   * @param membershipId The membership id of the user you wish to accept.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static AcceptFriendRequest = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Social/Friends/Requests/Accept/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "AcceptFriendRequest",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Declines a friend relationship with the target user. The user must be on your incoming friend request list, though no error will occur if they are not.
+   * @param membershipId The membership id of the user you wish to decline.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static DeclineFriendRequest = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Social/Friends/Requests/Decline/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "DeclineFriendRequest",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Remove a friend relationship with the target user. The user must be on your friend list, though no error will occur if they are not.
+   * @param membershipId The membership id of the user you wish to remove.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RemoveFriend = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Social/Friends/Remove/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "RemoveFriend",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Remove a friend relationship with the target user. The user must be on your outgoing request friend list, though no error will occur if they are not.
+   * @param membershipId The membership id of the user you wish to remove.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RemoveFriendRequest = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Social/Friends/Requests/Remove/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "RemoveFriendRequest",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Gets the platform friend of the requested type, with additional information if they have Bungie accounts. Must have a recent login session with said platform.
+   * @param friendPlatform The platform friend type.
+   * @param page The zero based page to return. Page size is 100.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlatformFriendList = (
+    friendPlatform: Globals.PlatformFriendType,
+    page: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Friends.PlatformFriendResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Social/PlatformFriends/${e(friendPlatform)}/${e(page)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "GetPlatformFriendList",
+      undefined,
+      clientState
+    );
+}
+
 class CoreServiceInternal {
   /**
    * Smoketest function
@@ -27292,6 +27711,7 @@ export class Platform {
   public static AlexaService = AlexaServiceInternal;
   public static CrosssaveService = CrosssaveServiceInternal;
   public static RecaptchaService = RecaptchaServiceInternal;
+  public static SocialService = SocialServiceInternal;
   public static CoreService = CoreServiceInternal;
   platformSettings: any;
 }

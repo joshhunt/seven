@@ -1,5 +1,5 @@
 import { BungieMembershipType } from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Responses } from "@Platform";
 import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";

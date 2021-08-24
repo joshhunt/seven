@@ -1,7 +1,11 @@
 import { DetailedError } from "@CustomErrors";
 import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import { InnerErrorBoundary } from "@UI/Errors/InnerErrorBoundary";
 import { Auth } from "@UI/User/Auth";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
@@ -195,7 +199,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
 
     return ConfirmationModal.show(
       {
-        children: <div dangerouslySetInnerHTML={{ __html: error.message }} />,
+        children: <div dangerouslySetInnerHTML={sanitizeHTML(error.message)} />,
         title,
         type: "warning",
         cancelButtonProps: {
@@ -299,7 +303,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
           >
             {children}
           </div>
-          <div className={styles.modalAfterContent} />
+          <div />
         </div>
         <HistoryListener modalRef={this.modalRef} />
       </div>

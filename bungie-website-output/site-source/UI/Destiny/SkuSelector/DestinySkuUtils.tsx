@@ -61,7 +61,8 @@ export class DestinySkuUtils {
       modalHeaderImage: contentItem.properties["ModalHeaderImage"],
       skuTag: sku,
       soldOutButtonLabel: contentItem.properties["soldOutButtonLabel"],
-      buyButtonDisabled: contentItem.properties["buyButtonDisabled"],
+      buyButtonDisabled: contentItem.properties["buyButtonDisabled"] === "true",
+      learnMoreUrl: contentItem.properties["LearnMoreUrl"],
     };
   }
 

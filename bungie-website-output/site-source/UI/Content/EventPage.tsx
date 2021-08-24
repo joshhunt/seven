@@ -3,12 +3,13 @@ import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import { Respond } from "@Boot/Respond";
 import { ResponsiveSize } from "@Boot/Responsive";
 import { NotFoundError } from "@CustomErrors";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
 import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -279,16 +280,16 @@ class EventPageInternal extends React.Component<
                         smallTitle={
                           hasSmallTitle && (
                             <div
-                              dangerouslySetInnerHTML={{
-                                __html: props.SmallTitle,
-                              }}
+                              dangerouslySetInnerHTML={sanitizeHTML(
+                                props.SmallTitle
+                              )}
                             />
                           )
                         }
                         sectionTitle={props.SectionTitle}
                         blurb={
                           <span
-                            dangerouslySetInnerHTML={{ __html: props.Blurb }}
+                            dangerouslySetInnerHTML={sanitizeHTML(props.Blurb)}
                           />
                         }
                         alignment={

@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import styles from "./CrossSavePcMoveRequired.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Modal, ModalOverflowTypes } from "@UI/UIKit/Controls/Modal/Modal";

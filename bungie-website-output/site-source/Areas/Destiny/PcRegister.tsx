@@ -4,7 +4,7 @@
 import * as React from "react";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
 import styles from "Areas/Destiny/PcRegister.module.scss";

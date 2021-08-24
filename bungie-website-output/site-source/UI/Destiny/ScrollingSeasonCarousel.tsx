@@ -3,8 +3,9 @@
 
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore, useDataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import * as React from "react";
 import styles from "./ScrollingSeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";

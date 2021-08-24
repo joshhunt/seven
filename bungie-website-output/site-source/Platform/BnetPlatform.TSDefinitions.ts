@@ -614,6 +614,8 @@ export declare namespace DestinyDefinitions {
     DailyOffer = 4096,
     Charity = 8192,
     SeasonalRewardExpiration = 16384,
+    BestDeal = 32768,
+    Popular = 65536,
   }
 
   enum DestinySocketCategoryStyle {
@@ -1210,22 +1212,6 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
-  export interface DestinyEnemyRaceDefinition {
-    displayProperties: DestinyDisplayPropertiesDefinition;
-
-    boundToRelease: string;
-
-    hash: number;
-
-    index: number;
-
-    contentIdentifier: string;
-
-    redacted: boolean;
-
-    blacklisted: boolean;
-  }
-
   export interface DestinyDamageTypeDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
 
@@ -1391,7 +1377,7 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyInventoryItemDefinition {
-    displayProperties: DestinyItemDisplayPropertiesDefinition;
+    displayProperties: DestinyDisplayPropertiesDefinition;
 
     tooltipNotifications: DestinyItemTooltipNotification[];
 
@@ -1414,6 +1400,8 @@ export declare namespace DestinyDefinitions {
     itemTypeName: string;
 
     itemTypeDisplayName: string;
+
+    flavorText: string;
 
     uiItemDisplayStyle: string;
 
@@ -1519,6 +1507,8 @@ export declare namespace DestinyDefinitions {
 
     traitIds: string[];
 
+    traitHashes: number[];
+
     boundToRelease: string;
 
     hash: number;
@@ -1530,22 +1520,6 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
-  }
-
-  export interface DestinyItemDisplayPropertiesDefinition {
-    flavorText: string;
-
-    description: string;
-
-    name: string;
-
-    icon: string;
-
-    iconSequences: DestinyIconSequenceDefinition[];
-
-    highResIcon: string;
-
-    hasIcon: boolean;
   }
 
   export interface DestinyItemTooltipNotification {
@@ -1778,6 +1752,8 @@ export declare namespace DestinyDefinitions {
     itemValue: DestinyItemQuantity[];
 
     valueDescription: string;
+
+    itemValueHasConditionalVisibility?: boolean;
   }
 
   export interface DestinyItemSourceBlockDefinition {
@@ -2506,6 +2482,12 @@ export declare namespace DestinyDefinitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
+
+    uiOnlyGatingUnlockExpressionMappingHash?: number;
+
+    uiOnlyGatingUnlockExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DestinyProgressionMappingDefinition {
@@ -3624,6 +3606,12 @@ export declare namespace DestinyDefinitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
+
+    uiOnlyGatingUnlockExpressionMappingHash?: number;
+
+    uiOnlyGatingUnlockExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DestinyItemCreationEntryLevelDefinition {
@@ -3742,6 +3730,12 @@ export declare namespace DestinyDefinitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
+
+    uiOnlyGatingUnlockExpressionMappingHash?: number;
+
+    uiOnlyGatingUnlockExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DyeReference {
@@ -3897,7 +3891,7 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyInventoryItemLiteDefinition {
-    displayProperties: DestinyItemDisplayPropertiesDefinition;
+    displayProperties: DestinyDisplayPropertiesDefinition;
 
     tooltipNotifications: DestinyItemTooltipNotification[];
 
@@ -4601,17 +4595,17 @@ export declare namespace DestinyDefinitions {
   export interface DestinySeasonPreviewDefinition {
     description: string;
 
-    link: string;
+    linkPath: string;
+
+    videoLink: string;
 
     images: DestinySeasonPreviewImageDefinition[];
   }
 
   export interface DestinySeasonPreviewImageDefinition {
-    thumbnailIcon: string;
+    thumbnailImage: string;
 
     highResImage: string;
-
-    videoLink: string;
   }
 
   export interface DestinySeasonPassDefinition {
@@ -4795,6 +4789,8 @@ export declare namespace DestinyDefinitions {
 
     intervalRewards: DestinyRecordIntervalRewards[];
 
+    anyRewardHasConditionalVisibility: boolean;
+
     presentationNodeType: DestinyPresentationNodeType;
 
     traitIds: string[];
@@ -4856,6 +4852,8 @@ export declare namespace DestinyDefinitions {
     completeUnlockHash: number;
 
     claimedUnlockHash: number;
+
+    completedCounterUnlockValueHash: number;
 
     invisibleExpression: DestinyUnlockExpressionDefinition;
   }
@@ -5146,6 +5144,12 @@ export declare namespace DestinyDefinitions {
     itemInstanceId?: string;
 
     quantity: number;
+
+    hasConditionalVisibility: boolean;
+
+    uiOnlyGatingUnlockExpressionMappingHash?: number;
+
+    uiOnlyGatingUnlockExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DestinyMilestoneActivityDefinition {
@@ -5876,9 +5880,6 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyDestinationDefinition: {
     [key: string]: DestinyDefinitions.DestinyDestinationDefinition;
   };
-  DestinyEnemyRaceDefinition: {
-    [key: string]: DestinyDefinitions.DestinyEnemyRaceDefinition;
-  };
   DestinyEnergyTypeDefinition: {
     [key: string]: DestinyDefinitions.DestinyEnergyTypeDefinition;
   };
@@ -6054,7 +6055,6 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyClassDefinition: DestinyDefinitions.DestinyClassDefinition;
   DestinyGenderDefinition: DestinyDefinitions.DestinyGenderDefinition;
   DestinyRaceDefinition: DestinyDefinitions.DestinyRaceDefinition;
-  DestinyEnemyRaceDefinition: DestinyDefinitions.DestinyEnemyRaceDefinition;
   DestinyDamageTypeDefinition: DestinyDefinitions.DestinyDamageTypeDefinition;
   DestinyEquipmentSlotDefinition: DestinyDefinitions.DestinyEquipmentSlotDefinition;
   DestinyFactionDefinition: DestinyDefinitions.DestinyFactionDefinition;
@@ -6130,7 +6130,6 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyClassDefinition",
   "DestinyGenderDefinition",
   "DestinyRaceDefinition",
-  "DestinyEnemyRaceDefinition",
   "DestinyDamageTypeDefinition",
   "DestinyEquipmentSlotDefinition",
   "DestinyFactionDefinition",

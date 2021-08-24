@@ -1,16 +1,17 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { GameHistoryDestinyMembershipDataStore } from "@Areas/GameHistory/DataStores/GameHistoryDestinyMembershipDataStore";
-import { GameHistoryEvent } from "@Areas/GameHistory/GameHistoryEvent";
+import { GameHistoryDestinyMembershipDataStore } from "./DataStores/GameHistoryDestinyMembershipDataStore";
+import GameHistoryEvent from "@Areas/GameHistory/GameHistoryEvent";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyActivityModeType } from "@Enum";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import { HistoricalStats, Platform } from "@Platform";
 import {
@@ -43,17 +44,12 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(GameHistoryDestinyMembershipDataStore);
 
-  useEffect(() => {
-    // DestinyMembershipDataStore.actions.getMemberships(UserUtils.loggedInUserMembershipIdFromCookie);
-  }, []);
-
   // Initialize types
   const initialHistory: HistoricalStats.DestinyActivityHistoryResults = null;
   const initialActivityMode: DestinyActivityModeType =
     DestinyActivityModeType.None;
 
   const [activityMode, setActivityMode] = useState(initialActivityMode);
-  const [loaded, setLoaded] = useState(true);
   const [history, setHistory] = useState(initialHistory);
 
   const hasHistory = history?.activities?.length > 0;
@@ -63,11 +59,9 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
     UserUtils.isAuthenticated(globalState) &&
       destinyMembership.selectedCharacter &&
       onCharacterChange(destinyMembership.selectedCharacter.characterId);
-  }, [history]);
+  }, [destinyMembership.selectedCharacter]);
 
   const onCharacterChange = (value: string) => {
-    setLoaded(false);
-
     UserUtils.isAuthenticated(globalState) &&
       destinyMembership.characters[value].characterId &&
       Platform.Destiny2Service.GetActivityHistory(
@@ -77,12 +71,9 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
         activityMode,
         20,
         0
-      )
-        .then((data) => {
-          setHistory(data);
-          setLoaded(true);
-        })
-        .catch(() => setLoaded(true));
+      ).then((data) => {
+        setHistory(data);
+      });
   };
 
   const onActivityChange = (value: number) => {
@@ -102,7 +93,11 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
       </div>
       <Grid>
         <GridCol cols={12}>
-          <RequiresAuth>
+          <RequiresAuth
+            onSignIn={() =>
+              GameHistoryDestinyMembershipDataStore.actions.loadUserData()
+            }
+          >
             <DestinyAccountWrapper
               onCharacterChange={onCharacterChange}
               membershipDataStore={GameHistoryDestinyMembershipDataStore}
@@ -130,11 +125,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
               {hasHistory ? (
                 showAllModeTypes ? (
                   history.activities.map((historyItem, i) => (
-                    <GameHistoryEvent
-                      key={i}
-                      historyItem={historyItem}
-                      definitions={props.definitions}
-                    />
+                    <GameHistoryEvent key={i} historyItem={historyItem} />
                   ))
                 ) : (
                   history.activities
@@ -142,11 +133,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
                       ac.activityDetails.modes.includes(activityMode)
                     )
                     .map((historyItem, i) => (
-                      <GameHistoryEvent
-                        key={i}
-                        historyItem={historyItem}
-                        definitions={props.definitions}
-                      />
+                      <GameHistoryEvent key={i} historyItem={historyItem} />
                     ))
                 )
               ) : (

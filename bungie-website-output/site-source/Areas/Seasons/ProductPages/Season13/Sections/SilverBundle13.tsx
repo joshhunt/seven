@@ -1,7 +1,7 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";

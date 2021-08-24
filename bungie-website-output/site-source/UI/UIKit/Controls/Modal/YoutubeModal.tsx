@@ -1,7 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import * as React from "react";
 import { InvalidPropsError } from "@CustomErrors";
 import YouTube, { Options } from "react-youtube";

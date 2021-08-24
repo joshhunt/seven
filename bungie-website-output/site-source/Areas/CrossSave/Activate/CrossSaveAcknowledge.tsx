@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {

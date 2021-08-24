@@ -1,6 +1,7 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -10,7 +11,7 @@ import { IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import React, { useEffect, useRef, useState } from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import styles from "./SeasonOfTheHunt.module.scss";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { InfoBlock } from "@UI/Content/InfoBlock";
@@ -18,7 +19,7 @@ import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Responsive } from "@Boot/Responsive";
 import classNames from "classnames";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -610,9 +611,9 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
                 {Localizer.Seasons.SeasonPassRewardTitle}
               </h2>
               <ul
-                dangerouslySetInnerHTML={{
-                  __html: Localizer.Season12.htmlPaidRewards,
-                }}
+                dangerouslySetInnerHTML={sanitizeHTML(
+                  Localizer.Season12.htmlPaidRewards
+                )}
               />
             </div>
             <div className={styles.freeRewardsList}>
@@ -628,9 +629,9 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
                 {Localizer.Seasons.ShortAllMarker}
               </h2>
               <ul
-                dangerouslySetInnerHTML={{
-                  __html: Localizer.Season12.htmlFreeRewards,
-                }}
+                dangerouslySetInnerHTML={sanitizeHTML(
+                  Localizer.Season12.htmlFreeRewards
+                )}
               />
             </div>
           </div>

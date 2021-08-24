@@ -1,11 +1,12 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import styles from "./SeasonPassList.module.scss";
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import React from "react";
 
@@ -32,7 +33,7 @@ export const SeasonPassList13: React.FC<SeasonPassList13Props> = (props) => {
               <h2 className={styles.rewardsSmallTitle}>
                 {Localizer.Seasons.SeasonPassRewardTitle}
               </h2>
-              <ul dangerouslySetInnerHTML={{ __html: s13.passList }} />
+              <ul dangerouslySetInnerHTML={sanitizeHTML(s13.passList)} />
             </div>
             <div className={styles.freeRewardsList}>
               <div
@@ -46,7 +47,7 @@ export const SeasonPassList13: React.FC<SeasonPassList13Props> = (props) => {
               <h2 className={styles.rewardsSmallTitle}>
                 {s13.FreeForAllDestiny2Players}
               </h2>
-              <ul dangerouslySetInnerHTML={{ __html: s13.freeList }} />
+              <ul dangerouslySetInnerHTML={sanitizeHTML(s13.freeList)} />
             </div>
           </div>
         </div>

@@ -49,17 +49,21 @@ class NotificationSidebarInternal extends React.Component<
   ): boolean {
     const className = "notifications-sidebar-open";
     if (nextProps.open) {
-      document.addEventListener("click", this.onBodyClick);
+      requestAnimationFrame(() => {
+        document.addEventListener("click", this.onBodyClick);
 
-      if (!document.documentElement.classList.contains(className)) {
-        document.documentElement.classList.add(className);
-      }
+        if (!document.documentElement.classList.contains(className)) {
+          document.documentElement.classList.add(className);
+        }
+      });
     } else {
-      document.removeEventListener("click", this.onBodyClick);
+      requestAnimationFrame(() => {
+        document.removeEventListener("click", this.onBodyClick);
 
-      if (document.documentElement.classList.contains(className)) {
-        document.documentElement.classList.remove(className);
-      }
+        if (document.documentElement.classList.contains(className)) {
+          document.documentElement.classList.remove(className);
+        }
+      });
     }
 
     return true;

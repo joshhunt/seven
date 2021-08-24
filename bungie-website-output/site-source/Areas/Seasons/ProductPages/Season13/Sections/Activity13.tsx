@@ -3,9 +3,9 @@
 
 import styles from "@Areas/Seasons/ProductPages/Season13/Sections/Activity13.module.scss";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import React, { LegacyRef } from "react";

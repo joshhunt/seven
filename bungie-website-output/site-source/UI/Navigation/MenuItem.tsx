@@ -1,7 +1,7 @@
 import { IResponsiveState } from "@Boot/Responsive";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import {
   IMenuParentItem,
   INavigationLinkItem,
@@ -202,7 +202,7 @@ const MenuLink = (props: ILinkProps) => {
   const secondaryLabel = link.SecondaryStringKey
     ? Localizer.Nav[link.SecondaryStringKey]
     : null;
-  const url = urlString.replace("{locale}", LocalizerUtils.currentCultureName);
+  const url = urlString.replace("{locale}", Localizer.CurrentCultureName);
 
   if (link.Url === null) {
     return <span className={styles.menuItem}>{label}</span>;

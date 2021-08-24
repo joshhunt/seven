@@ -1,7 +1,8 @@
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { UserUtils } from "@Utilities/UserUtils";
 import * as React from "react";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import {
   withGlobalState,
@@ -16,7 +17,7 @@ import {
 } from "./Shared/CrossSaveFlowStateDataStore";
 import styles from "./CrossSaveDeactivate.module.scss";
 import classNames from "classnames";
-import { DataStore } from "@Global/DataStore";
+import { DataStore } from "@bungie/datastore";
 import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
@@ -67,7 +68,9 @@ class CrossSaveDeactivate extends React.Component<
 
   private readonly onInputChange = (e: React.FormEvent<HTMLInputElement>) => {
     const gs = this.props.globalState;
-    const displayName = gs.loggedInUser.user.displayName;
+    const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
+      gs?.loggedInUser?.user
+    )?.bungieGlobalName;
 
     this.setState({
       confirmationInputValue: e.currentTarget.value.substr(
@@ -119,7 +122,9 @@ class CrossSaveDeactivate extends React.Component<
 
   private renderPrettyConfirmationInput() {
     const gs = this.props.globalState;
-    const displayName = gs.loggedInUser.user.displayName;
+    const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
+      gs?.loggedInUser?.user
+    )?.bungieGlobalName;
     const input = this.state.confirmationInputValue;
 
     const letters = displayName.split("");
@@ -187,7 +192,9 @@ class CrossSaveDeactivate extends React.Component<
       );
     }
 
-    const displayName = gs.loggedInUser.user.displayName;
+    const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
+      gs?.loggedInUser?.user
+    )?.bungieGlobalName;
 
     const confirmationPhraseLabel = Localizer.Format(
       Localizer.Crosssave.DeactivateTypeConfirmation,

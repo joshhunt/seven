@@ -2,13 +2,13 @@
 // tslint:disable: max-file-line-count
 
 import { IResponsiveState, Responsive } from "@Boot/Responsive";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { Platform } from "@Platform";
@@ -36,6 +36,7 @@ import {
   DestinyNewsAndMedia,
   IDestinyNewsMedia,
 } from "./Shared/DestinyNewsAndMedia";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 
 interface IDestinyShadowkeepProps
   extends GlobalStateComponentProps<"responsive"> {}
@@ -705,30 +706,30 @@ class DestinyShadowkeepInner extends React.Component<
                 {isStandardEditionShowing ? (
                   <div className={styles.buyMainContent}>
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: Localizer.Shadowkeep.StandardEditionDesc1,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        Localizer.Shadowkeep.StandardEditionDesc1
+                      )}
                     />
                     <div className={styles.descBottom}>
                       <div
-                        dangerouslySetInnerHTML={{
-                          __html: Localizer.Shadowkeep.StandardEditionDesc2,
-                        }}
+                        dangerouslySetInnerHTML={sanitizeHTML(
+                          Localizer.Shadowkeep.StandardEditionDesc2
+                        )}
                       />
                     </div>
                   </div>
                 ) : (
                   <div className={styles.buyMainContent}>
                     <div
-                      dangerouslySetInnerHTML={{
-                        __html: Localizer.Destiny.legendaryEditionDesc1,
-                      }}
+                      dangerouslySetInnerHTML={sanitizeHTML(
+                        Localizer.Destiny.legendaryEditionDesc1
+                      )}
                     />
                     <div className={styles.descBottom}>
                       <div
-                        dangerouslySetInnerHTML={{
-                          __html: Localizer.Destiny.legendaryEditionDesc2,
-                        }}
+                        dangerouslySetInnerHTML={sanitizeHTML(
+                          Localizer.Destiny.legendaryEditionDesc2
+                        )}
                       />
                     </div>
                   </div>

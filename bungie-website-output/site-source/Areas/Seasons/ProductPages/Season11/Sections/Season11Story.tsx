@@ -5,7 +5,7 @@ import {
 import React, { LegacyRef } from "react";
 import { Season11TripleBox } from "../Components/Season11TripleBox";
 import styles from "./Season11Story.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Season11GridBoundary } from "@Areas/Seasons/ProductPages/Season11/Components/Season11GridBoundary";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";

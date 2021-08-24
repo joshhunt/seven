@@ -1,5 +1,5 @@
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import {
   BnetNotification,

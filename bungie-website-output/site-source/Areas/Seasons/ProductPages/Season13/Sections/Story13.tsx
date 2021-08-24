@@ -2,11 +2,11 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import React, { LegacyRef, ReactElement } from "react";
 import styles from "./Story13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface Story13Props {
   inputRef: LegacyRef<HTMLDivElement>;

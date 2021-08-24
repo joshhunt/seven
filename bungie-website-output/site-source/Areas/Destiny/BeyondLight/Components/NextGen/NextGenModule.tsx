@@ -3,7 +3,7 @@
 
 import styles from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule.module.scss";
 import { DestinyBuyDetailItem } from "@Areas/Destiny/Buy/Shared/DestinyBuyDetailItem";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import classNames from "classnames";

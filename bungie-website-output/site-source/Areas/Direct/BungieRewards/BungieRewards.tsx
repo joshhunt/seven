@@ -1,9 +1,9 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@Global/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { HelpArticle } from "@Helpers";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -29,7 +29,7 @@ const BungieRewards: React.FC<BungieRewardsProps> = (props) => {
     const isMagentoEnabled = ConfigUtils.SystemStatus(SystemNames.MagentoStore);
 
     if (!isMagentoEnabled) {
-      window.location.href = `/${LocalizerUtils.currentCultureName}/Profile/Rewards`;
+      window.location.href = `/${Localizer.CurrentCultureName}/Profile/Rewards`;
     }
   }, []);
 
@@ -87,7 +87,7 @@ const BungieRewards: React.FC<BungieRewardsProps> = (props) => {
               </span>
             </Button>
             <Button
-              url={`/${LocalizerUtils.currentCultureName}/Profile/Rewards`}
+              url={`/${Localizer.CurrentCultureName}/Profile/Rewards`}
               className={styles.rewardsBtn}
               buttonType={"none"}
             >

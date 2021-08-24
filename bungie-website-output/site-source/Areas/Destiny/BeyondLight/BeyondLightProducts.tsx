@@ -1,9 +1,10 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
 import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import {
@@ -299,7 +300,7 @@ export class BeyondLightProducts extends React.Component<
           )}
           <div
             className={styles.blurb}
-            dangerouslySetInnerHTML={{ __html: productDef.blurb }}
+            dangerouslySetInnerHTML={sanitizeHTML(productDef.blurb)}
           />
         </div>
       </div>
@@ -336,7 +337,7 @@ export class BeyondLightProducts extends React.Component<
             {!this.isMedium() && <h5>{productDef.edition}</h5>}
             <div
               className={styles.smallBlurb}
-              dangerouslySetInnerHTML={{ __html: productDef.blurb }}
+              dangerouslySetInnerHTML={sanitizeHTML(productDef.blurb)}
             />
             <Button buttonType={buttonType} url={productDef.relatedPage}>
               {productDef.soldOutButtonLabel || productDef.buttonLabel}

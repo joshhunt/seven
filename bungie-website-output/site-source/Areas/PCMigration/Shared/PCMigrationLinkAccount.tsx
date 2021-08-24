@@ -9,7 +9,7 @@ import {
 } from "./PCMigrationModalStagePage";
 import { PCMigrationWizardHeader } from "./PCMigrationWizardHeader";
 import { PCMigrationPlatformContainer } from "./PCMigrationPlatformContainer";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
 import * as Globals from "@Enum";

@@ -1,5 +1,5 @@
 import * as Globals from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
 import * as React from "react";

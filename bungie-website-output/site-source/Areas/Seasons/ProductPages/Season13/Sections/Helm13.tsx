@@ -3,7 +3,7 @@
 
 import React from "react";
 import styles from "./Helm13.module.scss";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 
 interface Helm13Props {}
 

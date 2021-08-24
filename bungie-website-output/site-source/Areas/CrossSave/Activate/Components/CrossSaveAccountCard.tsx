@@ -14,7 +14,7 @@ import {
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
 import { CrossSaveCard } from "@Areas/CrossSave/Shared/CrossSaveCard";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { BungieMembershipType } from "@Enum";
 

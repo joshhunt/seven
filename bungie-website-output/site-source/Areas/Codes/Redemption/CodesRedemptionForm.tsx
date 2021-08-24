@@ -4,13 +4,14 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
 import * as Globals from "@Enum";
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { DataStore } from "@Global/DataStore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { DataStore } from "@bungie/datastore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -23,6 +24,7 @@ import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { SyntheticEvent } from "react";
 import { CodesDataStore, ICodesState } from "../CodesDataStore";
@@ -78,7 +80,7 @@ class CodesRedemptionForm extends React.Component<
         <h3 className={styles.errorTitle}>{e.name.toUpperCase()}</h3>
         <div
           className={styles.errorContent}
-          dangerouslySetInnerHTML={{ __html: e.message }}
+          dangerouslySetInnerHTML={sanitizeHTML(e.message)}
         />
       </div>
     );
@@ -326,9 +328,12 @@ class CodesRedemptionForm extends React.Component<
             <div className={styles.container}>
               <p>{Localizer.Coderedemption.SignedInAs}</p>
               <div className={styles.box}>
-                <p className={styles.id}>{loggedInUser?.user.displayName}</p>
-                <p className={styles.unique_name}>
-                  {loggedInUser?.user.uniqueName}
+                <p className={styles.id}>
+                  {
+                    UserUtils.getBungieNameFromBnetGeneralUser(
+                      loggedInUser?.user
+                    )?.bungieGlobalName
+                  }
                 </p>
               </div>
 

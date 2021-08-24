@@ -82,13 +82,7 @@ export const showToastInternal = (
   };
 
   const toast = (
-    <ToastContent
-      key={0}
-      ref={toastRef}
-      visible={true}
-      onClose={onClose}
-      {...props}
-    >
+    <ToastContent ref={toastRef} visible={true} onClose={onClose} {...props}>
       {children}
     </ToastContent>
   );

@@ -10,7 +10,7 @@ import {
 } from "@Global/DataStore/GlobalStateDataStore";
 import classNames from "classnames";
 import { BeyondLightNav } from "./BeyondLightNav";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Anchor } from "@UI/Navigation/Anchor";

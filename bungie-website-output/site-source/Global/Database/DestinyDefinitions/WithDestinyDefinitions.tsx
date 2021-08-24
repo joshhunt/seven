@@ -1,8 +1,8 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { DestroyCallback } from "@Global/Broadcaster/Broadcaster";
-import { Localizer } from "@Global/Localization/Localizer";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
@@ -88,6 +88,7 @@ export const withDestinyDefinitions = <
         return;
       }
 
+      //TODO jlauer - revert updateImmediately back to true when the datastore has been fixed
       this.destroyer = DestinyDefinitions.observe(
         (data) => {
           this.setState({
@@ -96,7 +97,7 @@ export const withDestinyDefinitions = <
           });
         },
         observerProps,
-        true
+        false
       );
     }
 

@@ -4,7 +4,7 @@
 import * as React from "react";
 import styles from "./SettingsBanners.module.scss";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
 import classNames from "classnames";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -277,7 +277,6 @@ export class SettingsBanners extends React.Component<
       addedOptIns: addedOptIns,
       removedOptIns: removeOptIns,
       displayName: null,
-      uniqueName: null,
       about: null,
       locale: null,
       emailAddress: null,

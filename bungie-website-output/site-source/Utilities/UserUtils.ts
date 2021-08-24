@@ -1,16 +1,23 @@
+import { DetailedError } from "@CustomErrors";
+import * as Globals from "@Enum";
 import {
   GlobalState,
   GlobalStateComponentProps,
 } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@bungie/localization/Localizer";
+import { Fireteam, Friends, GroupsV2, Ignores, User } from "@Platform";
+import * as H from "history";
 import Cookies from "js-cookie";
-import * as Globals from "@Enum";
-import { DetailedError } from "@CustomErrors";
 import moment from "moment";
 import { AnalyticsUtils } from "./AnalyticsUtils";
 import { ConfigUtils } from "./ConfigUtils";
-import * as H from "history";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Localizer } from "@Global/Localization/Localizer";
+
+export interface IBungieName {
+  /** This will fallback to the name to use if we do not have a bungie Global Name for them */
+  bungieGlobalName: string;
+  bungieGlobalCode: string;
+  bungieGlobalCodeWithHashtag: string;
+}
 
 export enum AuthChangeStatus {
   None,
@@ -84,12 +91,196 @@ export class UserUtils {
     return gs.loggedInUser ? gs.loggedInUser.user.displayName : null;
   }
 
+  public static formatBungieGlobalCode = (code: number) => {
+    const bungieGlobalCode =
+      code && code !== 0 ? UserUtils.standardizeBungieGlobalCode(code) : null;
+    const bungieGlobalCodeWithHashtag = bungieGlobalCode
+      ? `#${bungieGlobalCode}`
+      : null;
+
+    return {
+      bungieGlobalCode: bungieGlobalCode,
+      bungieGlobalCodeWithHashtag: bungieGlobalCodeWithHashtag,
+    };
+  };
+
+  public static readonly emptyBungieNameObject = {
+    bungieGlobalName: null,
+    bungieGlobalCode: null,
+    bungieGlobalCodeWithHashtag: null,
+  } as IBungieName;
+
+  public static getBungieNameFromBnetGeneralUser(
+    user: User.GeneralUser
+  ): IBungieName {
+    // The general user object is the only place where one of the values for GlobalDisplayName or GlobalDisplayNameCode can potentially be null or empty but not the other
+    const invalidCombination =
+      user.cachedBungieGlobalDisplayNameCode === 0 ||
+      !user.cachedBungieGlobalDisplayName;
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(
+      user.cachedBungieGlobalDisplayNameCode
+    );
+
+    return user && !invalidCombination
+      ? ({
+          bungieGlobalName:
+            user.cachedBungieGlobalDisplayName &&
+            user.cachedBungieGlobalDisplayName.length !== 0
+              ? user.cachedBungieGlobalDisplayName
+              : user.displayName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  }
+
+  public static getBungieNameFromGroupUserInfoCard = (
+    user: GroupsV2.GroupUserInfoCard
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+
+    return user
+      ? ({
+          bungieGlobalName:
+            user.bungieGlobalDisplayName ||
+            user.displayName ||
+            user.supplementalDisplayName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+  public static getBungieNameFromUserInfoCard = (
+    user: User.UserInfoCard
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+
+    return user
+      ? ({
+          bungieGlobalName:
+            user.bungieGlobalDisplayName ||
+            user.displayName ||
+            user.supplementalDisplayName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+  public static getBungieNameFromUserSearchResponseDetail = (
+    user: User.UserSearchResponseDetail
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+
+    return user
+      ? ({
+          bungieGlobalName: user.bungieGlobalDisplayName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+  public static getBungieNameFromBnetBungieFriend = (
+    friend: Friends.BungieFriend
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(friend.bungieGlobalDisplayNameCode);
+    const supplementalMembership = friend.bungieNetUser;
+    const supplementalData = UserUtils.formatBungieGlobalCode(
+      supplementalMembership.cachedBungieGlobalDisplayNameCode
+    );
+
+    return friend
+      ? ({
+          bungieGlobalName:
+            friend.bungieGlobalDisplayName ||
+            supplementalMembership.cachedBungieGlobalDisplayName ||
+            supplementalMembership.displayName,
+          bungieGlobalCode:
+            bungieGlobalCode || supplementalData.bungieGlobalCode,
+          bungieGlobalCodeWithHashtag:
+            bungieGlobalCodeWithHashtag ??
+            supplementalData.bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+  public static getBungieNameFromBnetIgnoredPlayer = (
+    player: Ignores.IgnoredPlayer
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(player.bungieNameCode);
+
+    return player
+      ? ({
+          bungieGlobalName: player.bungieName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+  public static getBungieNameFromBnetFireteamMember = (
+    member: Fireteam.FireteamMember
+  ): IBungieName => {
+    const {
+      bungieGlobalCode,
+      bungieGlobalCodeWithHashtag,
+    } = UserUtils.formatBungieGlobalCode(
+      member.destinyUserInfo?.bungieGlobalDisplayNameCode
+    );
+
+    return member
+      ? ({
+          bungieGlobalName:
+            member.destinyUserInfo?.bungieGlobalDisplayName ||
+            member.destinyUserInfo?.FireteamDisplayName ||
+            member.destinyUserInfo?.displayName,
+          bungieGlobalCode,
+          bungieGlobalCodeWithHashtag,
+        } as IBungieName)
+      : UserUtils.emptyBungieNameObject;
+  };
+
+  public static standardizeBungieGlobalCode = (
+    bungieGlobalCode: number
+  ): string => {
+    const splitString = [...bungieGlobalCode.toString()];
+    const numberNeeded = 4 - splitString.length;
+
+    return Array(numberNeeded).fill("0").concat(splitString).join("");
+  };
+
   /** Returns the logged in user's email */
   public static loggedInUserEmail(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
     return gs.loggedInUser ? gs.loggedInUser.email : null;
   }
+
+  /** Returns the profile picture path or defaults to tricorn for a bungieFriend */
+  public static bungieFriendProfilePicturePath(
+    user: Friends.BungieFriend
+  ): string | null {
+    return (
+      user?.bungieNetUser?.profilePicturePath ??
+      "/7/ca/destiny/logos/tricorn.png"
+    );
+  }
+
   /**
    * Converts BungieMembershipType to BungieCredentialType
    * @param membershipType
@@ -167,6 +358,69 @@ export class UserUtils {
     }
 
     return null;
+  }
+
+  /**
+   * Converts BungieCredentialType to PlatformFriendType
+   * @param credType
+   */
+  public static getPlatformTypeFromTypeFromCredentialType(
+    credType: Globals.BungieCredentialType
+  ) {
+    switch (credType) {
+      case Globals.BungieCredentialType.SteamId:
+        return Globals.PlatformFriendType.Steam;
+      case Globals.BungieCredentialType.Psnid:
+        return Globals.PlatformFriendType.PSN;
+      case Globals.BungieCredentialType.Xuid:
+        return Globals.PlatformFriendType.Xbox;
+      default:
+        throw new DetailedError(
+          "Invalid credential type",
+          "The supplied credential type does not have a corresponding PlatformFriendType"
+        );
+    }
+  }
+
+  /**
+   * Converts PlatformFriendType to BungieMembershipType
+   * @param platformFriendType
+   */
+  public static getBungieMembershipTypeFromPlatformFriendType(
+    platformFriendType: Globals.PlatformFriendType
+  ) {
+    switch (platformFriendType) {
+      case Globals.PlatformFriendType.Steam:
+        return Globals.BungieMembershipType.TigerSteam;
+      case Globals.PlatformFriendType.PSN:
+        return Globals.BungieMembershipType.TigerPsn;
+      case Globals.PlatformFriendType.Xbox:
+        return Globals.BungieMembershipType.TigerXbox;
+      default:
+        throw new DetailedError(
+          "Invalid platformFriend type",
+          "The supplied platform friend type does not have a corresponding BungieMembershipType"
+        );
+    }
+  }
+
+  /**
+   * Converts PlatformFriendType to BungieCredentialType
+   * @param platformFriendType
+   */
+  public static getCredentialTypeFromPlatformFriendType(
+    platformFriendType: Globals.PlatformFriendType
+  ) {
+    switch (platformFriendType) {
+      case Globals.PlatformFriendType.Steam:
+        return Globals.BungieCredentialType.SteamId;
+      case Globals.PlatformFriendType.PSN:
+        return Globals.BungieCredentialType.Psnid;
+      case Globals.PlatformFriendType.Xbox:
+        return Globals.BungieCredentialType.Xuid;
+      default:
+        return Globals.BungieCredentialType.None;
+    }
   }
 
   /**

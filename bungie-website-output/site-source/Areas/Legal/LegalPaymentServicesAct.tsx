@@ -1,7 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { InfoBlock } from "@UI/Content/InfoBlock";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import React from "react";

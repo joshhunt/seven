@@ -22,6 +22,7 @@ interface IconActionCardProps {
   cardSubtitle?: string;
   backgroundImage: string;
   action: string | IMultiSiteLink | (() => void);
+  analyticsId?: string;
   icon?: React.ReactNode;
 }
 
@@ -83,6 +84,7 @@ export const IconActionCard: React.FC<IconActionCardProps> = (props) => {
 
   return actionAsLink ? (
     <Anchor
+      data-analytics-id={props.analyticsId}
       url={actionAsLink}
       className={classNames(styles.iconActionCard, root)}
     >
@@ -90,6 +92,7 @@ export const IconActionCard: React.FC<IconActionCardProps> = (props) => {
     </Anchor>
   ) : (
     <div
+      data-analytics-id={props.analyticsId}
       onClick={actionAsFunction}
       className={classNames(styles.iconActionCard, root)}
     >

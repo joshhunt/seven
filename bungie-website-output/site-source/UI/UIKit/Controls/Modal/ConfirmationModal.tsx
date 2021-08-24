@@ -5,7 +5,7 @@ import { Checkbox } from "@UIKit/Forms/Checkbox";
 import * as React from "react";
 import styles from "./ConfirmationModal.module.scss";
 import { Icon } from "../Icon";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import { Button, ButtonTypes } from "../Button/Button";
 import { ModalProps, Modal } from "./Modal";

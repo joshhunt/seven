@@ -9,7 +9,7 @@ import ScreenShotBlock from "./BeyondLightScreenShotBlock/BeyondLightScreenShotB
 import { InteractiveSection } from "./BeyondLightInteractiveSection/BeyondLightInteractiveSection";
 import StackedCardBlock from "./BeyondLightStackedCardBlock/BeyondLightStackedCardBlock";
 import VideoCarousel from "./BeyondLightVideoCarousel/BeyondLightVideoCarousel";
-import { Accordion } from "./BeyondLightAccordion/BeyondLightAccordion";
+import { BeyondLightAccordion } from "./BeyondLightAccordion/BeyondLightAccordion";
 import BeyondLightMap from "./BeyondLightMap/BeyondLightMap";
 import { PhaseTwoAccordion } from "./BeyondLightPhaseTwoAccordion/BeyondLightPhaseTwoAccordion";
 import BeyondLightBackgroundParallax from "./BeyondLightParallax/BeyondLightBackgroundParallax";
@@ -24,7 +24,7 @@ export {
   InteractiveSection,
   StackedCardBlock,
   VideoCarousel,
-  Accordion,
+  BeyondLightAccordion,
   BeyondLightMap,
   PhaseTwoAccordion,
 };

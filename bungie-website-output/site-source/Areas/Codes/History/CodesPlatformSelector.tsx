@@ -2,11 +2,11 @@
 // Copyright Bungie, Inc.
 
 import { CodesDataStore } from "@Areas/Codes/CodesDataStore";
+import { useDataStore } from "@bungie/datastore/DataStore";
 import { BungieMembershipType } from "@Enum";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { useDataStore } from "@Utilities/ReactUtils";
 import React from "react";
 import styles from "./CodesHistoryForm.module.scss";
 

@@ -6,7 +6,7 @@ import {
   SeasonsArray,
   SeasonsDefinitions,
 } from "@Areas/Seasons/SeasonsDefinitions";
-import { Localizer } from "@Global/Localization/Localizer";
+import { Localizer } from "@bungie/localization";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ScrollToAnchorTags } from "@UI/Navigation/ScrollToAnchorTags";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
