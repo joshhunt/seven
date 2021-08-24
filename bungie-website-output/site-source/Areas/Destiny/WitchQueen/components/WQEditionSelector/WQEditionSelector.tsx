@@ -177,7 +177,7 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
             />
             <Button
               url={collectorsSku?.learnMoreUrl}
-              disabled={!collectorsSku?.buyButtonDisabled}
+              disabled={collectorsSku?.buyButtonDisabled}
               className={styles.ceBtn}
             >
               {collectorsSku?.buttonLabel}
@@ -224,7 +224,6 @@ const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
 
   const isSelected = props.selectedEdition === skuTag;
   const editionImage = imagePath ? `url(${imagePath})` : undefined;
-  // const btnUrl = learnMoreUrl || buyFlowRoute
 
   return (
     <div

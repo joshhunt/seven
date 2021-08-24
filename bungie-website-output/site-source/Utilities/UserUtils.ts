@@ -123,16 +123,22 @@ export class UserUtils {
     } = UserUtils.formatBungieGlobalCode(
       user.cachedBungieGlobalDisplayNameCode
     );
+    const validBungieNameFlow =
+      user.cachedBungieGlobalDisplayName &&
+      user.cachedBungieGlobalDisplayName.length !== 0
+        ? user.cachedBungieGlobalDisplayName
+        : user.displayName;
+    const invalidBungieNameBackup = user?.displayName;
 
-    return user && !invalidCombination
+    return user
       ? ({
-          bungieGlobalName:
-            user.cachedBungieGlobalDisplayName &&
-            user.cachedBungieGlobalDisplayName.length !== 0
-              ? user.cachedBungieGlobalDisplayName
-              : user.displayName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
+          bungieGlobalName: invalidCombination
+            ? invalidBungieNameBackup
+            : validBungieNameFlow,
+          bungieGlobalCode: invalidCombination ? "" : bungieGlobalCode,
+          bungieGlobalCodeWithHashtag: invalidCombination
+            ? ""
+            : bungieGlobalCodeWithHashtag,
         } as IBungieName)
       : UserUtils.emptyBungieNameObject;
   }
