@@ -125,7 +125,6 @@ export const withDestinyDefinitions = <
           <ConfirmationModalInline
             open={true}
             preventUserClose={true}
-            modalRef={this.modalRef}
             type={"warning"}
             confirmButtonProps={{
               labelOverride: Localizer.Destiny.DestinyDefinitionsErrorRetry,

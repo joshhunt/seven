@@ -33,7 +33,6 @@ export const GlobalErrorModal: React.FC<IGlobalErrorModalProps> = ({
   return (
     <ConfirmationModalInline
       open={true}
-      modalRef={modalRef}
       type={"warning"}
       confirmButtonProps={{
         labelOverride: Localizer.Errors.FatalErrorConfirmAction,

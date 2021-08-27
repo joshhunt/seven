@@ -239,14 +239,17 @@ export default createCustomModal<Props>(ConfirmationModalInner, {
 });
 
 /** If you want to create a confirmation modal inline instead of triggering it with a function, that is what this does. */
-export class ConfirmationModalInline extends React.Component<Props> {
-  public render() {
-    const { children, ...rest } = this.props;
+export const ConfirmationModalInline: React.FC<Omit<Props, "modalRef">> = (
+  props
+) => {
+  const { children, ...rest } = props;
+  const ref = React.useRef();
 
-    return (
-      <Modal {...rest}>
-        <ConfirmationModalInner {...rest}>{children}</ConfirmationModalInner>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal {...rest} ref={ref}>
+      <ConfirmationModalInner {...rest} modalRef={ref}>
+        {children}
+      </ConfirmationModalInner>
+    </Modal>
+  );
+};
