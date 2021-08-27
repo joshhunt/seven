@@ -243,9 +243,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
             emailAddress: null,
           }}
           validationSchema={Yup.object({
-            displayName: Yup.string()
-              .max(15, "Must be 15 characters or less")
-              .required("Required"),
+            displayName: Yup.string().required("Required"),
             about: Yup.string().max(
               aboutMaxLength,
               `Must be ${aboutMaxLength} characters or less`
@@ -297,7 +295,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     <div className={styles.subtitleContainer}>
                       <p>{subtitleToBungieName()}</p>
                       <Anchor
-                        url={RouteHelper.HelpArticle(4403006598164)}
+                        url={`/crossplayguide`}
                         className={styles.crossPlayGuide}
                       >
                         {Localizer.Format(

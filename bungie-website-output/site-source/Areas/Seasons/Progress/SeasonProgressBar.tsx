@@ -14,6 +14,10 @@ interface SeasonProgressBarProps {
 }
 
 export const SeasonProgressBar: React.FC<SeasonProgressBarProps> = (props) => {
+  if (!props.characterSeasonProgression) {
+    return null;
+  }
+
   const seasonPass = Localizer.Seasons.SeasonPass;
   const seasonalRank = Localizer.Seasons.SeasonalRank;
 

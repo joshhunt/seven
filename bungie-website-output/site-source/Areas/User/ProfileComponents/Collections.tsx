@@ -30,7 +30,7 @@ interface ICollectionScore {
 const Collections: React.FC<CollectionsProps> = (props) => {
   const { coreSettings, profileResponse, characterId, definitions } = props;
 
-  if (typeof profileResponse.characterPresentationNodes.data === "undefined") {
+  if (!profileResponse?.characterPresentationNodes?.data) {
     return null;
   }
 
@@ -40,7 +40,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
     const rootDef = definitions.DestinyPresentationNodeDefinition.get(
       coreSettings.destiny2CoreSettings.collectionRootNode
     );
-    const characterPresentationNodes =
+    const characterPresentationNodesForCharacter =
       profileResponse.characterPresentationNodes.data[characterId];
 
     let totalGathered = 0;
@@ -54,7 +54,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
 
         for (const childOfChildNode of childDef.children.presentationNodes) {
           let nodeData =
-            characterPresentationNodes.nodes[
+            characterPresentationNodesForCharacter?.nodes[
               childOfChildNode.presentationNodeHash
             ];
 
@@ -84,7 +84,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
 
   const scoreText = `${score.totalGathered} / ${score.totalPossible}`;
 
-  const noRecent = "Nothing collected recently.";
+  const noRecent = profileLoc.NothingCollectedRecently;
 
   return (
     <Anchor

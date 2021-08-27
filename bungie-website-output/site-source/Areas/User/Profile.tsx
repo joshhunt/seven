@@ -4,6 +4,7 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
 import { ActionSuccessModal } from "@Areas/User/AccountComponents/Internal/ActionSuccessModal";
+import { ReportButton } from "@Areas/User/AccountComponents/Internal/ReportButton";
 import { BungieFriend } from "@Areas/User/ProfileComponents/BungieFriend";
 import { BungieView } from "@Areas/User/ProfileComponents/BungieView";
 import { DestinyView } from "@Areas/User/ProfileComponents/DestinyView";
@@ -23,7 +24,6 @@ import { Contracts, Platform, Responses, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Auth } from "@UI/User/Auth";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
@@ -111,6 +111,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
   }, [globalState.loggedInUser, params.mid]);
 
   useEffect(() => {
+    //different mid or mtype
+
     const selectedDestinyMembershipIsCurrentlyUsedForView =
       destinyMembership?.selectedMembership?.membershipId === membershipId;
 
@@ -129,8 +131,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
     if (
       membershipId !== "" &&
       (selectedDestinyMembershipIsCurrentlyUsedForView ||
-        isCurrentlyUsingBNetAsSelectedMembership ||
-        (!isSelf && isCrossSaved))
+        isCurrentlyUsingBNetAsSelectedMembership)
     ) {
       loadUser();
     } else {
@@ -153,11 +154,15 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   // destinyMembership has been updated -> load all the other user data
   useEffect(() => {
+    const notTheSameUser =
+      !isSelf &&
+      destinyMembership?.membershipData !== null &&
+      destinyMembership?.membershipData.destinyMemberships[0]?.membershipId !==
+        membershipId;
+
     if (
       (isSelf && bungieNetUser === null) ||
-      (!isSelf &&
-        bungieNetUser === null &&
-        destinyMembership?.membershipData !== null) ||
+      notTheSameUser ||
       (isSelf && bungieNetUser?.membershipId !== membershipId)
     ) {
       loadUser();
@@ -235,6 +240,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
         Modal.error(e);
       });
   };
+
   const loadUser = () => {
     //bungie user data here
     let userName = "";
@@ -313,7 +319,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
   };
 
   // $todo atseng - replace with empty string when confirm this is user status
-  const status = bungieNetUser?.statusText ?? "status goes here?";
+  const status = bungieNetUser?.statusText ?? "";
 
   const useBungieNetUserForName = bungieNetUser !== null;
   const useDestinyMembershipForName =
@@ -333,8 +339,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   const profileLoc = Localizer.Profile;
 
-  const bungieTab = "Bungie";
-  const destinyTab = "Destiny";
+  const bungieTab = profileLoc.Bungie;
+  const destinyTab = profileLoc.Destiny;
 
   const pageTitle = Localizer.Format(
     Localizer.Userpages.BungieProfilePageTitle,
@@ -411,6 +417,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
                   >
                     {profileLoc.Block}
                   </Button>
+                  <ReportButton
+                    ignoredItemId={membershipId}
+                    itemContextType={IgnoredItemType.UserProfile}
+                  />
                 </>
               )}
               <div className={styles.aboutMe}>

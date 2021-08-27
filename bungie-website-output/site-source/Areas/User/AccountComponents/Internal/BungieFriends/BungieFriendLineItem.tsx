@@ -33,7 +33,7 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = ({
     <Anchor
       className={styles.friendLine}
       url={RouteHelper.TargetProfile(
-        bungieFriend.lastSeenAsMembershipId,
+        bungieFriend?.bungieNetUser?.membershipId,
         BungieMembershipType.BungieNext
       )}
     >
@@ -54,10 +54,10 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = ({
         }
         flair={
           <FriendsButtonHandler
-            buttonDataWithMid={props.buttonData.map((dc) => {
+            buttonDataWithMid={props.buttonData?.map((dc) => {
               return {
                 ...dc,
-                membershipId: bungieFriend.lastSeenAsMembershipId,
+                membershipId: bungieFriend?.bungieNetUser?.membershipId,
               };
             })}
             successText={props.successText}

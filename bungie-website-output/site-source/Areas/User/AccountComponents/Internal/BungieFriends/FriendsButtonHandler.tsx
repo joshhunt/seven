@@ -33,10 +33,10 @@ export const FriendsButtonHandler: React.FC<FriendsButtonHandlerProps> = (
   ) => {
     callback(mId)
       .then((res) => {
-        res && GlobalStateDataStore.refreshUserAndRelatedData();
-        res && FriendsListDataStore.actions.fetchAllFriends();
         setMessage(res ? props.successText : props.errorText);
         setButtonView(false);
+        res && GlobalStateDataStore.refreshUserAndRelatedData();
+        res && FriendsListDataStore.actions.fetchAllFriends();
       })
       .catch(ConvertToPlatformError)
       .catch((error) => Modal.error(error));
@@ -54,10 +54,12 @@ export const FriendsButtonHandler: React.FC<FriendsButtonHandlerProps> = (
               onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
                 e.preventDefault();
                 e.stopPropagation();
-                friendAction(b.membershipId, b.callback);
+                b?.membershipId
+                  ? friendAction(b.membershipId, b.callback)
+                  : Modal.open(Localizer.Messages.UserCannotFindRequestedUser);
               }}
             >
-              {b.title}
+              {b?.title}
             </Button>
           );
         })

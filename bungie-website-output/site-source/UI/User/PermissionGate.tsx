@@ -56,6 +56,10 @@ class PermissionGateInner extends React.Component<
   }
 
   public render() {
+    if (!UserUtils.isAuthenticated(this.props.globalState)) {
+      return null;
+    }
+
     return !this.state.anyPermissionMissing || this.props.unlockOverride ? (
       <div>{this.props.children || null}</div>
     ) : null;

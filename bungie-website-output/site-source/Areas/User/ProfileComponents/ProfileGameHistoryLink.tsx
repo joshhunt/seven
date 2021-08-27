@@ -18,7 +18,7 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
 ) => {
   const destinyMembershipData = useDataStore(ProfileDestinyMembershipDataStore);
 
-  if (typeof destinyMembershipData.selectedMembership === "undefined") {
+  if (!destinyMembershipData?.selectedMembership) {
     return null;
   }
 

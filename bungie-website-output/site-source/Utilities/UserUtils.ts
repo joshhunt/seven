@@ -88,7 +88,7 @@ export class UserUtils {
   public static loggedInUserDisplayName(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser ? gs.loggedInUser.user.displayName : null;
+    return gs.loggedInUser ? gs.loggedInUser?.user?.displayName : null;
   }
 
   public static formatBungieGlobalCode = (code: number) => {
@@ -113,152 +113,166 @@ export class UserUtils {
   public static getBungieNameFromBnetGeneralUser(
     user: User.GeneralUser
   ): IBungieName {
-    // The general user object is the only place where one of the values for GlobalDisplayName or GlobalDisplayNameCode can potentially be null or empty but not the other
-    const invalidCombination =
-      user.cachedBungieGlobalDisplayNameCode === 0 ||
-      !user.cachedBungieGlobalDisplayName;
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(
-      user.cachedBungieGlobalDisplayNameCode
-    );
-    const validBungieNameFlow =
-      user.cachedBungieGlobalDisplayName &&
-      user.cachedBungieGlobalDisplayName.length !== 0
-        ? user.cachedBungieGlobalDisplayName
-        : user.displayName;
-    const invalidBungieNameBackup = user?.displayName;
+    if (user) {
+      // The general user object is the only place where one of the values for GlobalDisplayName or GlobalDisplayNameCode can potentially be null or empty but not the other
+      const invalidCombination =
+        user?.cachedBungieGlobalDisplayNameCode === 0 ||
+        !user?.cachedBungieGlobalDisplayName;
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(
+        user?.cachedBungieGlobalDisplayNameCode
+      );
+      const validBungieNameFlow =
+        user?.cachedBungieGlobalDisplayName &&
+        user?.cachedBungieGlobalDisplayName.length !== 0
+          ? user?.cachedBungieGlobalDisplayName
+          : user?.displayName;
+      const invalidBungieNameBackup = user?.displayName;
 
-    return user
-      ? ({
-          bungieGlobalName: invalidCombination
-            ? invalidBungieNameBackup
-            : validBungieNameFlow,
-          bungieGlobalCode: invalidCombination ? "" : bungieGlobalCode,
-          bungieGlobalCodeWithHashtag: invalidCombination
-            ? ""
-            : bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName: invalidCombination
+          ? invalidBungieNameBackup
+          : validBungieNameFlow,
+        bungieGlobalCode: invalidCombination ? "" : bungieGlobalCode,
+        bungieGlobalCodeWithHashtag: invalidCombination
+          ? ""
+          : bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   }
 
   public static getBungieNameFromGroupUserInfoCard = (
     user: GroupsV2.GroupUserInfoCard
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+    if (user) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(user?.bungieGlobalDisplayNameCode);
 
-    return user
-      ? ({
-          bungieGlobalName:
-            user.bungieGlobalDisplayName ||
-            user.displayName ||
-            user.supplementalDisplayName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName:
+          user?.bungieGlobalDisplayName ||
+          user?.displayName ||
+          user?.supplementalDisplayName,
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
   public static getBungieNameFromUserInfoCard = (
     user: User.UserInfoCard
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+    if (user) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(user?.bungieGlobalDisplayNameCode);
 
-    return user
-      ? ({
-          bungieGlobalName:
-            user.bungieGlobalDisplayName ||
-            user.displayName ||
-            user.supplementalDisplayName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName:
+          user?.bungieGlobalDisplayName ||
+          user?.displayName ||
+          user?.supplementalDisplayName,
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
   public static getBungieNameFromUserSearchResponseDetail = (
     user: User.UserSearchResponseDetail
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(user.bungieGlobalDisplayNameCode);
+    if (user) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(user?.bungieGlobalDisplayNameCode);
 
-    return user
-      ? ({
-          bungieGlobalName: user.bungieGlobalDisplayName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName: user?.bungieGlobalDisplayName,
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
   public static getBungieNameFromBnetBungieFriend = (
     friend: Friends.BungieFriend
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(friend.bungieGlobalDisplayNameCode);
-    const supplementalMembership = friend.bungieNetUser;
-    const supplementalData = UserUtils.formatBungieGlobalCode(
-      supplementalMembership.cachedBungieGlobalDisplayNameCode
-    );
+    if (friend) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(friend?.bungieGlobalDisplayNameCode);
+      const supplementalMembership = friend?.bungieNetUser;
+      const supplementalData = UserUtils.formatBungieGlobalCode(
+        supplementalMembership?.cachedBungieGlobalDisplayNameCode
+      );
 
-    return friend
-      ? ({
-          bungieGlobalName:
-            friend.bungieGlobalDisplayName ||
-            supplementalMembership.cachedBungieGlobalDisplayName ||
-            supplementalMembership.displayName,
-          bungieGlobalCode:
-            bungieGlobalCode || supplementalData.bungieGlobalCode,
-          bungieGlobalCodeWithHashtag:
-            bungieGlobalCodeWithHashtag ??
-            supplementalData.bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName:
+          friend?.bungieGlobalDisplayName ||
+          supplementalMembership?.cachedBungieGlobalDisplayName ||
+          supplementalMembership?.displayName,
+        bungieGlobalCode:
+          bungieGlobalCode || supplementalData?.bungieGlobalCode,
+        bungieGlobalCodeWithHashtag:
+          bungieGlobalCodeWithHashtag ??
+          supplementalData?.bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
   public static getBungieNameFromBnetIgnoredPlayer = (
     player: Ignores.IgnoredPlayer
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(player.bungieNameCode);
+    if (player) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(player?.bungieNameCode);
 
-    return player
-      ? ({
-          bungieGlobalName: player.bungieName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName: player?.bungieName,
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
   public static getBungieNameFromBnetFireteamMember = (
     member: Fireteam.FireteamMember
   ): IBungieName => {
-    const {
-      bungieGlobalCode,
-      bungieGlobalCodeWithHashtag,
-    } = UserUtils.formatBungieGlobalCode(
-      member.destinyUserInfo?.bungieGlobalDisplayNameCode
-    );
+    if (member) {
+      const {
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } = UserUtils.formatBungieGlobalCode(
+        member?.destinyUserInfo?.bungieGlobalDisplayNameCode
+      );
 
-    return member
-      ? ({
-          bungieGlobalName:
-            member.destinyUserInfo?.bungieGlobalDisplayName ||
-            member.destinyUserInfo?.FireteamDisplayName ||
-            member.destinyUserInfo?.displayName,
-          bungieGlobalCode,
-          bungieGlobalCodeWithHashtag,
-        } as IBungieName)
-      : UserUtils.emptyBungieNameObject;
+      return {
+        bungieGlobalName:
+          member?.destinyUserInfo?.bungieGlobalDisplayName ||
+          member?.destinyUserInfo?.FireteamDisplayName ||
+          member?.destinyUserInfo?.displayName,
+        bungieGlobalCode,
+        bungieGlobalCodeWithHashtag,
+      } as IBungieName;
+    } else {
+      return UserUtils.emptyBungieNameObject;
+    }
   };
 
   public static standardizeBungieGlobalCode = (

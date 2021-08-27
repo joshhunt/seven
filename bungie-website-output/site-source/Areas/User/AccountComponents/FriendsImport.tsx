@@ -133,13 +133,9 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   const sendFriendRequest = (mId: string) => {
     Platform.SocialService.IssueFriendRequest(mId)
       .then((response) => {
-        Modal.open(
-          response ? (
-            <ActionSuccessModal />
-          ) : (
-            Localizer.Friends.FriendRequestFailed
-          )
-        );
+        if (!response) {
+          Modal.open(Localizer.Friends.FriendRequestFailed);
+        }
 
         //update the list
         getBungieFriendRequests();
@@ -153,13 +149,9 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   const cancelFriendRequest = (mId: string) => {
     Platform.SocialService.DeclineFriendRequest(mId)
       .then((response) => {
-        Modal.open(
-          response ? (
-            <ActionSuccessModal />
-          ) : (
-            Localizer.Friends.DecliningFriendRequest
-          )
-        );
+        if (!response) {
+          Modal.open(Localizer.Friends.DecliningFriendRequest);
+        }
 
         //update the list
         getBungieFriendRequests();
@@ -197,8 +189,6 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
             error: e,
           },
         ]);
-
-        Modal.error(e);
       });
   };
 
@@ -278,14 +268,14 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
     return (
       incomingRequests.findIndex((bungieFriend) => {
         return (
-          bungieFriend.bungieGlobalDisplayName ===
-          platformFriend.bungieGlobalDisplayName
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
         );
       }) === -1 &&
       outgoingRequests.findIndex((bungieFriend) => {
         return (
-          bungieFriend.bungieGlobalDisplayName ===
-          platformFriend.bungieGlobalDisplayName
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
         );
       }) === -1
     );
@@ -298,14 +288,14 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
     return (
       incomingRequests.findIndex((bungieFriend) => {
         return (
-          bungieFriend.bungieGlobalDisplayName ===
-          platformFriend.bungieGlobalDisplayName
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
         );
       }) > -1 ||
       outgoingRequests.findIndex((bungieFriend) => {
         return (
-          bungieFriend.bungieGlobalDisplayName ===
-          platformFriend.bungieGlobalDisplayName
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
         );
       }) > -1
     );
@@ -393,7 +383,7 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
       flair = (
         <div className={styles.twoButtons}>
           <Button
-            buttonType={"red"}
+            buttonType={"gold"}
             onClick={() => FriendsImportUtils.reAuth(platform)}
           >
             {Localizer.Accountlinking.Reauthorize}

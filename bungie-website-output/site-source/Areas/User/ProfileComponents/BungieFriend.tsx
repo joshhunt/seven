@@ -38,9 +38,7 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     return (
       friends.find(
         (value: Friends.BungieFriend) =>
-          value.bungieNetUser?.membershipId === props.mId ||
-          value.bungieGlobalDisplayNameCode ===
-            props.bungieGlobalDisplaynameCode
+          value.bungieNetUser?.membershipId === props.mId
       ) !== undefined
     );
   };

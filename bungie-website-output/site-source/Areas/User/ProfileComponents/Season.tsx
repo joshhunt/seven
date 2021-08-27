@@ -36,7 +36,7 @@ const Season: React.FC<SeasonProps> = (props) => {
     characterComponent,
   } = props;
 
-  if (typeof profileResponse.characterProgressions.data === "undefined") {
+  if (!profileResponse?.characterProgressions?.data || !characterComponent) {
     return null;
   }
 

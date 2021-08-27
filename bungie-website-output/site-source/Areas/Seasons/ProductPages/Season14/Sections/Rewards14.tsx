@@ -32,7 +32,7 @@ const Rewards14: React.FC<Rewards14Props> = (props) => {
     },
   ];
 
-  const learnMoreUrl = `/${Localizer.CultureName}/Profile/Rewards`;
+  const learnMoreUrl = `/${Localizer.CurrentCultureName}/Profile/Rewards`;
   const learnMoreAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.Season14Page,
     "Season14RewardsLearnMoreAnalyticsId",

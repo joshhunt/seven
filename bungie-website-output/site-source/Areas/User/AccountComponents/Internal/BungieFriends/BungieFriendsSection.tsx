@@ -41,17 +41,13 @@ export const BungieFriendsSection: React.FC<BungieFriendsSectionProps> = (
   };
 
   const sortByPresence = (a: Friends.BungieFriend, b: Friends.BungieFriend) => {
-    return a.onlineStatus ? -1 : 0;
+    return a?.onlineStatus ? -1 : 0;
   };
 
   const friendArray =
     props.bungieFriendsSectionType === "friends"
-      ? useMemo(
-          () =>
-            friendsData[props.bungieFriendsSectionType].sort(sortByPresence),
-          [friendsData.friends]
-        )
-      : friendsData[props.bungieFriendsSectionType];
+      ? friendsData?.[props.bungieFriendsSectionType]?.sort(sortByPresence)
+      : friendsData?.[props.bungieFriendsSectionType];
   let successText = "";
   let errorText = "";
 
@@ -78,7 +74,7 @@ export const BungieFriendsSection: React.FC<BungieFriendsSectionProps> = (
                 key={i}
                 bungieFriend={friend}
                 itemSubtitle={
-                  friend.onlineStatus === 1 ? (
+                  friend?.onlineStatus === 1 ? (
                     <div className={styles.online}>
                       {Localizer.friends.online}
                     </div>

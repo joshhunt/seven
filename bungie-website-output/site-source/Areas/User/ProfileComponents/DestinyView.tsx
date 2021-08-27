@@ -59,27 +59,28 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
         isSelf={isSelf}
         destinyMembership={destinyMembership}
       />
-      {destinyProfileResponse !== null && (
-        <>
-          <Season
-            seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
+      <Season
+        seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
+        profileResponse={destinyProfileResponse}
+        characterComponent={
+          destinyMembership?.selectedCharacter ??
+          destinyMembership.characters[0]
+        }
+      />
+      <div className={styles.triumphsCollections}>
+        <Triumphs
+          profileResponse={destinyProfileResponse}
+          coreSettings={coreSettings}
+        />
+        {destinyMembership?.selectedCharacter && (
+          <Collections
             profileResponse={destinyProfileResponse}
-            characterComponent={destinyMembership.selectedCharacter}
+            coreSettings={coreSettings}
+            characterId={destinyMembership.selectedCharacter.characterId}
           />
-          <div className={styles.triumphsCollections}>
-            <Triumphs
-              profileResponse={destinyProfileResponse}
-              coreSettings={coreSettings}
-            />
-            <Collections
-              profileResponse={destinyProfileResponse}
-              coreSettings={coreSettings}
-              characterId={destinyMembership.selectedCharacter.characterId}
-            />
-          </div>
-          <ProfileGameHistoryLink />
-        </>
-      )}
+        )}
+      </div>
+      <ProfileGameHistoryLink />
     </>
   );
 };

@@ -28,7 +28,7 @@ interface TriumphsProps
 const Triumphs: React.FC<TriumphsProps> = (props) => {
   const { coreSettings, profileResponse, definitions } = props;
 
-  if (typeof profileResponse.profileRecords.data === "undefined") {
+  if (!profileResponse?.profileRecords?.data) {
     return null;
   }
 

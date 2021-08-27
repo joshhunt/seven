@@ -10,6 +10,7 @@ import { OneLineItem } from "@UIKit/Companion/OneLineItem";
 import { Icon } from "@UIKit/Controls/Icon";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieView.module.scss";
+import { Localizer } from "@bungie/localization/Localizer";
 
 interface BungieNetActivityProps {
   membershipId: string;
@@ -33,8 +34,6 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
   useEffect(() => {
     GetForumActivity();
   }, [props.membershipId]);
-
-  const forumActivityTitle = "Forum Activity";
 
   if (forumActivity === null) {
     return null;
@@ -114,7 +113,7 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
 
   return (
     <div className={styles.forumActivity}>
-      <h3>{forumActivityTitle}</h3>
+      <h3>{Localizer.Profile.ForumActivity}</h3>
       <ul>
         {forumActivity.results.map(
           (activityMessage: Contracts.ActivityMessage) => {
