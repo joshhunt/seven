@@ -51,7 +51,7 @@ export class DestinySkuUtils {
       buttonLabel: contentItem.properties["ButtonLabel"],
       blurb: contentItem.properties["Blurb"],
       bigblurb: contentItem.properties["BigBlurb"],
-      featured: contentItem.properties["Featured"] === "true",
+      featured: JSON.parse(contentItem.properties["Featured"] || "false"),
       imagePath: contentItem.properties["Image"],
       price: contentItem.properties["Price"],
       discountText: contentItem.properties["DiscountLabel"],
@@ -61,8 +61,9 @@ export class DestinySkuUtils {
       modalHeaderImage: contentItem.properties["ModalHeaderImage"],
       skuTag: sku,
       soldOutButtonLabel: contentItem.properties["soldOutButtonLabel"],
-      buyButtonDisabled: contentItem.properties["buyButtonDisabled"] === "true",
-      learnMoreUrl: contentItem.properties["LearnMoreUrl"],
+      buyButtonDisabled: JSON.parse(
+        contentItem.properties["buyButtonDisabled"] || "true"
+      ),
     };
   }
 

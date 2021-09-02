@@ -236,6 +236,8 @@ export class RouteHelper {
   );
   public static Clans = LegacyPathWithQuery("/ClanV2/Search");
   public static MyClan = LegacyPathWithQuery("/ClanV2/MyClan");
+  public static Clan = (clanId: string) =>
+    LegacyPath(`/ClanV2?groupid=${clanId}`);
   public static Fireteams = LegacyPathWithQuery(
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );

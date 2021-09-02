@@ -98,20 +98,31 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       let membershipData = !isSameUser ? null : this.state.membershipData;
 
       if (!membershipData) {
-        membershipData = loadSpecificUser
-          ? await Platform.UserService.GetMembershipDataById(
-              user.membershipId,
-              user.membershipType
-            )
-          : await Platform.UserService.GetMembershipDataForCurrentUser();
-      }
+        try {
+          membershipData = loadSpecificUser
+            ? await Platform.UserService.GetMembershipDataById(
+                user.membershipId,
+                user.membershipType
+              )
+            : await Platform.UserService.GetMembershipDataForCurrentUser();
+        } catch {
+          const loadedForWho = loadSpecificUser
+            ? `${user.membershipType}/${user.membershipId}`
+            : "Current User";
 
-      if (!membershipData) {
-        const loadedForWho = loadSpecificUser
-          ? `${user.membershipType}/${user.membershipId}`
-          : "Current User";
+          console.error(`Cannot load user data for ${loadedForWho}`);
 
-        throw Error(`Cannot load user data for ${loadedForWho}`);
+          //this gives subscribers a way to react: stop spinners, load an error page
+          return {
+            membershipData,
+            memberships: [],
+            characters: {},
+            selectedCharacter: null,
+            selectedMembership: null,
+            isCrossSaved: false,
+            loaded: true,
+          };
+        }
       }
 
       const isCrossSaved =

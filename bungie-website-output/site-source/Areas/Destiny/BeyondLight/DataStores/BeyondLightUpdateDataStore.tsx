@@ -54,7 +54,7 @@ class _BeyondLightUpdateDataStore extends DataStore<
     this.initialLocale = Localizer.CurrentCultureName;
 
     this.actions.updateActive(ConfigUtils.SystemStatus("BeyondLightPhase1"));
-    await this.actions.getStrings();
+    await this.actions.getStrings().promise;
   }
 
   public actions = this.createActions({

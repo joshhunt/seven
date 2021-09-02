@@ -95,7 +95,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
       .then(() => {
         GlobalStateDataStore.actions
           .refreshCurrentUser(true)
-          .then(showSettingsChangedToast);
+          .promise.then((data) => data && showSettingsChangedToast());
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
@@ -145,7 +145,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                         name={"emailAddress"}
                         type={"email"}
                         placeholder={formikProps.values.emailAddress}
-                        className={styles.textInput}
+                        classes={{ input: styles.textInput }}
                       />
                       <Icon iconName={"pencil"} iconType={"fa"} />
                     </div>
@@ -174,10 +174,10 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                           return (
                             <EmailCheckbox
                               key={flag}
-                              title={Localizer.Registrationbenefits[flag]}
                               value={flag}
                               secondary={flag === "playtestsLocal"}
                               formikProps={formikProps}
+                              label={Localizer.Registrationbenefits[flag]}
                             />
                           );
                         })}

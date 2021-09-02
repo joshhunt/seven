@@ -101,6 +101,8 @@ class GlobalStateDataStoreInternal extends DataStore<
           coreSettings: stored,
         };
       }
+
+      return {};
     },
     /**
      * Reload settings from the server
@@ -130,9 +132,9 @@ class GlobalStateDataStoreInternal extends DataStore<
         Modal.error(e);
 
         await Logger.logToServer(e);
-
-        return;
       }
+
+      return {};
     },
     /**
      * Set user data back to initial state
@@ -197,6 +199,8 @@ class GlobalStateDataStoreInternal extends DataStore<
         };
       } catch (e) {
         GlobalFatalDataStore.actions.addError(e.message);
+
+        return {};
       }
     },
   });
@@ -206,7 +210,7 @@ class GlobalStateDataStoreInternal extends DataStore<
     NotificationCountManager.destroy();
 
     if (UserUtils.hasAuthenticationCookie) {
-      await this.actions.refreshCurrentUser(bustCache);
+      await this.actions.refreshCurrentUser(bustCache).promise;
 
       EventMux.initialize();
       NotificationCountManager.initialize(this.state.coreSettings);
@@ -241,10 +245,11 @@ class GlobalStateDataStoreInternal extends DataStore<
       true
     );
 
-    const didLoadFromStorage = !!(await this.actions.refreshSettings());
+    const didLoadFromStorage = !!(await this.actions.setSettingsFromStorage()
+      .promise);
 
     if (!didLoadFromStorage) {
-      await this.actions.refreshSettings();
+      await this.actions.refreshSettings().promise;
     }
 
     await this.refreshUserAndRelatedData(false);

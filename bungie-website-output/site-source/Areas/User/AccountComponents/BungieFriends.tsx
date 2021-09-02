@@ -9,6 +9,7 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { Friends, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieFriends.module.scss";
 
@@ -24,22 +25,23 @@ export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
 
   return (
     <div>
-      <GridCol cols={12} className={styles.banner}>
-        <div className={styles.importArea}>
-          <h3>{Localizer.friends.bungiefriends}</h3>
-          <p>{Localizer.friends.importfriendsDesc}</p>
-          <Button
-            buttonType={"gold"}
-            onClick={() => toggleFriendsImport(!showFriendsImport)}
-          >
-            {Localizer.friends.importfriends}
-          </Button>
-        </div>
-        {showFriendsImport && (
-          <FriendsImport bungieFriends={friendsData.friends} />
-        )}
-      </GridCol>
-
+      {ConfigUtils.SystemStatus("PlatformFriendImporter") && (
+        <GridCol cols={12} className={styles.banner}>
+          <div className={styles.importArea}>
+            <h3>{Localizer.friends.bungiefriends}</h3>
+            <p>{Localizer.friends.importfriendsDesc}</p>
+            <Button
+              buttonType={"gold"}
+              onClick={() => toggleFriendsImport(!showFriendsImport)}
+            >
+              {Localizer.friends.importfriends}
+            </Button>
+          </div>
+          {showFriendsImport && (
+            <FriendsImport bungieFriends={friendsData.friends} />
+          )}
+        </GridCol>
+      )}
       <BungieFriendsSection
         header={Localizer.groups.pending}
         bungieFriendsSectionType={"pendingRequests"}

@@ -42,7 +42,7 @@ export const BungieNetGroups: React.FC<BungieNetGroupsProps> = (props) => {
   }
 
   return (
-    <div>
+    <div className={styles.groups}>
       <h3>{groupsTitle}</h3>
       <ul>
         {groups.results.map((group: GroupsV2.GroupMembership) => {

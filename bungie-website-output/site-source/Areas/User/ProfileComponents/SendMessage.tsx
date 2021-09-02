@@ -46,13 +46,9 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
   ) => {
     Platform.MessageService.CreateConversationV2(input)
       .then((response: Responses.SaveMessageResult) => {
-        const resultMessage = "Message Sent";
-
         callback();
 
         toggleModalVisibility(false);
-
-        Modal.open(resultMessage);
       })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {

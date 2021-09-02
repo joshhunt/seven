@@ -5,8 +5,10 @@ import styles from "@Areas/User/AccountComponents/FriendsImport.module.scss";
 import { PlatformFriendType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
+import { Friends } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
@@ -65,6 +67,47 @@ export class FriendsImportUtils {
       () => {
         window.location.reload();
       }
+    );
+  };
+
+  public static hasBungieAccount = (platformFriend: Friends.PlatformFriend) => {
+    return !StringUtils.isNullOrWhiteSpace(
+      platformFriend.bungieNetMembershipId
+    );
+  };
+
+  public static isAlreadyFriend = (
+    bungieFriends: Friends.BungieFriend[],
+    platformFriend: Friends.PlatformFriend
+  ) => {
+    return (
+      bungieFriends.findIndex((value: Friends.BungieFriend) => {
+        return (
+          value.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
+        );
+      }) > -1
+    );
+  };
+
+  public static isPendingFriend = (
+    incomingRequests: Friends.BungieFriend[],
+    outgoingRequests: Friends.BungieFriend[],
+    platformFriend: Friends.PlatformFriend
+  ) => {
+    return (
+      incomingRequests.findIndex((bungieFriend) => {
+        return (
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
+        );
+      }) > -1 ||
+      outgoingRequests.findIndex((bungieFriend) => {
+        return (
+          bungieFriend.bungieNetUser?.membershipId ===
+          platformFriend.bungieNetMembershipId
+        );
+      }) > -1
     );
   };
 }

@@ -92,7 +92,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         .then(() => {
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .then(showSettingsChangedToast);
+            .promise.then(showSettingsChangedToast);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e))
@@ -274,7 +274,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       name={"displayName"}
                       type={"text"}
                       disabled={true}
-                      className={styles.textInput}
+                      classes={{ input: styles.textInput }}
                       placeholder={formikProps.values.displayName}
                       onChange={(e) => {
                         e.target.value !== bungieName?.bungieGlobalName

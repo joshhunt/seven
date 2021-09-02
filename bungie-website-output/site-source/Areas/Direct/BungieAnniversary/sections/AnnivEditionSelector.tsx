@@ -161,7 +161,6 @@ const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
     bigblurb,
     skuTag,
     buttonLabel,
-    learnMoreUrl,
   } = props.productDef;
 
   const productFamilyTag =

@@ -12,12 +12,9 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import React, { MouseEventHandler, useState } from "react";
 import styles from "../../BungieFriends.module.scss";
 
-interface FriendButtonDataWithMid extends FriendButtonData {
-  membershipId: string;
-}
-
 interface FriendsButtonHandlerProps {
-  buttonDataWithMid: FriendButtonDataWithMid[];
+  friendMembershipId: string;
+  buttonData?: FriendButtonData[];
   successText?: string;
   errorText?: string;
 }
@@ -33,10 +30,12 @@ export const FriendsButtonHandler: React.FC<FriendsButtonHandlerProps> = (
   ) => {
     callback(mId)
       .then((res) => {
-        setMessage(res ? props.successText : props.errorText);
-        setButtonView(false);
-        res && GlobalStateDataStore.refreshUserAndRelatedData();
-        res && FriendsListDataStore.actions.fetchAllFriends();
+        if (mId === props.friendMembershipId) {
+          setMessage(res ? props.successText : props.errorText);
+          setButtonView(false);
+          res && GlobalStateDataStore.refreshUserAndRelatedData();
+          res && FriendsListDataStore.actions.fetchAllFriends();
+        }
       })
       .catch(ConvertToPlatformError)
       .catch((error) => Modal.error(error));
@@ -45,7 +44,7 @@ export const FriendsButtonHandler: React.FC<FriendsButtonHandlerProps> = (
   return (
     <div className={styles.buttonContainer}>
       {buttonView ? (
-        props.buttonDataWithMid.map((b, i) => {
+        props.buttonData.map((b, i) => {
           return (
             <Button
               key={i}
@@ -54,8 +53,8 @@ export const FriendsButtonHandler: React.FC<FriendsButtonHandlerProps> = (
               onClick={(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
                 e.preventDefault();
                 e.stopPropagation();
-                b?.membershipId
-                  ? friendAction(b.membershipId, b.callback)
+                props.friendMembershipId
+                  ? friendAction(props.friendMembershipId, b.callback)
                   : Modal.open(Localizer.Messages.UserCannotFindRequestedUser);
               }}
             >

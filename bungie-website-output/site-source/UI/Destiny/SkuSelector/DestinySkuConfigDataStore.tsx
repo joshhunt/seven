@@ -81,7 +81,7 @@ class DestinySkuConfigDataStore extends DataStore<IDestinySkuConfig> {
   }
 
   public async initialize() {
-    await this.actions.refresh();
+    await this.actions.refresh().promise;
   }
 
   public actions = this.createActions({

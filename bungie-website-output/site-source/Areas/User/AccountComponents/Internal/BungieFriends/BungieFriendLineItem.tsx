@@ -54,12 +54,8 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = ({
         }
         flair={
           <FriendsButtonHandler
-            buttonDataWithMid={props.buttonData?.map((dc) => {
-              return {
-                ...dc,
-                membershipId: bungieFriend?.bungieNetUser?.membershipId,
-              };
-            })}
+            buttonData={props.buttonData}
+            friendMembershipId={bungieFriend?.bungieNetUser?.membershipId}
             successText={props.successText}
             errorText={props.errorText}
           />

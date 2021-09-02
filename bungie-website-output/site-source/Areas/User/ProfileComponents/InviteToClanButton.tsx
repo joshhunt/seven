@@ -114,15 +114,6 @@ export const InviteToClanButton: React.FC<InviteToClanButtonProps> = (
       props.onPageUserDestinyMembership.selectedMembership.membershipId
     )
       .then(() => {
-        // success
-        Modal.open(
-          Localizer.Format(clansLoc.YouHaveSuccessfullyInvited, {
-            displayName:
-              props.onPageUserDestinyMembership.selectedMembership
-                .bungieGlobalDisplayName,
-          })
-        );
-
         //refresh the master list
         getClanMembershipsForOnpageUser();
       })

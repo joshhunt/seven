@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { ViewerPermissionContext } from "@Areas/User/Account";
 import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStore";
@@ -11,14 +12,16 @@ import { Localizer } from "@bungie/localization";
 import { Applications, Platform } from "@Platform";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
+import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
+import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 interface AuthorizedApplicationsProps {
   /** The mid of the onPageUser */
@@ -48,7 +51,6 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
   };
 
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembershipData = useDataStore(AccountDestinyMembershipDataStore);
   const [applicationData, setApplicationData] = useState<
     Applications.Authorization[]
   >(null);
@@ -58,51 +60,49 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
       AuthorizationStatus.Active,
       AuthorizationStatus
     );
-  const { membershipId } = props;
-  const loggedInUserMembershipId = UserUtils.loggedInUserMembershipId(
-    globalStateData
+  const { membershipIdFromQuery, loggedInUserId, isSelf, isAdmin } = useContext(
+    ViewerPermissionContext
   );
 
-  const loggedInUserIsOnPageUser = (mid: string) => {
-    if (!loggedInUserMembershipId) {
-      return;
-    }
-    if (!mid || mid === "") {
-      return true;
-    }
-
-    return !!(
-      mid === loggedInUserMembershipId ||
-      destinyMembershipData?.membershipData?.destinyMemberships.find(
-        (m) => m.membershipId === loggedInUserMembershipId
-      )
-    );
-  };
-
   useEffect(() => {
-    const onPageMembershipId = loggedInUserIsOnPageUser
-      ? loggedInUserMembershipId
-      : membershipId;
+    getApplicationAuthorization();
+  }, []);
 
+  const onPageMembershipId = isSelf ? loggedInUserId : membershipIdFromQuery;
+
+  const getApplicationAuthorization = () => {
     Platform.ApplicationService.GetAuthorizations(onPageMembershipId, 0)
       .then((data) => {
         setApplicationData(data.results);
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
-  }, []);
+  };
 
+  const removeApplicationAuthorization = (applicationId: string) => {
+    isSelf &&
+      Platform.ApplicationService.RevokeAuthorization(
+        loggedInUserId,
+        applicationId
+      )
+        .then((errors) => {
+          if (errors === 0) {
+            getApplicationAuthorization();
+          }
+        })
+        .catch(ConvertToPlatformError)
+        .catch((e) => Modal.error(e));
+  };
+
+  const canSeeAndEditApplications = globalStateData?.loggedInUser?.userAcls?.includes(
+    AclEnum.BNextApplicationSupervision
+  );
   const allowedToReadUserDataAndAppData =
-    loggedInUserIsOnPageUser(membershipId) ||
-    (globalStateData?.loggedInUser?.userAcls?.includes(
-      AclEnum.BNextApplicationSupervision
-    ) &&
-      globalStateData?.loggedInUser?.userAcls?.includes(
-        AclEnum.BNextPrivateUserDataReader
-      ));
+    isSelf || (isAdmin && canSeeAndEditApplications);
 
   return (
-    applicationData?.length > 0 && (
+    applicationData?.length > 0 &&
+    allowedToReadUserDataAndAppData && (
       <div className={styles.applications}>
         <GridDivider cols={12} />
         <GridCol cols={2} medium={12}>
@@ -161,6 +161,20 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                       style: { fontSize: "3rem" },
                     }}
                   />
+                }
+                flair={
+                  <Button
+                    className={styles.removeButton}
+                    buttonType={"gold"}
+                    size={BasicSize.Small}
+                    onClick={() => {
+                      removeApplicationAuthorization(
+                        app.applicationId.toString()
+                      );
+                    }}
+                  >
+                    {Localizer.UserPages.Unlink}
+                  </Button>
                 }
               />
             );

@@ -147,7 +147,7 @@ export const ConfirmPlatformLinkingModalContent: React.FC<ConfirmPlatformLinking
                   name={"linkAccountConfirm"}
                   type={"text"}
                   disabled={false}
-                  className={styles.textInput}
+                  classes={{ input: styles.textInput }}
                   placeholder={linkAccount}
                   onChange={(e) => {
                     e.target.value.trim().toLowerCase() !==

@@ -1,11 +1,16 @@
+import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
+import { Localizer } from "@bungie/localization";
+import { BungieMembershipType } from "@Enum";
+import { GroupsV2, Platforms } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { ReactUtils } from "@Utilities/ReactUtils";
 import * as React from "react";
 import styles from "./CrossSavePlatformInfo.module.scss";
-import { GroupsV2, Platforms } from "@Platform";
-import { Localizer } from "@bungie/localization";
 import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
-import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
-import { BungieMembershipType } from "@Enum";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 
 interface ICrossSavePlatformInfoProps {
   membershipType: BungieMembershipType;
@@ -41,13 +46,28 @@ export class CrossSavePlatformInfo extends React.Component<
       ? platformMembership.platformDisplayName
       : Localizer.Crosssave.NoAccountLinked;
 
-    let clanLine = "";
+    let clanLine: React.ReactNode | string = "";
     if (!platformMembership && !this.props.hideAccountInfo) {
-      clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
-        platformName: LocalizerUtils.getPlatformNameFromMembershipType(
-          membershipType
-        ),
-      });
+      if (membershipType === BungieMembershipType.TigerXbox) {
+        const articleLink = ConfigUtils.GetParameter(
+          "CrossSave",
+          "CrossSaveMSHelp",
+          "https://www.bungie.net/help"
+        );
+
+        clanLine = (
+          <>
+            {Localizer.Crosssave.SignInToYourXboxNetwork}{" "}
+            <Anchor url={articleLink}>{articleLink}</Anchor>
+          </>
+        );
+      } else {
+        clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
+          platformName: LocalizerUtils.getPlatformNameFromMembershipType(
+            membershipType
+          ),
+        });
+      }
     }
 
     if (clan) {

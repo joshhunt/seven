@@ -143,11 +143,14 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
 
     return (
       <div className={styles.relativeContainer}>
-        {isLinked && <div>{displayName}</div>}
-        <p className={styles.subtitleMessage}>{crossSavedMessage}</p>
+        {isLinked && <div className={styles.platformName}>{displayName}</div>}
+        {crossSavedMessage ? (
+          <p className={styles.subtitleMessage}>{crossSavedMessage}</p>
+        ) : null}
         {isLinked && (
           <p className={styles.subtitleMessage}>{loggedInCredMessage}</p>
         )}
+
         {!isCrossSave && isLinked && (
           <Checkbox
             checked={checked}
@@ -176,6 +179,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           <TwoLineItem
             itemTitle={Localizer.Registration.networksigninoptionxbox}
             itemSubtitle={<AccountLinkItemSubtitle />}
+            normalWhiteSpace={true}
             icon={
               <IconCoin
                 iconImageUrl={Img(`/bungie/icons/logos/xbox/icon.png`)}
@@ -191,6 +195,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           <TwoLineItem
             itemTitle={Localizer.Registration.networksigninoptionplaystation}
             itemSubtitle={<AccountLinkItemSubtitle />}
+            normalWhiteSpace={true}
             icon={
               <IconCoin
                 iconImageUrl={Img(`/bungie/icons/logos/playstation/icon.png`)}
@@ -206,6 +211,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           <TwoLineItem
             itemTitle={Localizer.Registration.networksigninoptionsteam}
             itemSubtitle={<AccountLinkItemSubtitle />}
+            normalWhiteSpace={true}
             icon={
               <IconCoin
                 iconImageUrl={Img(`/bungie/icons/logos/steam/icon.png`)}
@@ -221,6 +227,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           <TwoLineItem
             itemTitle={Localizer.Registration.networksigninoptionstadia}
             itemSubtitle={<AccountLinkItemSubtitle />}
+            normalWhiteSpace={true}
             icon={
               <IconCoin
                 iconImageUrl={Img(`/bungie/icons/logos/stadia/icon.png`)}
@@ -238,6 +245,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           <TwoLineItem
             itemTitle={Localizer.Registration.networksigninoptiontwitch}
             itemSubtitle={<AccountLinkItemSubtitle />}
+            normalWhiteSpace={true}
             icon={
               <IconCoin
                 iconImageUrl={Img(`/bungie/icons/logos/twitch/icon.png`)}

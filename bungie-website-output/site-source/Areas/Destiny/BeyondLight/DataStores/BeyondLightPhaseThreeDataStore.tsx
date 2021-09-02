@@ -46,7 +46,7 @@ class _BeyondLightPhaseThreeDataStore extends DataStore<
     this.initialLocale = Localizer.CurrentCultureName;
 
     this.actions.updateActive(ConfigUtils.SystemStatus("BeyondLightPhase3"));
-    await this.actions.getStrings();
+    await this.actions.getStrings().promise;
   }
 
   public actions = this.createActions({

@@ -292,9 +292,8 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
             sortUsingFilterArray(validCredentialTypes, filterArray).map(
               (credential, i) => {
                 return (
-                  <>
+                  <div key={i} className={styles.accountLinkItem}>
                     <AccountLinkItem
-                      key={i}
                       onPageUserLoggedInCred={
                         isSelf || !membershipIdFromQuery ? loginCredType : null
                       }
@@ -311,7 +310,7 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
                     {i < validCredentialTypes.length - 1 && (
                       <GridDivider cols={12} />
                     )}
-                  </>
+                  </div>
                 );
               }
             )}

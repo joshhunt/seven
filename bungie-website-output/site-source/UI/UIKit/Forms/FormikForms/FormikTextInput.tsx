@@ -15,14 +15,19 @@ interface FormikTextInputProps {
   placeholder?: string;
   /** Optional function called on input value change */
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-  /** Passed by default to the input tag */
-  className?: string;
+  /** Passed by key to matching tag type */
+  classes?: {
+    container?: string;
+    input?: string;
+    error?: string;
+    label?: string;
+  };
   /** Controls whether or not the input value can be modified */
   disabled?: boolean;
 }
 
 export const FormikTextInput: React.FC<FormikTextInputProps> = ({
-  label,
+  classes,
   ...props
 }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -31,19 +36,23 @@ export const FormikTextInput: React.FC<FormikTextInputProps> = ({
   const [field, meta] = useField(props);
 
   return (
-    <>
-      <label htmlFor={field.name}>{label}</label>
+    <div className={classes?.container}>
+      <label htmlFor={field.name} className={classes?.label}>
+        {props.label}
+      </label>
       <input
         {...field}
         {...props}
+        id={field.name}
+        className={classes?.input}
         onChange={(e) => {
           props.onChange && props.onChange(e);
           field.onChange(e);
         }}
       />
-      {meta.touched && meta.error ? (
-        <div className="error">{meta.error}</div>
+      {meta.touched && meta.error && typeof meta.error === "string" ? (
+        <div className={classes?.error}>{meta.error}</div>
       ) : null}
-    </>
+    </div>
   );
 };

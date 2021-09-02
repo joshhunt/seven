@@ -26,6 +26,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { StringUtils } from "@Utilities/StringUtils";
@@ -72,7 +73,10 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   const [outgoingRequests, setOutgoingRequests] = useState<
     Friends.BungieFriend[]
   >([]);
-  const [selectedFriends, updateSelectedFriends] = useState<string[]>([]);
+  const [
+    friendMembershipIdsWithError,
+    setFriendMembershipIdsWithError,
+  ] = useState<string[]>([]);
 
   const [linkingModalOpen, setLinkingModalOpen] = useState(false);
   const [platformToLink, setPlatformToLink] = useState<PlatformFriendType>(
@@ -133,6 +137,11 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   const sendFriendRequest = (mId: string) => {
     Platform.SocialService.IssueFriendRequest(mId)
       .then((response) => {
+        //remove this user from errorList if present
+        setFriendMembershipIdsWithError((oldArray) => [
+          ...oldArray.filter((value) => value !== mId),
+        ]);
+
         if (!response) {
           Modal.open(Localizer.Friends.FriendRequestFailed);
         }
@@ -260,24 +269,15 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
     platformFriend: Friends.PlatformFriend
   ): boolean => {
     //friend does not have a bungie account
-    if (typeof platformFriend.bungieNetMembershipId === "undefined") {
+    if (!FriendsImportUtils.hasBungieAccount(platformFriend)) {
       return false;
     }
 
     //no incoming and no outgoing requests
-    return (
-      incomingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) === -1 &&
-      outgoingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) === -1
+    return !FriendsImportUtils.isPendingFriend(
+      incomingRequests,
+      outgoingRequests,
+      platformFriend
     );
   };
 
@@ -285,19 +285,10 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
     platformFriend: Friends.PlatformFriend
   ): boolean => {
     //incoming or outgoing request
-    return (
-      incomingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) > -1 ||
-      outgoingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) > -1
+    return FriendsImportUtils.isPendingFriend(
+      incomingRequests,
+      outgoingRequests,
+      platformFriend
     );
   };
 
@@ -324,6 +315,60 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   ) => {
     getPlatformFriends(platform, pageNumber.selected);
     getBungieFriendRequests();
+  };
+
+  const inviteAll = async (platformFriends: Friends.PlatformFriend[]) => {
+    //empty the error list we are retrying
+    setFriendMembershipIdsWithError([]);
+
+    const sendFriendRequestPromises: Promise<boolean>[] = [];
+    const requestedMembershipIdList: string[] = [];
+    platformFriends.forEach((friend) => {
+      //only friends that arent friends, or pending
+
+      if (
+        FriendsImportUtils.hasBungieAccount(friend) &&
+        !FriendsImportUtils.isPendingFriend(
+          incomingRequests,
+          outgoingRequests,
+          friend
+        ) &&
+        !FriendsImportUtils.isAlreadyFriend(props.bungieFriends, friend)
+      ) {
+        requestedMembershipIdList.push(friend.bungieNetMembershipId);
+        sendFriendRequestPromises.push(
+          Platform.SocialService.IssueFriendRequest(
+            friend.bungieNetMembershipId
+          )
+        );
+      }
+    });
+
+    await Promise.all(sendFriendRequestPromises)
+      .then((promiseResults: boolean[]) => {
+        const failedRequestsMemebershipIds: string[] = [];
+        //mark the ones that had errors
+        promiseResults.forEach((response, index) => {
+          if (!response) {
+            failedRequestsMemebershipIds.push(requestedMembershipIdList[index]);
+          }
+        });
+
+        setFriendMembershipIdsWithError(failedRequestsMemebershipIds);
+
+        if (failedRequestsMemebershipIds.length === 0) {
+          Modal.open(<ActionSuccessModal />);
+        } else {
+          Modal.open(friendsLoc.ThereWereSomeRequests);
+        }
+
+        //update the list
+        getBungieFriendRequests();
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e: PlatformError) => {
+        Modal.error(e);
+      });
   };
 
   const expandablePlatformList = (
@@ -402,22 +447,32 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
           flair={flair}
           onClick={() => togglePlatformList(platform)}
         />
-        {openPlatformList.includes(platform) && (
+        {openPlatformList.includes(platform) && platformFriends && (
           <>
+            {ConfigUtils.SystemStatus("PlatformFriendBulkImporter") && (
+              <div className={styles.batchAddHeader}>
+                <h3>{friendsLoc.BungieAccounts}</h3>
+                <Button
+                  buttonType={"text"}
+                  className={styles.inviteAllButton}
+                  onClick={() => inviteAll(platformFriends)}
+                >
+                  {friendsLoc.InviteAllOnThisPage}
+                </Button>
+              </div>
+            )}
             <ul className={styles.platformFriends}>
               {platformFriends.map((friend) => {
-                const noBungieAccount = StringUtils.isNullOrWhiteSpace(
+                const noBungieAccount = !FriendsImportUtils.hasBungieAccount(
+                  friend
+                );
+                const isBungieFriend = FriendsImportUtils.isAlreadyFriend(
+                  props.bungieFriends,
+                  friend
+                );
+                const errorDuringRequest = friendMembershipIdsWithError.includes(
                   friend.bungieNetMembershipId
                 );
-                const isBungieFriend =
-                  props.bungieFriends.findIndex(
-                    (value: Friends.BungieFriend) => {
-                      return (
-                        value.bungieGlobalDisplayNameCode ===
-                        friend.bungieGlobalDisplayNameCode
-                      );
-                    }
-                  ) > -1;
 
                 if (noBungieAccount) {
                   return (
@@ -463,13 +518,15 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
                           )}
                           {!isBungieFriend && showSendButtonForUser(friend) && (
                             <Button
-                              buttonType={"gold"}
+                              buttonType={errorDuringRequest ? "red" : "gold"}
                               size={BasicSize.Small}
                               onClick={() =>
                                 sendFriendRequest(friend.bungieNetMembershipId)
                               }
                             >
-                              {Localizer.Actions.SendRequest}
+                              {errorDuringRequest
+                                ? friendsLoc.ErrorRetry
+                                : Localizer.Actions.SendRequest}
                             </Button>
                           )}
                           {isBungieFriend && (
@@ -587,4 +644,5 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
       )}
     </div>
   );
+  // tslint:disable-next-line: max-file-line-count
 };

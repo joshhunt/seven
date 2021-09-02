@@ -7,6 +7,7 @@ import styles from "@Areas/User/AccountComponents/Privacy.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { Localizer } from "@bungie/localization";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { FormikCheckbox } from "@UIKit/Forms/FormikForms/FormikCheckbox";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
@@ -62,29 +63,27 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
     <div className={classNames(styles.clanInvites, styles.twoLine)}>
       {memberships.map((mt, i) => {
         return (
-          <div className={classNames(styles.checkbox, styles.noBorder)} key={i}>
-            <div>
-              {Localizer.Format(Localizer.Clans.AllowClanInvitationsFor, {
-                platform:
-                  Localizer.Platforms[
-                    EnumUtils.getStringValue(mt, BungieMembershipType)
-                  ],
-              })}
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                checked={clanInviteData?.clanInviteSettings?.[mt]}
-                value={clanInviteData?.clanInviteSettings?.[mt]?.toString()}
-                onChange={(e) => {
-                  const newSettings = { ...clanInviteData?.clanInviteSettings };
-                  newSettings[mt] = e.currentTarget.value === "false";
-                  ClanInviteDataStore.actions.updateCurrentSettings(
-                    newSettings
-                  );
-                }}
-              />
-            </div>
+          <div className={styles.checkbox} key={i}>
+            <FormikCheckbox
+              name={clanInviteData?.clanInviteSettings?.[mt]?.toString()}
+              label={`${Localizer.Format(
+                Localizer.Clans.AllowClanInvitationsFor,
+                {
+                  platform:
+                    Localizer.Platforms[
+                      EnumUtils.getStringValue(mt, BungieMembershipType)
+                    ],
+                }
+              )}`}
+              checked={clanInviteData?.clanInviteSettings?.[mt]}
+              value={clanInviteData?.clanInviteSettings?.[mt]?.toString()}
+              onChange={(e) => {
+                const newSettings = { ...clanInviteData?.clanInviteSettings };
+                newSettings[mt] = e.currentTarget.value === "false";
+                ClanInviteDataStore.actions.updateCurrentSettings(newSettings);
+              }}
+              classes={{ input: styles.input, label: styles.label }}
+            />
           </div>
         );
       })}

@@ -39,9 +39,14 @@ export const Clan: React.FC<ClanProps> = (props) => {
     ) {
       const clanResult = props.loggedInUserClans.results.find(
         (value, index) => {
-          return (
+          const isActiveClan = !props.loggedInUserClans
+            .areAllMembershipsInactive[value.group.groupId];
+          const clanMembershipTypeMatchesSelectedMembershipType =
             value.member.destinyUserInfo.membershipType ===
-            props.destinyMembership.selectedMembership.membershipType
+            props.destinyMembership.selectedMembership.membershipType;
+
+          return (
+            clanMembershipTypeMatchesSelectedMembershipType && isActiveClan
           );
         }
       );
@@ -50,41 +55,39 @@ export const Clan: React.FC<ClanProps> = (props) => {
         setClan(clanResult);
       }
     } else {
-      const problem = "problem loading clan info";
-
       Platform.GroupV2Service.GetGroupsForMember(
         props.mType,
         props.mId,
         GroupsForMemberFilter.All,
         GroupType.Clan
-      )
-        .then((clanResponse: GroupsV2.GetGroupsForMemberResponse) => {
-          if (clanResponse?.results.length > 0) {
-            const clanResult = clanResponse.results.find((value, index) => {
-              return (
-                value.member.destinyUserInfo.membershipType ===
-                props.destinyMembership.selectedMembership.membershipType
-              );
-            });
+      ).then((clanResponse: GroupsV2.GetGroupsForMemberResponse) => {
+        if (clanResponse?.results.length > 0) {
+          const clanResult = clanResponse.results.find((value, index) => {
+            const isActiveClan = !clanResponse.areAllMembershipsInactive[
+              value.group.groupId
+            ];
+            const clanMembershipTypeMatchesSelectedMembershipType =
+              value.member.destinyUserInfo.membershipType ===
+              props.destinyMembership.selectedMembership.membershipType;
 
-            if (typeof clanResult !== "undefined") {
-              setClan(clanResult);
-            }
+            return (
+              clanMembershipTypeMatchesSelectedMembershipType && isActiveClan
+            );
+          });
+
+          if (clanResult) {
+            setClan(clanResult);
           }
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          console.log(problem);
-          Modal.error(e);
-        });
+        }
+      });
     }
   };
 
   useEffect(() => {
     const noCurrentClanLoaded =
-      clan === null && props.destinyMembership.selectedMembership !== null;
+      !clan && props.destinyMembership?.selectedMembership;
     const clanIsDifferent =
-      clan !== null &&
+      clan &&
       !props.destinyMembership.membershipData.destinyMemberships.some(
         (dm) => dm.membershipId === clan.member.destinyUserInfo.membershipId
       );
@@ -94,7 +97,7 @@ export const Clan: React.FC<ClanProps> = (props) => {
     }
   }, [props.destinyMembership]);
 
-  if (clan === null) {
+  if (!clan) {
     //empty state
     return (
       <Anchor
@@ -116,7 +119,10 @@ export const Clan: React.FC<ClanProps> = (props) => {
         });
 
   return (
-    <Anchor className={styles.clanSection} url={RouteHelper.MyClan()}>
+    <Anchor
+      className={styles.clanSection}
+      url={RouteHelper.Clan(clan.group.groupId)}
+    >
       <ClanBannerDisplay
         className={styles.clanBanner}
         bannerSettings={clan.group.clanInfo.clanBannerData}

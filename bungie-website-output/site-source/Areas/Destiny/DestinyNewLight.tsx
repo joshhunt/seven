@@ -524,8 +524,8 @@ class DestinyNewLightInternal extends React.Component<
                 isMedium={this.state.responsive.medium}
               />
               <ScreenShotBlock
-                screenshotPath={`destiny/bgs/new_light/media/pvp_screenshot_3.jpg`}
-                thumbnailPath={`destiny/bgs/new_light/media/pvp_screenshot_3_thumbnail.jpg`}
+                screenshotPath={`destiny/bgs/new_light/media/pvp_screenshot_3_v2.jpg`}
+                thumbnailPath={`destiny/bgs/new_light/media/pvp_screenshot_3_thumbnail_v2.jpg`}
                 isMedium={this.state.responsive.medium}
               />
             </div>

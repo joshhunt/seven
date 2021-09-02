@@ -99,4 +99,7 @@ export const SystemNames = {
   Season15Page: "Season15Page",
   Season15HelpArticleUrlByLocale: "Season15HelpArticleUrlByLocale",
   WitchQueen: "WitchQueen",
+  CrossSaveMSHelp: "CrossSaveMSHelp",
+  PlatformFriendImporter: "PlatformFriendImporter",
+  PlatformFriendBulkImporter: "PlatformFriendBulkImporter",
 } as const;

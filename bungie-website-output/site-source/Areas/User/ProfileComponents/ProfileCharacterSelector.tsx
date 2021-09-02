@@ -20,6 +20,7 @@ interface CharactersProps
     | "DestinyClassDefinition"
     | "DestinyRaceDefinition"
     | "DestinyGenderDefinition"
+    | "DestinyInventoryItemLiteDefinition"
   > {
   characters: { [p: string]: Characters.DestinyCharacterComponent };
   selectedCharacterId: string;
@@ -49,9 +50,13 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
         const charComponent = value[1];
         const characterLight = `✧ ${charComponent.light}`;
 
+        const def = props.definitions.DestinyInventoryItemLiteDefinition.get(
+          charComponent.emblemHash
+        );
+
         characterList.push({
-          iconPath: charComponent.emblemPath,
-          backgroundPath: charComponent.emblemBackgroundPath,
+          iconPath: def.secondaryOverlay,
+          backgroundPath: def.secondarySpecial,
           light: (
             <React.Fragment>
               <span className={styles.light}>{characterLight}</span>
@@ -145,6 +150,7 @@ export default withDestinyDefinitions(ProfileCharacterSelector, {
     "DestinyClassDefinition",
     "DestinyRaceDefinition",
     "DestinyGenderDefinition",
+    "DestinyInventoryItemLiteDefinition",
   ],
 });
 

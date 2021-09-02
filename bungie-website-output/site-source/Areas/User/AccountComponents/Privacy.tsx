@@ -8,10 +8,8 @@ import { PrivacySelect } from "@Areas/User/AccountComponents/Internal/PrivacySel
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
-import { Contract, User, Platform } from "@Platform";
-import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
+import { Contract, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikCheckbox } from "@UIKit/Forms/FormikForms/FormikCheckbox";
@@ -52,7 +50,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
         errors === 0 &&
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .then(showSettingsChangedToast);
+            .promise.then(showSettingsChangedToast);
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e))
@@ -163,7 +161,6 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                       <div
                         className={classNames(styles.checkbox, styles.noBorder)}
                       >
-                        <div>{Localizer.Privacy.ShowMyForumActivities}</div>
                         <div>
                           <FormikCheckbox
                             name={"showActivity"}
@@ -171,6 +168,11 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                             onChange={(e) =>
                               handleChange(e, "showActivity", formikProps)
                             }
+                            label={Localizer.Privacy.ShowMyForumActivities}
+                            classes={{
+                              input: styles.input,
+                              label: styles.label,
+                            }}
                           />
                         </div>
                       </div>
@@ -186,7 +188,6 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                   <GridCol cols={10} medium={12}>
                     <div className={styles.row}>
                       <div className={styles.checkbox}>
-                        <div>{Localizer.Privacy.ShowMyDestinyGameActivity}</div>
                         <div>
                           <FormikCheckbox
                             name={"HideDestinyActivityHistoryFeed"}
@@ -200,6 +201,11 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                                 formikProps
                               )
                             }
+                            label={Localizer.Privacy.ShowMyDestinyGameActivity}
+                            classes={{
+                              input: styles.input,
+                              label: styles.label,
+                            }}
                           />
                         </div>
                       </div>
@@ -207,9 +213,6 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
 
                     <div className={styles.row}>
                       <div className={styles.checkbox}>
-                        <div>
-                          {Localizer.Privacy.ShowMyNonEquippedInventory}
-                        </div>
                         <div>
                           <FormikCheckbox
                             name={"ShowDestinyInventory"}
@@ -221,6 +224,11 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                                 formikProps
                               )
                             }
+                            label={Localizer.Privacy.ShowMyNonEquippedInventory}
+                            classes={{
+                              input: styles.input,
+                              label: styles.label,
+                            }}
                           />
                         </div>
                       </div>
@@ -236,12 +244,6 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                       <div
                         className={classNames(styles.checkbox, styles.noBorder)}
                       >
-                        <div className={styles.twoLine}>
-                          {Localizer.Privacy.ShowMyProgression}
-                          <div className={styles.subtitle}>
-                            {Localizer.Privacy.WhatIVeCompletedInDestiny}
-                          </div>
-                        </div>
                         <div>
                           <FormikCheckbox
                             name={"HideDestinyProgression"}
@@ -253,7 +255,15 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                                 formikProps
                               )
                             }
+                            label={Localizer.Privacy.ShowMyProgression}
+                            classes={{
+                              input: styles.input,
+                              label: styles.label,
+                            }}
                           />
+                          <div className={styles.subtitle}>
+                            {Localizer.Privacy.WhatIVeCompletedInDestiny}
+                          </div>
                         </div>
                       </div>
                     </div>

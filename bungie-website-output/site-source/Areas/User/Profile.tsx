@@ -9,8 +9,10 @@ import { BungieFriend } from "@Areas/User/ProfileComponents/BungieFriend";
 import { BungieView } from "@Areas/User/ProfileComponents/BungieView";
 import { DestinyView } from "@Areas/User/ProfileComponents/DestinyView";
 import { InviteToClanButton } from "@Areas/User/ProfileComponents/InviteToClanButton";
+import { ProfileHeader } from "@Areas/User/ProfileComponents/ProfileHeader";
 import { SendMessage } from "@Areas/User/ProfileComponents/SendMessage";
 import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import {
   BungieMembershipType,
@@ -19,10 +21,10 @@ import {
   ModeratorRequestedPunishment,
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
 import { Contracts, Platform, Responses, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
+import { Error404 } from "@UI/Errors/Error404";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Auth } from "@UI/User/Auth";
@@ -30,9 +32,10 @@ import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { UserUtils } from "@Utilities/UserUtils";
+import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
@@ -63,26 +66,42 @@ const Profile: React.FC<ProfileProps> = (props) => {
     globalState
   );
 
+  const isLoggedIn = UserUtils.isAuthenticated(globalState);
+  const loggedInMIDIsCurrentMembershipMID =
+    loggedInUserMembershipId === membershipId;
+  const loggedInMIDIsPlatformMID = destinyMembership?.memberships?.some(
+    (m) => m.membershipId === loggedInUserMembershipId
+  );
+  const loggedInMIDIsBNetMID =
+    destinyMembership?.membershipData?.bungieNetUser?.membershipId ===
+    loggedInUserMembershipId;
   // check mid against the bungienet account and the platform accounts
   const isSelf =
-    UserUtils.isAuthenticated(globalState) &&
-    (loggedInUserMembershipId === membershipId || //mid match
-      destinyMembership?.memberships?.some(
-        (m) => m.membershipId === loggedInUserMembershipId
-      ) || // logged in mid is one of the platform accounts
-      destinyMembership?.membershipData?.bungieNetUser.membershipId ===
-        loggedInUserMembershipId); //logged in mid is the bungienet user
+    isLoggedIn &&
+    (loggedInMIDIsCurrentMembershipMID ||
+      loggedInMIDIsPlatformMID ||
+      loggedInMIDIsBNetMID);
 
   const isCrossSaved = isSelf
     ? globalState.crossSavePairingStatus?.primaryMembershipType !== undefined
     : destinyMembership.isCrossSaved;
 
-  const [bungieNetUser, setUser] = useState<User.GeneralUser>(null);
+  const bungieNetUser = destinyMembership?.membershipData?.bungieNetUser;
+  const bungieGlobalNameObject = bungieNetUser
+    ? UserUtils.getBungieNameFromBnetGeneralUser(bungieNetUser)
+    : UserUtils.getBungieNameFromGroupUserInfoCard(
+        destinyMembership?.selectedMembership ??
+          destinyMembership?.membershipData?.destinyMemberships[0]
+      );
+
   const [destinyProfileResponse, setDestinyProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >(null);
 
   const [showMessageModal, toggleShowMessageModal] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isValidUser, setIsValidUser] = useState(true);
 
   enum pageView {
     destiny,
@@ -111,73 +130,48 @@ const Profile: React.FC<ProfileProps> = (props) => {
   }, [globalState.loggedInUser, params.mid]);
 
   useEffect(() => {
-    //different mid or mtype
+    if (membershipId && membershipType) {
+      setIsLoading(true);
 
-    const selectedDestinyMembershipIsCurrentlyUsedForView =
-      destinyMembership?.selectedMembership?.membershipId === membershipId;
+      ProfileDestinyMembershipDataStore.actions.loadUserData(
+        {
+          membershipId,
+          membershipType,
+        },
+        true
+      );
+    }
 
-    const membershipTypeIsBungieNext = EnumUtils.looseEquals(
-      membershipType,
-      BungieMembershipType.BungieNext,
-      BungieMembershipType
-    );
-
-    const isCurrentlyUsingBNetAsSelectedMembership =
-      membershipTypeIsBungieNext &&
-      destinyMembership?.membershipData?.bungieNetUser?.membershipId ===
-        membershipId;
-
-    //updating the url because the platform was updated, but its the exact same view, for example going from bungie profile to platform profile when only one account linked
-    if (
-      membershipId !== "" &&
-      (selectedDestinyMembershipIsCurrentlyUsedForView ||
-        isCurrentlyUsingBNetAsSelectedMembership)
-    ) {
-      loadUser();
-    } else {
-      if (membershipId && membershipType) {
-        // Load the membership data using the values from the URL
-        //setting to null allows user data to fully refresh
-        setDestinyProfileResponse(null);
-        setUser(null);
-
-        ProfileDestinyMembershipDataStore.actions.loadUserData(
-          {
-            membershipId,
-            membershipType,
-          },
-          true
-        );
-      }
+    if (membershipId !== "" && membershipType === BungieMembershipType.None) {
+      //example: /profile/jibberish
+      setIsValidUser(false);
     }
   }, [membershipType, membershipId]); // Triggered when either of these changes
 
   // destinyMembership has been updated -> load all the other user data
   useEffect(() => {
-    const notTheSameUser =
-      !isSelf &&
-      destinyMembership?.membershipData !== null &&
-      destinyMembership?.membershipData.destinyMemberships[0]?.membershipId !==
-        membershipId;
-
-    if (
-      (isSelf && bungieNetUser === null) ||
-      notTheSameUser ||
-      (isSelf && bungieNetUser?.membershipId !== membershipId)
-    ) {
-      loadUser();
+    if (destinyMembership?.loaded && !destinyMembership?.membershipData) {
+      setIsValidUser(false);
     }
 
-    if (
-      destinyProfileResponse === null &&
-      destinyMembership?.selectedMembership !== null
-    ) {
+    if (destinyMembership?.membershipData) {
+      updateUrlWithAllParams(bungieGlobalNameObject.bungieGlobalName);
       loadDestinyProfileData();
+      //destiny data has its own loading spinner so stop the profile loading spinner
+      setIsLoading(false);
     }
   }, [destinyMembership]);
 
+  if (!isValidUser) {
+    return <Error404 />;
+  }
+
   //the page requested did not have a mId in the Url and there is no loggedInUser -> prompt for signin
-  if (membershipId === "" && typeof globalState.loggedInUser === "undefined") {
+  if (
+    membershipId === "" &&
+    membershipType === BungieMembershipType.None &&
+    typeof globalState.loggedInUser === "undefined"
+  ) {
     return <RequiresAuth onSignIn={null} />;
   }
 
@@ -185,13 +179,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
     Platform.SocialService.IssueFriendRequest(membershipId)
       .then((response: boolean) => {
         updateSendingFriendRequest(false);
-
-        const message = response ? (
-          <ActionSuccessModal />
-        ) : (
-          profileLoc.ThereWasAProblemSending
-        );
-        Modal.open(message);
       })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
@@ -241,36 +228,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
       });
   };
 
-  const loadUser = () => {
-    //bungie user data here
-    let userName = "";
-
-    //use the platform display names when appropriate - shows up in the title and the url
-    if (isSelf) {
-      userName = !EnumUtils.looseEquals(
-        membershipType,
-        BungieMembershipType.BungieNext,
-        BungieMembershipType
-      )
-        ? destinyMembership?.selectedMembership?.displayName ||
-          globalState.loggedInUser.user.displayName
-        : globalState.loggedInUser.user.displayName;
-      setUser(globalState.loggedInUser.user);
-    } else {
-      userName = !EnumUtils.looseEquals(
-        membershipType,
-        BungieMembershipType.BungieNext,
-        BungieMembershipType
-      )
-        ? destinyMembership?.selectedMembership?.displayName ||
-          destinyMembership.membershipData.bungieNetUser.displayName
-        : destinyMembership.membershipData.bungieNetUser.displayName;
-      setUser(destinyMembership.membershipData.bungieNetUser);
-    }
-
-    updateUrlWithAllParams(userName);
-  };
-
   const updateUrlWithAllParams = (userName: string) => {
     //after the bungienet user info has loaded we can update the url with the username
     const newTitle = Localizer.Format(
@@ -291,34 +248,35 @@ const Profile: React.FC<ProfileProps> = (props) => {
   };
 
   const loadDestinyProfileData = () => {
-    Platform.Destiny2Service.GetProfile(
-      destinyMembership.selectedMembership.membershipType,
-      destinyMembership.selectedMembership.membershipId,
-      [
-        DestinyComponentType.Profiles,
-        DestinyComponentType.CharacterProgressions,
-        DestinyComponentType.Characters,
-        DestinyComponentType.PresentationNodes,
-        DestinyComponentType.Records,
-        DestinyComponentType.Collectibles,
-        DestinyComponentType.Metrics,
-      ]
-    ).then((destinyResponse: Responses.DestinyProfileResponse) => {
-      const hasCharacterData =
-        typeof destinyResponse.characters !== "undefined" &&
-        typeof destinyResponse.characters.data !== "undefined";
+    if (destinyMembership.selectedMembership) {
+      Platform.Destiny2Service.GetProfile(
+        destinyMembership.selectedMembership.membershipType,
+        destinyMembership.selectedMembership.membershipId,
+        [
+          DestinyComponentType.Profiles,
+          DestinyComponentType.CharacterProgressions,
+          DestinyComponentType.Characters,
+          DestinyComponentType.PresentationNodes,
+          DestinyComponentType.Records,
+          DestinyComponentType.Collectibles,
+          DestinyComponentType.Metrics,
+        ]
+      ).then((destinyResponse: Responses.DestinyProfileResponse) => {
+        const hasCharacterData =
+          typeof destinyResponse.characters !== "undefined" &&
+          typeof destinyResponse.characters.data !== "undefined";
 
-      let targetCharacterId = "";
+        let targetCharacterId = "";
 
-      if (hasCharacterData) {
-        targetCharacterId = Object.keys(destinyResponse.characters.data)[0];
-      }
+        if (hasCharacterData) {
+          targetCharacterId = Object.keys(destinyResponse.characters.data)[0];
+        }
 
-      setDestinyProfileResponse(destinyResponse);
-    });
+        setDestinyProfileResponse(destinyResponse);
+      });
+    }
   };
 
-  // $todo atseng - replace with empty string when confirm this is user status
   const status = bungieNetUser?.statusText ?? "";
 
   const useBungieNetUserForName = bungieNetUser !== null;
@@ -357,175 +315,177 @@ const Profile: React.FC<ProfileProps> = (props) => {
       <BungieHelmet title={pageTitle} description={pageTitle}>
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
-      {bungieNetUser !== null && (
-        <div
-          className={styles.profileBanner}
-          style={{
-            backgroundImage: `url(/img/UserThemes/${bungieNetUser.profileThemeName}/header.jpg)`,
-          }}
-        >
-          <Grid>
-            <GridCol cols={12} className={styles.userSection}>
-              <img
-                src={bungieNetUser.profilePicturePath}
-                alt={bungieNetUser.displayName}
-              />
-              <h2>
-                {bungieDisplayName}
-                <span className={styles.uniqueName}>
-                  {completeBungieIdSuffix}
-                </span>
-              </h2>
-              <p>{status}</p>
-            </GridCol>
-          </Grid>
-        </div>
-      )}
-      <Grid className={styles.profileBody}>
-        <GridCol cols={3} className={styles.profileSidebar}>
-          {bungieNetUser !== null && (
-            <>
-              {!isSelf && (
-                <>
-                  <BungieFriend
-                    mId={membershipId}
-                    isAuthed={UserUtils.isAuthenticated(globalState)}
-                    bungieGlobalDisplaynameCode={
-                      bungieNetUser?.cachedBungieGlobalDisplayNameCode ?? 0
-                    }
-                  />
-                  <InviteToClanButton
-                    onPageUserDestinyMembership={destinyMembership}
-                    loggedInUserClans={globalState.loggedInUserClans}
-                  />
-                  <Button
-                    buttonType={"white"}
-                    className={classNames(styles.button, styles.btnSendMessage)}
-                    onClick={() => toggleShowMessageModal(true)}
-                  >
-                    {profileLoc.SendMessage}
-                  </Button>
-                  <SendMessage
-                    recipientsMembershipId={membershipId}
-                    showModal={showMessageModal}
-                    onClose={() => toggleShowMessageModal(false)}
-                  />
-                  <Button
-                    buttonType={"white"}
-                    className={classNames(styles.button, styles.btnBlock)}
-                    onClick={blockUser}
-                  >
-                    {profileLoc.Block}
-                  </Button>
-                  <ReportButton
-                    ignoredItemId={membershipId}
-                    itemContextType={IgnoredItemType.UserProfile}
-                  />
-                </>
-              )}
+      <SpinnerContainer
+        loading={isLoading}
+        mode={SpinnerDisplayMode.fullPage}
+        delayRenderUntilLoaded={true}
+      >
+        {bungieGlobalNameObject && (
+          <ProfileHeader
+            bungieDisplayName={bungieGlobalNameObject.bungieGlobalName}
+            bungieGlobalCodeWithHash={
+              bungieGlobalNameObject.bungieGlobalCodeWithHashtag
+            }
+            profileThemePath={
+              bungieNetUser?.profileThemeName
+                ? `url(/img/UserThemes/${bungieNetUser.profileThemeName}/header.jpg)`
+                : ""
+            }
+            avatarPath={
+              bungieNetUser?.profilePicturePath
+                ? bungieNetUser.profilePicturePath
+                : ""
+            }
+            status={status}
+          />
+        )}
+        <Grid className={styles.profileBody}>
+          <GridCol cols={3} className={styles.profileSidebar}>
+            {!isSelf && bungieNetUser && bungieGlobalNameObject && (
+              <>
+                <BungieFriend
+                  mId={membershipId}
+                  isAuthed={UserUtils.isAuthenticated(globalState)}
+                  bungieGlobalDisplaynameCode={
+                    bungieNetUser?.cachedBungieGlobalDisplayNameCode ?? 0
+                  }
+                />
+                <InviteToClanButton
+                  onPageUserDestinyMembership={destinyMembership}
+                  loggedInUserClans={globalState.loggedInUserClans}
+                />
+                <Button
+                  buttonType={"white"}
+                  className={classNames(styles.button, styles.btnSendMessage)}
+                  onClick={() => toggleShowMessageModal(true)}
+                >
+                  {profileLoc.SendMessage}
+                </Button>
+                <SendMessage
+                  recipientsMembershipId={membershipId}
+                  showModal={showMessageModal}
+                  onClose={() => toggleShowMessageModal(false)}
+                />
+                <Button
+                  buttonType={"white"}
+                  className={classNames(styles.button, styles.btnBlock)}
+                  onClick={blockUser}
+                >
+                  {profileLoc.Block}
+                </Button>
+                <ReportButton
+                  ignoredItemId={membershipId}
+                  itemContextType={IgnoredItemType.UserProfile}
+                />
+              </>
+            )}
+            {bungieNetUser && (
               <div className={styles.aboutMe}>
                 <h3>{profileLoc.AboutMe}</h3>
                 <p>{bungieNetUser.about}</p>
               </div>
-              {destinyMembership?.membershipData?.destinyMemberships && (
-                <div className={styles.linked}>
-                  <h3>{profileLoc.LinkedAccounts}</h3>
-                  <ul>
-                    {destinyMembership.membershipData.destinyMemberships.map(
-                      (value, index) => {
-                        if (
-                          value.membershipType !==
-                          BungieMembershipType.BungieNext
-                        ) {
-                          return (
-                            <li
-                              key={value.membershipId}
-                              className={styles.linkedAccount}
-                            >
-                              <img
-                                src={value.iconPath}
-                                alt={value.displayName}
-                              />{" "}
-                              {value.displayName}
-                            </li>
-                          );
-                        }
+            )}
+
+            {destinyMembership?.membershipData?.destinyMemberships && (
+              <div className={styles.linked}>
+                <h3>{profileLoc.LinkedAccounts}</h3>
+                <ul>
+                  {destinyMembership.membershipData.destinyMemberships.map(
+                    (value, index) => {
+                      if (
+                        value.membershipType !== BungieMembershipType.BungieNext
+                      ) {
+                        return (
+                          <li
+                            key={value.membershipId}
+                            className={styles.linkedAccount}
+                          >
+                            <img src={value.iconPath} alt={value.displayName} />{" "}
+                            {value.displayName}
+                          </li>
+                        );
                       }
-                    )}
-                  </ul>
-                </div>
-              )}
-            </>
-          )}
-        </GridCol>
-        <GridCol cols={9} className={styles.profileMain}>
-          <div className={styles.tabs}>
-            <div
-              onClick={() => updateView(pageView.destiny)}
-              className={showView === pageView.destiny ? styles.selected : ``}
-            >
-              <Icon iconType={"bungle"} iconName={"logodestiny"} />
-              {destinyTab}
-            </div>
-            <div
-              onClick={() => updateView(pageView.bungie)}
-              className={showView === pageView.bungie ? styles.selected : ``}
-            >
-              <Icon iconType={"bungle"} iconName={"logoseventhcolumn"} />
-              {bungieTab}
-            </div>
-          </div>
-          {destinyMembership?.membershipData?.destinyMemberships.length > 1 &&
-            !isCrossSaved && (
-              <div className={styles.platformSelector}>
-                <DestinyPlatformSelector
-                  userMembershipData={destinyMembership.membershipData}
-                  onChange={(value: string) => {
-                    if (
-                      !EnumUtils.looseEquals(
-                        value,
-                        membershipType,
-                        BungieMembershipType
-                      )
-                    ) {
-                      history.push(
-                        RouteHelper.NewProfile({
-                          mid: destinyMembership.membershipData.destinyMemberships.find(
-                            (memberships) =>
-                              EnumUtils.looseEquals(
-                                value,
-                                memberships.membershipType,
-                                BungieMembershipType
-                              )
-                          ).membershipId,
-                          mtype: value,
-                        }).url
-                      );
                     }
-                  }}
-                  defaultValue={membershipType}
-                  crossSavePairingStatus={
-                    isSelf ? globalState.crossSavePairingStatus : null
-                  }
-                />
+                  )}
+                </ul>
               </div>
             )}
-          {showView === pageView.destiny && (
-            <DestinyView
-              coreSettings={globalState.coreSettings}
-              destinyMembership={destinyMembership}
-              destinyProfileResponse={destinyProfileResponse}
-              loggedInUserClans={globalState.loggedInUserClans}
-              membershipType={membershipType}
-              membershipId={membershipId}
-              isSelf={isSelf}
-            />
-          )}
-          {showView === pageView.bungie && (
-            <BungieView bungieNetUser={bungieNetUser} />
-          )}
-        </GridCol>
-      </Grid>
+          </GridCol>
+          <GridCol cols={9} className={styles.profileMain}>
+            {bungieNetUser && (
+              <div className={styles.tabs}>
+                <div
+                  onClick={() => updateView(pageView.destiny)}
+                  className={
+                    showView === pageView.destiny ? styles.selected : ``
+                  }
+                >
+                  <Icon iconType={"bungle"} iconName={"logodestiny"} />
+                  {destinyTab}
+                </div>
+                <div
+                  onClick={() => updateView(pageView.bungie)}
+                  className={
+                    showView === pageView.bungie ? styles.selected : ``
+                  }
+                >
+                  <Icon iconType={"bungle"} iconName={"logoseventhcolumn"} />
+                  {bungieTab}
+                </div>
+              </div>
+            )}
+            {destinyMembership?.membershipData?.destinyMemberships.length > 1 &&
+              !isCrossSaved && (
+                <div className={styles.platformSelector}>
+                  <DestinyPlatformSelector
+                    userMembershipData={destinyMembership.membershipData}
+                    onChange={(value: string) => {
+                      if (
+                        !EnumUtils.looseEquals(
+                          value,
+                          membershipType,
+                          BungieMembershipType
+                        )
+                      ) {
+                        history.push(
+                          RouteHelper.NewProfile({
+                            mid: destinyMembership.membershipData.destinyMemberships.find(
+                              (memberships) =>
+                                EnumUtils.looseEquals(
+                                  value,
+                                  memberships.membershipType,
+                                  BungieMembershipType
+                                )
+                            ).membershipId,
+                            mtype: value,
+                          }).url
+                        );
+                      }
+                    }}
+                    defaultValue={membershipType}
+                    crossSavePairingStatus={
+                      isSelf ? globalState.crossSavePairingStatus : null
+                    }
+                  />
+                </div>
+              )}
+            {showView === pageView.destiny && (
+              <DestinyView
+                coreSettings={globalState.coreSettings}
+                destinyMembership={destinyMembership}
+                destinyProfileResponse={destinyProfileResponse}
+                loggedInUserClans={globalState.loggedInUserClans}
+                membershipType={membershipType}
+                membershipId={membershipId}
+                isSelf={isSelf}
+              />
+            )}
+            {bungieNetUser && showView === pageView.bungie && (
+              <BungieView bungieNetUser={bungieNetUser} />
+            )}
+          </GridCol>
+        </Grid>
+      </SpinnerContainer>
     </div>
   );
 };

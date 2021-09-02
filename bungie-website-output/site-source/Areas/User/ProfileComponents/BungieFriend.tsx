@@ -72,11 +72,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
       .then((response: boolean) => {
         setSendingFriendRequest(false);
 
-        Modal.open(
-          response
-            ? profileLoc.SuccessfullySent
-            : profileLoc.ThereWasAProblemSending
-        );
+        if (!response) {
+          Modal.open(profileLoc.ThereWasAProblemSending);
+        }
 
         setIsPendingOutgoingRequest(true);
       })
@@ -92,11 +90,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     //accept
     Platform.SocialService.AcceptFriendRequest(props.mId)
       .then((response) => {
-        Modal.open(
-          response
-            ? profileLoc.SuccessfullyAccepted
-            : profileLoc.ThereWasAProblemAccepting
-        );
+        if (!response) {
+          Modal.open(profileLoc.ThereWasAProblemAccepting);
+        }
 
         setIsFriend(true);
         setIsPendingIncomingRequest(false);
@@ -111,11 +107,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     //outgoing
     Platform.SocialService.RemoveFriendRequest(props.mId)
       .then((response) => {
-        Modal.open(
-          response
-            ? profileLoc.SuccessfullyCanceled
-            : profileLoc.ThereWasAProblemCancelling
-        );
+        if (!response) {
+          Modal.open(profileLoc.ThereWasAProblemCancelling);
+        }
 
         setIsPendingOutgoingRequest(false);
       })
@@ -129,11 +123,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     //incoming
     Platform.SocialService.DeclineFriendRequest(props.mId)
       .then((response) => {
-        Modal.open(
-          response
-            ? profileLoc.SuccessfullyDeclined
-            : profileLoc.ThereWasAProblemDeclining
-        );
+        if (!response) {
+          Modal.open(profileLoc.ThereWasAProblemDeclining);
+        }
 
         setIsPendingIncomingRequest(false);
       })
@@ -147,11 +139,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     //remove
     Platform.SocialService.RemoveFriend(props.mId)
       .then((response) => {
-        Modal.open(
-          response
-            ? profileLoc.SuccessfullyRemoved
-            : profileLoc.ThereWasAProblemDeclining
-        );
+        if (!response) {
+          Modal.open(profileLoc.ThereWasAProblemDeclining);
+        }
 
         setIsFriend(false);
       })

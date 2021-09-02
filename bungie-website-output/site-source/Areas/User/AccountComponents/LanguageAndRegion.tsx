@@ -87,7 +87,7 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
         .then(() => {
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .then(showSettingsChangedToast);
+            .promise.then(showSettingsChangedToast);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e));

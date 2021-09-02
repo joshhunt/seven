@@ -3,11 +3,13 @@
 
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { Localizer } from "@bungie/localization";
+import { RendererLogLevel } from "@Enum";
+import { Logger } from "@Global/Logger";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import * as React from "react";
+import React from "react";
 import {
   AllDefinitionsFetcherized,
   DestinyDefinitions,
@@ -15,10 +17,12 @@ import {
   IDestinyDefinitionsObserverProps,
   ManifestPayload,
 } from "./DestinyDefinitions";
+import styles from "./withDestinyDefinitions.module.scss";
 
 interface D2DatabaseComponentState extends ManifestPayload {
   // The first time we receive data, we mark this as true. That way we can reliably know if things are loading or not.
   receivedInitialState: boolean;
+  indexedDBNotSupported: boolean;
 }
 
 export interface D2DatabaseComponentProps<T extends DestinyDefinitionType> {
@@ -68,37 +72,51 @@ export const withDestinyDefinitions = <
         isLoading: DestinyDefinitions.state.isLoading,
         isLoaded: DestinyDefinitions.state.isLoaded,
         receivedInitialState: false,
+        indexedDBNotSupported: false,
       };
     }
 
     public componentDidMount() {
-      const loadedDefinitions = Object.keys(DestinyDefinitions.definitions);
+      this.checkIndexedDBSupport();
+    }
 
-      const needsDefs = observerProps.types.some(
-        (defType) => loadedDefinitions.indexOf(defType) < 0
-      );
+    public componentDidUpdate(
+      prevProps: Readonly<P>,
+      prevState: Readonly<D2DatabaseComponentState>,
+      snapshot?: any
+    ) {
+      if (
+        !this.state.indexedDBNotSupported &&
+        !this.state.receivedInitialState
+      ) {
+        const loadedDefinitions = Object.keys(DestinyDefinitions.definitions);
 
-      if (!needsDefs) {
-        this.setState({
-          isLoaded: true,
-          isLoading: false,
-          receivedInitialState: true,
-        });
+        const needsDefs = observerProps.types.some(
+          (defType) => loadedDefinitions.indexOf(defType) < 0
+        );
 
-        return;
-      }
-
-      //TODO jlauer - revert updateImmediately back to true when the datastore has been fixed
-      this.destroyer = DestinyDefinitions.observe(
-        (data) => {
+        if (!needsDefs) {
           this.setState({
-            ...data,
+            isLoaded: true,
+            isLoading: false,
             receivedInitialState: true,
           });
-        },
-        observerProps,
-        false
-      );
+
+          return;
+        }
+
+        //TODO jlauer - revert updateImmediately back to true when the datastore has been fixed
+        this.destroyer = DestinyDefinitions.observe(
+          (data) => {
+            this.setState({
+              ...data,
+              receivedInitialState: true,
+            });
+          },
+          observerProps,
+          false
+        );
+      }
     }
 
     public componentWillUnmount() {
@@ -107,7 +125,32 @@ export const withDestinyDefinitions = <
       }
     }
 
+    private checkIndexedDBSupport() {
+      const request = indexedDB.open("test", 1);
+      request.onerror = (e: Event) => {
+        Logger.logToServer(
+          "Error logged to server: IndexedDB not supported in Firefox privacy/incognito mode",
+          RendererLogLevel.Error
+        );
+
+        this.setState({
+          indexedDBNotSupported: true,
+          receivedInitialState: true,
+          isLoading: false,
+          isLoaded: true,
+        });
+      };
+    }
+
     public render() {
+      if (this.state.indexedDBNotSupported) {
+        return (
+          <div className={styles.featureIsNotSupported}>
+            {Localizer.Errors.ThisFeatureIsNotSupported}
+          </div>
+        );
+      }
+
       // If we encounter any errors, we'll show this modal which will let users hit the DestinyDefinitions.scorchedEarth() function (deletes the databases and attempts to redownload stuff).
       if (this.state.hasError) {
         const label = Localizer.FormatReact(
@@ -145,7 +188,10 @@ export const withDestinyDefinitions = <
 
       // Loading is handled by AppLayout.tsx, which subscribes to DestinyDefinitions and shows a loader if any of them are loading.
       // This is because we don't want to show multiple loaders if more than one component is waiting for definitions
-      if (this.state.isLoading || !this.state.receivedInitialState) {
+      if (
+        !this.state.isLoaded &&
+        (this.state.isLoading || !this.state.receivedInitialState)
+      ) {
         return null;
       }
 

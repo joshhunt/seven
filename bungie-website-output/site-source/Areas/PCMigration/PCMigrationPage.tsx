@@ -169,7 +169,7 @@ class PCMigrationPage extends React.Component<
 
     GlobalStateDataStore.actions
       .refreshCredentialTypes()
-      .then(() =>
+      .promise.then(() =>
         this.getPCMigrationTransferState(temporaryGlobalState.credentialTypes)
       );
 

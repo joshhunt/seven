@@ -40,7 +40,6 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
   const [selectedEdition, setSelectedEdition] = useState(
     EnumUtils.getStringValue(WQEditions.witchqueendeluxeanniversary, WQEditions)
   );
-  const [skuConfig, setSkuConfig] = useState(DestinySkuConfigDataStore.state);
   const [skuItems, setSkuItems] = useState(null);
   const [
     collectorsSku,
@@ -176,8 +175,8 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
               dangerouslySetInnerHTML={sanitizeHTML(collectorsSku?.bigblurb)}
             />
             <Button
-              url={collectorsSku?.learnMoreUrl}
-              disabled={collectorsSku?.buyButtonDisabled}
+              url={collectorsSku?.relatedPage}
+              disabled={!collectorsSku?.buyButtonDisabled}
               className={styles.ceBtn}
             >
               {collectorsSku?.buttonLabel}
@@ -214,7 +213,6 @@ const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
     bigblurb,
     skuTag,
     buttonLabel,
-    learnMoreUrl,
   } = props.productDef;
 
   const buyFlowRoute = RouteHelper.DestinyBuyDetail(

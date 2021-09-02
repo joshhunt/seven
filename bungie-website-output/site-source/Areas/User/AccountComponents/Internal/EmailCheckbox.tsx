@@ -4,21 +4,20 @@
 // Copyright Bungie, Inc.
 
 import { FormikCheckbox } from "@UIKit/Forms/FormikForms/FormikCheckbox";
-import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import classNames from "classnames";
 import { FormikProps, FormikValues } from "formik";
 import React from "react";
 import styles from "../EmailSms.module.scss";
 
 interface EmailSettingsProps {
-  title: React.ReactNode;
+  label: string;
   value: string;
   formikProps: FormikProps<FormikValues>;
   secondary?: boolean;
 }
 
 export const EmailCheckbox: React.FC<EmailSettingsProps> = ({
-  title,
+  label,
   value,
   secondary,
   formikProps,
@@ -33,14 +32,13 @@ export const EmailCheckbox: React.FC<EmailSettingsProps> = ({
 
   return (
     <div className={classNames(styles.flex, { [styles.secondary]: secondary })}>
-      <div>
-        <FormikCheckbox
-          name={"emailFlags"}
-          value={value}
-          checked={shouldBoxBeChecked}
-        />
-      </div>
-      <GridCol cols={10}>{title}</GridCol>
+      <FormikCheckbox
+        name={"emailFlags"}
+        value={value}
+        checked={shouldBoxBeChecked}
+        label={label}
+        classes={{ input: styles.input, label: styles.label }}
+      />
     </div>
   );
 };
