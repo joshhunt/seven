@@ -209,8 +209,37 @@ export class RouteHelper {
 
     return LegacyPath(`/Profile/GameHistory${params}`);
   };
-  public static Triumphs = LegacyPathWithQuery("/Triumphs");
-  public static Collections = LegacyPathWithQuery("/Collections");
+  public static Triumphs = (
+    membershipId?: string,
+    membershipType?: BungieMembershipType
+  ) => {
+    let params = "";
+
+    if (membershipId && membershipType) {
+      params = `/${EnumUtils.getNumberValue(
+        membershipType,
+        BungieMembershipType
+      )}/${membershipId}`;
+    }
+
+    return LegacyPath(`/Triumphs${params}`);
+  };
+
+  public static Collections = (
+    membershipId?: string,
+    membershipType?: BungieMembershipType
+  ) => {
+    let params = "";
+
+    if (membershipId && membershipType) {
+      params = `/${EnumUtils.getNumberValue(
+        membershipType,
+        BungieMembershipType
+      )}/${membershipId}`;
+    }
+
+    return LegacyPath(`/Collections${params}`);
+  };
 
   public static ResendEmailVerification = (mid: string) =>
     LegacyPath(`/Emails/ResendVerification?area=Emails&mid=${mid}`);

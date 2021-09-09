@@ -19,7 +19,9 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import React, { useEffect, useState } from "react";
+import accountStyles from "../Account.module.scss";
 import styles from "./AccountLinking.module.scss";
 
 interface AccountLinkingProps {}
@@ -73,15 +75,17 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
   );
 
   return isSelf || (isAdmin && membershipId) ? (
-    <GridCol cols={12} className={styles.container}>
+    <div className={styles.container}>
       <SystemDisabledHandler systems={["Destiny2"]}>
-        <CrossSaveBannerAccountLinking
-          isCrossSaved={destinyMembershipData?.isCrossSaved}
-        />
+        <GridCol cols={12}>
+          <CrossSaveBannerAccountLinking
+            isCrossSaved={destinyMembershipData?.isCrossSaved}
+          />
+        </GridCol>
         <GridCol cols={12}>
           <h3>{Localizer.account.accountLinking}</h3>
         </GridCol>
-        <GridDivider cols={12} />
+        <GridDivider cols={12} className={accountStyles.mainDivider} />
         <GridCol cols={2} medium={12} className={styles.sectionTitle}>
           {Localizer.Accountlinking.LinkedPlatforms}
         </GridCol>
@@ -107,14 +111,18 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
                   Localizer.AccountLinking.DidYouLoseYourPhone
                 )}
               />
+              <Button
+                buttonType={"red"}
+                size={BasicSize.Small}
+                onClick={disableAllCompanionSessions}
+              >
+                {Localizer.Accountlinking.DisableAllMobileCompanion}
+              </Button>
             </div>
           </div>
-          <Button buttonType={"red"} onClick={disableAllCompanionSessions}>
-            {Localizer.Accountlinking.DisableAllMobileCompanion}
-          </Button>
         </GridCol>
         <AuthorizedApplications membershipId={membershipId} />
       </SystemDisabledHandler>
-    </GridCol>
+    </div>
   ) : null;
 };

@@ -19,7 +19,7 @@ import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 interface SendMessageProps {
-  recipientsMembershipId: string;
+  recipientsBnetMembershipId: string;
   showModal: boolean;
   onClose: () => void;
 }
@@ -101,7 +101,7 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
               {
                 subject: "",
                 membersToId: [
-                  props.recipientsMembershipId,
+                  props.recipientsBnetMembershipId,
                   globalState.loggedInUser.user.membershipId,
                 ],
                 body: values.message,

@@ -15,7 +15,11 @@ interface ISession {
   refreshDate: moment.Moment;
 }
 
-declare var ba: BungieAnalytics;
+declare global {
+  interface Window {
+    ba?: BungieAnalytics;
+  }
+}
 
 export class AnalyticsUtils {
   private static destroyLoggedInUserObserver: DestroyCallback;
@@ -65,15 +69,13 @@ export class AnalyticsUtils {
   private static onUserLoggedIn(userId: string) {
     AnalyticsUtils.userId = userId;
     ReactGA.set({ userId: userId });
-    // @ts-ignore
-    ba?.setUserId(userId);
+    window.ba?.setUserId(userId);
   }
 
   private static onUserLoggedOut() {
     AnalyticsUtils.userId = undefined;
     ReactGA.set({ userId: undefined });
-    // @ts-ignore
-    ba?.setUserId(undefined);
+    window.ba?.setUserId(undefined);
   }
 
   /** Tracks the current page to Google Analytics */

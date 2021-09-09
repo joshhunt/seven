@@ -362,7 +362,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                   {profileLoc.SendMessage}
                 </Button>
                 <SendMessage
-                  recipientsMembershipId={membershipId}
+                  recipientsBnetMembershipId={bungieNetUser.membershipId}
                   showModal={showMessageModal}
                   onClose={() => toggleShowMessageModal(false)}
                 />

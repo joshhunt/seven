@@ -71,12 +71,16 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
         <Triumphs
           profileResponse={destinyProfileResponse}
           coreSettings={coreSettings}
+          membershipId={membershipId}
+          membershipType={membershipType}
         />
         {destinyMembership?.selectedCharacter && (
           <Collections
             profileResponse={destinyProfileResponse}
             coreSettings={coreSettings}
             characterId={destinyMembership.selectedCharacter.characterId}
+            membershipId={membershipId}
+            membershipType={membershipType}
           />
         )}
       </div>

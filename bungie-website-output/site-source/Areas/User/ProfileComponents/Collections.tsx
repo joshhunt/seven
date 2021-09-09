@@ -7,6 +7,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { Localizer } from "@bungie/localization";
+import { BungieMembershipType } from "@Enum";
 import { Models, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -20,6 +21,8 @@ interface CollectionsProps
   coreSettings: Models.CoreSettingsConfiguration;
   profileResponse: Responses.DestinyProfileResponse;
   characterId: string;
+  membershipId: string;
+  membershipType: BungieMembershipType;
 }
 
 interface ICollectionScore {
@@ -88,7 +91,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
 
   return (
     <Anchor
-      url={RouteHelper.Collections()}
+      url={RouteHelper.Collections(props.membershipId, props.membershipType)}
       className={classNames(styles.mainContainer, styles.collectionsContainer)}
     >
       <h4>{profileLoc.Collections}</h4>

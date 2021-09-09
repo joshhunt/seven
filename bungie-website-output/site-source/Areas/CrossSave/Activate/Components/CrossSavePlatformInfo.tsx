@@ -48,26 +48,11 @@ export class CrossSavePlatformInfo extends React.Component<
 
     let clanLine: React.ReactNode | string = "";
     if (!platformMembership && !this.props.hideAccountInfo) {
-      if (membershipType === BungieMembershipType.TigerXbox) {
-        const articleLink = ConfigUtils.GetParameter(
-          "CrossSave",
-          "CrossSaveMSHelp",
-          "https://www.bungie.net/help"
-        );
-
-        clanLine = (
-          <>
-            {Localizer.Crosssave.SignInToYourXboxNetwork}{" "}
-            <Anchor url={articleLink}>{articleLink}</Anchor>
-          </>
-        );
-      } else {
-        clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
-          platformName: LocalizerUtils.getPlatformNameFromMembershipType(
-            membershipType
-          ),
-        });
-      }
+      clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
+        platformName: LocalizerUtils.getPlatformNameFromMembershipType(
+          membershipType
+        ),
+      });
     }
 
     if (clan) {

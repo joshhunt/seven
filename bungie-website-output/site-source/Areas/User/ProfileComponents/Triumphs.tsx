@@ -7,6 +7,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
+import { BungieMembershipType } from "@Enum";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Icon } from "@UIKit/Controls/Icon";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
@@ -23,6 +24,8 @@ interface TriumphsProps
   > {
   coreSettings: Models.CoreSettingsConfiguration;
   profileResponse: Responses.DestinyProfileResponse;
+  membershipId: string;
+  membershipType: BungieMembershipType;
 }
 
 const Triumphs: React.FC<TriumphsProps> = (props) => {
@@ -82,7 +85,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
 
   return (
     <Anchor
-      url={RouteHelper.Triumphs()}
+      url={RouteHelper.Triumphs(props.membershipId, props.membershipType)}
       className={classNames(styles.mainContainer, styles.triumphsContainer)}
     >
       <h4>{profileLoc.Triumphs}</h4>
