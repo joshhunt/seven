@@ -19,7 +19,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contract, Platform, User } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { Spinner, SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -282,7 +282,9 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
 
   return (
     <>
-      <SpinnerContainer loading={loading}>
+      {loading ? (
+        <Spinner on={loading} />
+      ) : (
         <GridCol
           cols={10}
           medium={12}
@@ -315,16 +317,16 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
               }
             )}
         </GridCol>
-        <SaveButtonBar
-          className={sharedStyles.saveButtonBar}
-          saveButton={
-            <Button buttonType={"gold"} onClick={saveSettings}>
-              {Localizer.userPages.savesettings}
-            </Button>
-          }
-          on={settingsChanged}
-        />
-      </SpinnerContainer>
+      )}
+      <SaveButtonBar
+        className={sharedStyles.saveButtonBar}
+        saveButton={
+          <Button buttonType={"gold"} onClick={saveSettings}>
+            {Localizer.userPages.savesettings}
+          </Button>
+        }
+        on={settingsChanged}
+      />
       {/* Having the modal inside the Spinner Container was messing with the pointer-events */}
       <ConfirmPlatformLinkingModal
         open={linkingModalOpen}

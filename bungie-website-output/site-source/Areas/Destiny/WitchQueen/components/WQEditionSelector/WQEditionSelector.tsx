@@ -176,7 +176,7 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
             />
             <Button
               url={collectorsSku?.relatedPage}
-              disabled={!collectorsSku?.buyButtonDisabled}
+              disabled={collectorsSku?.buyButtonDisabled}
               className={styles.ceBtn}
             >
               {collectorsSku?.buttonLabel}

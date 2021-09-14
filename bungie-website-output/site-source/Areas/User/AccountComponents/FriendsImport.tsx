@@ -156,19 +156,40 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
   };
 
   const cancelFriendRequest = (mId: string) => {
-    Platform.SocialService.DeclineFriendRequest(mId)
-      .then((response) => {
-        if (!response) {
-          Modal.open(Localizer.Friends.DecliningFriendRequest);
-        }
+    //use decline for incoming
+    if (FriendsImportUtils.isInFriendArray(incomingRequests, mId)) {
+      //use decline for incoming
+      Platform.SocialService.DeclineFriendRequest(mId)
+        .then((response) => {
+          if (!response) {
+            Modal.open(Localizer.Friends.DecliningFriendRequest);
+          }
 
-        //update the list
-        getBungieFriendRequests();
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        Modal.error(e);
-      });
+          //update the list
+          getBungieFriendRequests();
+        })
+        .catch(ConvertToPlatformError)
+        .catch((e: PlatformError) => {
+          Modal.error(e);
+        });
+    }
+
+    if (FriendsImportUtils.isInFriendArray(outgoingRequests, mId)) {
+      //use remove for outgoing
+      Platform.SocialService.RemoveFriendRequest(mId)
+        .then((response) => {
+          if (!response) {
+            Modal.open(Localizer.Friends.DecliningFriendRequest);
+          }
+
+          //update the list
+          getBungieFriendRequests();
+        })
+        .catch(ConvertToPlatformError)
+        .catch((e: PlatformError) => {
+          Modal.error(e);
+        });
+    }
   };
 
   const getPlatformFriends = (platform: PlatformFriendType, page: number) => {

@@ -251,6 +251,12 @@ export class RouteHelper {
     RouteDefs.Areas.Registration.getAction("Benefits")
   );
 
+  public static GlobalAdminPage = (pageName: string) => {
+    return LegacyPath(`/Admin/${pageName}`);
+  };
+
+  public static CommunityCurator = LegacyPath("/CommunityCurator");
+
   /**
    *
    * Destiny Links

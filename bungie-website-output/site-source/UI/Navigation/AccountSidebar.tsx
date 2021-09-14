@@ -1,9 +1,11 @@
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
+import { PermissionsGate } from "@UI/User/PermissionGate";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
+import { Route } from "react-router";
 import styles from "./Sidebar.module.scss";
 import { AuthTrigger } from "./AuthTrigger";
 import { Localizer } from "@bungie/localization";
@@ -13,6 +15,7 @@ import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import moment from "moment";
 import { Icon } from "@UIKit/Controls/Icon";
+import { AclEnum } from "@Enum";
 
 interface IAccountSidebarProps {
   /** The global state */
@@ -203,6 +206,60 @@ export class AccountSidebar extends React.Component<
             itemTitle={Localizer.Community.signoutheader}
           />
         </AuthTrigger>
+        {/*Admin Reports*/}
+        <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
+          <Anchor url={RouteHelper.GlobalAdminPage("Reports")}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.AdminReports}
+            />
+          </Anchor>
+        </PermissionsGate>
+        {/*Review User Bans*/}
+        <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
+          <Anchor url={RouteHelper.GlobalAdminPage("UserReports")}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.ReviewUserBans}
+            />
+          </Anchor>
+        </PermissionsGate>
+        {/*User Editor*/}
+        <PermissionsGate permissions={[AclEnum.BNextEditUsers]}>
+          <Anchor url={RouteHelper.GlobalAdminPage("UserEditor")}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.UserEditor}
+            />
+          </Anchor>
+        </PermissionsGate>
+        {/*Admin History*/}
+        <PermissionsGate permissions={[AclEnum.BNextAdminHistory]}>
+          <Anchor url={RouteHelper.GlobalAdminPage("AdminHistory")}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.AdminHistory}
+            />
+          </Anchor>
+        </PermissionsGate>
+        {/*Creations Curator*/}
+        <PermissionsGate permissions={[AclEnum.BNextCommunityContentCurator]}>
+          <Anchor url={RouteHelper.CommunityCurator}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.CreationsCurator}
+            />
+          </Anchor>
+        </PermissionsGate>
+        {/*Player Support*/}
+        <PermissionsGate permissions={[AclEnum.BNextPlayerSupport]}>
+          <Anchor url={RouteHelper.GlobalAdminPage("Tokens")}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.TokenSearch}
+            />
+          </Anchor>
+        </PermissionsGate>
       </div>
     );
   }

@@ -70,6 +70,17 @@ export class FriendsImportUtils {
     );
   };
 
+  public static isInFriendArray = (
+    requestsArray: Friends.BungieFriend[],
+    mId: string
+  ) => {
+    return (
+      requestsArray.findIndex((bungieFriend) => {
+        return bungieFriend.bungieNetUser?.membershipId === mId;
+      }) > -1
+    );
+  };
+
   public static hasBungieAccount = (platformFriend: Friends.PlatformFriend) => {
     return !StringUtils.isNullOrWhiteSpace(
       platformFriend.bungieNetMembershipId
@@ -96,18 +107,14 @@ export class FriendsImportUtils {
     platformFriend: Friends.PlatformFriend
   ) => {
     return (
-      incomingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) > -1 ||
-      outgoingRequests.findIndex((bungieFriend) => {
-        return (
-          bungieFriend.bungieNetUser?.membershipId ===
-          platformFriend.bungieNetMembershipId
-        );
-      }) > -1
+      FriendsImportUtils.isInFriendArray(
+        incomingRequests,
+        platformFriend.bungieNetMembershipId
+      ) ||
+      FriendsImportUtils.isInFriendArray(
+        outgoingRequests,
+        platformFriend.bungieNetMembershipId
+      )
     );
   };
 }
