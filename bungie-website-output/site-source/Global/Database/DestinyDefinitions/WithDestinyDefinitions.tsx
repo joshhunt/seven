@@ -78,6 +78,7 @@ export const withDestinyDefinitions = <
 
     public componentDidMount() {
       this.checkIndexedDBSupport();
+      this.tryRequestDefinitions();
     }
 
     public componentDidUpdate(
@@ -85,6 +86,10 @@ export const withDestinyDefinitions = <
       prevState: Readonly<D2DatabaseComponentState>,
       snapshot?: any
     ) {
+      this.tryRequestDefinitions();
+    }
+
+    private tryRequestDefinitions() {
       if (
         !this.state.indexedDBNotSupported &&
         !this.state.receivedInitialState

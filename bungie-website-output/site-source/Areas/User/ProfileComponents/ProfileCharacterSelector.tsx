@@ -93,15 +93,15 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
     return (
       <Anchor
         url={RouteHelper.Gear(
-          props.membershipId,
-          props.membershipType,
+          props?.membershipId,
+          props?.membershipType,
           characterProps.id
         )}
         key={characterProps.id}
         className={classNames(styles.character, {
-          [styles.selected]: characterProps.id === props.selectedCharacterId,
+          [styles.selected]: characterProps.id === props?.selectedCharacterId,
         })}
-        style={{ backgroundImage: `url(${characterProps.backgroundPath})` }}
+        style={{ backgroundImage: `url(${characterProps?.backgroundPath})` }}
       >
         <div
           className={styles.icon}

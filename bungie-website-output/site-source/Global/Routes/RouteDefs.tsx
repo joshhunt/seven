@@ -37,17 +37,11 @@ export class RouteDefs {
     Admin: new Area({
       name: RouteDefs.AreaNames.Admin,
       lazyComponent: createAsyncComponent(
-        () =>
-          import(
-            "@Areas/CrossSave/CrossSaveArea" /* webpackChunkName: "CrossSave" */
-          )
+        () => import("@Areas/Admin/AdminArea" /* webpackChunkName: "Admin" */)
       ),
       routes: [
-        (area) =>
-          new ActionRoute(area, "Activate", { path: ":step?/:skuName?" }),
-        (area) => new ActionRoute(area, "Confirmation"),
-        (area) => new ActionRoute(area, "Deactivate"),
-        (area) => new ActionRoute(area, "Recap"),
+        (area) => new ActionRoute(area, "Reports"),
+        (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
       ],
     }),
     CrossSave: new Area({

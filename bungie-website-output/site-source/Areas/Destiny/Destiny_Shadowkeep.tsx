@@ -1,9 +1,10 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import {
   GlobalStateComponentProps,
   withGlobalState,

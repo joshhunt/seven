@@ -1,3 +1,4 @@
+import { ResponsiveSize } from "@bungie/responsive";
 import { RouteDefs } from "@Global/Routes/RouteDefs";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
@@ -14,7 +15,6 @@ import CodesHistory from "./History/CodesHistory";
 import PartnerRewards from "./PartnerRewards/PartnerRewards";
 import styles from "./Codes.module.scss";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import { ResponsiveSize } from "@Boot/Responsive";
 
 class CodesArea extends React.Component<RouteComponentProps> {
   public render() {

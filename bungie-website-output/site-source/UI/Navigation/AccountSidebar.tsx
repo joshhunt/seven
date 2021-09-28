@@ -142,16 +142,6 @@ export class AccountSidebar extends React.Component<
           </Anchor>
         )}
 
-        <Anchor url={RouteHelper.PCMigration()}>
-          <OneLineItem
-            size={BasicSize.Small}
-            icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_steam.png" />
-            }
-            itemTitle={Localizer.Nav.userflyout_pcmove}
-          />
-        </Anchor>
-
         <Anchor url={RouteHelper.Rewards()}>
           <OneLineItem
             size={BasicSize.Small}
@@ -206,6 +196,15 @@ export class AccountSidebar extends React.Component<
             itemTitle={Localizer.Community.signoutheader}
           />
         </AuthTrigger>
+        {/*New Admin Reports*/}
+        <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
+          <Anchor url={RouteHelper.Reports()}>
+            <OneLineItem
+              size={BasicSize.Small}
+              itemTitle={Localizer.Nav.NewAdminReports}
+            />
+          </Anchor>
+        </PermissionsGate>
         {/*Admin Reports*/}
         <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
           <Anchor url={RouteHelper.GlobalAdminPage("Reports")}>

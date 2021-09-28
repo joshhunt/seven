@@ -165,10 +165,6 @@ class CrossSaveArea extends React.Component<
           <Anchor url={RouteHelper.CrossSave()}>
             {Localizer.Crosssave.HelpBarAboutCrossSave}
           </Anchor>
-          <span>|</span>
-          <Anchor url={RouteHelper.PCMigration()}>
-            {Localizer.Crosssave.HelpBarPcMigration}
-          </Anchor>
         </div>
       </CrossSaveFlowStateContext.Provider>
     );

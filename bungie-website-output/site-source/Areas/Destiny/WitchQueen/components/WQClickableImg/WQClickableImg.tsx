@@ -5,6 +5,7 @@ import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Icon } from "@UIKit/Controls/Icon";
+import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import classNames from "classnames";
@@ -13,7 +14,8 @@ import styles from "./WQClickableImg.module.scss";
 
 export interface WQClickableImgProps {
   thumbnail: string;
-  screenshot: string;
+  screenshots: string[];
+  screenshotIndex: number;
   caption: string;
   bottomCaption?: string;
   classes?: { root?: string; img?: string; imgWrapper?: string };
@@ -29,14 +31,15 @@ export const WQClickableImg: React.FC<WQClickableImgProps> = (props) => {
       : YoutubeModal.show({ videoId });
   };
 
-  const showImage = (imagePath: string) => {
-    Modal.open(<img src={`${imagePath}`} alt="" role="presentation" />, {
-      isFrameless: true,
+  const showImage = () => {
+    ImagePaginationModal.show({
+      images: props.screenshots ?? [],
+      imgIndex: props.screenshotIndex,
     });
   };
 
   const handleClick = () =>
-    props.videoId ? showVideo(props.videoId) : showImage(props.screenshot);
+    props.videoId ? showVideo(props.videoId) : showImage();
 
   const bgImage = props.thumbnail ? `url(${props.thumbnail})` : undefined;
 

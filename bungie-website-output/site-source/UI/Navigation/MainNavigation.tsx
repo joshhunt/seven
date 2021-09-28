@@ -1,6 +1,6 @@
 import { Respond } from "@Boot/Respond";
-import { ResponsiveSize } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { ResponsiveSize } from "@bungie/responsive";
 import {
   GlobalState,
   GlobalStateComponentProps,

@@ -240,9 +240,10 @@ const WitchQueen: React.FC = () => {
                         thumbnail={WQImgUrlFromQueryProp(
                           img?.thumbnail_imgConnection
                         )}
-                        screenshot={WQImgUrlFromQueryProp(
-                          img?.screenshot_imgConnection
+                        screenshots={clickable_thumbnails.map((thumb) =>
+                          WQImgUrlFromQueryProp(thumb?.screenshot_imgConnection)
                         )}
+                        screenshotIndex={j}
                         caption={img?.img_caption}
                         bottomCaption={img?.bottom_caption}
                         videoId={img?.video_id}
@@ -269,9 +270,13 @@ const WitchQueen: React.FC = () => {
                         thumbnail={WQImgUrlFromQueryProp(
                           blockObj?.thumbnail_imgConnection
                         )}
-                        screenshot={WQImgUrlFromQueryProp(
-                          blockObj?.screenshot_imgConnection
+                        screenshotsInSection={image_and_text_blocks.map(
+                          (block) =>
+                            WQImgUrlFromQueryProp(
+                              block?.screenshot_imgConnection
+                            )
                         )}
+                        screenshotIndex={j}
                         direction={isFlexReverse ? "reverse" : "normal"}
                         caption={blockObj?.caption}
                       />

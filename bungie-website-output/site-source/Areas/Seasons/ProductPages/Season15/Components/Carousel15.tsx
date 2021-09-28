@@ -4,6 +4,7 @@
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { Icon } from "@UIKit/Controls/Icon";
+import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import classNames from "classnames";
 import React, { useRef, useState } from "react";
@@ -45,21 +46,22 @@ const Carousel15: React.FC<Carousel15Props> = (props) => {
     }
   };
 
-  const handleImageClick = (slideIndex: number, img: string) => {
+  const handleImageClick = (slideIndex: number) => {
     // if user clicked current image, open image in thumbnail
     if (slideIndex === position) {
-      showImage(img);
+      showImage(slideIndex);
     } else {
       // else attempt to change slides to clicked image
       changeSlide(slideIndex);
     }
   };
 
-  const showImage = (imagePath: string) => {
+  const showImage = (imgIndex: number) => {
     // if screen is not "tiny", open image in modal
     if (!responsive.tiny) {
-      Modal.open(<img src={`${imagePath}`} alt="" role="presentation" />, {
-        isFrameless: true,
+      ImagePaginationModal.show({
+        images: props.slides?.map((slide) => slide?.image),
+        imgIndex: imgIndex,
       });
     }
   };
@@ -120,7 +122,7 @@ const Carousel15: React.FC<Carousel15Props> = (props) => {
                 <div
                   className={styles.slideWrapper}
                   key={i}
-                  onClick={() => handleImageClick(i, slide.image)}
+                  onClick={() => handleImageClick(i)}
                 >
                   <div
                     className={classNames(styles.slideImg, {

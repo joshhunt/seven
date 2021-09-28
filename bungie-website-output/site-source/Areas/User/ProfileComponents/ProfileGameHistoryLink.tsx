@@ -26,8 +26,8 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
     <Anchor
       className={styles.link}
       url={RouteHelper.GameHistory(
-        destinyMembershipData.selectedMembership.membershipId,
-        destinyMembershipData.selectedMembership.membershipType
+        destinyMembershipData?.selectedMembership?.membershipId,
+        destinyMembershipData?.selectedMembership?.membershipType
       )}
     >
       <GiBackwardTime />

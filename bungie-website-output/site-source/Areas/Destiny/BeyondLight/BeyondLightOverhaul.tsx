@@ -19,31 +19,26 @@ import {
   BeyondLightUpdateDataStore,
   BeyondLightUpdateDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightUpdateDataStore";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import DestinySkuConfigDataStore, {
   IDestinySkuConfig,
 } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import classNames from "classnames";
 import * as React from "react";
 import styles from "./BeyondLightOverhaul.module.scss";
 import { BeyondLightProducts } from "./BeyondLightProducts";
-import {
-  Hero,
-  ScreenShotBlock,
-  TextBlock,
-  VideoBlock,
-} from "./Components/index";
+import { Hero } from "./Components/index";
 
 // Required props
 interface IBeyondLightPropsOverhaul

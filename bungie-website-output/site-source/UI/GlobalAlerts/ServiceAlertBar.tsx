@@ -1,5 +1,6 @@
 import { Respond } from "@Boot/Respond";
-import { IResponsiveState, ResponsiveSize } from "@Boot/Responsive";
+import { ResponsiveSize } from "@bungie/responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { GlobalAlertLevel, GlobalAlertType } from "@Enum";
 import {
   GlobalStateComponentProps,

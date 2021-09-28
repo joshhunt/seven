@@ -3,19 +3,17 @@
 
 import accountStyles from "@Areas/User/Account.module.scss";
 import styles from "@Areas/User/AccountComponents/BungieFriends.module.scss";
-import {
-  BungieFriendLineItem,
-  FriendButtonData,
-} from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendLineItem";
-import { FriendsListDataStore } from "@Areas/User/AccountComponents/Internal/BungieFriends/FriendsListDataStore";
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Friends } from "@Platform";
-import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
-import React, { useMemo, useState } from "react";
+import { GridCol } from "@UIKit/Layout/Grid/Grid";
+import React, { useState } from "react";
 import ReactPaginate from "react-paginate";
+import { SpinnerContainer } from "../../../../../UI/UIKit/Controls/Spinner";
+import { BungieFriendLineItem } from "./BungieFriendLineItem";
+import { BungieFriendsDataStore } from "./BungieFriendsDataStore";
 
-type BungieFriendsSectionTypes =
+export type BungieFriendsSectionType =
   | "friends"
   | "pendingRequests"
   | "outgoingRequests";
@@ -23,16 +21,15 @@ type BungieFriendsSectionTypes =
 interface BungieFriendsSectionProps {
   header: string;
   subtitle: React.ReactNode;
-  bungieFriendsSectionType: BungieFriendsSectionTypes;
+  bungieFriendsSectionType: BungieFriendsSectionType;
   emptyStateString: string;
-  buttonData: FriendButtonData[];
 }
 
 export const BungieFriendsSection: React.FC<BungieFriendsSectionProps> = (
   props
 ) => {
   const [friendsOffset, setFriendsOffset] = useState(0);
-  const friendsData = useDataStore(FriendsListDataStore);
+  const friendsData = useDataStore(BungieFriendsDataStore);
   const bungieFriendsPerPage = 30;
 
   const handleFriendsPageChange = (pageNumber: { selected: number }) => {
@@ -48,26 +45,13 @@ export const BungieFriendsSection: React.FC<BungieFriendsSectionProps> = (
     props.bungieFriendsSectionType === "friends"
       ? friendsData?.[props.bungieFriendsSectionType]?.sort(sortByPresence)
       : friendsData?.[props.bungieFriendsSectionType];
-  let successText = "";
-  let errorText = "";
-
-  if (props.bungieFriendsSectionType === "friends") {
-    successText = Localizer.friends.successDesc;
-    errorText = Localizer.friends.removingFriendFailed;
-  } else if (props.bungieFriendsSectionType === "pendingRequests") {
-    successText = Localizer.friends.successDesc;
-    errorText = Localizer.Friends.ThereWasAnErrorEditing;
-  } else {
-    successText = `${Localizer.friends.PendingSentReq}. ${Localizer.friends.successDesc}`;
-    errorText = Localizer.Friends.RemovingFriendRequestFailed;
-  }
 
   return (
     <GridCol cols={12} className={styles.section}>
       <h3>{props.header}</h3>
-      {friendArray.length > 0 ? (
-        friendArray
-          .slice(friendsOffset, friendsOffset + bungieFriendsPerPage)
+      <SpinnerContainer loading={friendsData.loading}>
+        {friendArray
+          ?.slice(friendsOffset, friendsOffset + bungieFriendsPerPage)
           .map((friend, i) => {
             return (
               <BungieFriendLineItem
@@ -82,31 +66,30 @@ export const BungieFriendsSection: React.FC<BungieFriendsSectionProps> = (
                     <div>{Localizer.friends.offline}</div>
                   )
                 }
-                buttonData={props.buttonData}
-                successText={successText}
-                errorText={errorText}
+                section={props.bungieFriendsSectionType}
               />
             );
-          })
-      ) : (
-        <div className={styles.noRequests}>{props.emptyStateString}</div>
-      )}
-      <hr />
-      {friendArray.length > bungieFriendsPerPage && (
-        <ReactPaginate
-          onPageChange={(e) => handleFriendsPageChange(e)}
-          pageCount={Math.ceil(friendArray.length / bungieFriendsPerPage)}
-          pageRangeDisplayed={5}
-          marginPagesDisplayed={1}
-          previousLabel={Localizer.usertools.previousPage}
-          nextLabel={Localizer.usertools.nextPage}
-          containerClassName={accountStyles.paginateInterface}
-          activeClassName={accountStyles.active}
-          previousClassName={accountStyles.prev}
-          nextClassName={accountStyles.next}
-          disabledClassName={accountStyles.disabled}
-        />
-      )}
+          })}
+        {friendArray?.length === 0 && (
+          <div className={styles.noRequests}>{props.emptyStateString}</div>
+        )}
+        <hr />
+        {friendArray.length > bungieFriendsPerPage && (
+          <ReactPaginate
+            onPageChange={(e) => handleFriendsPageChange(e)}
+            pageCount={Math.ceil(friendArray.length / bungieFriendsPerPage)}
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={1}
+            previousLabel={Localizer.usertools.previousPage}
+            nextLabel={Localizer.usertools.nextPage}
+            containerClassName={accountStyles.paginateInterface}
+            activeClassName={accountStyles.active}
+            previousClassName={accountStyles.prev}
+            nextClassName={accountStyles.next}
+            disabledClassName={accountStyles.disabled}
+          />
+        )}
+      </SpinnerContainer>
     </GridCol>
   );
 };

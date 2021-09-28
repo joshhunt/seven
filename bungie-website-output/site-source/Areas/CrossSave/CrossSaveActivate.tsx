@@ -22,7 +22,6 @@ import classNames from "classnames";
 import * as React from "react";
 import posed, { PoseGroup } from "react-pose";
 import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
-import { CrossSavePcMoveRequired } from "./Activate/Components/CrossSavePcMoveRequired";
 import { CrossSaveAccountLink } from "./Activate/CrossSaveAccountLink";
 import { CrossSaveAcknowledge } from "./Activate/CrossSaveAcknowledge";
 import { CrossSaveCharacters } from "./Activate/CrossSaveCharacters";
@@ -426,8 +425,6 @@ class CrossSaveActivate extends React.Component<
                       </PoseGroup>
                     </PoseDirectionContext.Provider>
                   </RequiresAuth>
-
-                  {requiresMigration && <CrossSavePcMoveRequired />}
                 </div>
               </GridCol>
             </Grid>

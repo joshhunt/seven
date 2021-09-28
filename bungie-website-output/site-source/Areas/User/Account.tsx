@@ -9,7 +9,7 @@ import { CrossSave } from "@Areas/User/AccountComponents/CrossSave";
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { EmailAndSms } from "@Areas/User/AccountComponents/EmailAndSms";
 import { IdentitySettings } from "@Areas/User/AccountComponents/IdentitySettings";
-import { ImportMutedUsersBanner } from "@Areas/User/AccountComponents/Internal/BungieFriends/ImportMutedUsersBanner";
+import { ImportMutedUsersBanner } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/ImportMutedUsersBanner";
 import { LanguageAndRegion } from "@Areas/User/AccountComponents/LanguageAndRegion";
 import { Notifications } from "@Areas/User/AccountComponents/Notifications";
 import { Privacy } from "@Areas/User/AccountComponents/Privacy";

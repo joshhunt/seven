@@ -5,8 +5,9 @@ import {
   BeyondLightPhaseTwoDataStore,
   BeyondLightPhaseTwoDataStorePayload,
 } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseTwoDataStore";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import {
   GlobalStateComponentProps,
   withGlobalState,

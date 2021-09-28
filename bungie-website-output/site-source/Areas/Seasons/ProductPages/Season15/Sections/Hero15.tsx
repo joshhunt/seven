@@ -1,11 +1,9 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
-import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
+import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 import { Icon } from "@UIKit/Controls/Icon";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
@@ -18,14 +16,7 @@ interface Hero15Props {
 }
 
 export const Hero15: React.FC<Hero15Props> = (props) => {
-  const responsive = useDataStore(Responsive);
   const s15 = Localizer.Season15;
-
-  const showVideo = (videoId: string) => {
-    responsive.medium
-      ? (window.location.href = `https://www.youtube.com/watch?v=${videoId}`)
-      : YoutubeModal.show({ videoId: videoId });
-  };
 
   const trailerAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.Season15Page,
@@ -61,18 +52,17 @@ export const Hero15: React.FC<Hero15Props> = (props) => {
         />
         <div className={styles.date}>{s15.SeasonDate}</div>
         <div className={styles.heroBtnsWrapper}>
-          <button
-            className={classNames(styles.heroBtn, styles.trailerBtn)}
-            onClick={() => showVideo(props.gameplayTrailerId)}
-            data-analytics-id={trailerAnalyticsId}
+          <ClickableMediaThumbnail
+            videoId={props.gameplayTrailerId}
+            showShadowBehindPlayIcon={true}
+            classes={{
+              btnWrapper: classNames(styles.heroBtn),
+              btnBg: styles.heroBtnBg,
+              playIcon: styles.defaultPlayIcon,
+            }}
+            thumbnail={"/7/ca/destiny/bgs/season15/s15_hero_button_trailer.jpg"}
+            analyticsId={trailerAnalyticsId}
           >
-            <div
-              className={styles.btnBg}
-              style={{
-                backgroundImage:
-                  "url(/7/ca/destiny/bgs/season15/s15_hero_button_trailer.jpg)",
-              }}
-            />
             <div className={styles.heroBtnContent}>
               <Icon
                 className={styles.playIcon}
@@ -81,19 +71,16 @@ export const Hero15: React.FC<Hero15Props> = (props) => {
               />
               <p>{s15.HeroTrailerBtnTitle}</p>
             </div>
-          </button>
-          <a
-            className={classNames(styles.heroBtn, styles.playNowBtn)}
+          </ClickableMediaThumbnail>
+          <ClickableMediaThumbnail
+            classes={{
+              btnWrapper: classNames(styles.heroBtn, styles.playNowBtn),
+              btnBg: styles.heroBtnBg,
+            }}
+            thumbnail={"/7/ca/destiny/bgs/season15/s15_hero_button_play.jpg"}
             href={"/7/en/Destiny/Buy"}
-            data-analytics-id={playNowBtnAnalyticsId}
+            analyticsId={playNowBtnAnalyticsId}
           >
-            <div
-              className={styles.btnBg}
-              style={{
-                backgroundImage:
-                  "url(/7/ca/destiny/bgs/season15/s15_hero_button_play.jpg",
-              }}
-            />
             <div className={styles.heroBtnContent}>
               <p>
                 <Arrows className={styles.left} />
@@ -101,7 +88,7 @@ export const Hero15: React.FC<Hero15Props> = (props) => {
                 <Arrows className={styles.right} />
               </p>
             </div>
-          </a>
+          </ClickableMediaThumbnail>
         </div>
       </div>
     </div>

@@ -23,6 +23,7 @@ import {
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contracts, Platform, Responses, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { IProfileParams } from "@Routes/RouteParams";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { Error404 } from "@UI/Errors/Error404";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -42,11 +43,6 @@ import { useHistory, useParams } from "react-router";
 import styles from "./Profile.module.scss";
 
 interface ProfileProps {}
-
-export interface IProfileParams {
-  mid?: string;
-  mtype?: string;
-}
 
 const Profile: React.FC<ProfileProps> = (props) => {
   const params = useParams<IProfileParams>();

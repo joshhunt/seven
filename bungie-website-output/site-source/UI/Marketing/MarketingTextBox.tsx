@@ -3,13 +3,14 @@
 
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import * as React from "react";
 import styles from "./MarketingTextBox.module.scss";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Responsive, IResponsiveState } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 
 interface IMarketingTextBoxProps
   extends GlobalStateComponentProps<"responsive"> {

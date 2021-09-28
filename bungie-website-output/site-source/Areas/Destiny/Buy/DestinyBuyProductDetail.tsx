@@ -513,6 +513,11 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
                 <GridCol cols={12}>
                   <DestinyBuyDetailItem
+                    imagesForPagination={
+                      mediaDetailItem?.largeImage ||
+                      mediaDetailItem?.imageThumbnail ||
+                      mediaDetailItem?.videoThumbnail
+                    }
                     orientation={"textblock-media"}
                     item={mediaDetailItem}
                   />
@@ -533,6 +538,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         key={i}
                       >
                         <DestinyBuyDetailItem
+                          imagesForPagination={detailItems?.map(
+                            (item) => item.largeImage || item.imageThumbnail
+                          )}
+                          imgIndexInPagination={i}
                           orientation={"vertical"}
                           item={mma}
                           key={i}
@@ -558,6 +567,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                             key={i}
                           >
                             <DestinyBuyDetailItem
+                              imagesForPagination={comparisonSkus.map(
+                                (sku) => sku.imagePath
+                              )}
+                              imgIndexInPagination={i}
                               orientation={"vertical"}
                               skuItem={a}
                             />
@@ -579,6 +592,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       className={styles.collectorsEditionSection}
                     >
                       <DestinyBuyDetailItem
+                        imagesForPagination={collectorsEdition.imagePath}
                         orientation={"textblock-media"}
                         skuItem={collectorsEdition}
                         collectorsEdition={true}

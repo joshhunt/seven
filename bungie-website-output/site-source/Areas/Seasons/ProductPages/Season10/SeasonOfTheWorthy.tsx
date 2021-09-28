@@ -4,10 +4,12 @@
 // Copyright Bungie, Inc.
 
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { ResponsiveSize } from "@bungie/responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import * as React from "react";
-import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
 import { BrowserUtils, IScrollViewportData } from "@Utilities/BrowserUtils";
 import { DataStore } from "@bungie/datastore";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";

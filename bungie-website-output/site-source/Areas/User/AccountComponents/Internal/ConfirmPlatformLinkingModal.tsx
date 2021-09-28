@@ -3,10 +3,10 @@
 
 import styles from "@Areas/User/AccountComponents/Internal/ConfirmPlatformLinkingModal.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, PlatformFriendType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
-import { Platform, Contract } from "@Platform";
+import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -15,7 +15,6 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import domPurify from "dompurify";
 import { Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -52,6 +51,10 @@ export const ConfirmPlatformLinkingModalContent: React.FC<ConfirmPlatformLinking
     globalState?.crossSavePairingStatus &&
     typeof globalState.crossSavePairingStatus.primaryMembershipId !==
       "undefined";
+
+  if (credential === BungieCredentialType.None) {
+    return null;
+  }
 
   //getting credentialTypes here instead of GlobalStateDataStore to determine successful linking because there is a race condition in GlobalStateDataStore preventing us
   const getCredentialTypes = () => {

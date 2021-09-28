@@ -1,16 +1,16 @@
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import { Respond } from "@Boot/Respond";
-import { ResponsiveSize } from "@Boot/Responsive";
-import { NotFoundError } from "@CustomErrors";
 import { useDataStore } from "@bungie/datastore/DataStore";
+import { Localizer } from "@bungie/localization";
+import { ResponsiveSize } from "@bungie/responsive";
+import { NotFoundError } from "@CustomErrors";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";

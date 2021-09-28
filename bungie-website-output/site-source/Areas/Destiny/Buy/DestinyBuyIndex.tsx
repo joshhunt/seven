@@ -1,9 +1,10 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import DestinyBuyCarouselHero from "@Areas/Destiny/Buy/Shared/DestinyBuyCarouselHero";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Content, Platform } from "@Platform";
@@ -27,11 +28,10 @@ import {
 } from "@UI/UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React from "react";
 import styles from "./DestinyBuyIndex.module.scss";
 import { DestinyBuyCoverCard } from "./Shared/DestinyBuyCoverCard";
 
@@ -43,7 +43,8 @@ interface IDestinyBuyIndexState {
   skuItems: IDestinyProductDefinition[];
   skuConfig: IDestinySkuConfig;
   loading: boolean;
-  carouselItem: IMarketingMediaAsset;
+  carouselItems: IMarketingMediaAsset[];
+  isCarouselPaused: boolean;
   freeToPlayPopoutImg: string;
   responsive: IResponsiveState;
 }
@@ -69,7 +70,8 @@ export default class DestinyBuyInternal extends React.Component<
       skuItems: [],
       skuConfig: DestinySkuConfigDataStore.state,
       loading: true,
-      carouselItem: null,
+      carouselItems: null,
+      isCarouselPaused: false,
       freeToPlayPopoutImg: "",
       responsive: Responsive.state,
     };
@@ -177,16 +179,22 @@ export default class DestinyBuyInternal extends React.Component<
       );
   }
 
+  private readonly setIsCarouselPaused = (status: boolean) => {
+    this.setState({ isCarouselPaused: status });
+  };
+
   private carouselContent() {
     Platform.ContentService.GetContentByTagAndType(
-      "buyflowlandingheader",
-      "MarketingMediaAsset",
+      "buyflowlandingcarousel",
+      "ContentSet",
       Localizer.CurrentCultureName,
       false
     ).then((data) => {
       if (data) {
         this.setState({
-          carouselItem: ContentUtils.marketingMediaAssetFromContent(data),
+          carouselItems: data.properties.ContentItems.map((ci: any) =>
+            ContentUtils.marketingMediaAssetFromContent(ci)
+          ),
         });
       }
     });
@@ -198,7 +206,7 @@ export default class DestinyBuyInternal extends React.Component<
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );
     }
-    const { productFamilies, skuConfig, carouselItem, skuItems } = this.state;
+    const { productFamilies, skuConfig, carouselItems } = this.state;
 
     const getStartedCategoryName = "category1";
     const expansionsCategoryName = "category2";
@@ -229,28 +237,46 @@ export default class DestinyBuyInternal extends React.Component<
           />
         </BungieHelmet>
 
-        {carouselItem ? (
-          <div
-            className={styles.carousel}
-            style={{ backgroundImage: `url(${carouselItem.largeImage})` }}
+        {carouselItems ? (
+          <DestinyBuyCarouselHero
+            isPaused={this.state.isCarouselPaused}
+            setIsPaused={this.setIsCarouselPaused}
           >
-            <div className={classNames(styles.contentFrame, styles.contents)}>
-              <div className={styles.carouselTitle}>{carouselItem.title}</div>
-              <div
-                className={styles.carouselBlurb}
-                dangerouslySetInnerHTML={sanitizeHTML(carouselItem.textBlock)}
-              />
-              <Button
-                buttonType={"gold"}
-                size={BasicSize.Small}
-                url={carouselItem.buttonLink}
-                className={styles.button}
-                analyticsId={`carousel-pre-order-500`}
-              >
-                {carouselItem.buttonLabel}
-              </Button>
-            </div>
-          </div>
+            {carouselItems?.map((slide, i) => {
+              const bgImage = this.state.responsive.mobile
+                ? slide.imageThumbnail
+                : slide.largeImage;
+
+              return (
+                <div
+                  key={i}
+                  className={styles.slide}
+                  style={{ backgroundImage: `url(${bgImage})` }}
+                >
+                  <div
+                    className={classNames(styles.contentFrame, styles.contents)}
+                  >
+                    <div className={styles.titleDivider} />
+                    <div className={styles.carouselTitle}>{slide?.title}</div>
+                    <div
+                      className={styles.carouselBlurb}
+                      dangerouslySetInnerHTML={sanitizeHTML(slide?.textBlock)}
+                    />
+                    <Button
+                      buttonType={"gold"}
+                      size={BasicSize.Small}
+                      url={slide?.buttonLink}
+                      className={styles.button}
+                      analyticsId={`carousel-pre-order-500`}
+                      onMouseEnter={() => this.setIsCarouselPaused(true)}
+                    >
+                      {slide?.buttonLabel}
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </DestinyBuyCarouselHero>
         ) : (
           <div className={styles.spacer} />
         )}

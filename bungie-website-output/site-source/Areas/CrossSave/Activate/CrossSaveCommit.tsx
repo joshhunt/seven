@@ -1,11 +1,12 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
+import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { PlatformError } from "@CustomErrors";
 import * as Globals from "@Enum";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { DataStore } from "@bungie/datastore";
 import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { EnumKey } from "@Helpers";
 import { CrossSave, Platform } from "@Platform";

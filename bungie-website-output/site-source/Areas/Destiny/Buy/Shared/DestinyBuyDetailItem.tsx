@@ -2,6 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import {
+  ClickableMediaThumbnail,
+  ClickableMediaThumbnailProps,
+} from "@UI/Marketing/ClickableMediaThumbnail";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import * as React from "react";
 import {
@@ -32,6 +36,9 @@ interface IDestinyBuyDetailItemProps {
   orientation: DetailItemOrientations;
   collectorsEdition?: boolean;
   strangerEdition?: boolean;
+  /* all images user can paginate through when image is opened in modal */
+  imagesForPagination?: string[] | string;
+  imgIndexInPagination?: number;
 }
 
 interface IDestinyBuyDetailItemState {
@@ -73,9 +80,14 @@ export class DestinyBuyDetailItem extends React.Component<
     return item || skuItem ? (
       <div className={classNames(styles.container, styles[orientation])}>
         <MediaSection
+          singleOrAllScreenshots={this.props.imagesForPagination}
+          screenshotIndex={this.props.imgIndexInPagination}
           videoId={item ? item.videoId : null}
-          imageThumbnail={item ? item.imageThumbnail : skuItem.imagePath}
-          videoThumbnail={item ? item.videoThumbnail : skuItem.imagePath}
+          thumbnail={
+            item
+              ? item.imageThumbnail || item.videoThumbnail
+              : skuItem.imagePath
+          }
           videoTitle={
             item
               ? item.videoTitle
@@ -189,34 +201,21 @@ export const PotentialSkuButton: React.FC<IPotentialSkuButtonProps> = (
   );
 };
 
-interface IMediaSectionProps {
-  videoId?: string;
-  videoThumbnail?: string;
-  imageThumbnail?: string;
+interface IMediaSectionProps extends ClickableMediaThumbnailProps {
   videoTitle?: string;
   orientation: DetailItemOrientations;
 }
 
 const MediaSection = (props: IMediaSectionProps) => {
-  const {
-    videoId,
-    videoThumbnail,
-    imageThumbnail,
-    videoTitle,
-    orientation,
-  } = props;
-
-  const isVideo = !StringUtils.isNullOrWhiteSpace(videoId);
+  const { videoTitle, orientation, ...rest } = props;
 
   return (
     <div className={classNames(styles.mediaSection, styles[orientation])}>
-      <div
-        className={classNames(styles.thumbnail, { [styles.static]: !isVideo })}
-        style={{ backgroundImage: `url(${imageThumbnail || videoThumbnail})` }}
-        onClick={isVideo ? () => YoutubeModal.show({ videoId }) : null}
-      >
-        {isVideo && <div className={styles.thumbnailPlayButton} />}
-      </div>
+      <ClickableMediaThumbnail
+        classes={{ btnWrapper: styles.thumbnail, btnBg: styles.img }}
+        showShadowBehindPlayIcon={true}
+        {...rest}
+      />
       {videoTitle && <div className={styles.videoTitle}>{videoTitle}</div>}
     </div>
   );

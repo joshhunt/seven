@@ -78,7 +78,9 @@ export class BeyondLightMainNav extends React.Component<
   public componentDidUpdate() {
     if (this.state.mobileOpen) {
       BrowserUtils.lockScroll(this.wrapperRef);
-      document.addEventListener("click", this.onBodyClick);
+      requestAnimationFrame(() => {
+        document.addEventListener("click", this.onBodyClick);
+      });
     } else if (!this.state.mobileOpen) {
       BrowserUtils.unlockScroll();
       document.removeEventListener("click", this.onBodyClick);

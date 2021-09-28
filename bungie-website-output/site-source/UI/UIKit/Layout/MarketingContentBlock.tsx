@@ -1,9 +1,10 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import classNames from "classnames";

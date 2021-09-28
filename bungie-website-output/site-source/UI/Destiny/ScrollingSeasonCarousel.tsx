@@ -2,10 +2,11 @@
 // Copyright Bungie, Inc.
 
 import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
 import { useDataStore } from "@bungie/datastore/DataStore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import * as React from "react";
 import styles from "./ScrollingSeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";

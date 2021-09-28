@@ -16,7 +16,6 @@ import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SeoDataError, SystemDisabledError } from "@UI/Errors/CustomErrors";
 import EmailValidationGlobalAlertsBar from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
-import PCMigrationGlobalAlertBar from "@UI/GlobalAlerts/PCMigrationGlobalAlertBar";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
@@ -339,10 +338,6 @@ class AppLayout extends React.Component<
               mode={SpinnerDisplayMode.fullPage}
               loadingLabel={Localizer.Destiny.LoadingDestinyData}
             />
-          )}
-
-          {ConfigUtils.SystemStatus("PCMigrationSunsetPhase1") && (
-            <PCMigrationGlobalAlertBar />
           )}
           <EmailValidationGlobalAlertsBar />
           <MainNavigation

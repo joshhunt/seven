@@ -196,7 +196,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                           buttonType={"gold"}
                           size={BasicSize.Small}
                           url={RouteHelper.ResendEmailVerification(
-                            globalStateData.loggedInUser.user.membershipId
+                            globalStateData?.loggedInUser?.user?.membershipId
                           )}
                         >
                           {resendEmail}

@@ -2,11 +2,14 @@
 // Copyright Bungie, Inc.
 
 import AnnivEditionSelector from "@Areas/Direct/BungieAnniversary/sections/AnnivEditionSelector";
-import Carousel15 from "@Areas/Seasons/ProductPages/Season15/Components/Carousel15";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStore";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
 import ClickableImgCarousel from "@UI/Marketing/ClickableImgCarousel";
+import {
+  ClickableMediaThumbnail,
+  ClickableMediaThumbnailProps,
+} from "@UI/Marketing/ClickableMediaThumbnail";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { BungieAnniversaryQuery } from "./__generated__/BungieAnniversaryQuery.graphql";
 import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
@@ -14,7 +17,6 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Icon } from "@UIKit/Controls/Icon";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
 import classNames from "classnames";
 import React from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
@@ -335,7 +337,10 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
               blurbHeading={group?.blurb_heading}
               blurb={group?.blurb_text}
               thumbnail={annivImgUrlFromQueryProp(group?.thumbnailConnection)}
-              screenshot={annivImgUrlFromQueryProp(group?.screenshotConnection)}
+              screenshotIndex={i}
+              singleOrAllScreenshots={anniversary_pack_section?.text_image_group?.map(
+                (g) => annivImgUrlFromQueryProp(g.screenshotConnection)
+              )}
               direction={flexDirection}
             />
           );
@@ -465,27 +470,19 @@ const AnniversaryHelmet: React.FC<{ title: string; img: any }> = ({
   );
 };
 
-interface WQFlexInfoImgBlockProps {
+interface WQFlexInfoImgBlockProps extends ClickableMediaThumbnailProps {
   blurb: string;
   blurbHeading: string;
-  thumbnail: string;
-  screenshot: string;
   direction: "normal" | "reverse";
 }
 
 export const AnnivFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
   props
 ) => {
-  const showImage = () => {
-    Modal.open(<img src={`${props.screenshot}`} alt="" role="presentation" />, {
-      isFrameless: true,
-    });
-  };
+  const { blurbHeading, blurb, direction, ...rest } = props;
 
   const wrapperStyles: React.CSSProperties =
     props.direction === "reverse" ? { flexDirection: "row-reverse" } : {};
-
-  const thumbImg = props.thumbnail ? `url(${props.thumbnail})` : undefined;
 
   return (
     <div className={styles.flexInfoImgBlock} style={wrapperStyles}>
@@ -497,11 +494,14 @@ export const AnnivFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
         <p className={styles.blurbHeading}>{props.blurbHeading}</p>
         <p className={styles.blurb}>{props.blurb}</p>
       </div>
-      <div className={styles.clickableImg} onClick={showImage}>
-        <div className={styles.aspectRatioBox} />
-        <div className={styles.img} style={{ backgroundImage: thumbImg }} />
-        <div className={styles.bottomShade} />
-      </div>
+      <ClickableMediaThumbnail
+        {...rest}
+        showBottomShade={true}
+        classes={{
+          btnWrapper: styles.clickableImg,
+          btnBottomShade: styles.btnShade,
+        }}
+      />
     </div>
   );
 };

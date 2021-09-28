@@ -75,7 +75,7 @@ class CodesHistory extends React.Component<
 
         <RequiresAuth>
           <CodesHistoryForm
-            membershipId={this.props.match.params.membershipId}
+            membershipId={this.props.match.params?.membershipId}
           />
         </RequiresAuth>
       </React.Fragment>

@@ -1,18 +1,24 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
 import { useDataStore } from "@bungie/datastore/DataStore";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
+import {
+  ClickableMediaThumbnail,
+  ClickableMediaThumbnailProps,
+} from "@UI/Marketing/ClickableMediaThumbnail";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
+import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import classNames from "classnames";
 import * as React from "react";
@@ -94,17 +100,16 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
     DataStore.destroyAll(...this.destroys);
   }
 
-  private showImage(imageName: string) {
-    Modal.open(<img src={imageName} className={styles.largeImage} />, {
-      isFrameless: true,
+  private showImage(imgIndex: number) {
+    ImagePaginationModal.show({
+      images: this.props.screenshots?.map((s) => s.detail) ?? [],
+      imgIndex: imgIndex,
     });
   }
 
   private showMedia(media: IDestinyNewsMediaUpdated) {
     if (media.isVideo) {
       this.showVideo(media.detail);
-    } else {
-      this.showImage(media.detail);
     }
   }
 
@@ -256,12 +261,10 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                           })}
                         >
                           <MediaButton
-                            isVideo={a.isVideo}
-                            onClick={() => this.showMedia(a)}
+                            videoId={a.detail}
                             thumbnail={a.thumbnail}
                             index={i}
                           />
-                          {/*<div className={styles.videoTitle}>{a.title}</div>*/}
                         </div>
                       );
                     })}
@@ -277,7 +280,6 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                     this.props.lore.map((a, i) => (
                       <MediaButton
                         key={i}
-                        isVideo={a.isVideo}
                         onClick={() => this.goToLink(a.lorePath)}
                         thumbnail={a.thumbnail}
                         index={i}
@@ -298,8 +300,9 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                     this.props.screenshots.map((a, i) => (
                       <MediaButton
                         key={i}
-                        isVideo={a.isVideo}
-                        onClick={() => this.showMedia(a)}
+                        singleOrAllScreenshots={this.props.screenshots?.map(
+                          (s) => s.detail
+                        )}
                         thumbnail={a.thumbnail}
                         index={i}
                       />
@@ -317,7 +320,6 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                     this.props.wallpapers.map((a, i) => (
                       <MediaButton
                         key={i}
-                        isVideo={a.isVideo}
                         onClick={() => this.openInNewTab(a.detail)}
                         thumbnail={a.thumbnail}
                         index={i}
@@ -401,16 +403,15 @@ const TextContainer = (props: IBasicDivProps) => {
   return <div className={styles.sectionTextContent}>{props.children}</div>;
 };
 
-interface IMediaButtonProps {
-  onClick: any;
-  thumbnail: string;
-  isVideo: boolean;
+interface IMediaButtonProps extends ClickableMediaThumbnailProps {
   isFourAcross?: boolean;
   index: number;
   children?: React.ReactNode;
 }
 
 const MediaButton = (props: IMediaButtonProps) => {
+  const { isFourAcross, index, children, classes, ...rest } = props;
+
   const responsive = useDataStore(Responsive);
 
   const isFourthInRow = (props.index + 1) % 4 === 0;
@@ -426,16 +427,12 @@ const MediaButton = (props: IMediaButtonProps) => {
   );
 
   return (
-    <div onClick={props.onClick} className={buttonClasses}>
-      <img
-        src={props.thumbnail}
-        className={classNames(
-          styles.mediaBg,
-          props.isFourAcross ? styles.four : ""
-        )}
-      />
-      {props.isVideo && <div className={styles.playButton} />}
+    <ClickableMediaThumbnail
+      classes={{ btnWrapper: buttonClasses }}
+      screenshotIndex={index}
+      {...rest}
+    >
       {props.children}
-    </div>
+    </ClickableMediaThumbnail>
   );
 };

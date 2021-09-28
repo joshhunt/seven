@@ -1,8 +1,5 @@
-import { IProfileParams } from "@Areas/User/Profile";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import * as H from "history";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
 import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
@@ -11,8 +8,8 @@ import { UrlUtils } from "@Utilities/UrlUtils";
 import {
   BuyDetailRouteParams,
   BuyDetailQueryParams,
-  SignInRouteParams,
-  SignInQueryParams,
+  IProfileParams,
+  IReportParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -251,7 +248,14 @@ export class RouteHelper {
     RouteDefs.Areas.Registration.getAction("Benefits")
   );
 
-  public static GlobalAdminPage = (pageName: string) => {
+  public static Reports = BasicReactPath(
+    RouteDefs.Areas.Admin.getAction("Reports")
+  );
+  public static Report = BasicReactPath<IReportParams>(
+    RouteDefs.Areas.Admin.getAction("Report")
+  );
+
+  public static GlobalAdminPage = (pageName: string, idOfItem?: string) => {
     return LegacyPath(`/Admin/${pageName}`);
   };
 
@@ -311,9 +315,6 @@ export class RouteHelper {
   );
   public static NewLight = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("NewLight")
-  );
-  public static PCMigration = BasicReactPath(
-    RouteDefs.Areas.PCMigration.getAction("Index")
   );
   public static DestinyNextChapter = {
     url: "/Destiny2NextChapter",

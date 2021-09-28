@@ -1,4 +1,5 @@
-import { IResponsiveState, Responsive } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
 import {
   BroadcasterObserver,

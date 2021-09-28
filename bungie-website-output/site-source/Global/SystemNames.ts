@@ -15,6 +15,7 @@ export const SystemNames = {
   BeyondLightPhase5: "BeyondLightPhase5",
   BuyFlow: "BuyFlow",
   BungieAnalytics: "BungieAnalytics",
+  BungieFriends: "BungieFriends",
   BungieTokens: "BungieTokens",
   Clans: "Clans",
   CodeRedemptionReact: "CodeRedemptionReact",

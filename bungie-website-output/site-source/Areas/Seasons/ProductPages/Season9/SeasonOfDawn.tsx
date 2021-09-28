@@ -4,9 +4,11 @@
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
-import { IResponsiveState, Responsive, ResponsiveSize } from "@Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
+import { ResponsiveSize } from "@bungie/responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import {
   GlobalStateComponentProps,
   withGlobalState,

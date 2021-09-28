@@ -10,7 +10,8 @@ interface WQFlexInfoImgBlockProps {
   blurb: string;
   blurbHeading: string;
   thumbnail: string;
-  screenshot: string;
+  screenshotsInSection: string[];
+  screenshotIndex: number;
   direction: "normal" | "reverse";
   caption: string;
 }
@@ -38,7 +39,8 @@ export const WQFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
           img: styles.img,
         }}
         thumbnail={props.thumbnail}
-        screenshot={props.screenshot}
+        screenshots={props.screenshotsInSection}
+        screenshotIndex={props.screenshotIndex}
         caption={props.caption}
       />
     </div>

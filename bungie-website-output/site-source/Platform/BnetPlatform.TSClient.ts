@@ -2504,6 +2504,30 @@ export declare namespace Config {
     description: string;
   }
 
+  export interface ReportTrigger {
+    Id: number;
+
+    Reason: string;
+
+    MatchUrl: boolean;
+
+    QueueText: string;
+
+    Enabled: boolean;
+
+    Locale: string;
+
+    Scope: Globals.ReportTriggerScope;
+
+    Sources: Globals.ReportTriggerSourceFlags;
+
+    SilentBlock: boolean;
+
+    AutoWarn: boolean;
+
+    AutoBan: boolean;
+  }
+
   /**
 	DestinyManifest is the external-facing contract for just the properties needed by those calling the Destiny Platform.
 	*/
@@ -23996,6 +24020,67 @@ class AdminServiceInternal {
       "Admin",
       "GetAssignedReports",
       input,
+      clientState
+    );
+
+  /**
+   * Get the number of your assigned reports in your queue.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPendingReportCount = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/Admin/Assigned/Count/`,
+      [],
+      optionalQueryAppend,
+      "Admin",
+      "GetPendingReportCount",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Gets a specific report from ID
+   * @param reportId The Id of the target report.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetReportFromId = (
+    reportId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Contracts.ReportedItemResponse[]> =>
+    ApiIntermediary.doPostRequest(
+      `/Admin/Report/${e(reportId)}`,
+      [],
+      optionalQueryAppend,
+      "Admin",
+      "GetReportFromId",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Gets a specific report Trigger from autoTrigger ID
+   * @param autoTriggerId The Id of the target report Trigger.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetAutoTriggerFromId = (
+    autoTriggerId: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Config.ReportTrigger> =>
+    ApiIntermediary.doPostRequest(
+      `/Admin/ReportTrigger/${e(autoTriggerId)}`,
+      [],
+      optionalQueryAppend,
+      "Admin",
+      "GetAutoTriggerFromId",
+      undefined,
       clientState
     );
 

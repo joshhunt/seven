@@ -1,4 +1,4 @@
-import { IResponsiveState } from "@Boot/Responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";

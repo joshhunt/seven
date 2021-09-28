@@ -109,10 +109,6 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.Triumphs(), navLoc.TopNavTriumphs)}
               {this.renderLink(RouteHelper.CrossSave(), navLoc.CrossSave)}
               {this.renderLink(
-                RouteHelper.PCMigration(),
-                navLoc.UserFlyout_PcMove
-              )}
-              {this.renderLink(
                 RouteHelper.Rewards(),
                 navLoc.UserFlyout_Rewards
               )}

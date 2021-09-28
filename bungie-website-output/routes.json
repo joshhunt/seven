@@ -2,36 +2,20 @@
   {
     "areaName": "Admin",
     "areaObjectName": "Admin",
-    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
-    "action": "Activate",
+    "componentImportPath": "@Areas/Admin/AdminArea",
+    "action": "Report",
     "params": {
-      "path": ":step?/:skuName?"
+      "path": ":reportId?"
     },
-    "path": "/7/en/Admin/Activate/:step?/:skuName?"
+    "path": "/7/en/Admin/Report/:reportId?"
   },
   {
     "areaName": "Admin",
     "areaObjectName": "Admin",
-    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
-    "action": "Confirmation",
+    "componentImportPath": "@Areas/Admin/AdminArea",
+    "action": "Reports",
     "params": {},
-    "path": "/7/en/Admin/Confirmation"
-  },
-  {
-    "areaName": "Admin",
-    "areaObjectName": "Admin",
-    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
-    "action": "Deactivate",
-    "params": {},
-    "path": "/7/en/Admin/Deactivate"
-  },
-  {
-    "areaName": "Admin",
-    "areaObjectName": "Admin",
-    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
-    "action": "Recap",
-    "params": {},
-    "path": "/7/en/Admin/Recap"
+    "path": "/7/en/Admin/Reports"
   },
   {
     "areaName": "Codes",

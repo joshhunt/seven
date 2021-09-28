@@ -2,9 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { FriendsImport } from "@Areas/User/AccountComponents/FriendsImport";
+import { BungieFriendsDataStore } from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendsDataStore";
 import { BungieFriendsSection } from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendsSection";
-import { FriendsListDataStore } from "@Areas/User/AccountComponents/Internal/BungieFriends/FriendsListDataStore";
-import { useDataStore } from "@bungie/datastore/DataStore";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Friends, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -17,10 +16,9 @@ interface BungieFriendsProps {}
 
 export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
   const [showFriendsImport, toggleFriendsImport] = useState<boolean>(false);
-  const friendsData = useDataStore(FriendsListDataStore);
 
   useEffect(() => {
-    FriendsListDataStore.actions.fetchAllFriends();
+    BungieFriendsDataStore.actions.fetchAllFriends();
   }, []);
 
   return (
@@ -37,9 +35,7 @@ export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
               {Localizer.friends.importfriends}
             </Button>
           </div>
-          {showFriendsImport && (
-            <FriendsImport bungieFriends={friendsData.friends} />
-          )}
+          {showFriendsImport && <FriendsImport />}
         </GridCol>
       )}
       <BungieFriendsSection
@@ -47,16 +43,6 @@ export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
         bungieFriendsSectionType={"pendingRequests"}
         emptyStateString={Localizer.friends.nopending}
         subtitle={Localizer.friends.pendingRequestDesc}
-        buttonData={[
-          {
-            title: Localizer.actions.accept,
-            callback: Platform.SocialService.AcceptFriendRequest,
-          },
-          {
-            title: Localizer.actions.decline,
-            callback: Platform.SocialService.DeclineFriendRequest,
-          },
-        ]}
       />
       <BungieFriendsSection
         header={Localizer.account.bungieFriends}
@@ -69,24 +55,12 @@ export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
             <div>{Localizer.friends.offline}</div>
           );
         }}
-        buttonData={[
-          {
-            title: Localizer.friends.removebutton,
-            callback: Platform.SocialService.RemoveFriend,
-          },
-        ]}
       />
       <BungieFriendsSection
         header={Localizer.friends.OutgoingRequests}
         bungieFriendsSectionType={"outgoingRequests"}
         emptyStateString={Localizer.friends.nooutgoing}
         subtitle={Localizer.friends.PendingSentReq}
-        buttonData={[
-          {
-            title: Localizer.friends.removebutton,
-            callback: Platform.SocialService.RemoveFriendRequest,
-          },
-        ]}
       />
     </div>
   );

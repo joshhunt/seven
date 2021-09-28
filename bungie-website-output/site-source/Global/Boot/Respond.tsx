@@ -1,9 +1,11 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { ResponsiveSize } from "@bungie/responsive";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import * as React from "react";
-import { ResponsiveSize, Responsive, IResponsiveState } from "./Responsive";
 
 interface IRespondProps {
   /** The size at which we will start rendering the children */

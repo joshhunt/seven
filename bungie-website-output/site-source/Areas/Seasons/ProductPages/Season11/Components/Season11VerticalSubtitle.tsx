@@ -1,7 +1,7 @@
+import { ResponsiveContext } from "@Boot/Responsive";
+import classNames from "classnames";
 import React from "react";
 import styles from "./Season11VerticalSubtitle.module.scss";
-import classNames from "classnames";
-import { IResponsiveState, ResponsiveContext } from "@Boot/Responsive";
 
 interface Season11VerticalSubtitleProps {
   className?: string;

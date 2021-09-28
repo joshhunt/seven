@@ -29,7 +29,7 @@ export const BlockedUsers: React.FC<BlockedUsersProps> = (props) => {
 
   useEffect(() => {
     Platform.IgnoreService.ManageIgnoresForUser(
-      globalStateData.loggedInUser.user.membershipId
+      globalStateData?.loggedInUser?.user?.membershipId
     )
       .then((data) => {
         setBlockedUsers(data);
@@ -92,13 +92,13 @@ export const BlockedUsers: React.FC<BlockedUsersProps> = (props) => {
               .map((user, i) => {
                 return (
                   <TwoLineItem
-                    key={user.membershipId}
+                    key={user?.membershipId}
                     itemTitle={user.bungieName}
                     itemSubtitle={getLocalizedDateString(user.dateBlocked)}
                     flair={
                       <div className={styles.twoButtons}>
                         <Button
-                          onClick={(e) => unignorePlayer(user.membershipId)}
+                          onClick={(e) => unignorePlayer(user?.membershipId)}
                         >
                           {Localizer.friends.unblock}
                         </Button>

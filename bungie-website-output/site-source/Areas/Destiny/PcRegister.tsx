@@ -125,9 +125,6 @@ class PcRegister extends React.Component<IPcRegisterProps, IPcRegisterState> {
                     {Localizer.Pcregister.PcMoveheader}
                   </h5>
                   <p>{Localizer.Pcregister.PcMoveSubtitle}</p>
-                  <Button buttonType={"gold"} url={RouteHelper.PCMigration()}>
-                    {Localizer.Pcregister.PcMoveheader}
-                  </Button>
                   <AuthTrigger isSignOut={true}>
                     <Button buttonType={"white"}>
                       {Localizer.Pcregister.signout}

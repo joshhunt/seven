@@ -6,8 +6,10 @@ import { SectionHeader } from "@Areas/Seasons/ProductPages/Season15/Components/S
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
+import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { Info } from "luxon";
 import React, { LegacyRef, useState } from "react";
 import styles from "./SeasonPass15.module.scss";
 
@@ -28,6 +30,18 @@ interface SeasonPass15Props {
 
 const SeasonPass15: React.FC<SeasonPass15Props> = (props) => {
   const s15 = Localizer.Season15;
+  const infoBlockScreenshots = [
+    "/7/ca/destiny/bgs/season15/s15_season_pass_img_1_1080.jpg",
+    "/7/ca/destiny/bgs/season15/s15_season_pass_img_2_1080.jpg",
+    "/7/ca/destiny/bgs/season15/s15_season_pass_img_3_1080.jpg",
+  ];
+
+  const handleImgClick = (imgIndex: number) => {
+    ImagePaginationModal.show({
+      images: infoBlockScreenshots,
+      imgIndex: imgIndex,
+    });
+  };
 
   return (
     <div className={styles.seasonPassSection}>
@@ -59,25 +73,22 @@ const SeasonPass15: React.FC<SeasonPass15Props> = (props) => {
             blurb={s15.SeasonPassBlockBlurb1}
             title={s15.SeasonPassBlockHeading1}
             thumbnail={"/7/ca/destiny/bgs/season15/s15_season_pass_img_1.jpg"}
-            screenshot={
-              "/7/ca/destiny/bgs/season15/s15_season_pass_img_1_1080.jpg"
-            }
+            screenshot={infoBlockScreenshots[0]}
+            onClick={() => handleImgClick(0)}
           />
           <InfoBlock15
             blurb={s15.SeasonPassBlockBlurb2}
             title={s15.SeasonPassBlockHeading2}
             thumbnail={"/7/ca/destiny/bgs/season15/s15_season_pass_img_2.jpg"}
-            screenshot={
-              "/7/ca/destiny/bgs/season15/s15_season_pass_img_2_1080.jpg"
-            }
+            screenshot={infoBlockScreenshots[1]}
+            onClick={() => handleImgClick(1)}
           />
           <InfoBlock15
             blurb={s15.SeasonPassBlockBlurb3}
             title={s15.SeasonPassBlockHeading3}
             thumbnail={"/7/ca/destiny/bgs/season15/s15_season_pass_img_3.jpg"}
-            screenshot={
-              "/7/ca/destiny/bgs/season15/s15_season_pass_img_3_1080.jpg"
-            }
+            screenshot={infoBlockScreenshots[2]}
+            onClick={() => handleImgClick(2)}
           />
         </div>
       </div>
@@ -90,21 +101,16 @@ interface IInfoBlock15 {
   title: string;
   thumbnail: string;
   screenshot: string;
+  onClick: () => void;
 }
 
 const InfoBlock15 = (props: IInfoBlock15) => {
-  const showImage = (screenshot: string) => {
-    Modal.open(<img src={`${screenshot}`} alt="" role="presentation" />, {
-      isFrameless: true,
-    });
-  };
-
   return (
     <div className={styles.infoBlock}>
       <div
         className={styles.blockImg}
         style={{ backgroundImage: `url(${props.thumbnail})` }}
-        onClick={() => showImage(props.screenshot)}
+        onClick={props.onClick}
       />
       <div className={styles.blockText}>
         <h4>{props.title}</h4>

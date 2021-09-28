@@ -2176,6 +2176,7 @@ export enum DestinyEnergyType {
   Void = 3,
   Ghost = 4,
   Subclass = 5,
+  Stasis = 6,
 }
 
 export enum DestinyTalentNodeState {
@@ -3276,6 +3277,22 @@ export enum AwaResponseReason {
 		This request was replaced by another request.
 		*/
   Replaced = 3,
+}
+
+export enum ReportTriggerScope {
+  All = 0,
+  Public = 1,
+  Private = 2,
+}
+
+export enum ReportTriggerSourceFlags {
+  Any = 0,
+  Forum = 1,
+  Fireteam = 2,
+  GroupProfile = 4,
+  UserProfile = 8,
+  GroupWall = 16,
+  PrivateMessage = 32,
 }
 
 export enum OfferRedeemMode {
