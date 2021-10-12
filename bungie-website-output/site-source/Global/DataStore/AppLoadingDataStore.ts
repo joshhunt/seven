@@ -10,7 +10,7 @@ class AppLoadingDataStoreInternal extends DataStore<{ loading: boolean }> {
      * Set the loading state
      * @param loading Loading state
      */
-    updateLoading: (loading: boolean) => ({ loading }),
+    updateLoading: (state, loading: boolean) => ({ loading }),
   });
 }
 

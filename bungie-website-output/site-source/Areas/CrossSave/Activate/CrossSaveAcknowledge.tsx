@@ -44,14 +44,12 @@ export class CrossSaveAcknowledge extends React.Component<
     };
   }
 
-  private readonly changeAcknowledge = () => {
-    const newAck = !this.state.acknowledged;
-
+  private readonly changeAcknowledge = (acknowledged: boolean) => {
     this.setState({
-      acknowledged: newAck,
+      acknowledged,
     });
 
-    CrossSaveFlowStateDataStore.actions.updateAcknowledged(newAck);
+    CrossSaveFlowStateDataStore.actions.updateAcknowledged(acknowledged);
   };
 
   private readonly checkAcknowledgeStatus = () => {
@@ -114,8 +112,7 @@ export class CrossSaveAcknowledge extends React.Component<
           <div className={styles.checkboxContainer}>
             <Checkbox
               checked={this.state.acknowledged}
-              onChange={this.checkAcknowledgeStatus}
-              onClick={this.changeAcknowledge}
+              onChecked={(checked) => this.changeAcknowledge(checked)}
               label={Localizer.Crosssave.AcknowledgementCheckboxText}
             />
           </div>

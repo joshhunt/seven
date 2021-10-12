@@ -21,12 +21,12 @@ class SmsDataStoreInternal extends DataStore<SmsDataStorePayload> {
      * Update the last 4 digits
      * @param lastDigits
      */
-    updateLastDigits: (lastDigits: string) => ({ lastDigits }),
+    updateLastDigits: (state, lastDigits: string) => ({ lastDigits }),
     /**
      * Set the current phase of the verification flow
      * @param phase
      */
-    updatePhase: (phase: SmsVerificationPhases) => ({
+    updatePhase: (state, phase: SmsVerificationPhases) => ({
       verificationPhase: phase,
     }),
   });

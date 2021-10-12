@@ -1,8 +1,10 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { RemoveFriendModal } from "@Areas/User/AccountComponents/Internal/BungieFriends/RemoveFriendModal";
 import { Localizer } from "@bungie/localization/Localizer";
+import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType, PlatformErrorCodes } from "@Enum";
 import { Friends, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -12,14 +14,13 @@ import {
   FriendLineItem,
   LineItemRelevantProps,
 } from "@UIKit/Companion/FriendLineItem";
+import { Button } from "@UIKit/Controls/Button/Button";
+import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { Checkbox } from "@UIKit/Forms/Checkbox";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useState } from "react";
-import { ConvertToPlatformError } from "../../../../../Platform/ApiIntermediary";
-import { PlatformError } from "../../../../../UI/Errors/CustomErrors";
-import { Button } from "../../../../../UI/UIKit/Controls/Button/Button";
-import { Modal } from "../../../../../UI/UIKit/Controls/Modal/Modal";
 import styles from "../../BungieFriends.module.scss";
-import { BungieFriendsDataStore } from "./BungieFriendsDataStore";
 import { BungieFriendsSectionType } from "./BungieFriendsSection";
 
 interface BungieFriendLineItemProps extends LineItemRelevantProps {
@@ -43,17 +44,18 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = (
   const membershipIdForProfile =
     membershipId || bungieFriend?.lastSeenAsMembershipId;
 
-  const removeFriend = () => {
-    return Platform.SocialService.RemoveFriend(membershipId)
-      .then((response) => {
-        setError(null);
-        setButtonRecentlyClicked(true);
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        Modal.open(friendsLoc.RemovingFriendFailed);
-        setError(e);
-      });
+  const [showRemoveFriendModal, setShowRemoveFriendModal] = useState(false);
+
+  const removedFriend = () => {
+    setError(null);
+    setButtonRecentlyClicked(true);
+    setShowRemoveFriendModal(false);
+  };
+
+  const errorRemovingFriend = (e: PlatformError) => {
+    setShowRemoveFriendModal(false);
+    Modal.open(friendsLoc.RemovingFriendFailed);
+    setError(e);
   };
 
   const removeFriendRequest = () => {
@@ -161,7 +163,7 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = (
               e.preventDefault();
               e.stopPropagation();
 
-              removeFriend();
+              setShowRemoveFriendModal(true);
             }}
             buttonType={error ? "red" : "white"}
           >
@@ -196,33 +198,42 @@ export const BungieFriendLineItem: React.FC<BungieFriendLineItemProps> = (
   }
 
   return (
-    <Anchor
-      className={styles.friendLine}
-      url={RouteHelper.TargetProfile(
-        membershipIdForProfile,
-        BungieMembershipType.BungieNext
-      )}
-    >
-      <hr />
-      <FriendLineItem
-        membershipId={
-          bungieFriend?.bungieNetUser?.membershipId ??
-          bungieFriend?.lastSeenAsMembershipId
-        }
-        bungieName={
-          UserUtils.getBungieNameFromBnetBungieFriend(bungieFriend)
-            ?.bungieGlobalName
-        }
-        itemSubtitle={props.itemSubtitle}
-        icon={
-          <IconCoin
-            iconImageUrl={UserUtils.bungieFriendProfilePicturePath(
-              bungieFriend
-            )}
-          />
-        }
-        flair={flair}
+    <>
+      <RemoveFriendModal
+        bungieFriend={bungieFriend}
+        openModal={showRemoveFriendModal}
+        onRemove={() => removedFriend()}
+        onErrorRemovingFriend={(e) => errorRemovingFriend(e)}
+        onClose={() => setShowRemoveFriendModal(false)}
       />
-    </Anchor>
+      <Anchor
+        className={styles.friendLine}
+        url={RouteHelper.TargetProfile(
+          membershipIdForProfile,
+          BungieMembershipType.BungieNext
+        )}
+      >
+        <hr />
+        <FriendLineItem
+          membershipId={
+            bungieFriend?.bungieNetUser?.membershipId ??
+            bungieFriend?.lastSeenAsMembershipId
+          }
+          bungieName={
+            UserUtils.getBungieNameFromBnetBungieFriend(bungieFriend)
+              ?.bungieGlobalName
+          }
+          itemSubtitle={props.itemSubtitle}
+          icon={
+            <IconCoin
+              iconImageUrl={UserUtils.bungieFriendProfilePicturePath(
+                bungieFriend
+              )}
+            />
+          }
+          flair={flair}
+        />
+      </Anchor>
+    </>
   );
 };

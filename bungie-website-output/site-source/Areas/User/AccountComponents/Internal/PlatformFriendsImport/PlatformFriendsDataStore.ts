@@ -54,10 +54,10 @@ class _PlatformFriendsDataStore extends DataStore<
   });
 
   public actions = this.createActions({
-    addToErroringIds: (mId: string) => {
+    addToErroringIds: (state, mId: string) => {
       return { errorMembershipIds: [mId, ...this.state.errorMembershipIds] };
     },
-    addToRecentlySent: (mId: string) => {
+    addToRecentlySent: (state, mId: string) => {
       return {
         recentlySentMembershipIds: [
           mId,
@@ -65,7 +65,7 @@ class _PlatformFriendsDataStore extends DataStore<
         ],
       };
     },
-    addToRecentlyCanceledMembershipIds: (mId: string) => {
+    addToRecentlyCanceledMembershipIds: (state, mId: string) => {
       return {
         recentlyCanceledMembershipIds: [
           mId,
@@ -73,7 +73,7 @@ class _PlatformFriendsDataStore extends DataStore<
         ],
       };
     },
-    removeFromErroringIds: (mId: string) => {
+    removeFromErroringIds: (state, mId: string) => {
       return {
         errorMembershipIds: [
           ...this.state.errorMembershipIds.filter(
@@ -82,7 +82,7 @@ class _PlatformFriendsDataStore extends DataStore<
         ],
       };
     },
-    removeFromRecentlySent: (mId: string) => {
+    removeFromRecentlySent: (state, mId: string) => {
       return {
         recentlySentMembershipIds: [
           ...this.state.recentlySentMembershipIds.filter(
@@ -91,7 +91,7 @@ class _PlatformFriendsDataStore extends DataStore<
         ],
       };
     },
-    removeFromRecentlyCanceledMembershipIds: (mId: string) => {
+    removeFromRecentlyCanceledMembershipIds: (state, mId: string) => {
       return {
         recentlyCanceledMembershipIds: [
           ...this.state.recentlySentMembershipIds.filter(
@@ -110,6 +110,7 @@ class _PlatformFriendsDataStore extends DataStore<
       };
     },
     updatePlatformFriendResponse: (
+      state,
       platform: PlatformFriendType,
       friendResponse: Friends.PlatformFriendResponse
     ) => {
@@ -126,6 +127,7 @@ class _PlatformFriendsDataStore extends DataStore<
       return { platformSpecificData: deepCopyAllPlatformData };
     },
     replacePlatformFriends: (
+      state,
       platform: PlatformFriendType,
       friends: Friends.PlatformFriend[]
     ) => {
@@ -141,6 +143,7 @@ class _PlatformFriendsDataStore extends DataStore<
       return { platformSpecificData: deepCopyAllPlatformData };
     },
     updatePlatformIsLoaded: (
+      state,
       platform: PlatformFriendType,
       isLoaded: boolean
     ) => {
@@ -156,6 +159,7 @@ class _PlatformFriendsDataStore extends DataStore<
       return { platformSpecificData: deepCopyAllPlatformData };
     },
     updatePlatformTotalPages: (
+      state,
       platform: PlatformFriendType,
       totalPages: number
     ) => {
@@ -170,7 +174,7 @@ class _PlatformFriendsDataStore extends DataStore<
 
       return { platformSpecificData: deepCopyAllPlatformData };
     },
-    setError: (platform: PlatformFriendType, error: PlatformError) => {
+    setError: (state, platform: PlatformFriendType, error: PlatformError) => {
       const deepCopyAllPlatformData = this.getDeepCopyOfPlatformData();
       const nextPlatformData = this.getSpecificPlatform(
         platform,

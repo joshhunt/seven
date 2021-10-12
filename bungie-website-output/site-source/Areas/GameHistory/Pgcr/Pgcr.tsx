@@ -12,7 +12,7 @@ import {
   PgcrStatsByCharacter,
 } from "@Areas/GameHistory/Pgcr/PgcrDataStore";
 import { PgcrUtils } from "@Areas/GameHistory/Pgcr/PgcrUtils";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,

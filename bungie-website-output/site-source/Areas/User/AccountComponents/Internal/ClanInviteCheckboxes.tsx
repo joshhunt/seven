@@ -4,7 +4,7 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ClanInviteDataStore } from "@Areas/User/AccountComponents/DataStores/ClanInviteDataStore";
 import styles from "@Areas/User/AccountComponents/Privacy.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { FormikCheckbox } from "@UIKit/Forms/FormikForms/FormikCheckbox";
@@ -27,8 +27,8 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
   useEffect(() => {
     Platform.UserService.GetMembershipDataForCurrentUser()
       .then((data: User.UserMembershipData) => {
-        const membershipArray = data.destinyMemberships.map(
-          (card) => card.membershipType
+        const membershipArray = data?.destinyMemberships?.map(
+          (card) => card?.membershipType
         );
         setMemberships(membershipArray);
 
@@ -82,7 +82,7 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
                 newSettings[mt] = e.currentTarget.value === "false";
                 ClanInviteDataStore.actions.updateCurrentSettings(newSettings);
               }}
-              classes={{ input: styles.input, label: styles.label }}
+              classes={{ input: styles.input, labelAndCheckbox: styles.label }}
             />
           </div>
         );

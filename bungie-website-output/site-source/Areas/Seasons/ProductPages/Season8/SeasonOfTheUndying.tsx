@@ -243,9 +243,8 @@ class SeasonOfTheUndyingInternal extends React.Component<
 
         <MarketingSubNav
           onChange={this.onMenuLock}
-          idToElementsMapping={this.idToElementsMapping}
-          stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
-          relockUnder={this.heroRef.current}
+          ids={Object.keys(this.idToElementsMapping)}
+          renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
           buttonProps={
             this.state.responsive.mobile && {
               children: Localizer.Seasons.MenuCTALabel,
@@ -504,17 +503,6 @@ class SeasonOfTheUndyingInternal extends React.Component<
               >
                 {this.state.responsive.mobile ? mobileRankRows : rankRows}
               </SeasonCarousel>
-            </div>
-
-            <div className={styles.buttonSection}>
-              <Button
-                className={styles.buyButton}
-                size={BasicSize.Medium}
-                buttonType={"teal"}
-                url={RouteHelper.PreviousSeason()}
-              >
-                {Localizer.Seasons.ViewYourProgress}
-              </Button>
             </div>
 
             <h1 className={styles.rewardsTitle}>

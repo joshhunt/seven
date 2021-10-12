@@ -1,7 +1,7 @@
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 import { Respond } from "@Boot/Respond";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { ResponsiveSize } from "@bungie/responsive";
 import { NotFoundError } from "@CustomErrors";

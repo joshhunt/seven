@@ -22,7 +22,7 @@ class GlobalElementDataStoreInternal extends DataStore<
      * Remove an element using the GUID used in `addElement()`
      * @param guid
      */
-    removeElementByGuid: (guid: string) => {
+    removeElementByGuid: (state, guid: string) => {
       const elements = this.state.elements.filter((m) => m.guid !== guid);
 
       return {
@@ -35,7 +35,7 @@ class GlobalElementDataStoreInternal extends DataStore<
      * @param guid A unique ID that we can use to store the item and find it later
      * @param el The element
      */
-    addElement: (guid: string, el: JSX.Element) => {
+    addElement: (state, guid: string, el: JSX.Element) => {
       const elements = [
         ...this.state.elements,
         {

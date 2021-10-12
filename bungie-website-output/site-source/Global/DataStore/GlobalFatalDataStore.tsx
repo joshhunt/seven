@@ -19,7 +19,7 @@ class GlobalFatalDataStoreInternal extends DataStore<
      * Add an error. This should only include errors that are truly fatal, meaning the page is totally broken.
      * @param errorString The error contents
      */
-    addError: (errorString: string) => {
+    addError: (state, errorString: string) => {
       const errorArray = [...this.state.error];
 
       if (errorString) {

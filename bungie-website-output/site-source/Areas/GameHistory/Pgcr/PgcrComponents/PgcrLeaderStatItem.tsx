@@ -4,7 +4,7 @@
 import { PgcrDataStore } from "@Areas/GameHistory/Pgcr/PgcrDataStore";
 import { Localizer } from "@bungie/localization";
 import { HistoricalStats } from "@Platform";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import React, { useEffect, useState } from "react";
 import styles from "./PgcrLeaderStatItem.module.scss";
 

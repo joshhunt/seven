@@ -3,7 +3,7 @@
 
 import styles from "@Areas/User/AccountComponents/FriendsImport.module.scss";
 import { FriendsImportUtils } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/FriendsImportUtils";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformErrorCodes, PlatformFriendType } from "@Enum";
 import { Friends, Platform } from "@Platform";

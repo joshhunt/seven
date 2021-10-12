@@ -56,7 +56,6 @@ interface ISeasonOfTheWorthyState {
   trialsParallaxScroll: IScrollViewportData;
   gearParallaxScroll: IScrollViewportData;
   seasonPageLive: boolean;
-  haveShownToast: boolean;
 }
 
 /**
@@ -102,7 +101,6 @@ class SeasonOfTheWorthyInner extends React.Component<
         percent: 0,
       },
       seasonPageLive: false,
-      haveShownToast: false,
     };
   }
 
@@ -155,34 +153,6 @@ class SeasonOfTheWorthyInner extends React.Component<
   }
 
   private readonly onScroll = () => {
-    if (
-      !this.state.haveShownToast &&
-      UserUtils.isAuthenticated(this.props.globalState)
-    ) {
-      Toast.show(
-        <TwoLineItem
-          itemTitle={Localizer.Seasons.TrackYourProgress}
-          itemSubtitle={Localizer.Seasons.TrackYourProgressSubtitle}
-          icon={
-            <img
-              src={"7/ca/destiny/logos/seasons_icon_2019.svg"}
-              style={{ width: "3rem", height: "3rem" }}
-            />
-          }
-        />,
-        {
-          position: "b",
-          classes: {
-            toast: styles.toast,
-          },
-          url: RouteHelper.SeasonProgress(),
-          type: "none",
-        }
-      );
-
-      this.setState({ haveShownToast: true });
-    }
-
     if (
       this.props.globalState.responsive.mobile ||
       !this.state.seasonPageLive
@@ -322,9 +292,8 @@ class SeasonOfTheWorthyInner extends React.Component<
 
         <MarketingSubNav
           onChange={this.onMenuLock}
-          idToElementsMapping={this.idToElementsMapping}
-          stringFinder={(id) => Localizer.SeasonOfTheWorthy[`Submenu_${id}`]}
-          relockUnder={this.heroRef.current}
+          ids={Object.keys(this.idToElementsMapping)}
+          renderLabel={(id) => Localizer.SeasonOfTheWorthy[`Submenu_${id}`]}
           buttonProps={{
             children: Localizer.Seasons.MenuCTALabel,
             url: RouteHelper.DestinyBuy(),

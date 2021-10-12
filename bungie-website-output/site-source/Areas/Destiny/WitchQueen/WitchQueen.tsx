@@ -8,7 +8,7 @@ import { WQFlexInfoImgBlock } from "@Areas/Destiny/WitchQueen/components/WQFlexI
 import WQSkinnyBlurbSection from "@Areas/Destiny/WitchQueen/components/WQSkinnyBlurbSection/WQSkinnyBlurbSection";
 import WQHero from "@Areas/Destiny/WitchQueen/sections/WQHero/WQHero";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -17,7 +17,7 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import classNames from "classnames";
 import React, { useState } from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import styles from "./WitchQueen.module.scss";
 
 const WitchQueen: React.FC = () => {

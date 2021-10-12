@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styles from "./Season11.module.scss";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Season11DataStore } from "./Season11DataStore";
 import { Season11Hero } from "./Sections/Season11Hero";
 import { Localizer } from "@bungie/localization";
@@ -43,9 +43,8 @@ const Season11 = () => {
       <div className={styles.wrapper}>
         <Season11Hero />
         <MarketingSubNav
-          idToElementsMapping={idToElementsMapping}
-          relockUnder={s11Data.heroRef}
-          stringFinder={(id) => Localizer.Season11[`id-${id}`]}
+          ids={["story", "dungeon", "exotics", "gear", "progression"]}
+          renderLabel={(id) => Localizer.Season11[`id-${id}`]}
           primaryColor={"darkgray"}
           accentColor={"teal"}
           buttonProps={{
@@ -54,19 +53,11 @@ const Season11 = () => {
             buttonType: "teal",
           }}
         />
-        <Season11Story
-          inputRef={(ref) => (idToElementsMapping["story"] = ref)}
-        />
-        <Season11Dungeon
-          inputRef={(ref) => (idToElementsMapping["dungeon"] = ref)}
-        />
-        <Season11Exotics
-          inputRef={(ref) => (idToElementsMapping["exotics"] = ref)}
-        />
-        <Season11Gear inputRef={(ref) => (idToElementsMapping["gear"] = ref)} />
-        <Season11Progression
-          inputRef={(ref) => (idToElementsMapping["progression"] = ref)}
-        />
+        <Season11Story />
+        <Season11Dungeon />
+        <Season11Exotics />
+        <Season11Gear />
+        <Season11Progression />
         <Season11Calendar />
         <div id={"media"} className={styles.newsMedia}>
           <FirehoseNewsAndMedia tag={"S11_product_page_media"} />

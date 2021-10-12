@@ -19,7 +19,7 @@ import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Responsive } from "@Boot/Responsive";
 import classNames from "classnames";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BuyButton } from "@UI/UIKit/Controls/Button/BuyButton";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -46,7 +46,6 @@ const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
  */
 const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
   const responsive = useDataStore(Responsive);
-  const [haveShownToast, setHaveShownToast] = useState(false);
   const [calendarImage, setCalendarImage] = useState<string>(
     Img(
       `destiny/bgs/season12/calendar/beyond_light_calendar_${Localizer.CurrentCultureName.toUpperCase()}.jpg`
@@ -85,33 +84,6 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
   useEffect(() => {
     window.scrollTo(0, 1);
   }, []);
-
-  if (!haveShownToast && UserUtils.isAuthenticated(globalState)) {
-    setHaveShownToast(true);
-
-    Toast.show(
-      <TwoLineItem
-        itemTitle={Localizer.Seasons.ViewYourProgress}
-        itemSubtitle={Localizer.Seasons.ViewSeasonOfTheHuntProgress}
-        icon={
-          <img
-            src={"7/ca/destiny/logos/seasons_icon_2019.svg"}
-            className={styles.toastIcon}
-            alt={Localizer.Seasons.ViewYourProgress}
-          />
-        }
-      />,
-      {
-        position: "b",
-        classes: {
-          toast: styles.toast,
-        },
-        url: RouteHelper.SeasonProgress(),
-        type: "none",
-        closeOnHistoryChange: true,
-      }
-    );
-  }
 
   const showImage = (imageName: string) => {
     Modal.open(
@@ -276,9 +248,8 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
 
       <div className={styles.nav}>
         <MarketingSubNav
-          idToElementsMapping={idToElementsMapping}
-          stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
-          relockUnder={heroRef}
+          ids={Object.keys(idToElementsMapping)}
+          renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
           primaryColor={"darkgray"}
           accentColor={"teal"}
           buttonProps={{

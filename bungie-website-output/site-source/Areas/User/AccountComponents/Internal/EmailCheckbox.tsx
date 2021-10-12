@@ -22,22 +22,36 @@ export const EmailCheckbox: React.FC<EmailSettingsProps> = ({
   secondary,
   formikProps,
 }) => {
-  // This gets run for every value when a checkbox is updated. So when "PlayTestsLocal" is checked, it rerenders the options and when it gets to "Playtests," it sets checked to true.
-  const shouldBoxBeChecked =
-    formikProps.getFieldProps("emailFlags").value.includes("playtestsLocal") &&
-    value === "playtests" &&
-    !formikProps.getFieldProps("emailFlags").value.includes("playtests")
-      ? true
-      : formikProps.getFieldProps("emailFlags").value.includes(value);
+  // This gets run for every value when a checkbox is updated. So when "PlayTestsLocal" is checked,
+  // it rerenders the options and when it gets to "Playtests," it sets checked to true.
+
+  const playtestsLocalIsChecked = formikProps
+    .getFieldProps("emailFlags")
+    .value.includes("playtestsLocal");
+  const currentlyRerenderingPlaytestsChecked = value === "playtests";
+  const playtestsIsUnchecked = !formikProps
+    .getFieldProps("emailFlags")
+    .value.includes("playtests");
+  let shouldBoxBeChecked = false;
+
+  if (playtestsLocalIsChecked && currentlyRerenderingPlaytestsChecked) {
+    if (playtestsIsUnchecked) {
+      shouldBoxBeChecked = true;
+    }
+  } else {
+    shouldBoxBeChecked = formikProps
+      .getFieldProps("emailFlags")
+      .value.includes(value);
+  }
 
   return (
     <div className={classNames(styles.flex, { [styles.secondary]: secondary })}>
       <FormikCheckbox
         name={"emailFlags"}
         value={value}
-        checked={shouldBoxBeChecked}
+        overrideChecked={shouldBoxBeChecked}
         label={label}
-        classes={{ input: styles.input, label: styles.label }}
+        classes={{ input: styles.input, labelAndCheckbox: styles.label }}
       />
     </div>
   );

@@ -1,16 +1,16 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { Checkbox } from "@UIKit/Forms/Checkbox";
-import * as React from "react";
-import styles from "./ConfirmationModal.module.scss";
-import { Icon } from "../Icon";
 import { Localizer } from "@bungie/localization";
-import classNames from "classnames";
-import { Button, ButtonTypes } from "../Button/Button";
-import { ModalProps, Modal } from "./Modal";
-import { createCustomModal } from "./CreateCustomModal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { Checkbox } from "@UIKit/Forms/Checkbox";
+import classNames from "classnames";
+import * as React from "react";
+import { Button, ButtonTypes } from "../Button/Button";
+import { Icon } from "../Icon";
+import styles from "./ConfirmationModal.module.scss";
+import { createCustomModal } from "./CreateCustomModal";
+import { Modal, ModalProps } from "./Modal";
 
 interface IConfirmationModalProps extends ModalProps {
   /** Determines the type of modal */
@@ -43,8 +43,8 @@ interface DefaultProps {
 type Props = IConfirmationModalProps & Partial<DefaultProps>;
 
 interface IConfirmationModalState {
-  acknowledged: boolean;
-  ackCheckboxState?: boolean[];
+  allAcknowledgementsChecked: boolean;
+  acknowledgementsCheckedStatus?: boolean[];
 }
 
 /**
@@ -53,50 +53,24 @@ interface IConfirmationModalState {
  * @param {IConfirmationModalProps} props
  * @returns
  */
-class ConfirmationModalInner extends React.Component<
+class _ConfirmationModal extends React.Component<
   Props,
   IConfirmationModalState
 > {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      acknowledged: !(this.props.acknowledgements?.length > 0),
-      ackCheckboxState: this.props.acknowledgements?.length
-        ? this.props.acknowledgements.map((value, index) => false)
-        : null,
-    };
-  }
-
   public static defaultProps: DefaultProps = {
     iconOverride: null,
   };
 
-  private onButtonClick(buttonProps: IConfirmationModalButtonProps) {
-    const closeOnClick =
-      (buttonProps && buttonProps.onClick && buttonProps.onClick()) || true;
+  constructor(props: Props) {
+    super(props);
 
-    if (closeOnClick) {
-      this.props.modalRef.current?.close();
-    }
+    this.state = {
+      allAcknowledgementsChecked: false,
+      acknowledgementsCheckedStatus: this.props?.acknowledgements?.map(
+        (a) => false
+      ),
+    };
   }
-
-  private readonly changeAcknowledge = (acknowledgeNumber: number) => {
-    const ackCheckboxStateArray = this.state.ackCheckboxState;
-
-    ackCheckboxStateArray[acknowledgeNumber] = !this.state.ackCheckboxState[
-      acknowledgeNumber
-    ];
-
-    this.setState({
-      ackCheckboxState: ackCheckboxStateArray,
-      acknowledged: !this.state.ackCheckboxState.includes(false),
-    });
-  };
-
-  private readonly checkAcknowledgeStatus = (acknowledgeNumber: number) => {
-    return this.state.ackCheckboxState[acknowledgeNumber];
-  };
 
   public render() {
     const {
@@ -109,40 +83,13 @@ class ConfirmationModalInner extends React.Component<
       footerContent,
     } = this.props;
 
-    let cancelLabel = Localizer.Actions.canceldialogbutton,
-      confirmLabel = Localizer.Actions.confirmdialogbutton,
-      excludeCancelButton = false,
-      excludeConfirmButton = false,
-      cancelType = ["text", "white"] as ButtonTypes | ButtonTypes[],
-      confirmType = ["text", "gold"] as ButtonTypes | ButtonTypes[];
-
-    if (cancelButtonProps) {
-      if (cancelButtonProps.labelOverride) {
-        cancelLabel = cancelButtonProps.labelOverride;
-      }
-
-      if (cancelButtonProps.disable) {
-        excludeCancelButton = true;
-      }
-
-      if (cancelButtonProps.buttonType) {
-        cancelType = cancelButtonProps.buttonType;
-      }
-    }
-
-    if (confirmButtonProps) {
-      if (confirmButtonProps.labelOverride) {
-        confirmLabel = confirmButtonProps.labelOverride;
-      }
-
-      if (confirmButtonProps.disable) {
-        excludeConfirmButton = true;
-      }
-
-      if (confirmButtonProps.buttonType) {
-        confirmType = confirmButtonProps.buttonType;
-      }
-    }
+    const cancelLabel =
+      cancelButtonProps?.labelOverride ?? Localizer.Actions.canceldialogbutton;
+    const confirmLabel =
+      confirmButtonProps?.labelOverride ??
+      Localizer.Actions.confirmDialogButton;
+    const excludeCancelButton = cancelButtonProps?.disable ?? false;
+    const excludeConfirmButton = confirmButtonProps?.disable ?? false;
 
     let icon = iconOverride;
     if (!icon) {
@@ -182,22 +129,25 @@ class ConfirmationModalInner extends React.Component<
             <div className={styles.description}>{children}</div>
           </div>
         </div>
-
-        {this.props.acknowledgements && (
-          <div className={styles.ackWrapper}>
-            {this.props.acknowledgements.map((value, index) => {
+        <div className={styles.ackWrapper}>
+          {this.props?.acknowledgements?.length &&
+            this.props?.acknowledgements?.map((value, index) => {
               return (
                 <Checkbox
                   key={index}
-                  checked={this.state.ackCheckboxState[index]}
-                  onChange={() => this.checkAcknowledgeStatus(index)}
-                  onClick={() => this.changeAcknowledge(index)}
+                  checked={this.state.acknowledgementsCheckedStatus?.[index]}
+                  onChecked={(checked) => {
+                    const copy = [...this.state.acknowledgementsCheckedStatus];
+                    if (copy) {
+                      copy[index] = checked;
+                    }
+                    this.setState({ acknowledgementsCheckedStatus: copy });
+                  }}
                   label={value}
                 />
               );
             })}
-          </div>
-        )}
+        </div>
         {footerContent && (
           <div className={styles.footerContent}>
             <div className={styles.description}>{footerContent}</div>
@@ -206,9 +156,11 @@ class ConfirmationModalInner extends React.Component<
         <div className={buttonClasses}>
           {!excludeCancelButton && (
             <Button
-              buttonType={cancelType}
-              className={styles.cancelButton}
+              {...this.props?.cancelButtonProps}
               onClick={() => this.onButtonClick(cancelButtonProps)}
+              buttonType={
+                this.props?.cancelButtonProps?.buttonType ?? ["text", "white"]
+              }
               size={BasicSize.Small}
             >
               {cancelLabel}
@@ -216,10 +168,11 @@ class ConfirmationModalInner extends React.Component<
           )}
           {!excludeConfirmButton && (
             <Button
-              buttonType={confirmType}
-              className={styles.confirmButton}
-              disabled={!this.state.acknowledged}
+              {...this.props?.confirmButtonProps}
               onClick={() => this.onButtonClick(confirmButtonProps)}
+              buttonType={
+                this.props?.confirmButtonProps?.buttonType ?? ["text", "gold"]
+              }
               size={BasicSize.Small}
             >
               {confirmLabel}
@@ -229,9 +182,18 @@ class ConfirmationModalInner extends React.Component<
       </div>
     );
   }
+
+  private onButtonClick(buttonProps: IConfirmationModalButtonProps) {
+    const closeOnClick =
+      (buttonProps && buttonProps.onClick && buttonProps.onClick()) || true;
+
+    if (closeOnClick) {
+      this.props.modalRef.current?.close();
+    }
+  }
 }
 
-export default createCustomModal<Props>(ConfirmationModalInner, {
+export default createCustomModal<Props>(_ConfirmationModal, {
   className: styles.confirmationModal,
   contentClassName: styles.content,
   containerClassName: styles.confirmationModalContainer,
@@ -247,9 +209,9 @@ export const ConfirmationModalInline: React.FC<Omit<Props, "modalRef">> = (
 
   return (
     <Modal {...rest} ref={ref}>
-      <ConfirmationModalInner {...rest} modalRef={ref}>
+      <_ConfirmationModal {...rest} modalRef={ref}>
         {children}
-      </ConfirmationModalInner>
+      </_ConfirmationModal>
     </Modal>
   );
 };

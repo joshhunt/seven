@@ -347,6 +347,7 @@ export declare namespace DestinyDefinitions {
     Void = 3,
     Ghost = 4,
     Subclass = 5,
+    Stasis = 6,
   }
 
   enum SocketPlugSources {
@@ -1954,6 +1955,8 @@ export declare namespace DestinyDefinitions {
     perkVisibility: ItemPerkVisibility;
 
     unlockExpression: DestinyUnlockExpressionDefinition;
+
+    visibilityUnlockExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DestinyItemUnlockBlockDefinition {
@@ -5819,308 +5822,308 @@ export declare namespace DestinyDefinitions {
   }
 }
 export interface DestinyWorldDefinitionsGenerated {
-  DestinyAchievementDefinition: {
+  DestinyAchievementDefinition?: {
     [key: string]: DestinyDefinitions.DestinyAchievementDefinition;
   };
-  DestinyActivityDefinition: {
+  DestinyActivityDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityDefinition;
   };
-  DestinyActivityGraphDefinition: {
+  DestinyActivityGraphDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityGraphDefinition;
   };
-  DestinyActivityInteractableDefinition: {
+  DestinyActivityInteractableDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityInteractableDefinition;
   };
-  DestinyActivityModeDefinition: {
+  DestinyActivityModeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityModeDefinition;
   };
-  DestinyActivityModifierDefinition: {
+  DestinyActivityModifierDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityModifierDefinition;
   };
-  DestinyActivityTypeDefinition: {
+  DestinyActivityTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityTypeDefinition;
   };
-  DestinyArtDyeChannelDefinition: {
+  DestinyArtDyeChannelDefinition?: {
     [key: string]: DestinyDefinitions.DestinyArtDyeChannelDefinition;
   };
-  DestinyArtDyeReferenceDefinition: {
+  DestinyArtDyeReferenceDefinition?: {
     [key: string]: DestinyDefinitions.DestinyArtDyeReferenceDefinition;
   };
-  DestinyArtifactDefinition: {
+  DestinyArtifactDefinition?: {
     [key: string]: DestinyDefinitions.DestinyArtifactDefinition;
   };
-  DestinyBondDefinition: {
+  DestinyBondDefinition?: {
     [key: string]: DestinyDefinitions.DestinyBondDefinition;
   };
-  DestinyBreakerTypeDefinition: {
+  DestinyBreakerTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyBreakerTypeDefinition;
   };
-  DestinyCharacterCustomizationCategoryDefinition: {
+  DestinyCharacterCustomizationCategoryDefinition?: {
     [
       key: string
     ]: DestinyDefinitions.DestinyCharacterCustomizationCategoryDefinition;
   };
-  DestinyCharacterCustomizationOptionDefinition: {
+  DestinyCharacterCustomizationOptionDefinition?: {
     [
       key: string
     ]: DestinyDefinitions.DestinyCharacterCustomizationOptionDefinition;
   };
-  DestinyChecklistDefinition: {
+  DestinyChecklistDefinition?: {
     [key: string]: DestinyDefinitions.DestinyChecklistDefinition;
   };
-  DestinyClassDefinition: {
+  DestinyClassDefinition?: {
     [key: string]: DestinyDefinitions.DestinyClassDefinition;
   };
-  DestinyCollectibleDefinition: {
+  DestinyCollectibleDefinition?: {
     [key: string]: DestinyDefinitions.DestinyCollectibleDefinition;
   };
-  DestinyDamageTypeDefinition: {
+  DestinyDamageTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyDamageTypeDefinition;
   };
-  DestinyDestinationDefinition: {
+  DestinyDestinationDefinition?: {
     [key: string]: DestinyDefinitions.DestinyDestinationDefinition;
   };
-  DestinyEnergyTypeDefinition: {
+  DestinyEnergyTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEnergyTypeDefinition;
   };
-  DestinyEntitlementOfferDefinition: {
+  DestinyEntitlementOfferDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEntitlementOfferDefinition;
   };
-  DestinyEquipmentSlotDefinition: {
+  DestinyEquipmentSlotDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEquipmentSlotDefinition;
   };
-  DestinyFactionDefinition: {
+  DestinyFactionDefinition?: {
     [key: string]: DestinyDefinitions.DestinyFactionDefinition;
   };
-  DestinyGenderDefinition: {
+  DestinyGenderDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGenderDefinition;
   };
-  DestinyInventoryBucketDefinition: {
+  DestinyInventoryBucketDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryBucketDefinition;
   };
-  DestinyInventoryItemDefinition: {
+  DestinyInventoryItemDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryItemDefinition;
   };
-  DestinyInventoryItemLiteDefinition: {
+  DestinyInventoryItemLiteDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
   };
-  DestinyItemCategoryDefinition: {
+  DestinyItemCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinyItemCategoryDefinition;
   };
-  DestinyItemTierTypeDefinition: {
+  DestinyItemTierTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyItemTierTypeDefinition;
   };
-  DestinyLocationDefinition: {
+  DestinyLocationDefinition?: {
     [key: string]: DestinyDefinitions.DestinyLocationDefinition;
   };
-  DestinyLoreDefinition: {
+  DestinyLoreDefinition?: {
     [key: string]: DestinyDefinitions.DestinyLoreDefinition;
   };
-  DestinyMaterialRequirementSetDefinition: {
+  DestinyMaterialRequirementSetDefinition?: {
     [key: string]: DestinyDefinitions.DestinyMaterialRequirementSetDefinition;
   };
-  DestinyMedalTierDefinition: {
+  DestinyMedalTierDefinition?: {
     [key: string]: DestinyDefinitions.DestinyMedalTierDefinition;
   };
-  DestinyMetricDefinition: {
+  DestinyMetricDefinition?: {
     [key: string]: DestinyDefinitions.DestinyMetricDefinition;
   };
-  DestinyMilestoneDefinition: {
+  DestinyMilestoneDefinition?: {
     [key: string]: DestinyDefinitions.DestinyMilestoneDefinition;
   };
-  DestinyNodeStepDefinition: {
+  DestinyNodeStepDefinition?: {
     [key: string]: DestinyDefinitions.DestinyNodeStepDefinition;
   };
-  DestinyNodeStepSummaryDefinition: {
+  DestinyNodeStepSummaryDefinition?: {
     [key: string]: DestinyDefinitions.DestinyNodeStepSummaryDefinition;
   };
-  DestinyObjectiveDefinition: {
+  DestinyObjectiveDefinition?: {
     [key: string]: DestinyDefinitions.DestinyObjectiveDefinition;
   };
-  DestinyPlaceDefinition: {
+  DestinyPlaceDefinition?: {
     [key: string]: DestinyDefinitions.DestinyPlaceDefinition;
   };
-  DestinyPlatformBucketMappingDefinition: {
+  DestinyPlatformBucketMappingDefinition?: {
     [key: string]: DestinyDefinitions.DestinyPlatformBucketMappingDefinition;
   };
-  DestinyPlugSetDefinition: {
+  DestinyPlugSetDefinition?: {
     [key: string]: DestinyDefinitions.DestinyPlugSetDefinition;
   };
-  DestinyPowerCapDefinition: {
+  DestinyPowerCapDefinition?: {
     [key: string]: DestinyDefinitions.DestinyPowerCapDefinition;
   };
-  DestinyPresentationNodeDefinition: {
+  DestinyPresentationNodeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyPresentationNodeDefinition;
   };
-  DestinyProgressionDefinition: {
+  DestinyProgressionDefinition?: {
     [key: string]: DestinyDefinitions.DestinyProgressionDefinition;
   };
-  DestinyProgressionLevelRequirementDefinition: {
+  DestinyProgressionLevelRequirementDefinition?: {
     [
       key: string
     ]: DestinyDefinitions.DestinyProgressionLevelRequirementDefinition;
   };
-  DestinyProgressionMappingDefinition: {
+  DestinyProgressionMappingDefinition?: {
     [key: string]: DestinyDefinitions.DestinyProgressionMappingDefinition;
   };
-  DestinyRaceDefinition: {
+  DestinyRaceDefinition?: {
     [key: string]: DestinyDefinitions.DestinyRaceDefinition;
   };
-  DestinyRecordDefinition: {
+  DestinyRecordDefinition?: {
     [key: string]: DestinyDefinitions.DestinyRecordDefinition;
   };
-  DestinyReportReasonCategoryDefinition: {
+  DestinyReportReasonCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinyReportReasonCategoryDefinition;
   };
-  DestinyRewardAdjusterPointerDefinition: {
+  DestinyRewardAdjusterPointerDefinition?: {
     [key: string]: DestinyDefinitions.DestinyRewardAdjusterPointerDefinition;
   };
-  DestinyRewardAdjusterProgressionMapDefinition: {
+  DestinyRewardAdjusterProgressionMapDefinition?: {
     [
       key: string
     ]: DestinyDefinitions.DestinyRewardAdjusterProgressionMapDefinition;
   };
-  DestinyRewardSourceDefinition: {
+  DestinyRewardSourceDefinition?: {
     [key: string]: DestinyDefinitions.DestinyRewardSourceDefinition;
   };
-  DestinySackRewardItemListDefinition: {
+  DestinySackRewardItemListDefinition?: {
     [key: string]: DestinyDefinitions.DestinySackRewardItemListDefinition;
   };
-  DestinySandboxPatternDefinition: {
+  DestinySandboxPatternDefinition?: {
     [key: string]: DestinyDefinitions.DestinySandboxPatternDefinition;
   };
-  DestinySandboxPerkDefinition: {
+  DestinySandboxPerkDefinition?: {
     [key: string]: DestinyDefinitions.DestinySandboxPerkDefinition;
   };
-  DestinySeasonDefinition: {
+  DestinySeasonDefinition?: {
     [key: string]: DestinyDefinitions.DestinySeasonDefinition;
   };
-  DestinySeasonPassDefinition: {
+  DestinySeasonPassDefinition?: {
     [key: string]: DestinyDefinitions.DestinySeasonPassDefinition;
   };
-  DestinySocketCategoryDefinition: {
+  DestinySocketCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinySocketCategoryDefinition;
   };
-  DestinySocketTypeDefinition: {
+  DestinySocketTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinySocketTypeDefinition;
   };
-  DestinyStatDefinition: {
+  DestinyStatDefinition?: {
     [key: string]: DestinyDefinitions.DestinyStatDefinition;
   };
-  DestinyStatGroupDefinition: {
+  DestinyStatGroupDefinition?: {
     [key: string]: DestinyDefinitions.DestinyStatGroupDefinition;
   };
-  DestinyTalentGridDefinition: {
+  DestinyTalentGridDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTalentGridDefinition;
   };
-  DestinyTalentNodeDefinition: {
+  DestinyTalentNodeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTalentNodeDefinition;
   };
-  DestinyTraitCategoryDefinition: {
+  DestinyTraitCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTraitCategoryDefinition;
   };
-  DestinyTraitDefinition: {
+  DestinyTraitDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTraitDefinition;
   };
-  DestinyUnlockCountMappingDefinition: {
+  DestinyUnlockCountMappingDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockCountMappingDefinition;
   };
-  DestinyUnlockDefinition: {
+  DestinyUnlockDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockDefinition;
   };
-  DestinyUnlockEventDefinition: {
+  DestinyUnlockEventDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockEventDefinition;
   };
-  DestinyUnlockExpressionDefinition: {
+  DestinyUnlockExpressionDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockExpressionDefinition;
   };
-  DestinyUnlockExpressionMappingDefinition: {
+  DestinyUnlockExpressionMappingDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockExpressionMappingDefinition;
   };
-  DestinyUnlockValueDefinition: {
+  DestinyUnlockValueDefinition?: {
     [key: string]: DestinyDefinitions.DestinyUnlockValueDefinition;
   };
-  DestinyVendorDefinition: {
+  DestinyVendorDefinition?: {
     [key: string]: DestinyDefinitions.DestinyVendorDefinition;
   };
-  DestinyVendorGroupDefinition: {
+  DestinyVendorGroupDefinition?: {
     [key: string]: DestinyDefinitions.DestinyVendorGroupDefinition;
   };
 }
 export interface DestinyWorldDefinitionsTypeMap {
-  DestinyActivityDefinition: DestinyDefinitions.DestinyActivityDefinition;
-  DestinyActivityModeDefinition: DestinyDefinitions.DestinyActivityModeDefinition;
-  DestinyActivityTypeDefinition: DestinyDefinitions.DestinyActivityTypeDefinition;
-  DestinyBondDefinition: DestinyDefinitions.DestinyBondDefinition;
-  DestinyClassDefinition: DestinyDefinitions.DestinyClassDefinition;
-  DestinyGenderDefinition: DestinyDefinitions.DestinyGenderDefinition;
-  DestinyRaceDefinition: DestinyDefinitions.DestinyRaceDefinition;
-  DestinyDamageTypeDefinition: DestinyDefinitions.DestinyDamageTypeDefinition;
-  DestinyEquipmentSlotDefinition: DestinyDefinitions.DestinyEquipmentSlotDefinition;
-  DestinyFactionDefinition: DestinyDefinitions.DestinyFactionDefinition;
-  DestinyInventoryBucketDefinition: DestinyDefinitions.DestinyInventoryBucketDefinition;
-  DestinyPlatformBucketMappingDefinition: DestinyDefinitions.DestinyPlatformBucketMappingDefinition;
-  DestinyInventoryItemDefinition: DestinyDefinitions.DestinyInventoryItemDefinition;
-  DestinyItemCategoryDefinition: DestinyDefinitions.DestinyItemCategoryDefinition;
-  DestinyDestinationDefinition: DestinyDefinitions.DestinyDestinationDefinition;
-  DestinyLocationDefinition: DestinyDefinitions.DestinyLocationDefinition;
-  DestinyPlaceDefinition: DestinyDefinitions.DestinyPlaceDefinition;
-  DestinyMaterialRequirementSetDefinition: DestinyDefinitions.DestinyMaterialRequirementSetDefinition;
-  DestinyMedalTierDefinition: DestinyDefinitions.DestinyMedalTierDefinition;
-  DestinyObjectiveDefinition: DestinyDefinitions.DestinyObjectiveDefinition;
-  DestinySandboxPerkDefinition: DestinyDefinitions.DestinySandboxPerkDefinition;
-  DestinyProgressionDefinition: DestinyDefinitions.DestinyProgressionDefinition;
-  DestinyProgressionMappingDefinition: DestinyDefinitions.DestinyProgressionMappingDefinition;
-  DestinyArtDyeChannelDefinition: DestinyDefinitions.DestinyArtDyeChannelDefinition;
-  DestinyArtDyeReferenceDefinition: DestinyDefinitions.DestinyArtDyeReferenceDefinition;
-  DestinySandboxPatternDefinition: DestinyDefinitions.DestinySandboxPatternDefinition;
-  DestinyRewardSourceDefinition: DestinyDefinitions.DestinyRewardSourceDefinition;
-  DestinyStatDefinition: DestinyDefinitions.DestinyStatDefinition;
-  DestinyStatGroupDefinition: DestinyDefinitions.DestinyStatGroupDefinition;
-  DestinyNodeStepDefinition: DestinyDefinitions.DestinyNodeStepDefinition;
-  DestinyNodeStepSummaryDefinition: DestinyDefinitions.DestinyNodeStepSummaryDefinition;
-  DestinyTalentGridDefinition: DestinyDefinitions.DestinyTalentGridDefinition;
-  DestinyTalentNodeDefinition: DestinyDefinitions.DestinyTalentNodeDefinition;
-  DestinyUnlockEventDefinition: DestinyDefinitions.DestinyUnlockEventDefinition;
-  DestinyUnlockDefinition: DestinyDefinitions.DestinyUnlockDefinition;
-  DestinyUnlockExpressionDefinition: DestinyDefinitions.DestinyUnlockExpressionDefinition;
-  DestinyUnlockValueDefinition: DestinyDefinitions.DestinyUnlockValueDefinition;
-  DestinyVendorDefinition: DestinyDefinitions.DestinyVendorDefinition;
-  DestinyVendorGroupDefinition: DestinyDefinitions.DestinyVendorGroupDefinition;
-  DestinyUnlockCountMappingDefinition: DestinyDefinitions.DestinyUnlockCountMappingDefinition;
-  DestinyUnlockExpressionMappingDefinition: DestinyDefinitions.DestinyUnlockExpressionMappingDefinition;
-  DestinyTraitCategoryDefinition: DestinyDefinitions.DestinyTraitCategoryDefinition;
-  DestinyTraitDefinition: DestinyDefinitions.DestinyTraitDefinition;
-  DestinyPlugSetDefinition: DestinyDefinitions.DestinyPlugSetDefinition;
-  DestinySocketCategoryDefinition: DestinyDefinitions.DestinySocketCategoryDefinition;
-  DestinySocketTypeDefinition: DestinyDefinitions.DestinySocketTypeDefinition;
-  DestinySeasonDefinition: DestinyDefinitions.DestinySeasonDefinition;
-  DestinySeasonPassDefinition: DestinyDefinitions.DestinySeasonPassDefinition;
-  DestinySackRewardItemListDefinition: DestinyDefinitions.DestinySackRewardItemListDefinition;
-  DestinyRewardAdjusterPointerDefinition: DestinyDefinitions.DestinyRewardAdjusterPointerDefinition;
-  DestinyRewardAdjusterProgressionMapDefinition: DestinyDefinitions.DestinyRewardAdjusterProgressionMapDefinition;
-  DestinyReportReasonCategoryDefinition: DestinyDefinitions.DestinyReportReasonCategoryDefinition;
-  DestinyRecordDefinition: DestinyDefinitions.DestinyRecordDefinition;
-  DestinyProgressionLevelRequirementDefinition: DestinyDefinitions.DestinyProgressionLevelRequirementDefinition;
-  DestinyPresentationNodeDefinition: DestinyDefinitions.DestinyPresentationNodeDefinition;
-  DestinyPowerCapDefinition: DestinyDefinitions.DestinyPowerCapDefinition;
-  DestinyEntitlementOfferDefinition: DestinyDefinitions.DestinyEntitlementOfferDefinition;
-  DestinyMilestoneDefinition: DestinyDefinitions.DestinyMilestoneDefinition;
-  DestinyMetricDefinition: DestinyDefinitions.DestinyMetricDefinition;
-  DestinyLoreDefinition: DestinyDefinitions.DestinyLoreDefinition;
-  DestinyInventoryItemLiteDefinition: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
-  DestinyItemTierTypeDefinition: DestinyDefinitions.DestinyItemTierTypeDefinition;
-  DestinyEnergyTypeDefinition: DestinyDefinitions.DestinyEnergyTypeDefinition;
-  DestinyActivityGraphDefinition: DestinyDefinitions.DestinyActivityGraphDefinition;
-  DestinyCollectibleDefinition: DestinyDefinitions.DestinyCollectibleDefinition;
-  DestinyChecklistDefinition: DestinyDefinitions.DestinyChecklistDefinition;
-  DestinyCharacterCustomizationCategoryDefinition: DestinyDefinitions.DestinyCharacterCustomizationCategoryDefinition;
-  DestinyCharacterCustomizationOptionDefinition: DestinyDefinitions.DestinyCharacterCustomizationOptionDefinition;
-  DestinyBreakerTypeDefinition: DestinyDefinitions.DestinyBreakerTypeDefinition;
-  DestinyArtifactDefinition: DestinyDefinitions.DestinyArtifactDefinition;
-  DestinyActivityModifierDefinition: DestinyDefinitions.DestinyActivityModifierDefinition;
-  DestinyActivityInteractableDefinition: DestinyDefinitions.DestinyActivityInteractableDefinition;
-  DestinyAchievementDefinition: DestinyDefinitions.DestinyAchievementDefinition;
+  DestinyActivityDefinition?: DestinyDefinitions.DestinyActivityDefinition;
+  DestinyActivityModeDefinition?: DestinyDefinitions.DestinyActivityModeDefinition;
+  DestinyActivityTypeDefinition?: DestinyDefinitions.DestinyActivityTypeDefinition;
+  DestinyBondDefinition?: DestinyDefinitions.DestinyBondDefinition;
+  DestinyClassDefinition?: DestinyDefinitions.DestinyClassDefinition;
+  DestinyGenderDefinition?: DestinyDefinitions.DestinyGenderDefinition;
+  DestinyRaceDefinition?: DestinyDefinitions.DestinyRaceDefinition;
+  DestinyDamageTypeDefinition?: DestinyDefinitions.DestinyDamageTypeDefinition;
+  DestinyEquipmentSlotDefinition?: DestinyDefinitions.DestinyEquipmentSlotDefinition;
+  DestinyFactionDefinition?: DestinyDefinitions.DestinyFactionDefinition;
+  DestinyInventoryBucketDefinition?: DestinyDefinitions.DestinyInventoryBucketDefinition;
+  DestinyPlatformBucketMappingDefinition?: DestinyDefinitions.DestinyPlatformBucketMappingDefinition;
+  DestinyInventoryItemDefinition?: DestinyDefinitions.DestinyInventoryItemDefinition;
+  DestinyItemCategoryDefinition?: DestinyDefinitions.DestinyItemCategoryDefinition;
+  DestinyDestinationDefinition?: DestinyDefinitions.DestinyDestinationDefinition;
+  DestinyLocationDefinition?: DestinyDefinitions.DestinyLocationDefinition;
+  DestinyPlaceDefinition?: DestinyDefinitions.DestinyPlaceDefinition;
+  DestinyMaterialRequirementSetDefinition?: DestinyDefinitions.DestinyMaterialRequirementSetDefinition;
+  DestinyMedalTierDefinition?: DestinyDefinitions.DestinyMedalTierDefinition;
+  DestinyObjectiveDefinition?: DestinyDefinitions.DestinyObjectiveDefinition;
+  DestinySandboxPerkDefinition?: DestinyDefinitions.DestinySandboxPerkDefinition;
+  DestinyProgressionDefinition?: DestinyDefinitions.DestinyProgressionDefinition;
+  DestinyProgressionMappingDefinition?: DestinyDefinitions.DestinyProgressionMappingDefinition;
+  DestinyArtDyeChannelDefinition?: DestinyDefinitions.DestinyArtDyeChannelDefinition;
+  DestinyArtDyeReferenceDefinition?: DestinyDefinitions.DestinyArtDyeReferenceDefinition;
+  DestinySandboxPatternDefinition?: DestinyDefinitions.DestinySandboxPatternDefinition;
+  DestinyRewardSourceDefinition?: DestinyDefinitions.DestinyRewardSourceDefinition;
+  DestinyStatDefinition?: DestinyDefinitions.DestinyStatDefinition;
+  DestinyStatGroupDefinition?: DestinyDefinitions.DestinyStatGroupDefinition;
+  DestinyNodeStepDefinition?: DestinyDefinitions.DestinyNodeStepDefinition;
+  DestinyNodeStepSummaryDefinition?: DestinyDefinitions.DestinyNodeStepSummaryDefinition;
+  DestinyTalentGridDefinition?: DestinyDefinitions.DestinyTalentGridDefinition;
+  DestinyTalentNodeDefinition?: DestinyDefinitions.DestinyTalentNodeDefinition;
+  DestinyUnlockEventDefinition?: DestinyDefinitions.DestinyUnlockEventDefinition;
+  DestinyUnlockDefinition?: DestinyDefinitions.DestinyUnlockDefinition;
+  DestinyUnlockExpressionDefinition?: DestinyDefinitions.DestinyUnlockExpressionDefinition;
+  DestinyUnlockValueDefinition?: DestinyDefinitions.DestinyUnlockValueDefinition;
+  DestinyVendorDefinition?: DestinyDefinitions.DestinyVendorDefinition;
+  DestinyVendorGroupDefinition?: DestinyDefinitions.DestinyVendorGroupDefinition;
+  DestinyUnlockCountMappingDefinition?: DestinyDefinitions.DestinyUnlockCountMappingDefinition;
+  DestinyUnlockExpressionMappingDefinition?: DestinyDefinitions.DestinyUnlockExpressionMappingDefinition;
+  DestinyTraitCategoryDefinition?: DestinyDefinitions.DestinyTraitCategoryDefinition;
+  DestinyTraitDefinition?: DestinyDefinitions.DestinyTraitDefinition;
+  DestinyPlugSetDefinition?: DestinyDefinitions.DestinyPlugSetDefinition;
+  DestinySocketCategoryDefinition?: DestinyDefinitions.DestinySocketCategoryDefinition;
+  DestinySocketTypeDefinition?: DestinyDefinitions.DestinySocketTypeDefinition;
+  DestinySeasonDefinition?: DestinyDefinitions.DestinySeasonDefinition;
+  DestinySeasonPassDefinition?: DestinyDefinitions.DestinySeasonPassDefinition;
+  DestinySackRewardItemListDefinition?: DestinyDefinitions.DestinySackRewardItemListDefinition;
+  DestinyRewardAdjusterPointerDefinition?: DestinyDefinitions.DestinyRewardAdjusterPointerDefinition;
+  DestinyRewardAdjusterProgressionMapDefinition?: DestinyDefinitions.DestinyRewardAdjusterProgressionMapDefinition;
+  DestinyReportReasonCategoryDefinition?: DestinyDefinitions.DestinyReportReasonCategoryDefinition;
+  DestinyRecordDefinition?: DestinyDefinitions.DestinyRecordDefinition;
+  DestinyProgressionLevelRequirementDefinition?: DestinyDefinitions.DestinyProgressionLevelRequirementDefinition;
+  DestinyPresentationNodeDefinition?: DestinyDefinitions.DestinyPresentationNodeDefinition;
+  DestinyPowerCapDefinition?: DestinyDefinitions.DestinyPowerCapDefinition;
+  DestinyEntitlementOfferDefinition?: DestinyDefinitions.DestinyEntitlementOfferDefinition;
+  DestinyMilestoneDefinition?: DestinyDefinitions.DestinyMilestoneDefinition;
+  DestinyMetricDefinition?: DestinyDefinitions.DestinyMetricDefinition;
+  DestinyLoreDefinition?: DestinyDefinitions.DestinyLoreDefinition;
+  DestinyInventoryItemLiteDefinition?: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
+  DestinyItemTierTypeDefinition?: DestinyDefinitions.DestinyItemTierTypeDefinition;
+  DestinyEnergyTypeDefinition?: DestinyDefinitions.DestinyEnergyTypeDefinition;
+  DestinyActivityGraphDefinition?: DestinyDefinitions.DestinyActivityGraphDefinition;
+  DestinyCollectibleDefinition?: DestinyDefinitions.DestinyCollectibleDefinition;
+  DestinyChecklistDefinition?: DestinyDefinitions.DestinyChecklistDefinition;
+  DestinyCharacterCustomizationCategoryDefinition?: DestinyDefinitions.DestinyCharacterCustomizationCategoryDefinition;
+  DestinyCharacterCustomizationOptionDefinition?: DestinyDefinitions.DestinyCharacterCustomizationOptionDefinition;
+  DestinyBreakerTypeDefinition?: DestinyDefinitions.DestinyBreakerTypeDefinition;
+  DestinyArtifactDefinition?: DestinyDefinitions.DestinyArtifactDefinition;
+  DestinyActivityModifierDefinition?: DestinyDefinitions.DestinyActivityModifierDefinition;
+  DestinyActivityInteractableDefinition?: DestinyDefinitions.DestinyActivityInteractableDefinition;
+  DestinyAchievementDefinition?: DestinyDefinitions.DestinyAchievementDefinition;
 }
 export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyActivityDefinition",

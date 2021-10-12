@@ -49,10 +49,10 @@ class ForsakenPageInternal extends React.Component<
 > {
   private readonly destroys: DestroyCallback[] = [];
   private readonly heroRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
   private readonly forsakenLogo = `/7/ca/destiny/products/forsaken/v2/desktop/${Localizer.Destiny.ForsakenLogo}.png`;
 
+  private readonly idToElementsMapping: { [key: string]: HTMLDivElement } = {};
   private readonly storyVideoId = Localizer.Destiny.ForsakenStoryVideoID;
   private readonly titanSuperVideoId = Localizer.Destiny.ForsakenTitanVideoID;
   private readonly warlockSuperVideoId =
@@ -182,9 +182,8 @@ class ForsakenPageInternal extends React.Component<
         }
         <MarketingSubNav
           onChange={this.onMenuLock}
-          idToElementsMapping={this.idToElementsMapping}
-          stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
-          relockUnder={this.heroRef.current}
+          ids={Object.keys(this.idToElementsMapping)}
+          renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
           buttonProps={{
             children: Localizer.Destiny.BuyNow,
             onClick: () =>

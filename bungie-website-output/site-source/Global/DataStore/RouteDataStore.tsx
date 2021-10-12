@@ -14,6 +14,6 @@ export class RouteDataStore extends DataStore<IRouteUpdate> {
      * Set the current URL path
      * @param currentPath
      */
-    setCurrentPath: (currentPath: string) => ({ currentPath }),
+    setCurrentPath: (state, currentPath: string) => ({ currentPath }),
   });
 }

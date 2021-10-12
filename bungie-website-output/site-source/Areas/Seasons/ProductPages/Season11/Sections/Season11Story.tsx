@@ -10,13 +10,11 @@ import { Season11GridBoundary } from "@Areas/Seasons/ProductPages/Season11/Compo
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 
-interface Season11StoryProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11StoryProps {}
 
 export const Season11Story: React.FC<Season11StoryProps> = (props) => {
   return (
-    <div className={styles.wrapper} id={"story"} ref={props.inputRef}>
+    <div className={styles.wrapper} id={"story"}>
       <Season11VerticalSubtitle separator={"//"} className={styles.subtitle}>
         {Localizer.Season11.S11StoryActivities}
       </Season11VerticalSubtitle>

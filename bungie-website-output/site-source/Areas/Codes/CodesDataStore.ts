@@ -18,7 +18,7 @@ class CodesDataStoreInternal extends DataStore<ICodesState> {
      * Re-fetch membership data
      * @param userIsCrossSaved
      */
-    refreshUserMemberships: async (userIsCrossSaved = true) => {
+    refreshUserMemberships: async (state, userIsCrossSaved = true) => {
       try {
         const membershipData = await Platform.UserService.GetMembershipDataForCurrentUser();
 
@@ -39,9 +39,10 @@ class CodesDataStoreInternal extends DataStore<ICodesState> {
      * Sets the selected membership type
      * @param selectedMembership
      */
-    updateSelectedMembership: (selectedMembership: BungieMembershipType) => ({
-      selectedMembership,
-    }),
+    updateSelectedMembership: (
+      state,
+      selectedMembership: BungieMembershipType
+    ) => ({ selectedMembership }),
   });
 
   public async initialize(userIsCrossSaved = true) {

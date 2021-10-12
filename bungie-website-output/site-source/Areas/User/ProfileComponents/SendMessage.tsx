@@ -4,7 +4,7 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/ProfileComponents/SendMessage.module.scss";
 import { PlatformError } from "@CustomErrors";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Platform, Requests, Responses } from "@Platform";

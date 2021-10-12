@@ -7,7 +7,7 @@ import { BeyondLightPhaseTwoDataStore } from "@Areas/Destiny/BeyondLight/DataSto
 import { BeyondLightPhaseThreeDataStore } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseThreeDataStore";
 import { BeyondLightPhaseFourDataStore } from "@Areas/Destiny/BeyondLight/DataStores/BeyondLightPhaseFourDataStore";
 
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { AsyncRoute } from "@Routes/AsyncRoute";
 import { RouteDefs } from "@Routes/RouteDefs";

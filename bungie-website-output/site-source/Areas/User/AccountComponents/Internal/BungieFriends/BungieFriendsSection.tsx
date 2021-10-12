@@ -3,7 +3,7 @@
 
 import accountStyles from "@Areas/User/Account.module.scss";
 import styles from "@Areas/User/AccountComponents/BungieFriends.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Friends } from "@Platform";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";

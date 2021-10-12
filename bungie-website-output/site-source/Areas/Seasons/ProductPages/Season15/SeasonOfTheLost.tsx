@@ -93,9 +93,8 @@ const SeasonOfTheLost: React.FC<SeasonOfTheLostProps> = (props) => {
         gameplayTrailerId={heroTrailerId}
       />
       <MarketingSubNav
-        relockUnder={heroRef}
-        idToElementsMapping={idToElementsMapping}
-        stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
+        ids={Object.keys(idToElementsMapping)}
+        renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
         primaryColor={"queenPurple"}
         accentColor={"teal"}
         buttonProps={{

@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { SystemNames } from "@Global/SystemNames";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";

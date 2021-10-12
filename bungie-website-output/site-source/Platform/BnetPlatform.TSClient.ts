@@ -24032,7 +24032,7 @@ class AdminServiceInternal {
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<number> =>
-    ApiIntermediary.doPostRequest(
+    ApiIntermediary.doGetRequest(
       `/Admin/Assigned/Count/`,
       [],
       optionalQueryAppend,
@@ -24053,7 +24053,7 @@ class AdminServiceInternal {
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Contracts.ReportedItemResponse[]> =>
-    ApiIntermediary.doPostRequest(
+    ApiIntermediary.doGetRequest(
       `/Admin/Report/${e(reportId)}`,
       [],
       optionalQueryAppend,
@@ -24074,7 +24074,7 @@ class AdminServiceInternal {
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Config.ReportTrigger> =>
-    ApiIntermediary.doPostRequest(
+    ApiIntermediary.doGetRequest(
       `/Admin/ReportTrigger/${e(autoTriggerId)}`,
       [],
       optionalQueryAppend,

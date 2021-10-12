@@ -1,48 +1,37 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import styles from "./UserResearch.module.scss";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
-import { Platform, Contract } from "@Platform";
-import { OptInFlags, EmailValidationStatus } from "@Enum";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { Localizer } from "@bungie/localization";
+import { EmailValidationStatus, OptInFlags } from "@Enum";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { UserUtils } from "@Utilities/UserUtils";
-import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
-import { Localizer } from "@bungie/localization";
+import { Contract, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
+import { Checkbox } from "@UI/UIKit/Forms/Checkbox";
+import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import { RequiresAuth } from "@UI/User/RequiresAuth";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
+import styles from "./UserResearch.module.scss";
 
 // Required props
 interface IUserResearchProps
   extends GlobalStateComponentProps<"loggedInUser"> {}
 
-// Default props - these will have values set in PlayTest.defaultProps
-interface DefaultProps {}
-
-type Props = IUserResearchProps & DefaultProps;
-
 interface IUserResearchState {
-  optedIn: boolean;
-  optInChecked: boolean;
-  clickedOptIn: boolean;
-  emailVerfied: boolean;
+  optedInUR: boolean;
   user: Contract.UserDetail;
-  clickedTravel: boolean;
+  emailVerified: boolean;
   canTravel: boolean;
-  canTravelChecked: boolean;
 }
 
 /**
@@ -51,27 +40,20 @@ interface IUserResearchState {
  * @param {IUserResearchProps} props
  * @returns
  */
-class UserResearch extends React.Component<Props, IUserResearchState> {
-  private readonly checkboxTravelRef: React.RefObject<Checkbox>;
-
-  constructor(props: Props) {
+class UserResearch extends React.Component<
+  IUserResearchProps,
+  IUserResearchState
+> {
+  constructor(props: IUserResearchProps) {
     super(props);
 
     this.state = {
-      optedIn: false,
+      optedInUR: false,
       user: null,
-      optInChecked: false,
-      clickedOptIn: false,
-      emailVerfied: false,
-      clickedTravel: false,
+      emailVerified: false,
       canTravel: false,
-      canTravelChecked: false,
     };
-
-    this.checkboxTravelRef = React.createRef();
   }
-
-  public static defaultProps: DefaultProps = {};
 
   public async componentDidMount() {
     if (UserUtils.isAuthenticated(this.props.globalState)) {
@@ -84,14 +66,16 @@ class UserResearch extends React.Component<Props, IUserResearchState> {
     prevState: IUserResearchState
   ) {
     if (
-      prevProps.globalState.loggedInUser !== this.props.globalState.loggedInUser
+      prevProps.globalState.loggedInUser !==
+        this.props.globalState.loggedInUser &&
+      UserUtils.isAuthenticated(this.props.globalState)
     ) {
       await this.loadUser();
     }
 
     if (
-      (this.state.clickedOptIn && prevState.optedIn !== this.state.optedIn) ||
-      (this.state.clickedTravel && prevState.canTravel !== this.state.canTravel)
+      prevState.optedInUR !== this.state.optedInUR ||
+      prevState.canTravel !== this.state.canTravel
     ) {
       this.updateUserSettings();
     }
@@ -176,18 +160,16 @@ class UserResearch extends React.Component<Props, IUserResearchState> {
     const usersEmail = this.props.globalState.loggedInUser.email;
 
     const changeEmailSettingsLink = RouteHelper.Settings({
-      membershipId: this.props.globalState.loggedInUser.user.membershipId,
+      membershipId: this.props.globalState.loggedInUser?.user?.membershipId,
       membershipType: 254,
       category: "Notifications",
     });
 
     const changeEmailLink = Localizer.Pcmigration.changeemailaddress;
-
     const emailsWillBeSent = Localizer.Format(
       Localizer.Userresearch.EmailsWillBeSentToUsersemail,
       { usersEmail: usersEmail }
     );
-
     const emailNotVerified = Localizer.Userresearch.EmailIsNotVerifiedOnce;
     const emailNotVerifiedBut = Localizer.Userresearch.YouHaveOptedInButYour;
 
@@ -200,39 +182,36 @@ class UserResearch extends React.Component<Props, IUserResearchState> {
       <React.Fragment>
         <div className={styles.settingsSection}>
           <div className={styles.emailContainer}>
-            <p className={styles.emailAddress}>
-              <span>{emailsWillBeSent}</span>{" "}
+            <p>
+              <span>{emailsWillBeSent}</span>
               <Anchor url={changeEmailSettingsLink}>{changeEmailLink}</Anchor>
             </p>
 
-            {!this.state.emailVerfied && !this.state.optedIn && (
+            {!this.state.emailVerified && !this.state.optedInUR && (
               <p>
                 <Anchor url={emailSettingsLink}>{emailNotVerified}</Anchor>
               </p>
             )}
 
-            {!this.state.emailVerfied && this.state.optedIn && (
+            {!this.state.emailVerified && this.state.optedInUR && (
               <p>
                 <Anchor url={emailSettingsLink}>{emailNotVerifiedBut}</Anchor>
               </p>
             )}
           </div>
           <Checkbox
-            onClick={this.handleToggleOptIn}
-            onChange={this.checkOptedInStatus}
-            checked={this.state.optInChecked}
+            checked={this.state.optedInUR}
+            onChecked={(checked) => this.setState({ optedInUR: checked })}
             label={optInLabel}
           />
 
-          {this.state.optedIn && (
+          {this.state.optedInUR && (
             <div className={styles.travelContainer}>
               <Checkbox
-                onClick={this.handleToggleTravel}
-                onChange={this.checkTravelStatus}
-                checked={this.state.canTravelChecked}
+                onChecked={(checked) => this.setState({ canTravel: checked })}
+                checked={this.state.canTravel}
                 label={canTravelLabel}
-                disabled={!this.state.emailVerfied && !this.state.optedIn}
-                ref={this.checkboxTravelRef}
+                disabled={!this.state.emailVerified && !this.state.optedInUR}
               />
             </div>
           )}
@@ -241,61 +220,39 @@ class UserResearch extends React.Component<Props, IUserResearchState> {
     );
   }
 
-  private readonly checkOptedInStatus = () => {
-    return this.state.optedIn;
-  };
-
-  private readonly checkTravelStatus = () => {
-    return this.state.canTravel;
-  };
-
-  private readonly handleToggleOptIn = () => {
-    const newOptIn = !this.state.optedIn;
-
-    this.setState({
-      clickedOptIn: true,
-      optedIn: newOptIn,
-    });
-  };
-
-  private readonly handleToggleTravel = () => {
-    const newTravel = !this.state.canTravel;
-
-    this.setState({
-      clickedTravel: true,
-      canTravel: newTravel,
-    });
-  };
-
   private updateUserSettings() {
-    //reset the clicked state
-    this.setState({
-      clickedOptIn: false,
-      clickedTravel: false,
-    });
+    const originalEmailPreferences = this.props.globalState?.loggedInUser
+      ?.emailUsage;
+    const originalOptedIn =
+      (parseInt(originalEmailPreferences, 10) & OptInFlags.PlayTests) !== 0;
+    const originalCanTravel =
+      (parseInt(originalEmailPreferences, 10) & OptInFlags.PlayTestsLocal) !==
+      0;
+    const optInChanged = originalOptedIn !== this.state.optedInUR;
+    const travelChanged = originalCanTravel !== this.state.canTravel;
+
+    // if can travel is true, opting into travel must also be true
 
     const addedOptIns =
-      this.state.optedIn || this.state.canTravel
-        ? (
-            (this.state.optedIn ? OptInFlags.PlayTests : OptInFlags.None) |
-            (this.state.canTravel ? OptInFlags.PlayTestsLocal : OptInFlags.None)
-          ).toString()
-        : null;
+      (this.state.optedInUR && optInChanged
+        ? OptInFlags.PlayTests
+        : OptInFlags.None) |
+      (this.state.canTravel && travelChanged
+        ? OptInFlags.PlayTestsLocal
+        : OptInFlags.None);
 
     const removeOptIns =
-      !this.state.optedIn || !this.state.canTravel
-        ? (
-            (!this.state.optedIn ? OptInFlags.PlayTests : OptInFlags.None) |
-            (!this.state.canTravel
-              ? OptInFlags.PlayTestsLocal
-              : OptInFlags.None)
-          ).toString()
-        : null;
+      (!this.state.optedInUR && optInChanged
+        ? OptInFlags.PlayTests
+        : OptInFlags.None) |
+      (!this.state.canTravel && travelChanged
+        ? OptInFlags.PlayTestsLocal
+        : OptInFlags.None);
 
     const input: Contract.UserEditRequest = {
       membershipId: this.state.user.user.membershipId,
-      addedOptIns: addedOptIns,
-      removedOptIns: removeOptIns,
+      addedOptIns: addedOptIns.toString(),
+      removedOptIns: removeOptIns.toString(),
       displayName: null,
       about: null,
       locale: null,
@@ -317,18 +274,16 @@ class UserResearch extends React.Component<Props, IUserResearchState> {
     const user = await Platform.UserService.GetCurrentUser();
 
     const optedIn =
-      (parseInt(user.emailUsage, 10) & OptInFlags.PlayTests) !== 0;
+      (parseInt(user?.emailUsage, 10) & OptInFlags.PlayTests) !== 0;
 
     const canTravel =
-      (parseInt(user.emailUsage, 10) & OptInFlags.PlayTestsLocal) !== 0;
+      (parseInt(user?.emailUsage, 10) & OptInFlags.PlayTestsLocal) !== 0;
 
     this.setState({
       user: user,
-      optedIn: optedIn,
-      optInChecked: optedIn,
+      optedInUR: optedIn,
       canTravel: canTravel,
-      canTravelChecked: canTravel,
-      emailVerfied: user.emailStatus === EmailValidationStatus.VALID,
+      emailVerified: user.emailStatus === EmailValidationStatus.VALID,
     });
   }
 }

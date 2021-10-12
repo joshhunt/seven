@@ -1,12 +1,11 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieMembershipType } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Applications, Platform, Queries } from "@Platform";
 import React, { useEffect, useState } from "react";
-import accountStyles from "../Account.module.scss";
 
 interface AppHistoryProps {}
 

@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { BungieCredentialType } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import {

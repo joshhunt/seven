@@ -55,7 +55,7 @@ class _BeyondLightPhaseFourDataStore extends DataStore<
      * Set this phase active
      * @param active
      */
-    updateActive: (active: boolean) => ({
+    updateActive: (state, active: boolean) => ({
       phaseFourActive: active,
     }),
     /**

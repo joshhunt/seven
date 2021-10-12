@@ -232,6 +232,9 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
                     case "Playstation":
                       storeKeyForTitle = "PlayStation";
                       break;
+                    case "MicrosoftPC":
+                      storeKeyForTitle = "Windows";
+                      break;
                   }
 
                   return (

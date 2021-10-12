@@ -10,13 +10,11 @@ import styles from "./Season11Exotics.module.scss";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 import { Season11AvailableToAll } from "@Areas/Seasons/ProductPages/Season11/Components/Season11AvailableToAll";
 
-interface Season11ExoticsProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11ExoticsProps {}
 
 export const Season11Exotics: React.FC<Season11ExoticsProps> = (props) => {
   return (
-    <div id={"exotics"} ref={props.inputRef}>
+    <div id={"exotics"}>
       <div className={styles.wrapper}>
         <Season11VerticalSubtitle separator={"//"}>
           {Localizer.Season11.S11ExoticGear}

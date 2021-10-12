@@ -13,7 +13,7 @@ import { Spinner } from "@UIKit/Controls/Spinner";
 import { SubmitButton } from "@UIKit/Forms/SubmitButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface SmsCodeFormProps {}

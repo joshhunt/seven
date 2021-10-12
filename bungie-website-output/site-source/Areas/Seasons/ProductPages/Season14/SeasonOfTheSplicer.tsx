@@ -101,9 +101,8 @@ const SeasonOfTheSplicer: React.FC<SeasonOfTheSplicerProps> = (props) => {
         inputRef={(ref) => setHeroRef(ref)}
       />
       <MarketingSubNav
-        relockUnder={heroRef}
-        idToElementsMapping={idToElementsMapping}
-        stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
+        ids={Object.keys(idToElementsMapping)}
+        renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
         primaryColor={"splicerBlue"}
         accentColor={"teal"}
         buttonProps={{

@@ -5,7 +5,7 @@ import styles from "@Areas/User/AccountComponents/FriendsImport.module.scss";
 import { FriendsImportUtils } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/FriendsImportUtils";
 import { PlatformFriendLineItem } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/PlatformFriendLineItem";
 import { PlatformFriendsDataStore } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/PlatformFriendsDataStore";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformFriendType } from "@Enum";
 import { Friends } from "@Platform";

@@ -5,7 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ClanInviteDataStore } from "@Areas/User/AccountComponents/DataStores/ClanInviteDataStore";
 import { ClanInviteCheckboxes } from "@Areas/User/AccountComponents/Internal/ClanInviteCheckboxes";
 import { PrivacySelect } from "@Areas/User/AccountComponents/Internal/PrivacySelect";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Contract, Platform } from "@Platform";
@@ -47,10 +47,11 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
 
     Platform.UserService.UpdateUser(userEditRequest)
       .then((errors) => {
-        errors === 0 &&
+        if (!errors) {
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .promise.then(showSettingsChangedToast);
+            .async.then(showSettingsChangedToast);
+        }
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e))
@@ -171,7 +172,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                             label={Localizer.Privacy.ShowMyForumActivities}
                             classes={{
                               input: styles.input,
-                              label: styles.label,
+                              labelAndCheckbox: styles.label,
                             }}
                           />
                         </div>
@@ -204,7 +205,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                             label={Localizer.Privacy.ShowMyDestinyGameActivity}
                             classes={{
                               input: styles.input,
-                              label: styles.label,
+                              labelAndCheckbox: styles.label,
                             }}
                           />
                         </div>
@@ -227,7 +228,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                             label={Localizer.Privacy.ShowMyNonEquippedInventory}
                             classes={{
                               input: styles.input,
-                              label: styles.label,
+                              labelAndCheckbox: styles.label,
                             }}
                           />
                         </div>
@@ -258,7 +259,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                             label={Localizer.Privacy.ShowMyProgression}
                             classes={{
                               input: styles.input,
-                              label: styles.label,
+                              labelAndCheckbox: styles.label,
                             }}
                           />
                           <div className={styles.subtitle}>

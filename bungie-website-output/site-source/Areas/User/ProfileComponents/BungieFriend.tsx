@@ -38,7 +38,7 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     return (
       friends.find(
         (value: Friends.BungieFriend) =>
-          value.bungieNetUser?.membershipId === props.mId
+          value?.bungieNetUser?.membershipId === props.mId
       ) !== undefined
     );
   };
@@ -48,7 +48,7 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
 
     //get friends
     Platform.SocialService.GetFriendList().then((response) => {
-      setIsFriend(userFound(response.friends));
+      setIsFriend(userFound(response?.friends));
     });
   };
 

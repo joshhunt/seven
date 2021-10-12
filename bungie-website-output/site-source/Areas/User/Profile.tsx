@@ -11,7 +11,7 @@ import { DestinyView } from "@Areas/User/ProfileComponents/DestinyView";
 import { InviteToClanButton } from "@Areas/User/ProfileComponents/InviteToClanButton";
 import { ProfileHeader } from "@Areas/User/ProfileComponents/ProfileHeader";
 import { SendMessage } from "@Areas/User/ProfileComponents/SendMessage";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import {
@@ -290,6 +290,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
   //appends the unique part to the displayName for css purposes
   const bungieDisplayName = bungieName?.bungieGlobalName;
   const completeBungieIdSuffix = bungieName?.bungieGlobalCodeWithHashtag;
+  const joinDate = bungieNetUser?.firstAccess ?? "";
 
   const profileLoc = Localizer.Profile;
 
@@ -333,6 +334,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 : ""
             }
             status={status}
+            joinDate={joinDate}
           />
         )}
         <Grid className={styles.profileBody}>

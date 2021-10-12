@@ -5,7 +5,7 @@ import { FriendsImport } from "@Areas/User/AccountComponents/FriendsImport";
 import { BungieFriendsDataStore } from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendsDataStore";
 import { BungieFriendsSection } from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendsSection";
 import { Localizer } from "@bungie/localization/Localizer";
-import { Friends, Platform } from "@Platform";
+import { Friends } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";

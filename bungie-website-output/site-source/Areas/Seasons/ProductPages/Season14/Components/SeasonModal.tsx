@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./SeasonModal.module.scss";

@@ -1,7 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contracts, Platform } from "@Platform";
 import React, { useEffect, useState } from "react";

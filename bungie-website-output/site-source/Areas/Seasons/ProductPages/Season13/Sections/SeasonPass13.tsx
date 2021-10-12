@@ -7,7 +7,7 @@ import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import styles from "./SeasonPass13.module.scss";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
 import ClickableVideoOrImgThumb from "@UI/Marketing/ClickableVideoOrImgThumb";

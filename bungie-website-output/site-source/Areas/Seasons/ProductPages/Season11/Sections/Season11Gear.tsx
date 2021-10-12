@@ -5,15 +5,13 @@ import { Season11DataStore } from "@Areas/Seasons/ProductPages/Season11/Season11
 import { Localizer } from "@bungie/localization";
 import styles from "./Season11Gear.module.scss";
 import { Season11PotentialVideo } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PotentialVideo";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Responsive } from "@Boot/Responsive";
 
-interface Season11GearProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11GearProps {}
 
 export const Season11Gear: React.FC<Season11GearProps> = (props) => {
   const season11Data = useDataStore(Season11DataStore);
@@ -37,7 +35,7 @@ export const Season11Gear: React.FC<Season11GearProps> = (props) => {
   };
 
   return (
-    <div id={"gear"} ref={props.inputRef}>
+    <div id={"gear"}>
       <div className={styles.gearWrapper}>
         <Season11VerticalSubtitle separator={"//"}>
           {Localizer.Season11.S11GearRewards}

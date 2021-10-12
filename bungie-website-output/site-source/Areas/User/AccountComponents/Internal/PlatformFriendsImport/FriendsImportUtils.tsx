@@ -125,7 +125,6 @@ export class FriendsImportUtils {
       .catch((e: PlatformError) => {
         // updates error for platform in datastore (most likely need to reauth error)
         PlatformFriendsDataStore.actions.setError(platform, e);
-        Modal.error(e);
       })
       .finally(() => {
         if (onComplete) {

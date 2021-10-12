@@ -5,7 +5,7 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import styles from "./SeasonPassList.module.scss";
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import React from "react";

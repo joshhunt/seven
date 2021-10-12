@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Icon } from "@UIKit/Controls/Icon";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";

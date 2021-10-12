@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { CodesDataStore } from "@Areas/Codes/CodesDataStore";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieMembershipType } from "@Enum";
 import { Localizer } from "@bungie/localization";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";

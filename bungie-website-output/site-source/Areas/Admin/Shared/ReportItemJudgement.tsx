@@ -1,6 +1,6 @@
 // Created by atseng, 2020
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import {

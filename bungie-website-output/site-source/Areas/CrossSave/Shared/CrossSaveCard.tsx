@@ -3,6 +3,7 @@
 
 import * as React from "react";
 import classNames from "classnames";
+import { Localizer } from "@bungie/localization";
 import styles from "./CrossSaveCard.module.scss";
 import {
   SpinnerContainer,
@@ -10,6 +11,7 @@ import {
 } from "@UI/UIKit/Controls/Spinner";
 import { BungieMembershipType } from "@Enum";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { TiVendorMicrosoft } from "react-icons/ti";
 
 interface ICrossSaveCardProps extends React.HTMLProps<HTMLDivElement> {
   membershipType: BungieMembershipType;
@@ -64,16 +66,31 @@ export class CrossSaveCard extends React.Component<
         styles[BungieMembershipType[membershipType]]
       );
 
+    const platformIcon =
+      platform === "Xbox" ? (
+        <>
+          /<TiVendorMicrosoft />
+        </>
+      ) : (
+        <>&nbsp;</>
+      );
+    const platformName =
+      platform === "Xbox" ? (
+        <>{Localizer.Crosssave.MicrosoftAccount}</>
+      ) : (
+        <>&nbsp;</>
+      );
+
     return (
       <div className={classNames(className, styles.accountCard)} {...rest}>
         <SpinnerContainer loading={loading} mode={SpinnerDisplayMode.cover} />
         {withMembership ? (
           <div className={platformClasses}>
             <div className={styles.platformLogoIcon} title={platform}>
-              &nbsp;
+              {platformIcon}
             </div>
             <div className={styles.platformLogoText} title={platform}>
-              &nbsp;
+              {platformName}
             </div>
           </div>
         ) : (

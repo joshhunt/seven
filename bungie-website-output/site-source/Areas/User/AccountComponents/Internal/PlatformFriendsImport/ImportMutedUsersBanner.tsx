@@ -8,7 +8,7 @@ import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import styles from "../../BlockedUsers.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Button } from "@UIKit/Controls/Button/Button";

@@ -150,7 +150,7 @@ export class UrlUtils {
    * Gets the "action" of the current URL. This assumes URLs follow the pattern of /{locale}/{area}/{action}
    * @param l The location from RouteComponentProps
    */
-  public static GetUrlAction(l: H.Location) {
+  public static GetUrlAction(l: H.Location | Location) {
     const matches = l.pathname.match(
       /\/[a-zA-Z\-]{1,6}\/[a-zA-Z0-9]+\/([a-zA-Z0-9]+)\/?/
     );

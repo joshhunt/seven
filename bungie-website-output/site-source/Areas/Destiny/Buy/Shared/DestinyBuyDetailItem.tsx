@@ -13,7 +13,7 @@ import {
   ButtonProps,
   ButtonTypes,
 } from "@UI/UIKit/Controls/Button/Button";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import DestinySkuConfigDataStore from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { DestinySkuUtils } from "@UI/Destiny/SkuSelector/DestinySkuUtils";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";

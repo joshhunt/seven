@@ -6,7 +6,7 @@ import { ViewerPermissionContext } from "@Areas/User/Account";
 import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { AccountLinkingFlags } from "@Areas/User/AccountComponents/Internal/AccountLinkSection";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieCredentialType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
@@ -42,6 +42,8 @@ interface AccountLinkItemProps {
     checked: boolean,
     credentialType: BungieCredentialType
   ) => void;
+  /** Callback to run after credential changes link status */
+  onCredentialChange?: () => void;
 }
 
 export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
@@ -51,6 +53,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
   onPageUserLoggedInCred,
   displayName,
   onPublicSettingChanged,
+  onCredentialChange,
 }) => {
   const globalStateData = useDataStore(GlobalStateDataStore, [
     "loggedinuser",
@@ -65,12 +68,17 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
   );
 
   const openLinkWindow = (cred: BungieCredentialType) => {
-    BrowserUtils.openWindow(RouteHelper.GetAccountLink(cred, 0).url, "linkui");
+    BrowserUtils.openWindow(
+      RouteHelper.GetAccountLink(cred, 0).url,
+      "linkui",
+      onCredentialChange
+    );
   };
   const openUnlinkWindow = (cred: BungieCredentialType) => {
     BrowserUtils.openWindow(
       RouteHelper.GetAccountUnlink(cred, 0).url,
-      "linkui"
+      "linkui",
+      onCredentialChange
     );
   };
 
@@ -130,11 +138,9 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
     const isPublic = EnumUtils.hasFlag(flag, AccountLinkingFlags.Public);
 
     const crossSavedMessage =
-      destinyMembershipData.isCrossSaved &&
-      crossSaveEligible &&
-      (isLinked
+      destinyMembershipData.isCrossSaved && crossSaveEligible && isLinked
         ? Localizer.Accountlinking.DisableCrossSaveToUnlink
-        : Localizer.Accountlinking.YourBungieAccountHasCross);
+        : Localizer.Accountlinking.YourBungieAccountHasCross;
 
     const loggedInCredMessage =
       !!onPageUserLoggedInCred &&
@@ -144,20 +150,24 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
     return (
       <div className={styles.relativeContainer}>
         {isLinked && <div className={styles.platformName}>{displayName}</div>}
+        {!isLinked && (
+          <p className={styles.noAccountMessage}>
+            {Localizer.Accountlinking.LinkAccount}
+          </p>
+        )}
         {crossSavedMessage ? (
           <p className={styles.subtitleMessage}>{crossSavedMessage}</p>
         ) : null}
         {isLinked && (
           <p className={styles.subtitleMessage}>{loggedInCredMessage}</p>
         )}
-
         {!isCrossSave && isLinked && (
           <Checkbox
             checked={checked}
             label={Localizer.Userpages.LinkAccountPrivacyLabel}
-            onClick={() => {
-              onPublicSettingChanged(!checked, credentialType);
-              setChecked(!checked);
+            onChecked={(updatedChecked: boolean) => {
+              onPublicSettingChanged(updatedChecked, credentialType);
+              setChecked(updatedChecked);
             }}
           />
         )}

@@ -98,7 +98,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
      * Set whether the user has acknowledged the agreement
      * @param acknowledged
      */
-    updateAcknowledged: (acknowledged: boolean) => {
+    updateAcknowledged: (state, acknowledged: boolean) => {
       CrossSaveFlowStateDataStoreInternal.updateAckStorage(
         this.state.acknowledged
       );
@@ -113,6 +113,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
      * @param membershipId
      */
     setPairingStatus: async (
+      state,
       pairingStatus: CrossSave.CrossSavePairingStatus,
       membershipId: string
     ) => {
@@ -181,7 +182,10 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
      * Sets the primary membershipType for the user's Cross Save status
      * @param membershipType
      */
-    updatePrimaryMembershipType: (membershipType: BungieMembershipType) => ({
+    updatePrimaryMembershipType: (
+      state,
+      membershipType: BungieMembershipType
+    ) => ({
       primaryMembershipType: membershipType,
     }),
   });

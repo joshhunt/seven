@@ -6,7 +6,7 @@ import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents
 import { AccountLinkSection } from "@Areas/User/AccountComponents/Internal/AccountLinkSection";
 import { AuthorizedApplications } from "@Areas/User/AccountComponents/Internal/AuthorizedApplications";
 import { CrossSaveBannerAccountLinking } from "@Areas/User/AccountComponents/Internal/CrossSaveBannerAccountLinking";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { AclEnum, BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
@@ -20,37 +20,20 @@ import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { ViewerPermissionContext } from "../Account";
 import accountStyles from "../Account.module.scss";
 import styles from "./AccountLinking.module.scss";
 
 interface AccountLinkingProps {}
 
 export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
-  const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
   const destinyMembershipData = useDataStore(AccountDestinyMembershipDataStore);
-  const [membershipId, setMembershipId] = useState(
-    UrlUtils.QueryToObject().membershipId
+  const { membershipIdFromQuery, loggedInUserId, isSelf, isAdmin } = useContext(
+    ViewerPermissionContext
   );
-  const loggedInUserMembershipId = UserUtils.loggedInUserMembershipId(
-    globalStateData
-  );
-
-  const loggedInUserIsOnPageUser = (mid: string) => {
-    if (!loggedInUserMembershipId) {
-      return;
-    }
-    if (!mid || mid === "") {
-      return true;
-    }
-
-    return !!(
-      mid === loggedInUserMembershipId ||
-      destinyMembershipData?.membershipData?.destinyMemberships.find(
-        (m) => m.membershipId === loggedInUserMembershipId
-      )
-    );
-  };
+  const membershipId =
+    membershipIdFromQuery && isAdmin ? membershipIdFromQuery : loggedInUserId;
 
   const disableAllCompanionSessions = () => {
     Platform.UserService.CloseAllCompanionSessions()
@@ -62,20 +45,18 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
   };
 
   useEffect(() => {
-    setMembershipId(UrlUtils.QueryToObject().membershipId);
     AccountDestinyMembershipDataStore.actions.loadUserData({
       membershipId,
       membershipType: BungieMembershipType.BungieNext,
     });
   }, []);
 
-  const isSelf = loggedInUserIsOnPageUser(membershipId);
-  const isAdmin = globalStateData?.loggedInUser?.userAcls.includes(
-    AclEnum.BNextPrivateUserDataReader
-  );
+  if (!isSelf && !(isAdmin && membershipIdFromQuery)) {
+    return null;
+  }
 
-  return isSelf || (isAdmin && membershipId) ? (
-    <div className={styles.container}>
+  return (
+    <div>
       <SystemDisabledHandler systems={["Destiny2"]}>
         <GridCol cols={12}>
           <CrossSaveBannerAccountLinking
@@ -124,5 +105,5 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
         <AuthorizedApplications membershipId={membershipId} />
       </SystemDisabledHandler>
     </div>
-  ) : null;
+  );
 };

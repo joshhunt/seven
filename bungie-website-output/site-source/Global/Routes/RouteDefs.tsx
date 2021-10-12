@@ -328,11 +328,6 @@ export class RouteDefs {
       </Route>
     ));
 
-    return (
-      <>
-        {areaRoutes}
-        {areaGroupIndexComponents}
-      </>
-    );
+    return [...areaRoutes, ...areaGroupIndexComponents];
   }
 }

@@ -62,7 +62,10 @@ class GlobalStateDataStoreInternal extends DataStore<
   private isInitialized = false;
 
   constructor(initial: IGlobalState) {
-    super(initial, GlobalStateDataStoreMonitor, true);
+    super(initial, {
+      observerClassConstructor: GlobalStateDataStoreMonitor,
+      propsRequired: true,
+    });
   }
 
   public actions = this.createActions({
@@ -70,12 +73,12 @@ class GlobalStateDataStoreInternal extends DataStore<
      * Set the loaded state
      * @param loaded loaded state
      */
-    updateLoaded: (loaded: boolean) => ({ loaded }),
+    updateLoaded: (state, loaded: boolean) => ({ loaded }),
     /**
      * Set the current Responsive state
      * @param responsive
      */
-    updateResponsive: (responsive: IResponsiveState) => ({ responsive }),
+    updateResponsive: (state, responsive: IResponsiveState) => ({ responsive }),
     /**
      * Refreshes the user credentials portion of global data
      */
@@ -187,7 +190,7 @@ class GlobalStateDataStoreInternal extends DataStore<
      * Fetch the current user data
      * @param bustCache
      */
-    refreshCurrentUser: async (bustCache?: boolean) => {
+    refreshCurrentUser: async (state, bustCache?: boolean) => {
       const queryAppend = bustCache ? `&bustCache=${Date.now()}` : undefined;
 
       try {
@@ -211,7 +214,7 @@ class GlobalStateDataStoreInternal extends DataStore<
     NotificationCountManager.destroy();
 
     if (UserUtils.hasAuthenticationCookie) {
-      await this.actions.refreshCurrentUser(bustCache).promise;
+      await this.actions.refreshCurrentUser(bustCache).async;
 
       EventMux.initialize();
       NotificationCountManager.initialize(this.state.coreSettings);
@@ -247,10 +250,10 @@ class GlobalStateDataStoreInternal extends DataStore<
     );
 
     const didLoadFromStorage = !!(await this.actions.setSettingsFromStorage()
-      .promise);
+      .async);
 
     if (!didLoadFromStorage) {
-      await this.actions.refreshSettings().promise;
+      await this.actions.refreshSettings().async;
     }
 
     await this.refreshUserAndRelatedData(false);

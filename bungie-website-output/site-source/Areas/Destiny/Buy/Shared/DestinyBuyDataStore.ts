@@ -16,7 +16,9 @@ class DestinyBuyDataStoreGeneral extends DataStore<IDestinyBuyDataState> {
      * Set the SKU index selected in the buy flow
      * @param index
      */
-    setSelectedSkuIndex: (index: number) => ({ selectedSkuIndex: index }),
+    setSelectedSkuIndex: (state, index: number) => ({
+      selectedSkuIndex: index,
+    }),
   });
 }
 

@@ -6,7 +6,7 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import styles from "./PgcrStatBar.module.scss";

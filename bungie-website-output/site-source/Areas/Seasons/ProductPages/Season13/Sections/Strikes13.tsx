@@ -5,7 +5,7 @@ import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import styles from "./Strikes13.module.scss";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { MarketingTitles } from "@UI/Marketing/MarketingTitles";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";

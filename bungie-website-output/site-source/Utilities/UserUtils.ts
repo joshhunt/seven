@@ -76,7 +76,7 @@ export class UserUtils {
   public static loggedInUserMembershipId(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser ? gs.loggedInUser.user.membershipId : null;
+    return gs.loggedInUser ? gs.loggedInUser?.user?.membershipId : null;
   }
 
   /** Returns the logged in user's membership ID */

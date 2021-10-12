@@ -67,7 +67,7 @@ class PCMigrationUserDataStoreInternal extends DataStore<IPCMigrationUserData> {
    * likely to cause problems.
    */
   public actions = this.createActions({
-    temporaryCrappyUpdate: (data: Partial<IPCMigrationUserData>) => data,
+    temporaryCrappyUpdate: (state, data: Partial<IPCMigrationUserData>) => data,
   });
 
   public getDestinyAccount(globalState: GlobalState<"loggedInUser">) {
@@ -222,7 +222,7 @@ class PCMigrationUserDataStoreInternal extends DataStore<IPCMigrationUserData> {
         user.membershipId,
         user.membershipType
       ).then((response: Tokens.EververseSilverBalanceResponse) =>
-        this.setSilverAmount(response, user.membershipType)
+        this.setSilverAmount(response, user?.membershipType)
       );
     }
   }

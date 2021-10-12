@@ -2,12 +2,9 @@ import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateD
 import { Localizer } from "@bungie/localization";
 import { BungieMembershipType } from "@Enum";
 import { GroupsV2, Platforms } from "@Platform";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { ReactUtils } from "@Utilities/ReactUtils";
 import * as React from "react";
 import styles from "./CrossSavePlatformInfo.module.scss";
 import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
@@ -48,11 +45,36 @@ export class CrossSavePlatformInfo extends React.Component<
 
     let clanLine: React.ReactNode | string = "";
     if (!platformMembership && !this.props.hideAccountInfo) {
-      clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
-        platformName: LocalizerUtils.getPlatformNameFromMembershipType(
-          membershipType
-        ),
-      });
+      if (membershipType === BungieMembershipType.TigerXbox) {
+        const articleLink = ConfigUtils.GetParameter(
+          "CrossSave",
+          "CrossSaveMSHelp",
+          "https://www.bungie.net/help"
+        );
+
+        clanLine = (
+          <>
+            {Localizer.FormatReact(
+              Localizer.Crosssave.SignInToYourXboxNetwork,
+              {
+                linebreak: (
+                  <>
+                    <br />
+                    <br />
+                  </>
+                ),
+              }
+            )}{" "}
+            <Anchor url={articleLink}>{articleLink}</Anchor>
+          </>
+        );
+      } else {
+        clanLine = Localizer.Format(Localizer.Crosssave.SignInMessage, {
+          platformName: LocalizerUtils.getPlatformNameFromMembershipType(
+            membershipType
+          ),
+        });
+      }
     }
 
     if (clan) {

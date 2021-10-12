@@ -2,7 +2,7 @@
 
 import { BeyondLightArgSelfTyper } from "@Areas/Direct/BeyondLightArg/BeyondLightArgSelfTyper";
 import { ArgData } from "@Areas/Direct/BeyondLightArg/BeyondLightArgUtils";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Img } from "@Helpers";
 import { ConfigUtils } from "@Utilities/ConfigUtils";

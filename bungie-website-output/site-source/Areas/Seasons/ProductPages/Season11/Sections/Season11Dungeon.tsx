@@ -8,21 +8,19 @@ import { Localizer } from "@bungie/localization";
 import styles from "./Season11Dungeon.module.scss";
 import { Season11Image } from "@Areas/Seasons/ProductPages/Season11/Season11Utils";
 import { Season11PotentialVideo } from "@Areas/Seasons/ProductPages/Season11/Components/Season11PotentialVideo";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Season11VerticalSubtitle } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 import { Season11AvailableToAll } from "@Areas/Seasons/ProductPages/Season11/Components/Season11AvailableToAll";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { RouteHelper } from "@Routes/RouteHelper";
 
-interface Season11DungeonProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11DungeonProps {}
 
 export const Season11Dungeon: React.FC<Season11DungeonProps> = (props) => {
   const season11Data = useDataStore(Season11DataStore);
 
   return (
-    <div id={"dungeon"} ref={props.inputRef}>
+    <div id={"dungeon"}>
       <div
         className={styles.wrapper}
         style={{

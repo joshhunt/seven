@@ -3,7 +3,7 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/Profile.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import { IgnoredItemType, ModeratorRequestedPunishment } from "@Enum";

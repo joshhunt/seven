@@ -21,7 +21,9 @@ class _BungieFriendsDataStore extends DataStore<BungieFriendsDataStorePayload> {
   });
 
   public actions = this.createActions({
-    setLoading: (loading: boolean) => ({ loading }),
+    setLoading: (state: BungieFriendsDataStorePayload, loading: boolean) => ({
+      loading,
+    }),
     fetchAllFriends: async () => {
       this.actions.setLoading(true);
 
@@ -36,8 +38,8 @@ class _BungieFriendsDataStore extends DataStore<BungieFriendsDataStorePayload> {
 
       return {
         friends: friends ?? [],
-        pendingRequests: requests.pendingRequests ?? [],
-        outgoingRequests: requests.outgoingRequests ?? [],
+        pendingRequests: requests?.pendingRequests ?? [],
+        outgoingRequests: requests?.outgoingRequests ?? [],
         loading: false,
       };
     },

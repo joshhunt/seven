@@ -3,7 +3,7 @@
 
 import { SeasonPassRewardsList } from "@Areas/Seasons/ProductPages/Season15/Components/SeasonPassRewardsList";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";

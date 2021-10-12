@@ -30,7 +30,9 @@ export class EventMuxSubManager extends DataStore<
   private lastSeqParsed = 0;
 
   constructor() {
-    super(null, EventMuxMonitor);
+    super(null, {
+      observerClassConstructor: EventMuxMonitor,
+    });
 
     EventMux.storage.addCallback(() => {
       this.sendUpdates();

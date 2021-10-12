@@ -5,7 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/AccountComponents/BlockedUsers.module.scss";
 import accountStyles from "../Account.module.scss";
 import * as Globals from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Ignores, Platform } from "@Platform";

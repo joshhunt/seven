@@ -1,3 +1,6 @@
+import { DataStore } from "@bungie/datastore";
+import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
 import { DefinitionNotFoundError, InvalidPropsError } from "@CustomErrors";
 import { DestinyDatabase } from "@Database/Database";
 import {
@@ -5,13 +8,12 @@ import {
   DestinyWorldDefinitionsTypeMap,
 } from "@Definitions";
 import { RendererLogLevel } from "@Enum";
-import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
-import { DataStore } from "@bungie/datastore";
-import { Localizer } from "@bungie/localization";
 import { Logger } from "@Global/Logger";
 import { Config, Platform } from "@Platform";
-import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import React from "react";
+import { Anchor } from "../../../UI/Navigation/Anchor";
+import { Toast } from "../../../UI/UIKit/Controls/Toast/Toast";
+import { RouteHelper } from "../../Routes/RouteHelper";
 // @ts-ignore
 import MyWorker from "./DestinyDefinitions.worker";
 
@@ -77,25 +79,8 @@ class DestinyDefinitionsInternal extends DataStore<
   DestinyDefinitionsObserver
 > {
   public static Instance = new DestinyDefinitionsInternal();
-
-  private readonly worker = new MyWorker() as Worker;
   public definitions: Partial<AllDefinitionsFetcherized> = {};
   public requestedTypes: (keyof AllDefinitionsFetcherized)[] = [];
-
-  constructor() {
-    super({
-      isLoading: false,
-      isLoaded: false,
-    });
-
-    this.worker.onerror = this.actions.setError;
-
-    this.worker.addEventListener("error", this.actions.setError, false);
-
-    // Listen for anytime the worker sends definitions and put them in state
-    this.worker.onmessage = this.onWorkerMessage;
-  }
-
   public actions = this.createActions({
     /**
      * Set the error value
@@ -121,6 +106,65 @@ class DestinyDefinitionsInternal extends DataStore<
       };
     },
   });
+  private readonly worker = new MyWorker() as Worker;
+
+  constructor() {
+    super({
+      isLoading: false,
+      isLoaded: false,
+    });
+
+    this.worker.onerror = this.actions.setError;
+
+    this.worker.addEventListener("error", this.actions.setError, false);
+
+    // Listen for anytime the worker sends definitions and put them in state
+    this.worker.onmessage = this.onWorkerMessage;
+  }
+
+  public observe(
+    callback: (newData: ManifestPayload) => void,
+    props?: IDestinyDefinitionsObserverProps<DestinyDefinitionType>,
+    updateImmediately = true
+  ) {
+    if (!props) {
+      throw new InvalidPropsError("Props are required for DestinyDefinitions");
+    }
+
+    this.load(props);
+
+    return super.observe(callback, props, updateImmediately);
+  }
+
+  /** Used as a last resort if things are busted. Only to be called on error. */
+  public async scorchedEarth() {
+    const db = await DestinyDatabase;
+    await db.delete();
+
+    window.location.reload();
+  }
+
+  public typesAreLoaded(types: (keyof DestinyWorldDefinitionsGenerated)[]) {
+    return types.every((type) => Object.keys(this.definitions).includes(type));
+  }
+
+  // We need to make sure we only update observers whose definitions are fully loaded
+  protected getObserversToUpdate() {
+    return this.allObservers.filter((observer: DestinyDefinitionsObserver) => {
+      // Allow something to subscribe to no types, but still get udpates
+      if (!observer.params.types) {
+        return true;
+      }
+
+      const requestedTypes = observer.params.types;
+      const loadedDefinitions = Object.keys(
+        this.definitions
+      ) as (keyof DestinyWorldDefinitionsGenerated)[];
+
+      // Check to see if the definitions object includes all the definitions requested in this observer
+      return requestedTypes.every((key) => loadedDefinitions.includes(key));
+    });
+  }
 
   private readonly onWorkerMessage = (event: MessageEvent) => {
     // The data we got back from the worker
@@ -178,75 +222,6 @@ class DestinyDefinitionsInternal extends DataStore<
     }
   };
 
-  public observe(
-    callback: (newData: ManifestPayload) => void,
-    props?: IDestinyDefinitionsObserverProps<DestinyDefinitionType>,
-    updateImmediately = true
-  ) {
-    if (!props) {
-      throw new InvalidPropsError("Props are required for DestinyDefinitions");
-    }
-
-    this.load(props);
-
-    return super.observe(callback, props, updateImmediately);
-  }
-
-  // We need to make sure we only update observers whose definitions are fully loaded
-  protected getObserversToUpdate() {
-    return this.allObservers.filter((observer: DestinyDefinitionsObserver) => {
-      // Allow something to subscribe to no types, but still get udpates
-      if (!observer.params.types) {
-        return true;
-      }
-
-      const requestedTypes = observer.params.types;
-      const loadedDefinitions = Object.keys(
-        this.definitions
-      ) as (keyof DestinyWorldDefinitionsGenerated)[];
-
-      // Check to see if the definitions object includes all the definitions requested in this observer
-      return requestedTypes.every((key) => loadedDefinitions.includes(key));
-    });
-  }
-
-  /** Used as a last resort if things are busted. Only to be called on error. */
-  public async scorchedEarth() {
-    const db = await DestinyDatabase;
-    await db.delete();
-
-    window.location.reload();
-  }
-
-  public typesAreLoaded(types: (keyof DestinyWorldDefinitionsGenerated)[]) {
-    return types.every((type) => Object.keys(this.definitions).includes(type));
-  }
-
-  private showUpdateModal() {
-    ConfirmationModal.show(
-      {
-        type: "warning",
-        cancelButtonProps: {
-          disable: true,
-        },
-        confirmButtonProps: {
-          buttonType: "gold",
-          labelOverride: Localizer.Destiny.BungieNetUpdateButtonLabel,
-          onClick: () => {
-            location.reload();
-
-            return false;
-          },
-        },
-        title: Localizer.Destiny.DefinitionsUpdateRequired,
-        children: <div>{Localizer.Destiny.DefinitionsUpdateMessage}</div>,
-      },
-      {
-        preventUserClose: true,
-      }
-    );
-  }
-
   /**
    * Load the manifest data.
    */
@@ -286,6 +261,24 @@ class DestinyDefinitionsInternal extends DataStore<
 
     const manifestData = await this.loadManifest();
 
+    const params = new URLSearchParams(location.search);
+    const afterUpdate = params.get("newManifest") === "true";
+
+    if (afterUpdate) {
+      const definitionsErrorMessage = Localizer.FormatReact(
+        Localizer.Destiny.DestinyDefinitionLoadIssue,
+        {
+          helpForumLink: (
+            <Anchor url={RouteHelper.Forums({ tg: "Help" })}>
+              {Localizer.Destiny.HelpForumLinkLabel}
+            </Anchor>
+          ),
+        }
+      );
+
+      Toast.show(definitionsErrorMessage, { position: "br" });
+    }
+
     this.worker.postMessage({
       name: "load",
       detail: {
@@ -321,10 +314,11 @@ class DestinyDefinitionsInternal extends DataStore<
       }
     }
 
-    /** If we already have definitions loaded in memory, but the manifest is updated, show a force update modal. */
+    /** If we already have definitions loaded in memory, but the manifest is updated, force update the definitions and let the user know this will take a minute. */
     const existingDefinitionKeys = Object.keys(this.definitions);
     if (existingDefinitionKeys.length > 0 && !isCurrent) {
-      this.showUpdateModal();
+      window.location.href = window.location.href + "?newManifest=true";
+      window.location.reload();
 
       return;
     }

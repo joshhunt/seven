@@ -7,7 +7,7 @@ import styles from "@Areas/Codes/History/CodesHistoryForm.module.scss";
 import { CodesPlatformSelector } from "@Areas/Codes/History/CodesPlatformSelector";
 import { PlatformError } from "@CustomErrors";
 import { AclEnum, BungieMembershipType, OfferRedeemMode } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Contracts, Platform } from "@Platform";
@@ -143,6 +143,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
 
               return true;
             },
+            labelOverride: null,
           },
         })
       : ConfirmationModal.show({
@@ -160,6 +161,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
           ),
           cancelButtonProps: {
             disable: true,
+            labelOverride: null,
           },
           confirmButtonProps: {
             labelOverride: Localizer.Coderedemption.ErrorAcknowledge,

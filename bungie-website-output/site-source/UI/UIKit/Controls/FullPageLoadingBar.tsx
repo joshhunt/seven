@@ -1,7 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import styles from "./FullPageLoadingBar.module.scss";
 import classNames from "classnames";
 import { AppLoadingDataStore } from "@Global/DataStore/AppLoadingDataStore";

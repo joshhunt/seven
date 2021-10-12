@@ -21,6 +21,7 @@ interface IPermissionGateProps
 
 interface IPermissionGateState {
   anyPermissionMissing: boolean;
+  permissionChecked: boolean;
 }
 
 /**
@@ -38,31 +39,56 @@ class PermissionGateInner extends React.Component<
 
     this.state = {
       anyPermissionMissing: true,
+      permissionChecked: false,
     };
   }
 
   public componentDidMount() {
-    // Check if the user is missing any required permissions
-
-    const anyPermissionMissing =
+    if (
       UserUtils.isAuthenticated(this.props.globalState) &&
-      this.props.permissions.some(
-        (p) => this.props.globalState?.loggedInUser?.userAcls?.indexOf(p) === -1
-      );
+      !this.state.permissionChecked
+    ) {
+      // Check if the user is missing any required permissions
+      this.checkPermissions();
+    }
+  }
 
-    this.setState({
-      anyPermissionMissing,
-    });
+  public componentDidUpdate(
+    prevProps: Readonly<IPermissionGateProps>,
+    prevState: Readonly<IPermissionGateState>,
+    snapshot?: any
+  ) {
+    if (
+      UserUtils.isAuthenticated(this.props.globalState) &&
+      !this.state.permissionChecked
+    ) {
+      // Check if the user is missing any required permissions
+      this.checkPermissions();
+    }
   }
 
   public render() {
-    if (!UserUtils.isAuthenticated(this.props.globalState)) {
+    if (
+      !UserUtils.isAuthenticated(this.props.globalState) ||
+      !this.state.permissionChecked
+    ) {
       return null;
     }
 
     return !this.state.anyPermissionMissing || this.props.unlockOverride ? (
       <div>{this.props.children || null}</div>
     ) : null;
+  }
+
+  private checkPermissions() {
+    const anyPermissionMissing = this.props.permissions.some(
+      (p) => this.props.globalState?.loggedInUser?.userAcls?.indexOf(p) === -1
+    );
+
+    this.setState({
+      permissionChecked: true,
+      anyPermissionMissing: anyPermissionMissing,
+    });
   }
 }
 

@@ -58,7 +58,7 @@ class DestinyNewLightInternal extends React.Component<
 > {
   private readonly destroys: DestroyCallback[] = [];
   private readonly heroRef: React.RefObject<HTMLDivElement> = React.createRef();
-  private readonly idToElementsMapping: { [key: string]: HTMLElement } = {};
+  private readonly ids: string[] = [];
 
   constructor(props: IDestinyNewLightProps) {
     super(props);
@@ -151,22 +151,36 @@ class DestinyNewLightInternal extends React.Component<
             >
               {Localizer.Destiny.NewLightBuyTitle}
             </BuyButton>
-            <div className={styles.supportedPlatforms} />
+            <div className={styles.supportedPlatforms}>
+              <div className={styles.xboxSeriesX} />
+              <div className={styles.xboxOne} />
+              <div className={styles.windows} />
+              <div className={styles.playstation} />
+              <div className={styles.steam} />
+              <div className={styles.stadia} />
+            </div>
           </div>
         </div>
 
         {/* SUB NAV */}
         <MarketingSubNav
           onChange={this.onMenuLock}
-          idToElementsMapping={this.idToElementsMapping}
-          stringFinder={(id) => {
+          ids={[
+            "newlight_game",
+            "newlight_destinations",
+            "newlight_guardians",
+            "newlight_guardians",
+            "newlight_gear",
+            "newlight_activities",
+            "newlight_guide",
+          ]}
+          renderLabel={(id, index) => {
             if (id === "media") {
               return Localizer.Destiny.Media;
             } else {
               return Localizer.Destiny[`Submenu_${id}`];
             }
           }}
-          relockUnder={this.heroRef.current}
           buttonProps={{
             children: Localizer.Destiny.LaunchPadTitle,
             onClick: () =>
@@ -184,7 +198,6 @@ class DestinyNewLightInternal extends React.Component<
           className={styles.textWithScreenShots}
           style={{ backgroundColor: "#121212" }}
           id={"newlight_game"}
-          ref={(el) => (this.idToElementsMapping["newlight_game"] = el)}
         >
           <div
             className={classNames(styles.contentWrapper, styles.worldSection)}
@@ -247,10 +260,7 @@ class DestinyNewLightInternal extends React.Component<
         </section>
 
         {/* DESTINATION */}
-        <section
-          id={"newlight_destinations"}
-          ref={(el) => (this.idToElementsMapping["newlight_destinations"] = el)}
-        >
+        <section id={"newlight_destinations"}>
           <VideoCarousel
             isMedium={this.state.responsive.medium}
             backgroundImage={`/7/ca/destiny/bgs/new_light/destinations_bg_desktop.jpg`}
@@ -326,7 +336,6 @@ class DestinyNewLightInternal extends React.Component<
           className={styles.cardsSection}
           style={{ backgroundColor: "#080d11" }}
           id={"newlight_guardians"}
-          ref={(el) => (this.idToElementsMapping["newlight_guardians"] = el)}
         >
           <div className={styles.contentWrapper}>
             <div className={styles.textWrapper}>
@@ -428,7 +437,6 @@ class DestinyNewLightInternal extends React.Component<
           className={styles.textWithScreenShots}
           style={{ backgroundColor: "#0c0b10" }}
           id={"newlight_gear"}
-          ref={(el) => (this.idToElementsMapping["newlight_gear"] = el)}
         >
           <div
             className={classNames(styles.contentWrapper, styles.weaponsSection)}
@@ -471,7 +479,6 @@ class DestinyNewLightInternal extends React.Component<
           className={styles.textWithScreenShots}
           style={{ backgroundColor: "#000d15" }}
           id={"newlight_activities"}
-          ref={(el) => (this.idToElementsMapping["newlight_activities"] = el)}
         >
           <div className={classNames(styles.contentWrapper, styles.pveSection)}>
             <div>
@@ -567,11 +574,7 @@ class DestinyNewLightInternal extends React.Component<
 
         {/*NEW PLAYER GUIDE*/}
 
-        <section
-          className={styles.guide}
-          id={"newlight_guide"}
-          ref={(el) => (this.idToElementsMapping["newlight_guide"] = el)}
-        >
+        <section className={styles.guide} id={"newlight_guide"}>
           <Anchor
             className={styles.guideContent}
             url={RouteHelper.GuideDestiny()}

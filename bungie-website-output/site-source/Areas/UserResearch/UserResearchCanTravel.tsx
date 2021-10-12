@@ -104,7 +104,7 @@ class UserResearchCanTravel extends React.Component<
     const addedOptIns = OptInFlags.PlayTestsLocal.toString();
 
     const input: Contract.UserEditRequest = {
-      membershipId: this.state.user.user.membershipId,
+      membershipId: this.state.user?.user?.membershipId,
       addedOptIns: addedOptIns,
       removedOptIns: null,
       displayName: null,

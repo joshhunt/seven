@@ -3,23 +3,19 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
-import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
 import sharedStyles from "@Areas/User/Account.module.scss";
-import { sortUsingFilterArray } from "@Helpers";
-import {
-  AccountLinkItem,
-  PublicCheckBoxMouseEvent,
-} from "@Areas/User/AccountComponents/Internal/AccountLinkItem";
+import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
+import { AccountLinkItem } from "@Areas/User/AccountComponents/Internal/AccountLinkItem";
 import { ConfirmPlatformLinkingModal } from "@Areas/User/AccountComponents/Internal/ConfirmPlatformLinkingModal";
 import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButtonBar";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { sortUsingFilterArray } from "@Helpers";
 import { Contract, Platform, User } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { Spinner, SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -84,6 +80,9 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
     BungieCredentialType
   >(null);
   const [loading, setLoading] = useState(false);
+  const [updateCredentials, setUpdateCredentials] = useState(false);
+
+  const onPageMembershipId = isSelf ? loggedInUserId : membershipIdFromQuery;
 
   const getAccountLinkingFlagMap = (
     userCredentials: BungieCredentialType[],
@@ -120,32 +119,28 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
     }, {} as Record<BungieCredentialType, AccountLinkingFlags>);
   };
 
-  useEffect(() => {
+  const getLoggedInPlatform = () => {
     Platform.UserService.GetCurrentUserAuthContextState()
       .then((data) => {
         setLoginCredType(data.AuthProvider);
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
-  }, []);
+  };
 
-  useEffect(() => {
-    setLoading(true);
+  const getMembershipData = (creds: BungieCredentialType[]) =>
+    Platform.UserService.GetMembershipDataById(
+      onPageMembershipId,
+      BungieMembershipType.BungieNext
+    )
+      .then((data) => {
+        setAccountLinkingFlagMap(getAccountLinkingFlagMap(creds, data));
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e))
+      .finally(() => setLoading(false));
 
-    const onPageMembershipId = isSelf ? loggedInUserId : membershipIdFromQuery;
-
-    const getMembershipData = (creds: BungieCredentialType[]) =>
-      Platform.UserService.GetMembershipDataById(
-        onPageMembershipId,
-        BungieMembershipType.BungieNext
-      )
-        .then((data) => {
-          setAccountLinkingFlagMap(getAccountLinkingFlagMap(creds, data));
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => Modal.error(e))
-        .finally(() => setLoading(false));
-
+  const getCredentialTypesForUser = () => {
     Platform.UserService.GetCredentialTypesForTargetAccount(onPageMembershipId)
       .then((data) => {
         setCredentials(data);
@@ -153,7 +148,20 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
-  }, [loggedInUserId]);
+  };
+
+  useEffect(() => {
+    getLoggedInPlatform();
+    setUpdateCredentials(true);
+  }, [globalStateData?.loggedInUser]);
+
+  useEffect(() => {
+    if (updateCredentials) {
+      setLoading(true);
+      getCredentialTypesForUser();
+      setUpdateCredentials(false);
+    }
+  }, [updateCredentials]);
 
   const openLinkingModal = (cr: BungieCredentialType) => {
     setCredentialToLink(cr);
@@ -213,14 +221,14 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
           accountLinkingFlagMap[cred],
           AccountLinkingFlags.Linked
         ) &&
-        EnumUtils.hasFlag(
+        !EnumUtils.hasFlag(
           accountLinkingFlagMap[cred],
           AccountLinkingFlags.CrossSaveEligible
         )
       );
     },
     (cred: BungieCredentialType) =>
-      EnumUtils.hasFlag(
+      !EnumUtils.hasFlag(
         accountLinkingFlagMap[cred],
         AccountLinkingFlags.CrossSaveEligible
       ),
@@ -282,42 +290,40 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
 
   return (
     <>
-      {loading ? (
-        <Spinner on={loading} />
-      ) : (
-        <GridCol
-          cols={10}
-          medium={12}
-          className={classNames(styles.linkingContent)}
-        >
-          {accountLinkingFlagMap &&
-            sortUsingFilterArray(validCredentialTypes, filterArray).map(
-              (credential, i) => {
-                return (
-                  <div key={i} className={styles.accountLinkItem}>
-                    <AccountLinkItem
-                      onPageUserLoggedInCred={
-                        isSelf || !membershipIdFromQuery ? loginCredType : null
-                      }
-                      displayName={
-                        credentials?.find(
-                          (c) => c.credentialType === credential
-                        )?.credentialDisplayName
-                      }
-                      openLinkingModal={() => openLinkingModal(credential)}
-                      flag={accountLinkingFlagMap[credential]}
-                      credentialType={credential}
-                      onPublicSettingChanged={onPublicSettingChanged}
-                    />
-                    {i < validCredentialTypes.length - 1 && (
-                      <GridDivider cols={12} />
-                    )}
-                  </div>
-                );
-              }
-            )}
-        </GridCol>
-      )}
+      <GridCol
+        cols={10}
+        medium={12}
+        className={classNames(styles.linkingContent)}
+      >
+        {accountLinkingFlagMap &&
+          sortUsingFilterArray(validCredentialTypes, filterArray).map(
+            (credential, i) => {
+              return (
+                <div key={i} className={styles.accountLinkItem}>
+                  <AccountLinkItem
+                    onPageUserLoggedInCred={isSelf ? loginCredType : null}
+                    displayName={
+                      credentials?.find((c) => c.credentialType === credential)
+                        ?.credentialDisplayName
+                    }
+                    openLinkingModal={() => openLinkingModal(credential)}
+                    flag={accountLinkingFlagMap[credential]}
+                    credentialType={credential}
+                    onPublicSettingChanged={(checked) =>
+                      onPublicSettingChanged(checked, credential)
+                    }
+                    onCredentialChange={() => {
+                      setUpdateCredentials(true);
+                    }}
+                  />
+                  {i < validCredentialTypes.length - 1 && (
+                    <GridDivider cols={12} />
+                  )}
+                </div>
+              );
+            }
+          )}
+      </GridCol>
       <SaveButtonBar
         className={sharedStyles.saveButtonBar}
         saveButton={
@@ -331,7 +337,10 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
       <ConfirmPlatformLinkingModal
         open={linkingModalOpen}
         credential={credentialToLink}
-        onClose={() => setLinkingModalOpen(false)}
+        credentials={credentials?.map((c) => c?.credentialType)}
+        onClose={() => {
+          setLinkingModalOpen(false);
+        }}
       />
     </>
   );

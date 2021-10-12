@@ -21,12 +21,14 @@ class _ClanInviteDataStore extends DataStore<ClanInviteDataStorePayload> {
   });
 
   public actions = this.createActions({
-    updateInitialSettings: (initialClanSettings: { [p: string]: boolean }) => ({
-      initialClanSettings,
-    }),
-    updateCurrentSettings: (clanInviteSettings: { [p: string]: boolean }) => ({
-      clanInviteSettings,
-    }),
+    updateInitialSettings: (
+      state,
+      initialClanSettings: { [p: string]: boolean }
+    ) => ({ initialClanSettings }),
+    updateCurrentSettings: (
+      state,
+      clanInviteSettings: { [p: string]: boolean }
+    ) => ({ clanInviteSettings }),
   });
 
   public updateClans = () => {

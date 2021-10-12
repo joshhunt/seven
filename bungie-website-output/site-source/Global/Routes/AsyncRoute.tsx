@@ -45,7 +45,7 @@ const retry = (
   });
 };
 
-class LoadingFallback extends React.Component {
+export class LoadingFallback extends React.Component {
   public componentDidMount() {
     AppLoadingDataStore.actions.updateLoading(true);
   }

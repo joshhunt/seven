@@ -9,7 +9,7 @@ import { SmsSignInButton } from "@Areas/Sms/SmsSignInButton";
 import { SmsVerifiedState } from "@Areas/Sms/SmsVerifiedState";
 import { PlatformError } from "@CustomErrors";
 import { PhoneValidationStatusEnum } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";

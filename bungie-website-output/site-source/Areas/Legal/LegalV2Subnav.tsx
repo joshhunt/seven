@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { LegalV2SubnavQuery } from "@Areas/Legal/__generated__/LegalV2SubnavQuery.graphql";
-import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization";
 import { ResponsiveSize } from "@bungie/responsive";
 import { RouteHelper } from "@Routes/RouteHelper";

@@ -57,9 +57,8 @@ const SeasonOfTheChosen: React.FC<SeasonOfTheChosenProps> = (props) => {
       </BungieHelmet>
       <Hero13 inputRef={(ref) => setHeroRef(ref)} />
       <MarketingSubNav
-        idToElementsMapping={idToElementsMapping}
-        stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
-        relockUnder={heroRef}
+        ids={Object.keys(idToElementsMapping)}
+        renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
         primaryColor={"ash"}
         accentColor={"teal"}
         buttonProps={{

@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { BungieMembershipType } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
@@ -70,7 +70,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
     }
   }, []);
 
-  return destinyMembership.membershipData ? (
+  return destinyMembership?.membershipData ? (
     <Grid>
       <SystemDisabledHandler systems={["Destiny2"]}>
         <RequiresAuth />

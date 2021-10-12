@@ -5,7 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
 import { IdentityPagination } from "@Areas/User/AccountComponents/Internal/IdentityPagination";
 import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButtonBar";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
@@ -92,7 +92,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         .then(() => {
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .promise.then(showSettingsChangedToast);
+            .async.then(showSettingsChangedToast);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e))
@@ -237,7 +237,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                 : onPageUser?.profilePicture,
             profileTheme:
               onPageUser?.profileTheme === 0 ? 1000 : onPageUser?.profileTheme,
-            statusText: null,
+            statusText: onPageUser?.statusText,
             membershipId: onPageUser?.membershipId,
             locale: null,
             emailAddress: null,
@@ -348,6 +348,21 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       <p>{Localizer.userpages.namechangewarning}</p>
                     </div>
                   )}
+                </GridCol>
+                <GridDivider cols={12} />
+                <GridCol cols={2} medium={12} className={styles.sectionTitle}>
+                  {Localizer.Userpages.Status}
+                </GridCol>
+                <GridCol cols={10} medium={12}>
+                  <div className={styles.iconContainer}>
+                    <FormikTextInput
+                      name={"statusText"}
+                      type={"text"}
+                      placeholder={formikProps.values?.statusText}
+                      classes={{ input: styles.textArea }}
+                    />
+                    <Icon iconName={"pencil"} iconType={"fa"} />
+                  </div>
                 </GridCol>
                 <GridDivider cols={12} />
                 <GridCol cols={2} medium={12} className={styles.sectionTitle}>

@@ -1,7 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";

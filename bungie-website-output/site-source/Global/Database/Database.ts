@@ -54,10 +54,6 @@ class DestinyDatabaseInitializer {
 
     db.version(1).stores(this.schema);
 
-    await db.open().catch((err) => {
-      console.error(err.stack || err);
-    });
-
     return db;
   }
 }

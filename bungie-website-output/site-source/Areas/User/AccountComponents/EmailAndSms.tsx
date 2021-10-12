@@ -6,7 +6,7 @@ import { SmsPage } from "@Areas/Sms/SmsPage";
 import styles from "@Areas/User/AccountComponents/EmailSms.module.scss";
 import { EmailCheckbox } from "@Areas/User/AccountComponents/Internal/EmailCheckbox";
 import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButtonBar";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { EmailValidationStatus } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
@@ -95,7 +95,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
       .then(() => {
         GlobalStateDataStore.actions
           .refreshCurrentUser(true)
-          .promise.then((data) => data && showSettingsChangedToast());
+          .async.then((data) => data && showSettingsChangedToast());
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));

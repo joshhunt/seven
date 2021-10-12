@@ -23,22 +23,11 @@ interface ISettingsBannersProps {
   membershipId: string;
 }
 
-// Default props - these will have values set in SettingsBanners.defaultProps
-interface DefaultProps {}
-
-type Props = ISettingsBannersProps & DefaultProps;
+type Props = ISettingsBannersProps;
 
 interface ISettingsBannersState {
   emailUsageLoaded: boolean;
-  optedInUR: boolean;
-  optedInURChecked: boolean;
-  optedInURClicked: boolean;
-  optedInTravel: boolean;
-  optedInTravelChecked: boolean;
-  optedInTravelClicked: boolean;
   optedInRewards: boolean;
-  optedInRewardsChecked: boolean;
-  optedInRewardsClicked: boolean;
 }
 
 /**
@@ -62,15 +51,7 @@ export class SettingsBanners extends React.Component<
 
     this.state = {
       emailUsageLoaded: false,
-      optedInUR: false,
-      optedInURChecked: false,
-      optedInURClicked: false,
-      optedInTravel: false,
-      optedInTravelChecked: false,
-      optedInTravelClicked: false,
       optedInRewards: false,
-      optedInRewardsChecked: false,
-      optedInRewardsClicked: false,
     };
   }
 
@@ -78,23 +59,10 @@ export class SettingsBanners extends React.Component<
     prevProps: Props,
     prevState: ISettingsBannersState
   ) {
-    if (
-      (this.state.optedInRewardsClicked &&
-        prevState.optedInRewards !== this.state.optedInRewards) ||
-      (this.state.optedInTravelClicked &&
-        prevState.optedInTravel !== this.state.optedInTravel) ||
-      (this.state.optedInURClicked &&
-        prevState.optedInUR !== this.state.optedInUR)
-    ) {
-      this.updateUserSettings();
-    }
-
     if (!this.state.emailUsageLoaded) {
       this.setEmailUsage();
     }
   }
-
-  public static defaultProps: DefaultProps = {};
 
   public render() {
     return (
@@ -105,43 +73,6 @@ export class SettingsBanners extends React.Component<
           </React.Fragment>
         )}
       </React.Fragment>
-    );
-  }
-
-  private URBanner() {
-    const signUpForUserResearch =
-      Localizer.Registrationbenefits.SignUpForBungieUserResearch;
-    const allowUserResearchEmails =
-      Localizer.Registrationbenefits.IAllowBungieToEmailMeUR;
-    const allowUserResearchTravelEmails =
-      Localizer.Registrationbenefits.IAmInterestedInUserResearch;
-    const learnMoreButton = Localizer.Registrationbenefits.LearnMore;
-
-    return (
-      <div className={classNames(styles.optInUR, styles.postValidationBanner)}>
-        <span className={styles.URIcon} />
-        <div className={styles.text}>
-          <strong>{signUpForUserResearch}</strong>
-          <Checkbox
-            onClick={this.handleURToggleOptIn}
-            onChange={this.checkUROptedInStatus}
-            checked={this.state.optedInURChecked}
-            label={allowUserResearchEmails}
-          />
-          <Checkbox
-            disabled={!this.state.optedInUR}
-            onClick={this.handleURTravelToggleOptIn}
-            onChange={this.checkURTravelOptedInStatus}
-            checked={this.state.optedInTravelChecked}
-            label={allowUserResearchTravelEmails}
-          />
-        </div>
-        <div className={styles.buttons}>
-          <Button buttonType={"gold"} url={RouteHelper.PlayTests()}>
-            {learnMoreButton}
-          </Button>
-        </div>
-      </div>
     );
   }
 
@@ -160,9 +91,11 @@ export class SettingsBanners extends React.Component<
         <div className={styles.text}>
           <strong>{signUpForRewards}</strong>
           <Checkbox
-            onClick={this.handleRewardsToggleOptIn}
-            onChange={this.checkRewardsOptedInStatus}
-            checked={this.state.optedInRewardsChecked}
+            checked={this.state.optedInRewards}
+            onChecked={(checked: boolean) => {
+              this.setState({ optedInRewards: checked });
+              this.updateUser(checked);
+            }}
             label={allowRewardsEmails}
           />
         </div>
@@ -175,107 +108,31 @@ export class SettingsBanners extends React.Component<
     );
   }
 
-  private readonly handleRewardsToggleOptIn = () => {
-    const newOptIn = !this.state.optedInRewards;
-
-    this.setState({
-      optedInRewardsClicked: true,
-      optedInRewards: newOptIn,
-    });
-  };
-
-  private readonly handleURToggleOptIn = () => {
-    const newOptIn = !this.state.optedInUR;
-
-    this.setState({
-      optedInURClicked: true,
-      optedInUR: newOptIn,
-    });
-  };
-
-  private readonly handleURTravelToggleOptIn = () => {
-    const newOptIn = !this.state.optedInTravel;
-
-    this.setState({
-      optedInTravelClicked: true,
-      optedInTravel: newOptIn,
-    });
-  };
-
-  private readonly checkRewardsOptedInStatus = () => {
-    return this.state.optedInRewards;
-  };
-
-  private readonly checkUROptedInStatus = () => {
-    return this.state.optedInUR;
-  };
-
-  private readonly checkURTravelOptedInStatus = () => {
-    return this.state.optedInUR;
-  };
-
   private setEmailUsage() {
     this.setState({ emailUsageLoaded: true });
 
     const emailUsage = this.props.emailUsage;
 
-    const optedInUR = (emailUsage & OptInFlags.PlayTests) !== 0;
-    const optedInTravel = (emailUsage & OptInFlags.PlayTestsLocal) !== 0;
-
     const optedInRewards = (emailUsage & this.aggregateRewardsFlags) !== 0;
 
     this.setState({
-      optedInUR: optedInUR,
-      optedInURChecked: optedInUR,
-      optedInTravel: optedInTravel,
-      optedInTravelChecked: optedInTravel,
       optedInRewards: optedInRewards,
-      optedInRewardsChecked: optedInRewards,
     });
   }
 
-  private updateUserSettings() {
-    //reset the clicked state
-    this.setState({
-      optedInRewardsClicked: false,
-      optedInURClicked: false,
-      optedInTravelClicked: false,
-    });
-
-    const addedOptIns =
-      this.state.optedInUR ||
-      this.state.optedInTravel ||
-      this.state.optedInRewards
-        ? (
-            (this.state.optedInUR ? OptInFlags.PlayTests : OptInFlags.None) |
-            (this.state.optedInTravel
-              ? OptInFlags.PlayTestsLocal
-              : OptInFlags.None) |
-            (this.state.optedInRewards
-              ? this.aggregateRewardsFlags
-              : OptInFlags.None)
-          ).toString()
-        : null;
-
-    const removeOptIns =
-      !this.state.optedInUR ||
-      !this.state.optedInTravel ||
-      !this.state.optedInRewards
-        ? (
-            (!this.state.optedInUR ? OptInFlags.PlayTests : OptInFlags.None) |
-            (!this.state.optedInTravel
-              ? OptInFlags.PlayTestsLocal
-              : OptInFlags.None) |
-            (!this.state.optedInRewards
-              ? this.aggregateRewardsFlags
-              : OptInFlags.None)
-          ).toString()
-        : null;
+  private updateUser(optedInRewardsChecked: boolean) {
+    // Since this is in initial registration, we can assume that this user does not have any values set for these preferences
+    const addedOptIns = optedInRewardsChecked
+      ? this.aggregateRewardsFlags
+      : OptInFlags.None;
+    const removeOptIns = !optedInRewardsChecked
+      ? this.aggregateRewardsFlags
+      : OptInFlags.None;
 
     const input: Contract.UserEditRequest = {
-      membershipId: this.props.membershipId,
-      addedOptIns: addedOptIns,
-      removedOptIns: removeOptIns,
+      membershipId: this.props?.membershipId,
+      addedOptIns: addedOptIns.toString(),
+      removedOptIns: removeOptIns.toString(),
       displayName: null,
       about: null,
       locale: null,

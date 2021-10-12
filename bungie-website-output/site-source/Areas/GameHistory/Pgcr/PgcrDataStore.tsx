@@ -118,14 +118,16 @@ class PgcrDataStoreInternal extends DataStore<PgcrDataStorePayload> {
      * Update pgcr as it comes directly from the endpoint
      * @param pgcr
      */
-    updatePgcr: (pgcr: HistoricalStats.DestinyPostGameCarnageReportData) => ({
-      pgcr,
-    }),
+    updatePgcr: (
+      state,
+      pgcr: HistoricalStats.DestinyPostGameCarnageReportData
+    ) => ({ pgcr }),
     /**
      * Store useful definition hashes
      * @param pgcrDefinitionHashes
      */
     updatePgcrDefinitionHashes: (
+      state,
       pgcrDefinitionHashes: PgcrDefinitionHashes
     ) => ({ pgcrDefinitionHashes }),
     /**
@@ -133,20 +135,21 @@ class PgcrDataStoreInternal extends DataStore<PgcrDataStorePayload> {
      * @param pgcrDerivedDefinitionHashes
      */
     updatePgcrDerivedDefinitionHashes: (
+      state,
       pgcrDerivedDefinitionHashes: PgcrDerivedDefinitionHashes
     ) => ({ pgcrDerivedDefinitionHashes }),
     /**
      * Filter pgcr to see what kind of activity it is
      * @param pgcrActivityData
      */
-    updatePgcrActivityData: (pgcrActivityData: PgcrActivityData) => ({
+    updatePgcrActivityData: (state, pgcrActivityData: PgcrActivityData) => ({
       pgcrActivityData,
     }),
     /**
      * Create or update stats in the format that is useful for creating the stat bars, stat leaders section and stats data tables in the pgcr
      * @param pgcrStats
      */
-    updateStats: (pgcrStats: PgcrStats) => ({ pgcrStats }),
+    updateStats: (state, pgcrStats: PgcrStats) => ({ pgcrStats }),
   });
 }
 

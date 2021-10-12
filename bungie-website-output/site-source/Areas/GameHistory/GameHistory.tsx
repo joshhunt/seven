@@ -8,7 +8,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyActivityModeType } from "@Enum";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
@@ -57,17 +57,17 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
 
   useEffect(() => {
     UserUtils.isAuthenticated(globalState) &&
-      destinyMembership.selectedCharacter &&
-      onCharacterChange(destinyMembership.selectedCharacter.characterId);
-  }, [destinyMembership.selectedCharacter]);
+      destinyMembership?.selectedCharacter &&
+      onCharacterChange(destinyMembership?.selectedCharacter.characterId);
+  }, [destinyMembership?.selectedCharacter]);
 
   const onCharacterChange = (value: string) => {
     UserUtils.isAuthenticated(globalState) &&
-      destinyMembership.characters[value].characterId &&
+      destinyMembership?.characters[value].characterId &&
       Platform.Destiny2Service.GetActivityHistory(
-        destinyMembership.selectedMembership.membershipType,
-        destinyMembership.selectedMembership.membershipId,
-        destinyMembership.characters[value].characterId,
+        destinyMembership?.selectedMembership.membershipType,
+        destinyMembership?.selectedMembership.membershipId,
+        destinyMembership?.characters[value].characterId,
         activityMode,
         20,
         0

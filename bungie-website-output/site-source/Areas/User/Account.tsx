@@ -15,7 +15,7 @@ import { Notifications } from "@Areas/User/AccountComponents/Notifications";
 import { Privacy } from "@Areas/User/AccountComponents/Privacy";
 import { SilverBalanceHistory } from "@Areas/User/AccountComponents/SilverBalanceHistory";
 import { Responsive, ResponsiveContext } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { AclEnum, BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";

@@ -32,7 +32,7 @@ class _Season11DataStore extends DataStore<Season11DataStorePayload> {
      * Set the reference for the hero element
      * @param heroRef
      */
-    setHeroRef: (heroRef: HTMLElement) => ({ heroRef }),
+    setHeroRef: (state, heroRef: HTMLElement) => ({ heroRef }),
     /**
      * Get the parameter values from Webmaster for the trailer IDs
      */
@@ -57,7 +57,7 @@ class _Season11DataStore extends DataStore<Season11DataStorePayload> {
      * @param element
      * @param id
      */
-    mapIdToElement: (element: HTMLElement, id: string) => {
+    mapIdToElement: (state, element: HTMLElement, id: string) => {
       return {
         ...this.state.idToElementsMapping,
         ...{ [id]: element },

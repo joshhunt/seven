@@ -4,7 +4,7 @@ import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
 import { Localizer } from "@bungie/localization";
 import { Responsive } from "@Boot/Responsive";
 import classNames from "classnames";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -19,9 +19,7 @@ import {
   Season11VerticalSubtitle,
 } from "@Areas/Seasons/ProductPages/Season11/Components/Season11VerticalSubtitle";
 
-interface Season11ProgressionProps {
-  inputRef: LegacyRef<HTMLDivElement>;
-}
+interface Season11ProgressionProps {}
 
 export const Season11Progression: React.FC<Season11ProgressionProps> = (
   props
@@ -40,7 +38,7 @@ export const Season11Progression: React.FC<Season11ProgressionProps> = (
   ));
 
   return (
-    <div id={"progression"} ref={props.inputRef}>
+    <div id={"progression"}>
       <div
         className={styles.wrapper}
         style={{

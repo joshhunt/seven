@@ -2,7 +2,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
 import { SmsError } from "@Areas/Sms/SmsError";
 import styles from "@Areas/Sms/SmsPage.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { PlatformError } from "@CustomErrors";
 import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";

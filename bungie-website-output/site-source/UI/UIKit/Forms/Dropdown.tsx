@@ -14,11 +14,12 @@ interface IDropdownProps {
   columns?: number;
   /** If the dropdown should show a selected value outside its internal selection, populate this prop */
   selectedValue?: string;
+  /** If you want to set an initial value but have the dropdown control updating the selected value, populate this prop */
+  initialValue?: string;
   /** If you need access to the name of the inner <select> (like for form data submission), set this */
   name?: string;
   /** Triggered when dropdown is changed */
   onChange?: (value: string) => void;
-
   className?: string;
 }
 
@@ -173,7 +174,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
 
   public updateIfNeeded() {
     const selectedValue = this.props.selectedValue;
-    const currentValue = this.state.currentValue;
+    const currentValue = this.state.currentValue ?? this.props.initialValue;
 
     if (!selectedValue || !currentValue) {
       return;

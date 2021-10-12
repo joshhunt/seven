@@ -3,7 +3,7 @@
 
 import AnnivEditionSelector from "@Areas/Direct/BungieAnniversary/sections/AnnivEditionSelector";
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
 import ClickableImgCarousel from "@UI/Marketing/ClickableImgCarousel";
 import {
@@ -12,7 +12,7 @@ import {
 } from "@UI/Marketing/ClickableMediaThumbnail";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { BungieAnniversaryQuery } from "./__generated__/BungieAnniversaryQuery.graphql";
-import { BungieNetLocaleMap } from "@bungie/contentstack/presets/BungieNet/BungieNetLocaleMap";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";

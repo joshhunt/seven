@@ -1,15 +1,15 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import classNames from "classnames";
-import { MainNavAffix } from "@UI/Navigation/MainNavAffix";
-import { Icon } from "@UI/UIKit/Controls/Icon";
-import { Button, ButtonProps } from "@UI/UIKit/Controls/Button/Button";
-import styles from "./MarketingSubNav.module.scss";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { Button, ButtonProps } from "@UI/UIKit/Controls/Button/Button";
+import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { UrlUtils } from "@Utilities/UrlUtils";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./MarketingSubNav.module.scss";
 
 export type NavPrimaryColors =
   | "taupe"
@@ -22,11 +22,9 @@ export type NavAccentColors = "gold" | "teal" | "s11green";
 
 interface IMarketingSubNavProps {
   /** The anchors from which we're creating the menu */
-  idToElementsMapping: { [key: string]: HTMLElement };
+  ids: string[];
   /** A function that describes how to get the Nav Labels from a given id */
-  stringFinder?: (id: string) => any;
-  /** Locks under this element */
-  relockUnder: HTMLElement;
+  renderLabel?: (id: string, idIndex: number) => React.ReactNode;
   /** Props for the call to action button in the subnav, if not provided, there will be no button */
   buttonProps?: ButtonProps;
   /** Classname for menu items (not including the call to action button) */
@@ -64,7 +62,7 @@ export class MarketingSubNav extends React.Component<
     super(props);
 
     this.state = {
-      currentId: Object.keys(this.props.idToElementsMapping)[0],
+      currentId: this.props.ids[0],
       menuOpen: false,
       fixed: false,
     };
@@ -93,8 +91,8 @@ export class MarketingSubNav extends React.Component<
   private get idsToCenterpoints() {
     const result: Record<string, number> = {};
 
-    Object.keys(this.props.idToElementsMapping).forEach((key) => {
-      const el = this.props.idToElementsMapping[key];
+    this.props.ids.forEach((key) => {
+      const el = document.getElementById(key);
       const rect = el?.getBoundingClientRect();
       const center = rect?.top ?? 0;
       result[key] = center;
@@ -143,7 +141,7 @@ export class MarketingSubNav extends React.Component<
 
   private scrollToId(id: string) {
     const el = document.getElementById(id);
-    const top = el.getBoundingClientRect().top + window.scrollY;
+    const top = el?.getBoundingClientRect().top + window.scrollY ?? 0;
 
     BrowserUtils.animatedScrollTo(top, 1000);
 
@@ -162,14 +160,16 @@ export class MarketingSubNav extends React.Component<
 
   public render() {
     const {
-      idToElementsMapping,
+      ids,
       buttonProps,
       primaryColor,
       accentColor,
       withGutter,
     } = this.props;
 
-    const menuItems = Object.keys(idToElementsMapping).map((id) => {
+    const path = location.pathname.replace(UrlUtils.AppBaseUrl, "");
+
+    const menuItems = ids.map((id, index) => {
       const classes = classNames(
         styles.menuItem,
         {
@@ -182,10 +182,10 @@ export class MarketingSubNav extends React.Component<
         <Anchor
           key={id}
           className={classes}
-          url={`#${id}`}
+          url={`${path}#${id}`}
           onClick={this.onClickLink}
         >
-          {this.props.stringFinder(id)}
+          {this.props.renderLabel(id, index)}
         </Anchor>
       );
     });
@@ -203,21 +203,15 @@ export class MarketingSubNav extends React.Component<
       : "keyboard_arrow_down";
 
     return (
-      <div>
-        <MainNavAffix
-          from={this.props.relockUnder}
-          hideNavOnLock={true}
-          onChange={this.onChange}
-        >
-          <div className={wrapperClasses}>
-            <div className={styles.hamburger} onClick={this.toggleMenu}>
-              <Icon iconType={"material"} iconName={icon} />
-            </div>
-            <div className={styles.menuItems}>{menuItems}</div>
-
-            {buttonProps && <SubNavButton buttonProps={buttonProps} />}
+      <div className={styles.outerWrapper}>
+        <div className={wrapperClasses}>
+          <div className={styles.hamburger} onClick={this.toggleMenu}>
+            <Icon iconType={"material"} iconName={icon} />
           </div>
-        </MainNavAffix>
+          <div className={styles.menuItems}>{menuItems}</div>
+
+          {buttonProps && <SubNavButton buttonProps={buttonProps} />}
+        </div>
 
         <div
           className={classNames(styles.spacer, {

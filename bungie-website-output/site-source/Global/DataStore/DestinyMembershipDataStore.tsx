@@ -54,7 +54,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
      * Refresh state with all valid destiny memberships for user, accounting for cross save.
      * Loads current user by default, unless membership info is provided
      */
-    loadUserData: async (user?: MembershipPair, force = false) => {
+    loadUserData: async (state, user?: MembershipPair, force = false) => {
       const isSameMembershipType =
         user &&
         user?.membershipType === this.state.selectedMembership?.membershipType;
@@ -63,7 +63,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         user?.membershipId ===
           this.state.membershipData?.bungieNetUser?.membershipId;
       const isNewMembershipIdIncludedInCurrentDestinyMemberships = this.state.membershipData?.destinyMemberships?.some(
-        (u) => user && u.membershipId === user?.membershipId
+        (u) => u?.membershipId === user?.membershipId
       );
 
       const isSameUser =
@@ -217,7 +217,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
     /**
      * Change selected platform in state and update characters in state with characters on selected platform
      */
-    updatePlatform: async (platformName: string) => {
+    updatePlatform: async (state, platformName: string) => {
       if (!this.state.loaded) {
         throw new Error(
           "actions.loadUserData must be called to initialize the data before any other action can be accessed"
@@ -283,7 +283,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
     /**
      * Change selected character in state
      */
-    updateCharacter: (value: string) => {
+    updateCharacter: (state, value: string) => {
       if (!this.state.loaded) {
         throw new Error(
           "actions.loadUserData must be called to initialize the data before any other action can be accessed"

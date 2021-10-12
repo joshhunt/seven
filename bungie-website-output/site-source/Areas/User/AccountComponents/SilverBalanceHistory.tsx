@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Platform, Queries } from "@Platform";
 import React, { useEffect, useState } from "react";
 

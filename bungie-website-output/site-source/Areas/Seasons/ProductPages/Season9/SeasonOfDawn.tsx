@@ -51,7 +51,6 @@ interface ISeasonOfDawnState {
   calendarImage: string;
   lore: Content.ContentItemPublicContract[];
   heroTrailerId: string;
-  haveShownToast: boolean;
 }
 
 /**
@@ -86,7 +85,6 @@ class SeasonOfDawnInternal extends React.Component<
       calendarImage: "",
       lore: null,
       heroTrailerId: "",
-      haveShownToast: false,
     };
   }
 
@@ -142,34 +140,6 @@ class SeasonOfDawnInternal extends React.Component<
   }
 
   private readonly onScroll = () => {
-    if (
-      !this.state.haveShownToast &&
-      UserUtils.isAuthenticated(this.props.globalState)
-    ) {
-      Toast.show(
-        <TwoLineItem
-          itemTitle={Localizer.Seasons.ViewYourProgress}
-          itemSubtitle={Localizer.Seasons.ViewSeasonOfDawnProgress}
-          icon={
-            <img
-              src={"7/ca/destiny/logos/seasons_icon_2019.svg"}
-              style={{ width: "3rem", height: "3rem" }}
-            />
-          }
-        />,
-        {
-          position: "b",
-          classes: {
-            toast: styles.toast,
-          },
-          url: RouteHelper.PreviousSeason(),
-          type: "none",
-        }
-      );
-
-      this.setState({ haveShownToast: true });
-    }
-
     Object.keys(this.state.visibleContentItems).forEach((k) => {
       if (!this.state.visibleContentItems[k]) {
         if (this.isScrolledIntoView(k)) {
@@ -317,9 +287,8 @@ class SeasonOfDawnInternal extends React.Component<
 
         <MarketingSubNav
           onChange={this.onMenuLock}
-          idToElementsMapping={this.idToElementsMapping}
-          stringFinder={(id) => Localizer.Destiny[`Submenu_${id}`]}
-          relockUnder={this.heroRef.current}
+          ids={Object.keys(this.idToElementsMapping)}
+          renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
           buttonProps={{
             children: Localizer.Seasons.MenuCTALabel,
             url: RouteHelper.DestinyBuy(),

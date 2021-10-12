@@ -46,7 +46,7 @@ class _BeyondLightPhaseTwoDataStore extends DataStore<
     this.initialLocale = Localizer.CurrentCultureName;
 
     this.actions.updateActive(ConfigUtils.SystemStatus("BeyondLightPhase2"));
-    await this.actions.getStrings().promise;
+    await this.actions.getStrings().async;
   }
 
   public actions = this.createActions({
@@ -54,7 +54,7 @@ class _BeyondLightPhaseTwoDataStore extends DataStore<
      * Sets the phase active state
      * @param active
      */
-    updateActive: (active: boolean) => ({ phaseTwoActive: active }),
+    updateActive: (state, active: boolean) => ({ phaseTwoActive: active }),
     /**
      * Download strings
      */

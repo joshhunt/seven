@@ -119,7 +119,7 @@ export const withDestinyDefinitions = <
             });
           },
           observerProps,
-          false
+          true
         );
       }
     }

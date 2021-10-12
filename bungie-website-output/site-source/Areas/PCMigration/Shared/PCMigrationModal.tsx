@@ -6,10 +6,8 @@ import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import React, { ReactElement } from "react";
 import { PCMigrationLinkAccount } from "./PCMigrationLinkAccount";
 import { PCMigrationTransferAgreement } from "./PCMigrationTransferAgreement";
-import { PCMigrationNotVerified } from "./PCMigrationNotVerified";
 import { PCMigrationVerifying } from "./PCMigrationVerifying";
 import { PCMigrationUtilities } from "./PCMigrationUtilities";
-import { PCMigrationVerified } from "./PCMigrationVerified";
 import { PCMigrationTransferDetails } from "./PCMigrationTransferDetails";
 import { PCMigrationSuccess } from "./PCMigrationSuccess";
 import { EmailVerificationState } from "./PCMigrationModalStagePage";
@@ -174,31 +172,10 @@ export class PCMigrationModal extends React.Component<
 
   private stageFragment(): ReactElement {
     switch (this.state.stage) {
-      case "emailnotverified":
-        return (
-          <PCMigrationNotVerified
-            updateStage={this.updateStage}
-            globalState={this.state.globalState}
-            closeModal={this.props.closeModal}
-            bypass={this.bypassChecks}
-          />
-        );
-
       case "emailverifying":
         return (
           <PCMigrationVerifying
             updateStage={this.updateStage}
-            globalState={this.state.globalState}
-            closeModal={this.props.closeModal}
-            bypass={this.bypassChecks}
-          />
-        );
-
-      case "emailverified":
-        return (
-          <PCMigrationVerified
-            updateStage={this.updateStage}
-            pcMigrationUser={this.state.user}
             globalState={this.state.globalState}
             closeModal={this.props.closeModal}
             bypass={this.bypassChecks}

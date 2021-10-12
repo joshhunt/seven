@@ -2,8 +2,9 @@
 // Copyright Bungie, Inc.
 
 import styles from "@Areas/User/Profile.module.scss";
+import { Localizer } from "@bungie/localization";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { StringUtils } from "@Utilities/StringUtils";
+import { DateTime } from "luxon";
 import React from "react";
 
 interface ProfileHeaderProps {
@@ -12,9 +13,20 @@ interface ProfileHeaderProps {
   status: string;
   profileThemePath: string;
   avatarPath: string;
+  joinDate: string;
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
+  const joinDateString = props.joinDate.length
+    ? Localizer.Format(Localizer.Profile.JoinedDate, {
+        date: DateTime.fromISO(props.joinDate).toLocaleString({
+          locale: Localizer.CurrentCultureName,
+          month: "long",
+          year: "numeric",
+        }),
+      })
+    : "";
+
   return (
     <div
       className={styles.profileBanner}
@@ -41,7 +53,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
               {props.bungieGlobalCodeWithHash}
             </span>
           </h2>
-          <p>{status}</p>
+          {status && <p className={styles.status}>{props.status}</p>}
+          {joinDateString && <p>{joinDateString}</p>}
         </GridCol>
       </Grid>
     </div>

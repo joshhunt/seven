@@ -29,7 +29,7 @@ class FirehoseDebuggerDataStoreInternal extends DataStore<
      * Add a Firehose item
      * @param contract
      */
-    add: (contract: Content.ContentItemPublicContract) => {
+    add: (state, contract: Content.ContentItemPublicContract) => {
       let children: IFirehoseDebuggerItemData[] = [];
       /* There can be multiple values inside the contract.properties that are lists, 
 			so we look for lists where the items in the list have their own contentId 

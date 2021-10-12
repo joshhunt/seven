@@ -3,7 +3,7 @@
 
 import sharedStyles from "@Areas/User/Account.module.scss";
 import styles from "@Areas/User/AccountComponents/FriendsImport.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformFriendType } from "@Enum";
 import React, { useEffect, useState } from "react";
