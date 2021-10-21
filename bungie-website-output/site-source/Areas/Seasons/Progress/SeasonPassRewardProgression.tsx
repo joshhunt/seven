@@ -294,8 +294,9 @@ class SeasonPassRewardProgression extends React.Component<
     let classType: CharacterClass = CharacterClass.Hunter;
 
     const classTypeDefEnum =
+      this.props.definitions.DestinyClassDefinition &&
       typeof this.props.definitions.DestinyClassDefinition.get(classHash) !==
-      "undefined"
+        "undefined"
         ? this.props.definitions.DestinyClassDefinition.get(classHash).classType
         : null;
 

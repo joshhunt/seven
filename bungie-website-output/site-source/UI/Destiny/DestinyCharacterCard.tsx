@@ -41,9 +41,9 @@ export class DestinyCharacterCard extends React.Component<
     let classDef: Definitions.DestinyClassDefinition = null;
     let emblemDef: Definitions.DestinyInventoryItemDefinition = null;
     if (definitions) {
-      raceDef = definitions.races[character.raceHash];
-      classDef = definitions.classes[character.classHash];
-      emblemDef = definitions.items[character.emblemHash];
+      raceDef = definitions.races[character?.raceHash];
+      classDef = definitions.classes[character?.classHash];
+      emblemDef = definitions.items[character?.emblemHash];
     }
 
     const classes = classNames(styles.character, className);

@@ -116,7 +116,7 @@ class CrossSaveActivate extends React.Component<
     super(props);
 
     this.state = {
-      lastStep: props.match.params.step,
+      lastStep: props?.match.params.step,
       exitPose: "exitRight",
       preEnterPose: "exitLeft",
       poseDirection: "left",
@@ -145,7 +145,7 @@ class CrossSaveActivate extends React.Component<
     state: ICrossSaveActivateState
   ): ICrossSaveActivateState {
     const currentStep = state.lastStep;
-    const nextStep = props.match.params.step;
+    const nextStep = props?.match.params.step;
 
     const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
       state.flowState
@@ -182,7 +182,7 @@ class CrossSaveActivate extends React.Component<
       exitPose,
       preEnterPose,
       poseDirection,
-      lastStep: props.match.params.step,
+      lastStep: props?.match.params.step,
     };
   }
 
@@ -192,7 +192,7 @@ class CrossSaveActivate extends React.Component<
     );
 
     const activeStepDef = stepDefs.find((stepDef) =>
-      eq(stepDef.step, this.props.match.params.step)
+      eq(stepDef.step, this.props?.match.params.step)
     );
     const activeIndex = stepDefs.indexOf(activeStepDef);
 
@@ -219,7 +219,7 @@ class CrossSaveActivate extends React.Component<
     const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
       this.state.flowState
     );
-    const currentStep = this.props.match.params.step;
+    const currentStep = this.props?.match.params.step;
     const stepIndex = stepDefs.findIndex((a) => a.step === currentStep);
     const pairStepIndex = stepDefs.findIndex((a) => a.step === "Pair");
     const linkStepIndex = stepDefs.findIndex((a) => a.step === "Link");
@@ -256,7 +256,7 @@ class CrossSaveActivate extends React.Component<
     const requiresAuth =
       stepIndex > linkStepIndex && !flowState.isActive && !authComplete;
     const noStepSpecified =
-      this.props.match.params.step === undefined && !redirectPath;
+      this.props?.match.params.step === undefined && !redirectPath;
 
     // If you didn't acknowledge, you can't go further
     if (mustAcknowledge) {
@@ -311,7 +311,7 @@ class CrossSaveActivate extends React.Component<
 
     const activateAction = RouteDefs.Areas.CrossSave.getAction("Activate");
     const crossSaveLoc = Localizer.Crosssave;
-    const currentStep = this.props.match.params.step;
+    const currentStep = this.props?.match.params.step;
 
     const acknowledgeStep = activateAction.resolve<ICrossSaveActivateParams>({
       step: "Acknowledge",
@@ -389,7 +389,7 @@ class CrossSaveActivate extends React.Component<
                         preEnterPose={this.state.preEnterPose}
                         animateOnMount={false}
                       >
-                        <RouteContainer key={this.props.match.params.step}>
+                        <RouteContainer key={this.props?.match.params.step}>
                           <Switch location={location}>
                             <Route path={acknowledgeStep}>
                               <CrossSaveAcknowledge

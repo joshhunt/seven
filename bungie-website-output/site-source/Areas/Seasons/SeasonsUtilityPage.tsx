@@ -125,7 +125,7 @@ class SeasonsUtilityPage extends React.Component<
       const {
         membershipId,
         membershipType,
-      } = this.state.destinyMembershipData.selectedMembership;
+      } = this.state.destinyMembershipData?.selectedMembership;
 
       Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
         DestinyComponentType.CharacterProgressions,
@@ -154,7 +154,7 @@ class SeasonsUtilityPage extends React.Component<
   public render() {
     const isAnonymous = !UserUtils.isAuthenticated(this.props.globalState);
 
-    if (!this.state.destinyMembershipData.loaded) {
+    if (!this.state.destinyMembershipData?.loaded) {
       return (
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );
@@ -200,8 +200,8 @@ class SeasonsUtilityPage extends React.Component<
               className={styles.itemModal}
               dangerouslySetInnerHTML={sanitizeHTML(
                 this.state.itemDetailElement
-                  .getElementsByTagName("template")
-                  .item(0).innerHTML
+                  ?.getElementsByTagName("template")
+                  ?.item(0)?.innerHTML
               )}
             />
             {charactersLoaded &&
@@ -250,7 +250,7 @@ class SeasonsUtilityPage extends React.Component<
                   <Button
                     buttonType={"gold"}
                     url={RouteHelper.ProfileSettings(
-                      this.props.globalState.loggedInUser.user.membershipId,
+                      this.props.globalState?.loggedInUser?.user?.membershipId,
                       "Accounts"
                     )}
                   >
@@ -280,11 +280,11 @@ class SeasonsUtilityPage extends React.Component<
                 seasonHash={seasonHash}
                 characterClassHash={
                   charactersLoaded
-                    ? characters[selectedCharacter?.characterId].classHash
+                    ? characters[selectedCharacter?.characterId]?.classHash
                     : 0
                 }
                 characterProgressions={
-                  charactersLoaded ? forCharacter.progressions : undefined
+                  charactersLoaded ? forCharacter?.progressions : undefined
                 }
                 handleClick={(itemHash, rewardIndex, canClaim) =>
                   this.openItemDetailModal(itemHash, rewardIndex, canClaim)
@@ -298,7 +298,7 @@ class SeasonsUtilityPage extends React.Component<
                 characterId={selectedCharacter?.characterId}
                 seasonHash={seasonHash}
                 platformProgressions={characterProgressions}
-                characterProgressions={forCharacter.progressions}
+                characterProgressions={forCharacter?.progressions}
                 membershipType={selectedMembership?.membershipType}
                 handleClick={(itemHash, rewardIndex, canClaim) =>
                   this.openItemDetailModal(itemHash, rewardIndex, canClaim)

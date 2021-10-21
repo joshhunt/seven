@@ -62,15 +62,15 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
               <span className={styles.light}>{characterLight}</span>
             </React.Fragment>
           ),
-          class: props.definitions.DestinyClassDefinition.get(
-            charComponent.classHash
+          class: props.definitions.DestinyClassDefinition?.get(
+            charComponent?.classHash
           ).displayProperties.name,
           id: charComponent.characterId,
           race: props.definitions.DestinyRaceDefinition.get(
-            charComponent.raceHash
+            charComponent?.raceHash
           ).displayProperties.name,
           gender: props.definitions.DestinyGenderDefinition.get(
-            charComponent.genderHash
+            charComponent?.genderHash
           ).displayProperties.name,
         });
       }

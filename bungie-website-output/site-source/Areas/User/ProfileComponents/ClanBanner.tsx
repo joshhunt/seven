@@ -145,7 +145,7 @@ export const ClanBannerDisplay: React.FC<ClanBannerProps> = (props) => {
   ): string => {
     const color = items[id];
 
-    return `${color.red},${color.green},${color.blue}`;
+    return `${color?.red},${color?.green},${color?.blue}` || "0, 0, 0";
   };
 
   const getDecalFromBannerSource = (

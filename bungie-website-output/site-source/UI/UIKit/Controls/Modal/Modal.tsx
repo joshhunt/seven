@@ -149,7 +149,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     }
 
     if (this.state.open && !nextProps.open) {
-      this.close();
+      this?.close();
     }
 
     return true;
@@ -239,7 +239,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
       !clickedInsideDropdown &&
       !this.props.preventUserClose
     ) {
-      this.close();
+      this?.close();
     }
   };
 
@@ -253,7 +253,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     } = this.props;
 
     const closeButton = !this.props.preventUserClose && (
-      <div className={styles.buttonClose} onClick={this.close}>
+      <div className={styles.buttonClose} onClick={this?.close}>
         <Icon iconType={"material"} iconName={"close"} />
       </div>
     );
@@ -286,7 +286,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     }
 
     // This makes sure modals close before switching from one React page to another on back button click
-    window.onpopstate = this.close;
+    window.onpopstate = this?.close;
 
     return (
       <div

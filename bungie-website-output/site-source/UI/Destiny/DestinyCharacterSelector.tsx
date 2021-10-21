@@ -53,7 +53,7 @@ class DestinyCharacterSelector extends React.Component<
   public render() {
     const characterOptions: IDropdownOption[] = [];
 
-    Object.entries(this.props.characterComponent).forEach(
+    Object.entries(this.props.characterComponent)?.forEach(
       (value: [string, Characters.DestinyCharacterComponent]) => {
         const charComponent = value[1];
         const characterLight = `✧ ${charComponent.light}`;
@@ -69,8 +69,8 @@ class DestinyCharacterSelector extends React.Component<
           label: (
             <React.Fragment>
               {
-                this.props.definitions.DestinyClassDefinition.get(
-                  charComponent.classHash
+                this.props.definitions.DestinyClassDefinition?.get(
+                  charComponent?.classHash
                 ).displayProperties.name
               }{" "}
               <span className={styles.light}>{characterLight}</span>
@@ -78,8 +78,8 @@ class DestinyCharacterSelector extends React.Component<
           ),
           value: charComponent.characterId,
           mobileLabel: `${
-            this.props.definitions.DestinyClassDefinition.get(
-              charComponent.classHash
+            this.props.definitions.DestinyClassDefinition?.get(
+              charComponent?.classHash
             ).displayProperties.name
           } ${characterLight}`,
         });

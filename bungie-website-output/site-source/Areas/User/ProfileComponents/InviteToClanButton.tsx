@@ -48,24 +48,24 @@ export const InviteToClanButton: React.FC<InviteToClanButtonProps> = (
     props.onPageUserDestinyMembership.memberships.forEach((membership) => {
       clanPromises.push(
         Platform.GroupV2Service.GetGroupsForMember(
-          membership.membershipType,
-          membership.membershipId,
+          membership?.membershipType,
+          membership?.membershipId,
           GroupsForMemberFilter.All,
           GroupType.Clan
         )
       );
       pendingClanPromises.push(
         Platform.GroupV2Service.GetPotentialGroupsForMember(
-          membership.membershipType,
-          membership.membershipId,
+          membership?.membershipType,
+          membership?.membershipId,
           GroupPotentialMemberStatus.Invitee,
           GroupType.Clan
         )
       );
       pendingClanPromises.push(
         Platform.GroupV2Service.GetPotentialGroupsForMember(
-          membership.membershipType,
-          membership.membershipId,
+          membership?.membershipType,
+          membership?.membershipId,
           GroupPotentialMemberStatus.Applicant,
           GroupType.Clan
         )
@@ -110,8 +110,8 @@ export const InviteToClanButton: React.FC<InviteToClanButtonProps> = (
     Platform.GroupV2Service.IndividualGroupInvite(
       input,
       clanId,
-      props.onPageUserDestinyMembership.selectedMembership.membershipType,
-      props.onPageUserDestinyMembership.selectedMembership.membershipId
+      props.onPageUserDestinyMembership?.selectedMembership?.membershipType,
+      props.onPageUserDestinyMembership?.selectedMembership?.membershipId
     )
       .then(() => {
         //refresh the master list
