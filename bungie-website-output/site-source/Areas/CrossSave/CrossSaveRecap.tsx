@@ -96,6 +96,8 @@ class CrossSaveRecap extends React.Component<
         return RouteHelper.DestinyBuy({ target: "Forsaken" });
       case DestinyGameVersions.Shadowkeep:
         return RouteHelper.DestinyBuy({ target: "Shadowkeep" });
+      case DestinyGameVersions.BeyondLight:
+        return RouteHelper.DestinyBuy({ target: "BeyondLight" });
       default:
         return RouteHelper.DestinyBuy();
     }

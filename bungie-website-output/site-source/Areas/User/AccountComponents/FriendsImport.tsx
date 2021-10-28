@@ -11,6 +11,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -66,6 +67,23 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
     // since updating validPlatformLinked would be a race condition, pass in the value it will be updated to directly
     platformFriendsData?.platformSpecificData &&
       FriendsImportUtils.getAllPlatformFriends(_validPlatformsLinked);
+  };
+
+  const openLinkPreview = (platform: PlatformFriendType) => {
+    BrowserUtils.openWindow(
+      `/${
+        Localizer.CurrentCultureName
+      }/User/SignInAndPreview/${UserUtils.getCredentialTypeFromPlatformFriendType(
+        platform
+      )}`,
+      "linkpreviewui",
+      () => {
+        GlobalStateDataStore.refreshUserAndRelatedData(true).then(() => {
+          //load the platforms friends
+          FriendsImportUtils.getPlatformFriends(platform);
+        });
+      }
+    );
   };
 
   useEffect(() => {
@@ -126,8 +144,7 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
                     buttonType={"gold"}
                     size={BasicSize.Small}
                     onClick={() => {
-                      setPlatformToLink(platform);
-                      setLinkingModalOpen(true);
+                      openLinkPreview(platform);
                     }}
                   >
                     {Localizer.Format(Localizer.Friends.LinkPlatform, {
@@ -140,12 +157,6 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
           );
         })}
       </div>
-
-      <ConfirmPlatformLinkingModal
-        open={linkingModalOpen}
-        onClose={() => setLinkingModalOpen(false)}
-        platform={platformToLink}
-      />
     </div>
   );
 };

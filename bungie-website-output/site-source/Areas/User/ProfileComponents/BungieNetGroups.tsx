@@ -1,12 +1,15 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
-import { Contracts, GroupsV2, Platform } from "@Platform";
+import { GroupsV2, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UIKit/Companion/OneLineItem";
+import { useAsyncError } from "@Utilities/ReactUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieView.module.scss";
 
@@ -15,6 +18,7 @@ interface BungieNetGroupsProps {
 }
 
 export const BungieNetGroups: React.FC<BungieNetGroupsProps> = (props) => {
+  const throwError = useAsyncError();
   const [groups, setGroups] = useState<GroupsV2.GetGroupsForMemberResponse>(
     null
   );
@@ -25,10 +29,11 @@ export const BungieNetGroups: React.FC<BungieNetGroupsProps> = (props) => {
       props.membershipId,
       GroupsForMemberFilter.All,
       GroupType.General
-    ).then((response) => {
-      console.log(response);
-      setGroups(response);
-    });
+    )
+      .then((response) => {
+        setGroups(response);
+      })
+      .catch(throwError);
   };
 
   useEffect(() => {

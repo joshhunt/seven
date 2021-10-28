@@ -3,8 +3,10 @@
 
 import styles from "@Areas/User/Profile.module.scss";
 import { Clan } from "@Areas/User/ProfileComponents/Clan";
+import { Localizer } from "@bungie/localization";
 import Collections from "@Areas/User/ProfileComponents/Collections";
 import ProfileCharacterSelector from "@Areas/User/ProfileComponents/ProfileCharacterSelector";
+import { ProfileErrorBoundary } from "@Areas/User/ProfileComponents/ProfileErrorBoundary";
 import Season from "@Areas/User/ProfileComponents/Season";
 import Triumphs from "@Areas/User/ProfileComponents/Triumphs";
 import { BungieMembershipType } from "@Enum";
@@ -34,6 +36,8 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
     isSelf,
   } = props;
 
+  const profileLoc = Localizer.Profile;
+
   return (
     <>
       {typeof destinyMembership.characters !== "undefined" && (
@@ -51,40 +55,50 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
           }
         />
       )}
-      <Clan
-        mType={membershipType}
-        mId={membershipId}
-        loggedInUserClans={loggedInUserClans}
-        coreSettings={coreSettings}
-        isSelf={isSelf}
-        destinyMembership={destinyMembership}
-      />
-      <Season
-        seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
-        profileResponse={destinyProfileResponse}
-        characterComponent={
-          destinyMembership?.selectedCharacter ??
-          destinyMembership.characters[0]
-        }
-      />
-      <div className={styles.triumphsCollections}>
-        <Triumphs
-          profileResponse={destinyProfileResponse}
+      <ProfileErrorBoundary message={profileLoc.ClanLoadingError}>
+        <Clan
+          mType={membershipType}
+          mId={membershipId}
+          loggedInUserClans={loggedInUserClans}
           coreSettings={coreSettings}
-          membershipId={membershipId}
-          membershipType={membershipType}
+          isSelf={isSelf}
+          destinyMembership={destinyMembership}
         />
-        {destinyMembership?.selectedCharacter && (
-          <Collections
+      </ProfileErrorBoundary>
+      <ProfileErrorBoundary message={profileLoc.SeasonLoadingError}>
+        <Season
+          seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
+          profileResponse={destinyProfileResponse}
+          characterComponent={
+            destinyMembership?.selectedCharacter ??
+            destinyMembership.characters[0]
+          }
+        />
+      </ProfileErrorBoundary>
+      <div className={styles.triumphsCollections}>
+        <ProfileErrorBoundary message={profileLoc.TriumphsLoadingError}>
+          <Triumphs
             profileResponse={destinyProfileResponse}
             coreSettings={coreSettings}
-            characterId={destinyMembership.selectedCharacter.characterId}
             membershipId={membershipId}
             membershipType={membershipType}
           />
+        </ProfileErrorBoundary>
+        {destinyMembership?.selectedCharacter && (
+          <ProfileErrorBoundary message={profileLoc.CollectionsLoadingError}>
+            <Collections
+              profileResponse={destinyProfileResponse}
+              coreSettings={coreSettings}
+              characterId={destinyMembership.selectedCharacter.characterId}
+              membershipId={membershipId}
+              membershipType={membershipType}
+            />
+          </ProfileErrorBoundary>
         )}
       </div>
-      <ProfileGameHistoryLink />
+      <ProfileErrorBoundary message={profileLoc.GameHistoryLoadingError}>
+        <ProfileGameHistoryLink />
+      </ProfileErrorBoundary>
     </>
   );
 };

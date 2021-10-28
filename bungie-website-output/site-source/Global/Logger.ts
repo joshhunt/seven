@@ -1,12 +1,13 @@
 // tslint:disable: variable-name
-import { Renderer } from "@Platform";
 // @ts-ignore
 import { mapStackTrace } from "@bungie/sourcemapped-stacktrace";
 import { DetailedError } from "@CustomErrors";
 import { RendererLogLevel, SpamReductionLevel } from "@Enum";
-import { StringUtils, StringCompareOptions } from "@Utilities/StringUtils";
-import { FetchUtils } from "@Utilities/FetchUtils";
+import { BaseLogger, ILogger } from "@Global/BaseLogger";
+import { Renderer } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { FetchUtils } from "@Utilities/FetchUtils";
+import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
 
 enum LogType {
   Message,
@@ -22,65 +23,15 @@ export enum LogLevel {
 
 type LogSignature = (content: any, ...optional: any[]) => number;
 
-export interface ILogger {
-  log: LogSignature;
-  logVerbose: LogSignature;
-  warn: LogSignature;
-  warnVerbose: LogSignature;
-  error: LogSignature;
-  errorVerbose: LogSignature;
-
+export interface IServerLogger extends ILogger {
   logToServer: (logThis: Error | string, logLevel: RendererLogLevel) => void;
-
-  setLogLevel: (level: LogLevel) => void;
 }
 
-class LoggerInternal implements ILogger {
-  public static Instance = new LoggerInternal("Blam");
+class LoggerInternal extends BaseLogger implements IServerLogger {
+  public static Instance = new LoggerInternal("[BLAM]");
 
-  private readonly logsInFlight: string[] = [];
-
-  private readonly base_log = Function.prototype.bind.call(
-    console.log,
-    console
-  );
-  private readonly base_logVerbose = Function.prototype.bind.call(
-    console.debug,
-    console
-  );
-  private readonly base_warn = Function.prototype.bind.call(
-    console.warn,
-    console
-  );
-  private readonly base_warnVerbose = Function.prototype.bind.call(
-    console.warn,
-    console
-  );
-  private readonly base_error = Function.prototype.bind.call(
-    console.error,
-    console
-  );
-  private readonly base_errorVerbose = Function.prototype.bind.call(
-    console.error,
-    console
-  );
-
-  public log = (content: any, ...optional: any[]) => 0;
-  public logVerbose = (content: any, ...optional: any[]) => 0;
-  public warn = (content: any, ...optional: any[]) => 0;
-  public warnVerbose = (content: any, ...optional: any[]) => 0;
-  public error = (
-    error: Error | any,
-    sendToServer = true,
-    ...optional: any[]
-  ) => 0;
-  public errorVerbose = (content: any, ...optional: any[]) => 0;
-
-  private constructor(private readonly prefix: string) {
-    const logLevelDefault = location.hostname.endsWith("local")
-      ? LogLevel.Verbose
-      : LogLevel.None;
-    this.setLogLevel(logLevelDefault);
+  constructor(prefix: string) {
+    super(prefix);
   }
 
   public create(prefix: string): ILogger {
@@ -168,51 +119,6 @@ class LoggerInternal implements ILogger {
       );
     });
   }
-
-  public setLogLevel(level: LogLevel) {
-    this.log = Function.prototype.bind.call(
-      this.base_log,
-      console,
-      `${this.prefix}:`
-    );
-    this.logVerbose = Function.prototype.bind.call(
-      this.base_logVerbose,
-      console,
-      `${this.prefix}:`
-    );
-    this.warn = Function.prototype.bind.call(
-      this.base_warn,
-      console,
-      `${this.prefix}:`
-    );
-    this.warnVerbose = Function.prototype.bind.call(
-      this.base_warnVerbose,
-      console,
-      `${this.prefix}:`
-    );
-    this.error = Function.prototype.bind.call(
-      this.base_error,
-      console,
-      `${this.prefix}:`
-    );
-    this.errorVerbose = Function.prototype.bind.call(
-      this.base_errorVerbose,
-      console,
-      `${this.prefix}:`
-    );
-
-    if (level < LogLevel.Verbose) {
-      this.logVerbose = (...args: any[]) => null;
-      this.warnVerbose = (...args: any[]) => null;
-      this.errorVerbose = (...args: any[]) => null;
-    }
-
-    if (level < LogLevel.Normal) {
-      this.log = (...args: any[]) => null;
-      this.warn = (...args: any[]) => null;
-      this.error = (...args: any[]) => null;
-    }
-  }
 }
 
 export const Logger = LoggerInternal.Instance;
@@ -227,9 +133,4 @@ window.onerror = (
   if (!(error instanceof Request)) {
     Logger.logToServer(error);
   }
-};
-
-// @ts-ignore
-window["enableLogging"] = () => {
-  Logger.setLogLevel(LogLevel.Verbose);
 };

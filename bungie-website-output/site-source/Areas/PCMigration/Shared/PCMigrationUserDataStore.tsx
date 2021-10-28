@@ -272,8 +272,8 @@ class PCMigrationUserDataStoreInternal extends DataStore<IPCMigrationUserData> {
     characters.forEach((character) => {
       const title = `${
         definitions.classes[character[1]?.classHash].displayProperties.name
-      } ${definitions.races[character[1].raceHash].displayProperties.name} ${
-        definitions.genders[character[1].genderHash].displayProperties.name
+      } ${definitions.races[character[1]?.raceHash].displayProperties.name} ${
+        definitions.genders[character[1]?.genderHash].displayProperties.name
       }`;
 
       const display: IPCMigrationCharacterDisplay = {

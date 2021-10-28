@@ -3,8 +3,8 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
-import { ActionSuccessModal } from "@Areas/User/AccountComponents/Internal/ActionSuccessModal";
 import { ReportButton } from "@Areas/User/AccountComponents/Internal/ReportButton";
+import { BlockButton } from "@Areas/User/ProfileComponents/BlockButton";
 import { BungieFriend } from "@Areas/User/ProfileComponents/BungieFriend";
 import { BungieView } from "@Areas/User/ProfileComponents/BungieView";
 import { DestinyView } from "@Areas/User/ProfileComponents/DestinyView";
@@ -15,13 +15,13 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import {
+  BungieCredentialType,
   BungieMembershipType,
   DestinyComponentType,
   IgnoredItemType,
-  ModeratorRequestedPunishment,
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Contracts, Platform, Responses, User } from "@Platform";
+import { Contract, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IProfileParams } from "@Routes/RouteParams";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
@@ -36,7 +36,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { IBungieName, UserUtils } from "@Utilities/UserUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
@@ -82,6 +82,23 @@ const Profile: React.FC<ProfileProps> = (props) => {
     ? globalState.crossSavePairingStatus?.primaryMembershipType !== undefined
     : destinyMembership.isCrossSaved;
 
+  const [twitchCred, setTwitchCred] = useState<
+    Contract.GetCredentialTypesForAccountResponse
+  >(undefined);
+
+  const getCredentialTypesForUser = () => {
+    //only used looking at someone elses profile and only for twitch
+    Platform.UserService.GetCredentialTypesForTargetAccount(membershipId).then(
+      (data) => {
+        setTwitchCred(
+          data.find((cred) => {
+            return cred.credentialType === BungieCredentialType.TwitchId;
+          })
+        );
+      }
+    );
+  };
+
   const bungieNetUser = destinyMembership?.membershipData?.bungieNetUser;
   const bungieGlobalNameObject = bungieNetUser
     ? UserUtils.getBungieNameFromBnetGeneralUser(bungieNetUser)
@@ -113,7 +130,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
   useEffect(() => {
     if (globalState.loggedInUser && !params.mid) {
       // Redirect to the current user if we have one and the URL didn't specify one
-      history.push(
+      history.replace(
         RouteHelper.NewProfile({
           mid: globalState.loggedInUser.user.membershipId,
           mtype: EnumUtils.getNumberValue(
@@ -123,7 +140,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
         }).url
       );
     }
-  }, [globalState.loggedInUser, params.mid]);
+  }, [globalState.loggedInUser, params]);
 
   useEffect(() => {
     if (membershipId && membershipType) {
@@ -156,7 +173,11 @@ const Profile: React.FC<ProfileProps> = (props) => {
       //destiny data has its own loading spinner so stop the profile loading spinner
       setIsLoading(false);
     }
-  }, [destinyMembership]);
+  }, [destinyMembership, isLoading]);
+
+  useEffect(() => {
+    getCredentialTypesForUser();
+  }, [membershipId]);
 
   if (!isValidUser) {
     return <Error404 />;
@@ -195,51 +216,21 @@ const Profile: React.FC<ProfileProps> = (props) => {
     );
   }
 
-  const blockUser = () => {
-    //Reason and ItemContextId are set to their defaults here. The C# code expects Longs, we can only provide ints or strings in js -- the endpoint knows how to handle it
-    const ignoreItemRequest = {
-      ignoredItemId: membershipId,
-      ignoredItemType: IgnoredItemType.User,
-      comment: "",
-      reason: "0",
-      itemContextId: "0",
-      itemContextType: 0,
-      requestedPunishment: ModeratorRequestedPunishment.Unknown,
-      requestedBlastBan: false,
-    } as Contracts.IgnoreItemRequest;
-
-    Platform.IgnoreService.IgnoreItem(ignoreItemRequest)
-      .then((response: Contracts.IgnoreDetailResponse) => {
-        const message = response ? (
-          <ActionSuccessModal />
-        ) : (
-          profileLoc.ThereWasAProblemBlocking
-        );
-
-        Modal.open(message);
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        Modal.error(e);
-      });
-  };
-
   const updateUrlWithAllParams = (userName: string) => {
     //after the bungienet user info has loaded we can update the url with the username
-    const newTitle = Localizer.Format(
+    document.title = Localizer.Format(
       Localizer.Userpages.BungieProfilePageTitle,
       { displayname: userName }
     );
 
-    window.history.replaceState(
-      null,
-      newTitle,
-      `/7/${
-        Localizer.CurrentCultureName
-      }/User/Profile/${EnumUtils.getNumberValue(
-        membershipType,
-        BungieMembershipType
-      )}/${membershipId}/${userName}`
+    history.replace(
+      RouteHelper.NewProfile({
+        mid: membershipId,
+        mtype: EnumUtils.getNumberValue(
+          membershipType,
+          BungieMembershipType
+        ).toString(),
+      }).url + `/${userName}`
     );
   };
 
@@ -364,13 +355,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
                   showModal={showMessageModal}
                   onClose={() => toggleShowMessageModal(false)}
                 />
-                <Button
-                  buttonType={"white"}
-                  className={classNames(styles.button, styles.btnBlock)}
-                  onClick={blockUser}
-                >
-                  {profileLoc.Block}
-                </Button>
+                <BlockButton
+                  bungieGlobalNameObject={bungieGlobalNameObject}
+                  membershipId={membershipId}
+                />
                 <ReportButton
                   ignoredItemId={membershipId}
                   itemContextType={IgnoredItemType.UserProfile}
@@ -404,6 +392,15 @@ const Profile: React.FC<ProfileProps> = (props) => {
                         );
                       }
                     }
+                  )}
+                  {twitchCred && (
+                    <li className={styles.linkedAccount}>
+                      <img
+                        src={"/7/ca//bungie/icons/logos/twitch/icon.png"}
+                        alt={twitchCred.credentialDisplayName}
+                      />{" "}
+                      {twitchCred.credentialDisplayName}
+                    </li>
                   )}
                 </ul>
               </div>

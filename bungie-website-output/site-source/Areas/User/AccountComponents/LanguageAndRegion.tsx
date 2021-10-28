@@ -5,6 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
+import LocalizationState from "@bungie/localization/LocalizationState";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contract, Platform } from "@Platform";
@@ -102,6 +103,7 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
         <Dropdown
           options={dropdownOptions}
           onChange={(value: string) => {
+            LocalizationState.setLocale(value);
             setSelectedLocale(value);
             updateSettings(value);
           }}

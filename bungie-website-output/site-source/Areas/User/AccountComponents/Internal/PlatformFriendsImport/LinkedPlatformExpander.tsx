@@ -94,7 +94,7 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
     //empty the error list we are retrying
     PlatformFriendsDataStore.actions.resetErroringIds();
 
-    const sendFriendRequestPromises: Promise<any>[] = [];
+    const sendFriendRequestPromises: (() => Promise<any>)[] = [];
 
     platformFriends.forEach((friend, i) => {
       const lastInArray = i === platformFriends.length - 1;
@@ -118,7 +118,7 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
           friend?.bungieNetMembershipId
         )
       ) {
-        sendFriendRequestPromises.push(
+        sendFriendRequestPromises.push(() =>
           Platform.SocialService.IssueFriendRequest(
             friend?.bungieNetMembershipId
           )
@@ -166,7 +166,7 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
 
     const friendQueue = new FriendInviteThrottleQueue();
 
-    friendQueue.all(sendFriendRequestPromises);
+    await friendQueue.all(sendFriendRequestPromises);
   };
 
   let flair = null;

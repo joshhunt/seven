@@ -148,7 +148,15 @@ export const withDestinyDefinitions = <
     }
 
     public render() {
-      if (this.state.indexedDBNotSupported) {
+      const {
+        receivedInitialState,
+        isLoaded,
+        isLoading,
+        indexedDBNotSupported,
+        hasError,
+      } = this.state;
+
+      if (indexedDBNotSupported) {
         return (
           <div className={styles.featureIsNotSupported}>
             {Localizer.Errors.ThisFeatureIsNotSupported}
@@ -157,7 +165,7 @@ export const withDestinyDefinitions = <
       }
 
       // If we encounter any errors, we'll show this modal which will let users hit the DestinyDefinitions.scorchedEarth() function (deletes the databases and attempts to redownload stuff).
-      if (this.state.hasError) {
+      if (hasError) {
         const label = Localizer.FormatReact(
           Localizer.Destiny.DestinyDefinitionLoadIssue,
           {
@@ -191,12 +199,12 @@ export const withDestinyDefinitions = <
         );
       }
 
+      const notLoaded = !isLoaded;
+      const loading = isLoading || !receivedInitialState;
+
       // Loading is handled by AppLayout.tsx, which subscribes to DestinyDefinitions and shows a loader if any of them are loading.
       // This is because we don't want to show multiple loaders if more than one component is waiting for definitions
-      if (
-        !this.state.isLoaded &&
-        (this.state.isLoading || !this.state.receivedInitialState)
-      ) {
+      if (notLoaded || loading) {
         return null;
       }
 

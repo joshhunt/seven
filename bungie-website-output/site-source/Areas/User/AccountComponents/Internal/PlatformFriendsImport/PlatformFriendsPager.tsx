@@ -20,6 +20,7 @@ export const PlatformFriendsPager: React.FC<PlatformFriendsPagerProps> = ({
   platform,
 }) => {
   const platformFriendsData = useDataStore(PlatformFriendsDataStore);
+
   const platformSpecificData = platformFriendsData?.platformSpecificData?.find(
     (x) => x.platform === platform
   );
@@ -32,16 +33,21 @@ export const PlatformFriendsPager: React.FC<PlatformFriendsPagerProps> = ({
     BungieFriendsDataStore.actions.fetchAllFriends();
   };
 
-  if (!hasMorePages || onFirstPage) {
+  if (!hasMorePages && onFirstPage) {
     return null;
   }
+
+  //for determining when to disable the next button
+  const pageCount = !hasMorePages
+    ? platformSpecificData.friendsResponse.currentPage + 1
+    : platformSpecificData.totalPages;
 
   return (
     <ReactPaginate
       onPageChange={(e) => handleRequestsPageChange(e)}
-      pageCount={platformSpecificData.totalPages}
+      pageCount={pageCount}
       pageRangeDisplayed={0}
-      forcePage={platformSpecificData.friendsResponse.currentPage ?? 0}
+      forcePage={platformSpecificData.friendsResponse.currentPage ?? 1} //pager shows 1 but real page # is 0 based
       marginPagesDisplayed={0}
       previousLabel={Localizer.usertools.previousPage}
       nextLabel={Localizer.usertools.nextPage}

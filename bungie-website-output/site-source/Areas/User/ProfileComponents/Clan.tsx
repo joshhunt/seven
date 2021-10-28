@@ -6,8 +6,7 @@ import { ClanBannerDisplay } from "@Areas/User/ProfileComponents/ClanBanner";
 import { PlatformError } from "@CustomErrors";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { Route } from "react-router-dom";
+import { useAsyncError } from "@Utilities/ReactUtils";
 import styles from "./Clan.module.scss";
 import React, { useEffect, useState } from "react";
 import { GroupsV2, Models, Platform } from "@Platform";
@@ -28,6 +27,8 @@ interface ClanProps {
 
 export const Clan: React.FC<ClanProps> = (props) => {
   const [clan, setClan] = useState<GroupsV2.GroupMembership>(null);
+
+  const throwError = useAsyncError();
 
   const loadClanInfo = () => {
     if (props.isSelf && props.loggedInUserClans?.results?.length === 0) {
@@ -60,26 +61,33 @@ export const Clan: React.FC<ClanProps> = (props) => {
         props.mId,
         GroupsForMemberFilter.All,
         GroupType.Clan
-      ).then((clanResponse: GroupsV2.GetGroupsForMemberResponse) => {
-        if (clanResponse?.results.length > 0) {
-          const clanResult = clanResponse.results.find((value, index) => {
-            const isActiveClan = !clanResponse.areAllMembershipsInactive[
-              value.group.groupId
-            ];
-            const clanMembershipTypeMatchesSelectedMembershipType =
-              value.member.destinyUserInfo.membershipType ===
-              props.destinyMembership.selectedMembership.membershipType;
+      )
+        .then((clanResponse: GroupsV2.GetGroupsForMemberResponse) => {
+          try {
+            if (clanResponse?.results.length > 0) {
+              const clanResult = clanResponse.results.find((value, index) => {
+                const isActiveClan = !clanResponse.areAllMembershipsInactive[
+                  value.group.groupId
+                ];
+                const clanMembershipTypeMatchesSelectedMembershipType =
+                  value.member.destinyUserInfo.membershipType ===
+                  props.destinyMembership.selectedMembership.membershipType;
 
-            return (
-              clanMembershipTypeMatchesSelectedMembershipType && isActiveClan
-            );
-          });
+                return (
+                  clanMembershipTypeMatchesSelectedMembershipType &&
+                  isActiveClan
+                );
+              });
 
-          if (clanResult) {
-            setClan(clanResult);
+              if (clanResult) {
+                setClan(clanResult);
+              }
+            }
+          } catch {
+            throwError(new Error());
           }
-        }
-      });
+        })
+        .catch(throwError);
     }
   };
 

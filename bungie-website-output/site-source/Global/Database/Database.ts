@@ -32,21 +32,6 @@ class DestinyDatabaseInitializer {
     this.schema = GenerateDestinyDatabaseSchema();
   }
 
-  /** Creates the Dexie database schema (basically, create the list of tables and define the 'key' for each) */
-  public generateSchema() {
-    // Loop through every type of definition and make a table for it, with the columns "hash" and "def"
-    const schema = DestinyWorldDefinitionsTypeNameList.reduce((acc, val) => {
-      acc[val] = "hash";
-
-      return acc;
-    }, {} as Record<string, string>);
-
-    // Also create a table for the manifest version
-    schema["manifest"] = "version";
-
-    return schema;
-  }
-
   public async createDb() {
     this.createSchema();
 

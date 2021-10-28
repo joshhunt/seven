@@ -1,8 +1,9 @@
+import { ILogger } from "@Global/BaseLogger";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { PromiseUtils } from "@Utilities/PromiseUtils";
 import * as Globals from "@Enum";
 import { DetailedError, PlatformError } from "@CustomErrors";
-import { Logger, ILogger } from "@Global/Logger";
+import { Logger } from "@Global/Logger";
 import { Localizer } from "@bungie/localization";
 import {
   FirehoseDebuggerDataStore,

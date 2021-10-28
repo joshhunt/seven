@@ -1,3 +1,4 @@
+import { Localizer } from "@bungie/localization";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { RouteDefs } from "./RouteDefs";
@@ -192,6 +193,12 @@ export class RouteHelper {
     const stringCredValue = EnumUtils.getStringValue(cr, BungieCredentialType);
 
     return LegacyPath(`/User/Reauth/${stringCredValue}`);
+  };
+
+  public static SignInPreview = (cr: BungieCredentialType) => {
+    const stringCredValue = EnumUtils.getStringValue(cr, BungieCredentialType);
+
+    return LegacyPath(`/User/SignInAndPreview/${stringCredValue}`);
   };
 
   public static GameHistory = (
@@ -423,12 +430,6 @@ export class RouteHelper {
     LegacyPath(`/Forums/Post/${postId}?sort=0&page=0`);
   public static BungieStore = (subPath = "") =>
     `https://bungiestore.com/${subPath}`;
-  public static PressKits = () =>
-    ConfigUtils.GetParameter(
-      "WebRenderer",
-      "PressKitUrl",
-      "https://press.bungie.com"
-    );
   public static Search = LegacyPathWithQuery("/Search");
   public static Foundation = (subPath = "") =>
     `https://bungiefoundation.org/${subPath}`;
@@ -437,6 +438,17 @@ export class RouteHelper {
   );
   public static BungieNewsRoom = LegacyPath("/Newsroom");
   public static BungieTechBlog = LegacyPath("/BungieTech");
+
+  public static pressKitLocale =
+    Localizer.CurrentCultureName !== "en"
+      ? `/${Localizer.CurrentCultureName}`
+      : "";
+  public static PressKits = () =>
+    ConfigUtils.GetParameter(
+      "WebRenderer",
+      "PressKitUrl",
+      "https://press.bungie.com"
+    ) + RouteHelper.pressKitLocale;
 
   /**
    *

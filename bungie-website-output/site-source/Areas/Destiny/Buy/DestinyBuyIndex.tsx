@@ -4,11 +4,11 @@
 import DestinyBuyCarouselHero from "@Areas/Destiny/Buy/Shared/DestinyBuyCarouselHero";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { Content, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import {
   IDestinyProductDefinition,
   IDestinyProductFamilyDefinition,
@@ -90,116 +90,6 @@ export default class DestinyBuyInternal extends React.Component<
     this.destroys.forEach((d) => d && d());
   }
 
-  private readonly onSkuConfigLoaded = () => {
-    if (this.state.skuConfig.loaded) {
-      const skuSection = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinySkus"
-      );
-      const familySection = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinyProductFamilies"
-      );
-
-      /* Load the Firehose content item for the specified tags */
-      this.loadProductFamilyContent(familySection.firehoseContentSetTag);
-      this.loadSkuContent(skuSection.firehoseContentSetTag);
-      this.carouselContent();
-      this.loadFreeToPlayPopoutImage("free-to-play-popout-image");
-    }
-  };
-
-  private loadProductFamilyContent(firehoseContentSetTag: string) {
-    Platform.ContentService.GetContentByTagAndType(
-      firehoseContentSetTag,
-      "ContentSet",
-      Localizer.CurrentCultureName,
-      false
-    ).then((contentSet) => {
-      const allItems: Content.ContentItemPublicContract[] =
-        contentSet.properties["ContentItems"];
-      const productFamilies = allItems.map((contentItem) =>
-        DestinySkuUtils.productFamilyDefinitionFromContent(contentItem)
-      );
-
-      if (productFamilies) {
-        this.setState({
-          productFamilies,
-        });
-      }
-    });
-  }
-
-  private loadFreeToPlayPopoutImage(staticAssetTag: string) {
-    Platform.ContentService.GetContentByTagAndType(
-      staticAssetTag,
-      "StaticAsset",
-      Localizer.CurrentCultureName,
-      false
-    ).then((response) => {
-      const { Path: path } = response.properties;
-      if (path) {
-        this.setState({ freeToPlayPopoutImg: path });
-      }
-    });
-  }
-
-  private loadSkuContent(firehoseContentSetTag: string) {
-    Platform.ContentService.GetContentByTagAndType(
-      firehoseContentSetTag,
-      "ContentSet",
-      Localizer.CurrentCultureName,
-      false
-    )
-      .then((contentSet) => {
-        const title = contentSet.properties["Title"];
-        const allItems: Content.ContentItemPublicContract[] =
-          contentSet.properties["ContentItems"];
-        if (allItems) {
-          const skuItems: IDestinyProductDefinition[] = allItems
-            .filter((a) => a.cType === "DestinySkuItem")
-            .map((contentItem) =>
-              DestinySkuUtils.skuDefinitionFromContent(contentItem)
-            )
-            .filter((skuItem) =>
-              DestinySkuUtils.productExists(
-                skuItem.skuTag,
-                this.state.skuConfig
-              )
-            );
-
-          this.setState({
-            title,
-            skuItems,
-          });
-        }
-      })
-      .finally(() =>
-        this.setState({
-          loading: false,
-        })
-      );
-  }
-
-  private readonly setIsCarouselPaused = (status: boolean) => {
-    this.setState({ isCarouselPaused: status });
-  };
-
-  private carouselContent() {
-    Platform.ContentService.GetContentByTagAndType(
-      "buyflowlandingcarousel",
-      "ContentSet",
-      Localizer.CurrentCultureName,
-      false
-    ).then((data) => {
-      if (data) {
-        this.setState({
-          carouselItems: data.properties.ContentItems.map((ci: any) =>
-            ContentUtils.marketingMediaAssetFromContent(ci)
-          ),
-        });
-      }
-    });
-  }
-
   public render() {
     if (this.state.productFamilies.length === 0) {
       return (
@@ -221,6 +111,25 @@ export default class DestinyBuyInternal extends React.Component<
     const bundleProducts = productFamilies?.filter(
       (product) => product.landingPageCategory === bundlesCategoryName
     );
+
+    const params = new URLSearchParams(location.search);
+    const promoView = params.get("promo");
+
+    if (promoView === "true") {
+      return (
+        <Grid
+          className={styles.contentFrame}
+          noPadding={true}
+          strictMode={true}
+        >
+          <PaidContent
+            expansionProducts={expansionProducts}
+            bundleProducts={bundleProducts}
+            skuConfig={skuConfig}
+          />
+        </Grid>
+      );
+    }
 
     const metaImage = "/7/ca/destiny/bgs/season14/buy_landing_cover_f2p.jpg";
 
@@ -332,73 +241,206 @@ export default class DestinyBuyInternal extends React.Component<
               );
             })}
           </div>
-
-          <div className={styles.borderTop}>
-            <div className={styles.sectionTitle}>
-              {Localizer.Buyflow.Releases}
-            </div>
-          </div>
-
-          <div className={styles.coverCards}>
-            {expansionProducts.map((productFamily, i) => {
-              const productIsOnSale =
-                skuConfig &&
-                productFamily?.skuList.some((st) =>
-                  DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
-                );
-              const saleInformation =
-                Localizer.Sales[productFamily.productFamilyTag];
-
-              return (
-                <GridCol cols={3} mobile={6} key={i}>
-                  <DestinyBuyCoverCard productFamily={productFamily}>
-                    <ProductFamilyTitles
-                      onSale={productIsOnSale}
-                      subtitle={productFamily.smallCoverTitle}
-                      title={productFamily.coverTitle}
-                      saleDetails={saleInformation}
-                    />
-                  </DestinyBuyCoverCard>
-                </GridCol>
-              );
-            })}
-          </div>
-
-          <div className={classNames(styles.borderTop, styles.bundlesTop)}>
-            <div className={styles.sectionTitle}>
-              {Localizer.Buyflow.Bundles}
-            </div>
-          </div>
-
-          <div className={classNames(styles.coverCards, styles.bundleCards)}>
-            {bundleProducts.map((productFamily, i) => {
-              const productIsOnSale =
-                skuConfig &&
-                productFamily?.skuList.some((st) =>
-                  DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
-                );
-              const saleInformation =
-                Localizer.Sales[productFamily.productFamilyTag];
-
-              return (
-                <GridCol cols={3} mobile={6} key={i}>
-                  <DestinyBuyCoverCard productFamily={productFamily}>
-                    <ProductFamilyTitles
-                      onSale={productIsOnSale}
-                      subtitle={productFamily.smallCoverTitle}
-                      title={productFamily.coverTitle}
-                      saleDetails={saleInformation}
-                    />
-                  </DestinyBuyCoverCard>
-                </GridCol>
-              );
-            })}
-          </div>
+        </Grid>
+        <Grid
+          className={styles.contentFrame}
+          noPadding={true}
+          strictMode={true}
+        >
+          <PaidContent
+            expansionProducts={expansionProducts}
+            bundleProducts={bundleProducts}
+            skuConfig={skuConfig}
+          />
         </Grid>
       </SystemDisabledHandler>
     );
   }
+
+  private readonly onSkuConfigLoaded = () => {
+    if (this.state.skuConfig.loaded) {
+      const skuSection = this.state.skuConfig.sections.find(
+        (a) => a.key === "DestinySkus"
+      );
+      const familySection = this.state.skuConfig.sections.find(
+        (a) => a.key === "DestinyProductFamilies"
+      );
+
+      /* Load the Firehose content item for the specified tags */
+      this.loadProductFamilyContent(familySection.firehoseContentSetTag);
+      this.loadSkuContent(skuSection.firehoseContentSetTag);
+      this.carouselContent();
+      this.loadFreeToPlayPopoutImage("free-to-play-popout-image");
+    }
+  };
+
+  private loadProductFamilyContent(firehoseContentSetTag: string) {
+    Platform.ContentService.GetContentByTagAndType(
+      firehoseContentSetTag,
+      "ContentSet",
+      Localizer.CurrentCultureName,
+      false
+    ).then((contentSet) => {
+      const allItems: Content.ContentItemPublicContract[] =
+        contentSet.properties["ContentItems"];
+      const productFamilies = allItems.map((contentItem) =>
+        DestinySkuUtils.productFamilyDefinitionFromContent(contentItem)
+      );
+
+      if (productFamilies) {
+        this.setState({
+          productFamilies,
+        });
+      }
+    });
+  }
+
+  private loadFreeToPlayPopoutImage(staticAssetTag: string) {
+    Platform.ContentService.GetContentByTagAndType(
+      staticAssetTag,
+      "StaticAsset",
+      Localizer.CurrentCultureName,
+      false
+    ).then((response) => {
+      const { Path: path } = response.properties;
+      if (path) {
+        this.setState({ freeToPlayPopoutImg: path });
+      }
+    });
+  }
+
+  private loadSkuContent(firehoseContentSetTag: string) {
+    Platform.ContentService.GetContentByTagAndType(
+      firehoseContentSetTag,
+      "ContentSet",
+      Localizer.CurrentCultureName,
+      false
+    )
+      .then((contentSet) => {
+        const title = contentSet.properties["Title"];
+        const allItems: Content.ContentItemPublicContract[] =
+          contentSet.properties["ContentItems"];
+        if (allItems) {
+          const skuItems: IDestinyProductDefinition[] = allItems
+            .filter((a) => a.cType === "DestinySkuItem")
+            .map((contentItem) =>
+              DestinySkuUtils.skuDefinitionFromContent(contentItem)
+            )
+            .filter((skuItem) =>
+              DestinySkuUtils.productExists(
+                skuItem.skuTag,
+                this.state.skuConfig
+              )
+            );
+
+          this.setState({
+            title,
+            skuItems,
+          });
+        }
+      })
+      .finally(() =>
+        this.setState({
+          loading: false,
+        })
+      );
+  }
+
+  private readonly setIsCarouselPaused = (status: boolean) => {
+    this.setState({ isCarouselPaused: status });
+  };
+
+  private carouselContent() {
+    Platform.ContentService.GetContentByTagAndType(
+      "buyflowlandingcarousel",
+      "ContentSet",
+      Localizer.CurrentCultureName,
+      false
+    ).then((data) => {
+      if (data) {
+        this.setState({
+          carouselItems: data.properties.ContentItems.map((ci: any) =>
+            ContentUtils.marketingMediaAssetFromContent(ci)
+          ),
+        });
+      }
+    });
+  }
 }
+
+interface IPaidContent {
+  expansionProducts: IDestinyProductFamilyDefinition[];
+  bundleProducts: IDestinyProductFamilyDefinition[];
+  skuConfig: IDestinySkuConfig;
+}
+
+const PaidContent = ({
+  expansionProducts,
+  bundleProducts,
+  skuConfig,
+}: IPaidContent) => {
+  return (
+    <>
+      <div className={styles.borderTop}>
+        <div className={styles.sectionTitle}>{Localizer.Buyflow.Releases}</div>
+      </div>
+
+      <div className={styles.coverCards}>
+        {expansionProducts.map((productFamily, i) => {
+          const productIsOnSale =
+            skuConfig &&
+            productFamily?.skuList.some((st) =>
+              DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
+            );
+          const saleInformation =
+            Localizer.Sales[productFamily.productFamilyTag];
+
+          return (
+            <GridCol cols={3} mobile={6} key={i}>
+              <DestinyBuyCoverCard productFamily={productFamily}>
+                <ProductFamilyTitles
+                  onSale={productIsOnSale}
+                  subtitle={productFamily.smallCoverTitle}
+                  title={productFamily.coverTitle}
+                  saleDetails={saleInformation}
+                />
+              </DestinyBuyCoverCard>
+            </GridCol>
+          );
+        })}
+      </div>
+
+      <div className={classNames(styles.borderTop, styles.bundlesTop)}>
+        <div className={styles.sectionTitle}>{Localizer.Buyflow.Bundles}</div>
+      </div>
+
+      <div className={classNames(styles.coverCards, styles.bundleCards)}>
+        {bundleProducts.map((productFamily, i) => {
+          const productIsOnSale =
+            skuConfig &&
+            productFamily?.skuList.some((st) =>
+              DestinySkuUtils.isProductOnSale(st.SkuTag, skuConfig)
+            );
+          const saleInformation =
+            Localizer.Sales[productFamily.productFamilyTag];
+
+          return (
+            <GridCol cols={3} mobile={6} key={i}>
+              <DestinyBuyCoverCard productFamily={productFamily}>
+                <ProductFamilyTitles
+                  onSale={productIsOnSale}
+                  subtitle={productFamily.smallCoverTitle}
+                  title={productFamily.coverTitle}
+                  saleDetails={saleInformation}
+                />
+              </DestinyBuyCoverCard>
+            </GridCol>
+          );
+        })}
+      </div>
+    </>
+  );
+};
 
 interface IProductFamilyTitlesProps {
   title: string;

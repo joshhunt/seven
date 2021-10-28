@@ -4,10 +4,11 @@
 import { Queue } from "@Global/Queue";
 import { SystemNames } from "@Global/SystemNames";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { Modal } from "../../../../../UI/UIKit/Controls/Modal/Modal";
 
 export class FriendInviteThrottleQueue extends Queue {
   // put "override in here when we get to Typescript 4.3"
-  public runFunction = async (func: Promise<void>) => {
+  public runFunction = async (func: () => Promise<void>) => {
     const friendImportThrottle = ConfigUtils.GetParameter(
       SystemNames.BungieFriends,
       "FriendsInviteMiniThrottleMilliseconds",
@@ -26,6 +27,10 @@ export class FriendInviteThrottleQueue extends Queue {
       );
     });
 
-    await Promise.allSettled([throttle, func]);
+    try {
+      func && (await Promise.allSettled([throttle, func()]));
+    } catch (e) {
+      Modal.error(e);
+    }
   };
 }

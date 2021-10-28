@@ -5,9 +5,9 @@ import { ActivityOutputFormat, BungieMembershipType } from "@Enum";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { OneLineItem } from "@UIKit/Companion/OneLineItem";
 import { Icon } from "@UIKit/Controls/Icon";
+import { useAsyncError } from "@Utilities/ReactUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieView.module.scss";
 import { Localizer } from "@bungie/localization/Localizer";
@@ -20,15 +20,18 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
   const [forumActivity, setForumActivity] = useState<
     Contracts.ActivityMessageSearchResponse
   >(null);
+  const throwError = useAsyncError();
 
   const GetForumActivity = () => {
     Platform.ActivityService.GetForumActivityForUserV2(
       props.membershipId,
       1,
       ActivityOutputFormat.BNet
-    ).then((response) => {
-      setForumActivity(response);
-    });
+    )
+      .then((response) => {
+        setForumActivity(response);
+      })
+      .catch(throwError);
   };
 
   useEffect(() => {
@@ -73,19 +76,19 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
         const id = anchor.getAttribute("data-ccid");
 
         anchor.href = RouteHelper.CreationsDetail(id).url;
-      } else if (anchor.hasAttribute("[data-tag]")) {
+      } else if (anchor.hasAttribute("data-tag")) {
         // Tag Text
         const id = anchor.getAttribute("data-tag");
 
         anchor.href = RouteHelper.ForumsTag(id).url;
-      } else if (anchor.hasAttribute("[data-membershipid]")) {
+      } else if (anchor.hasAttribute("data-membershipid")) {
         //profile
         const id = anchor.getAttribute("data-membershipid");
 
         anchor.href = RouteHelper.NewProfile({
           mid: id,
         }).url;
-      } else if (anchor.hasAttribute("[data-characterid]")) {
+      } else if (anchor.hasAttribute("data-characterid")) {
         const mType =
           BungieMembershipType[
             anchor.getAttribute(
@@ -96,7 +99,7 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
         const characterId = anchor.getAttribute("data-characterid");
 
         anchor.href = RouteHelper.Gear(destinyId, mType, characterId).url;
-      } else if (anchor.hasAttribute("[data-applicationid]")) {
+      } else if (anchor.hasAttribute("data-applicationid")) {
         const applicationId = anchor.getAttribute("data-applicationid");
 
         anchor.href = RouteHelper.ApplicationDetail(applicationId).url;

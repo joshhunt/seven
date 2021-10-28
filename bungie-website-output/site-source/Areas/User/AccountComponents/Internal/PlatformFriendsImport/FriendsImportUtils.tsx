@@ -111,10 +111,6 @@ export class FriendsImportUtils {
         if (response) {
           PlatformFriendsDataStore.actions.setError(platform, null);
 
-          response.hasMore
-            ? (response.currentPage += 1)
-            : (response.currentPage += 0);
-
           PlatformFriendsDataStore.actions.updatePlatformFriendResponse(
             platform,
             response
@@ -176,10 +172,12 @@ export class FriendsImportUtils {
         const isFinal = i === linkedPlatforms.length - 1;
         const onCompleteCallback = isFinal && onComplete ? onComplete : null;
 
-        return FriendsImportUtils.getPlatformFriends(
-          platform,
-          onCompleteCallback
-        );
+        return () => {
+          return FriendsImportUtils.getPlatformFriends(
+            platform,
+            onCompleteCallback
+          );
+        };
       })
     );
   };

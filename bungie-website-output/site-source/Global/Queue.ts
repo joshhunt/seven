@@ -4,7 +4,7 @@
 export class Queue {
   public static Instance = new Queue();
 
-  private functionList: Promise<any>[] = [];
+  private functionList: (() => Promise<any>)[] = [];
 
   private readonly continue = async (): Promise<boolean> => {
     if (this.functionList.length !== 0) {
@@ -17,12 +17,12 @@ export class Queue {
   };
 
   protected readonly runFunction = async (
-    func: Promise<void>
+    func: () => Promise<void>
   ): Promise<void> => {
-    await func;
+    await func();
   };
 
-  public all = (functions: Promise<any>[]) => {
+  public all = (functions: (() => Promise<any>)[]) => {
     this.functionList = [...functions];
 
     return this.continue();

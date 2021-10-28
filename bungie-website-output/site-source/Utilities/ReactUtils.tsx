@@ -1,5 +1,5 @@
 import isEqual from "react-fast-compare";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { DataStore } from "@bungie/datastore";
 
 export class ReactUtils {
@@ -50,4 +50,20 @@ export const usePrevious = <T extends any>(value: T) => {
 
   // Return previous value (happens before update in useEffect above)
   return ref.current;
+};
+
+/**
+ * A hook that allows error boundaries to catch async errors.
+ * */
+export const useAsyncError = () => {
+  const [_, setError] = React.useState();
+
+  return React.useCallback(
+    (e) => {
+      setError(() => {
+        throw e;
+      });
+    },
+    [setError]
+  );
 };

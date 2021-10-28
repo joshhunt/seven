@@ -69,8 +69,8 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
 
   const openLinkWindow = (cred: BungieCredentialType) => {
     BrowserUtils.openWindow(
-      RouteHelper.GetAccountLink(cred, 0).url,
-      "linkui",
+      RouteHelper.SignInPreview(cred).url,
+      "linkpreviewui",
       onCredentialChange
     );
   };
@@ -137,10 +137,16 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
     const isCrossSave = EnumUtils.hasFlag(flag, AccountLinkingFlags.CrossSaved);
     const isPublic = EnumUtils.hasFlag(flag, AccountLinkingFlags.Public);
 
-    const crossSavedMessage =
-      destinyMembershipData.isCrossSaved && crossSaveEligible && isLinked
-        ? Localizer.Accountlinking.DisableCrossSaveToUnlink
-        : Localizer.Accountlinking.YourBungieAccountHasCross;
+    const isCrossSavedAndLinked =
+      destinyMembershipData.isCrossSaved && crossSaveEligible && isLinked;
+
+    const crossSavedAndLinkedMessage = isCrossSavedAndLinked
+      ? Localizer.Accountlinking.DisableCrossSaveToUnlink
+      : "";
+    const crossSavedAndNotLinkedMessage =
+      destinyMembershipData.isCrossSaved && !isLinked
+        ? Localizer.Accountlinking.YourBungieAccountHasCross
+        : "";
 
     const loggedInCredMessage =
       !!onPageUserLoggedInCred &&
@@ -155,8 +161,10 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
             {Localizer.Accountlinking.LinkAccount}
           </p>
         )}
-        {crossSavedMessage ? (
-          <p className={styles.subtitleMessage}>{crossSavedMessage}</p>
+        {crossSavedAndLinkedMessage || crossSavedAndNotLinkedMessage ? (
+          <p className={styles.subtitleMessage}>
+            {crossSavedAndLinkedMessage || crossSavedAndNotLinkedMessage}
+          </p>
         ) : null}
         {isLinked && (
           <p className={styles.subtitleMessage}>{loggedInCredMessage}</p>
