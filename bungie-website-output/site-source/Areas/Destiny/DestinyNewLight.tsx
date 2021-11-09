@@ -169,7 +169,6 @@ class DestinyNewLightInternal extends React.Component<
             "newlight_game",
             "newlight_destinations",
             "newlight_guardians",
-            "newlight_guardians",
             "newlight_gear",
             "newlight_activities",
             "newlight_guide",

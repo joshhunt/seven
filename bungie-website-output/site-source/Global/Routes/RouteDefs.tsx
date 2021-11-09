@@ -122,6 +122,11 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reveal"),
         (area) => new ActionRoute(area, "Info", { path: ":eventTag" }),
         (area) => new ActionRoute(area, "WitchQueen"),
+        (area) =>
+          new ActionRoute(area, "WitchQueenComparison", {
+            path: "WitchQueen/Comparison",
+            isOverride: true,
+          }),
       ],
     }),
     Direct: new Area({

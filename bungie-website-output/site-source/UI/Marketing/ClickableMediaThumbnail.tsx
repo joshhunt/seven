@@ -100,7 +100,11 @@ export const ClickableMediaThumbnail: React.FC<ClickableMediaThumbnailProps> = (
   const btnAttributes = {
     href: props.href,
     className: classNames(styles.mediaBtn, classes?.btnWrapper),
-    onClick: !props.href && handleBtnClick,
+    onClick: !props.href
+      ? handleBtnClick
+      : () => {
+          return;
+        },
     ["data-analytics-id"]: props.analyticsId,
   };
 

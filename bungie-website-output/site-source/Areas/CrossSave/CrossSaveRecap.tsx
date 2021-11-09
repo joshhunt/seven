@@ -93,11 +93,15 @@ class CrossSaveRecap extends React.Component<
       case DestinyGameVersions.Destiny2:
         return RouteHelper.NewLight();
       case DestinyGameVersions.Forsaken:
-        return RouteHelper.DestinyBuy({ target: "Forsaken" });
+        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "forsaken" });
       case DestinyGameVersions.Shadowkeep:
-        return RouteHelper.DestinyBuy({ target: "Shadowkeep" });
+        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "shadowkeep" });
       case DestinyGameVersions.BeyondLight:
-        return RouteHelper.DestinyBuy({ target: "BeyondLight" });
+        return RouteHelper.DestinyBuyDetail({
+          productFamilyTag: "beyondlight",
+        });
+      case DestinyGameVersions.TheWitchQueen:
+        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "witchqueen" });
       default:
         return RouteHelper.DestinyBuy();
     }

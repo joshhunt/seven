@@ -1,19 +1,18 @@
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { DataStore } from "@bungie/datastore";
 import {
   BungieMembershipType,
   DestinyGameVersions,
   GroupsForMemberFilter,
   GroupType,
 } from "@Enum";
-import { DataStore } from "@bungie/datastore";
-import React from "react";
-import { Renderer, Platform, CrossSave, GroupsV2 } from "@Platform";
-import { CrossSaveUtils } from "./CrossSaveUtils";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { CrossSave, GroupsV2, Platform, Renderer } from "@Platform";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SessionStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
+import React from "react";
+import { CrossSaveUtils } from "./CrossSaveUtils";
 
 export enum CrossSaveMode {
   U,
@@ -41,6 +40,8 @@ export interface ICrossSaveFlowState extends Renderer.CrossSaveUserData {
 export const CrossSaveValidGameVersions: DestinyGameVersions[] = [
   DestinyGameVersions.Shadowkeep,
   DestinyGameVersions.Forsaken,
+  DestinyGameVersions.BeyondLight,
+  DestinyGameVersions.TheWitchQueen,
 ];
 
 class CrossSaveFlowStateDataStoreInternal extends DataStore<

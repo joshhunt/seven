@@ -16,6 +16,9 @@ export type WitchQueenQueryResponse = {
         } | null;
       } | null> | null;
     } | null;
+    readonly hero: {
+      readonly hero_date_text: string | null;
+    } | null;
     readonly page_bottom_img_desktopConnection: {
       readonly edges: ReadonlyArray<{
         readonly node: {
@@ -50,6 +53,31 @@ export type WitchQueenQueryResponse = {
       } | null> | null;
     } | null;
     readonly locale_supports_gradient_font: boolean | null;
+    readonly sticky_buy_nav: {
+      readonly buy_btn_text: string | null;
+      readonly dropdown_title: string | null;
+      readonly wq_logo_desktopConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly wq_logo_mobileConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly mobile_dropdown_label: string | null;
+    } | null;
+    readonly sticky_nav_skus: ReadonlyArray<{
+      readonly wq_sku?: {
+        readonly label: string | null;
+        readonly sku_tag: string | null;
+      } | null;
+    } | null> | null;
     readonly section_blocks: ReadonlyArray<{
       readonly section_content?: {
         readonly section: string | null;
@@ -140,6 +168,9 @@ query WitchQueenQuery(
         }
       }
     }
+    hero {
+      hero_date_text
+    }
     page_bottom_img_desktopConnection {
       edges {
         node {
@@ -174,6 +205,34 @@ query WitchQueenQuery(
       }
     }
     locale_supports_gradient_font
+    sticky_buy_nav {
+      buy_btn_text
+      dropdown_title
+      wq_logo_desktopConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      wq_logo_mobileConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      mobile_dropdown_label
+    }
+    sticky_nav_skus {
+      __typename
+      ... on NovaProductPageStickyNavSkusWqSku {
+        wq_sku {
+          label
+          sku_tag
+        }
+      }
+    }
     section_blocks {
       __typename
       ... on NovaProductPageSectionBlocksSectionContent {
@@ -322,6 +381,24 @@ const node: ConcreteRequest = (function () {
     v5 = {
       alias: null,
       args: null,
+      concreteType: "NovaProductPageHero",
+      kind: "LinkedField",
+      name: "hero",
+      plural: false,
+      selections: [
+        {
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "hero_date_text",
+          storageKey: null,
+        },
+      ],
+      storageKey: null,
+    } as any,
+    v6 = {
+      alias: null,
+      args: null,
       concreteType: "SysAssetConnection",
       kind: "LinkedField",
       name: "page_bottom_img_desktopConnection",
@@ -329,7 +406,7 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v6 = {
+    v7 = {
       alias: null,
       args: null,
       concreteType: "SysAssetConnection",
@@ -339,42 +416,42 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v7 = {
+    v8 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "section_heading_wq_text",
       storageKey: null,
     } as any,
-    v8 = {
+    v9 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "editions_section_title",
       storageKey: null,
     } as any,
-    v9 = {
+    v10 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "editions_tab_anniversary_bundle",
       storageKey: null,
     } as any,
-    v10 = {
+    v11 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "editions_tab_standard",
       storageKey: null,
     } as any,
-    v11 = {
+    v12 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "editions_tab_deluxe",
       storageKey: null,
     } as any,
-    v12 = {
+    v13 = {
       alias: null,
       args: null,
       concreteType: "SysAssetConnection",
@@ -384,7 +461,7 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v13 = {
+    v14 = {
       alias: null,
       args: null,
       concreteType: "SysAssetConnection",
@@ -394,14 +471,98 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v14 = {
+    v15 = {
       alias: null,
       args: null,
       kind: "ScalarField",
       name: "locale_supports_gradient_font",
       storageKey: null,
     } as any,
-    v15 = {
+    v16 = {
+      alias: null,
+      args: null,
+      concreteType: "NovaProductPageStickyBuyNav",
+      kind: "LinkedField",
+      name: "sticky_buy_nav",
+      plural: false,
+      selections: [
+        {
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "buy_btn_text",
+          storageKey: null,
+        },
+        {
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "dropdown_title",
+          storageKey: null,
+        },
+        {
+          alias: null,
+          args: null,
+          concreteType: "SysAssetConnection",
+          kind: "LinkedField",
+          name: "wq_logo_desktopConnection",
+          plural: false,
+          selections: v3 /*: any*/,
+          storageKey: null,
+        },
+        {
+          alias: null,
+          args: null,
+          concreteType: "SysAssetConnection",
+          kind: "LinkedField",
+          name: "wq_logo_mobileConnection",
+          plural: false,
+          selections: v3 /*: any*/,
+          storageKey: null,
+        },
+        {
+          alias: null,
+          args: null,
+          kind: "ScalarField",
+          name: "mobile_dropdown_label",
+          storageKey: null,
+        },
+      ],
+      storageKey: null,
+    } as any,
+    v17 = {
+      kind: "InlineFragment",
+      selections: [
+        {
+          alias: null,
+          args: null,
+          concreteType: "NovaProductPageStickyNavSkusWqSkuBlock",
+          kind: "LinkedField",
+          name: "wq_sku",
+          plural: false,
+          selections: [
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "label",
+              storageKey: null,
+            },
+            {
+              alias: null,
+              args: null,
+              kind: "ScalarField",
+              name: "sku_tag",
+              storageKey: null,
+            },
+          ],
+          storageKey: null,
+        },
+      ],
+      type: "NovaProductPageStickyNavSkusWqSku",
+      abstractKey: null,
+    } as any,
+    v18 = {
       alias: null,
       args: null,
       concreteType: "SysAssetConnection",
@@ -411,7 +572,7 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v16 = {
+    v19 = {
       alias: null,
       args: null,
       concreteType: "SysAssetConnection",
@@ -421,7 +582,7 @@ const node: ConcreteRequest = (function () {
       selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v17 = {
+    v20 = {
       kind: "InlineFragment",
       selections: [
         {
@@ -518,8 +679,8 @@ const node: ConcreteRequest = (function () {
               name: "clickable_thumbnails",
               plural: true,
               selections: [
-                v15 /*: any*/,
-                v16 /*: any*/,
+                v18 /*: any*/,
+                v19 /*: any*/,
                 {
                   alias: null,
                   args: null,
@@ -567,8 +728,8 @@ const node: ConcreteRequest = (function () {
                   name: "blurb_heading",
                   storageKey: null,
                 },
-                v15 /*: any*/,
-                v16 /*: any*/,
+                v18 /*: any*/,
+                v19 /*: any*/,
                 {
                   alias: null,
                   args: null,
@@ -585,6 +746,13 @@ const node: ConcreteRequest = (function () {
       ],
       type: "NovaProductPageSectionBlocksSectionContent",
       abstractKey: null,
+    } as any,
+    v21 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "__typename",
+      storageKey: null,
     } as any;
   return {
     fragment: {
@@ -613,6 +781,18 @@ const node: ConcreteRequest = (function () {
             v12 /*: any*/,
             v13 /*: any*/,
             v14 /*: any*/,
+            v15 /*: any*/,
+            v16 /*: any*/,
+            {
+              alias: null,
+              args: null,
+              concreteType: null,
+              kind: "LinkedField",
+              name: "sticky_nav_skus",
+              plural: true,
+              selections: [v17 /*: any*/],
+              storageKey: null,
+            },
             {
               alias: null,
               args: null,
@@ -620,7 +800,7 @@ const node: ConcreteRequest = (function () {
               kind: "LinkedField",
               name: "section_blocks",
               plural: true,
-              selections: [v17 /*: any*/],
+              selections: [v20 /*: any*/],
               storageKey: null,
             },
           ],
@@ -656,6 +836,18 @@ const node: ConcreteRequest = (function () {
             v12 /*: any*/,
             v13 /*: any*/,
             v14 /*: any*/,
+            v15 /*: any*/,
+            v16 /*: any*/,
+            {
+              alias: null,
+              args: null,
+              concreteType: null,
+              kind: "LinkedField",
+              name: "sticky_nav_skus",
+              plural: true,
+              selections: [v21 /*: any*/, v17 /*: any*/],
+              storageKey: null,
+            },
             {
               alias: null,
               args: null,
@@ -663,16 +855,7 @@ const node: ConcreteRequest = (function () {
               kind: "LinkedField",
               name: "section_blocks",
               plural: true,
-              selections: [
-                {
-                  alias: null,
-                  args: null,
-                  kind: "ScalarField",
-                  name: "__typename",
-                  storageKey: null,
-                },
-                v17 /*: any*/,
-              ],
+              selections: [v21 /*: any*/, v20 /*: any*/],
               storageKey: null,
             },
           ],
@@ -681,15 +864,15 @@ const node: ConcreteRequest = (function () {
       ],
     },
     params: {
-      cacheID: "02bacdea4f825b435ef9c34e308187ae",
+      cacheID: "1da3c1ec71e3895d2f92cfef90901fa3",
       id: null,
       metadata: {},
       name: "WitchQueenQuery",
       operationKind: "query",
       text:
-        'query WitchQueenQuery(\n  $locale: String!\n) {\n  nova_product_page(uid: "blt6927482d223d0222", locale: $locale) {\n    title\n    meta_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    page_bottom_img_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    page_bottom_img_mobileConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    section_heading_wq_text\n    editions_section_title\n    editions_tab_anniversary_bundle\n    editions_tab_standard\n    editions_tab_deluxe\n    editions_section_bg_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    collectors_edition_bg_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    locale_supports_gradient_font\n    section_blocks {\n      __typename\n      ... on NovaProductPageSectionBlocksSectionContent {\n        section_content {\n          section\n          section_class\n          section_bg_desktopConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          section_bg_mobileConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          img_above_headingConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          section_heading\n          primary_section_blurbs {\n            blurb_text\n            uses_special_font\n          }\n          clickable_thumbnails {\n            thumbnail_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            screenshot_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            img_caption\n            bottom_caption\n            video_id\n          }\n          image_and_text_blocks {\n            blurb\n            blurb_heading\n            thumbnail_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            screenshot_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            caption\n          }\n        }\n      }\n    }\n  }\n}\n',
+        'query WitchQueenQuery(\n  $locale: String!\n) {\n  nova_product_page(uid: "blt6927482d223d0222", locale: $locale) {\n    title\n    meta_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    hero {\n      hero_date_text\n    }\n    page_bottom_img_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    page_bottom_img_mobileConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    section_heading_wq_text\n    editions_section_title\n    editions_tab_anniversary_bundle\n    editions_tab_standard\n    editions_tab_deluxe\n    editions_section_bg_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    collectors_edition_bg_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    locale_supports_gradient_font\n    sticky_buy_nav {\n      buy_btn_text\n      dropdown_title\n      wq_logo_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      wq_logo_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      mobile_dropdown_label\n    }\n    sticky_nav_skus {\n      __typename\n      ... on NovaProductPageStickyNavSkusWqSku {\n        wq_sku {\n          label\n          sku_tag\n        }\n      }\n    }\n    section_blocks {\n      __typename\n      ... on NovaProductPageSectionBlocksSectionContent {\n        section_content {\n          section\n          section_class\n          section_bg_desktopConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          section_bg_mobileConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          img_above_headingConnection {\n            edges {\n              node {\n                url\n              }\n            }\n          }\n          section_heading\n          primary_section_blurbs {\n            blurb_text\n            uses_special_font\n          }\n          clickable_thumbnails {\n            thumbnail_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            screenshot_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            img_caption\n            bottom_caption\n            video_id\n          }\n          image_and_text_blocks {\n            blurb\n            blurb_heading\n            thumbnail_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            screenshot_imgConnection {\n              edges {\n                node {\n                  url\n                }\n              }\n            }\n            caption\n          }\n        }\n      }\n    }\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "444c5ba14823229d6d21b133bf126355";
+(node as any).hash = "d8cb6cab4d0c42792832eee66c893d78";
 export default node;

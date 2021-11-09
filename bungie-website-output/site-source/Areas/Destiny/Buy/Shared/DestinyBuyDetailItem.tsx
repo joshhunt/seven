@@ -39,6 +39,7 @@ interface IDestinyBuyDetailItemProps {
   /* all images user can paginate through when image is opened in modal */
   imagesForPagination?: string[] | string;
   imgIndexInPagination?: number;
+  showSkuBtn?: boolean;
 }
 
 interface IDestinyBuyDetailItemState {
@@ -70,12 +71,16 @@ export class DestinyBuyDetailItem extends React.Component<
       skuItem,
       collectorsEdition,
       strangerEdition,
+      showSkuBtn,
     } = this.props;
 
     let buttonLabel = item ? item.buttonLabel : skuItem?.buttonLabel;
     if (!item && skuItem && skuItem.buyButtonDisabled) {
       buttonLabel = skuItem.soldOutButtonLabel;
     }
+
+    const buttonSku =
+      (showSkuBtn ? skuItem?.skuTag : null) ?? item?.buttonSku ?? null;
 
     return item || skuItem ? (
       <div className={classNames(styles.container, styles[orientation])}>
@@ -105,7 +110,7 @@ export class DestinyBuyDetailItem extends React.Component<
             />
           }
           buttonLabel={buttonLabel}
-          buttonSku={item ? item.buttonSku : null}
+          buttonSku={buttonSku}
           buttonUrl={
             item
               ? item.buttonLink
@@ -113,6 +118,7 @@ export class DestinyBuyDetailItem extends React.Component<
           }
           buttonType={skuItem?.buyButtonDisabled ? "disabled" : "gold"}
           orientation={orientation}
+          reverseBlurbAndSkuBtn={showSkuBtn}
         />
       </div>
     ) : null;
@@ -127,6 +133,7 @@ interface ITextSectionProps {
   buttonUrl?: string;
   buttonType?: ButtonTypes;
   orientation: DetailItemOrientations;
+  reverseBlurbAndSkuBtn?: boolean;
 }
 
 const TextSection = (props: ITextSectionProps) => {
@@ -138,22 +145,37 @@ const TextSection = (props: ITextSectionProps) => {
     buttonUrl,
     buttonType,
     orientation,
+    reverseBlurbAndSkuBtn,
   } = props;
+
+  const showSkuButton = buttonLabel && (buttonUrl || buttonSku);
 
   return (
     <div className={classNames(styles.textSection, styles[orientation])}>
-      <div className={styles.textTitle}>{title}</div>
-      <div className={styles.textBlurb}>{blurb}</div>
-      {((buttonLabel && buttonUrl) || buttonSku) && (
-        <PotentialSkuButton
-          className={styles.button}
-          url={buttonUrl}
-          sku={buttonSku}
-          buttonType={buttonType}
-        >
-          {buttonLabel}
-        </PotentialSkuButton>
-      )}
+      <div
+        className={classNames(styles.textTitle, {
+          [styles.hasSkuBtn]: showSkuButton,
+        })}
+      >
+        {title}
+      </div>
+      <div
+        className={classNames(styles.textContentWrapper, {
+          [styles.reverse]: reverseBlurbAndSkuBtn,
+        })}
+      >
+        <div className={styles.textBlurb}>{blurb}</div>
+        {showSkuButton && (
+          <PotentialSkuButton
+            className={styles.button}
+            url={buttonUrl}
+            sku={buttonSku}
+            buttonType={buttonType}
+          >
+            {buttonLabel}
+          </PotentialSkuButton>
+        )}
+      </div>
     </div>
   );
 };
@@ -195,6 +217,7 @@ export const PotentialSkuButton: React.FC<IPotentialSkuButtonProps> = (
       onClick={fixedOnClick}
       size={BasicSize.Small}
       buttonType={buttonType}
+      className={styles.skuBtn}
     >
       {children}
     </Button>

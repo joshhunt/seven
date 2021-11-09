@@ -64,7 +64,10 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
     ViewerPermissionContext
   );
   const [checked, setChecked] = useState(
-    isSelf && EnumUtils.hasFlag(flag, AccountLinkingFlags.Public)
+    isSelf &&
+      globalStateData.credentialTypes.find(
+        (x) => x.credentialType === credentialType
+      )?.isPublic
   );
 
   const openLinkWindow = (cred: BungieCredentialType) => {

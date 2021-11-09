@@ -13,6 +13,7 @@ import { CookieConsentValidity, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as H from "history";
 import * as React from "react";
+import { EnumUtils } from "../../Utilities/EnumUtils";
 import styles from "./CookieConsent.module.scss";
 
 interface ICookieConsentProps {
@@ -50,7 +51,13 @@ export class CookieConsent extends React.Component<
 
   public componentDidMount() {
     this.destroyHistory = this.props.history.listen(() => {
-      if (this.state.consentValidity === CookieConsentValidity.Current) {
+      if (
+        !EnumUtils.looseEquals(
+          this.state.consentValidity,
+          CookieConsentValidity.Current,
+          CookieConsentValidity
+        )
+      ) {
         this.hide();
         this.destroyHistory();
       }
@@ -71,6 +78,9 @@ export class CookieConsent extends React.Component<
   }
 
   public componentWillUnmount() {
+    this.setState({
+      consentValidity: CookieConsentValidity.Current,
+    });
     this.destroyHistory();
   }
 
@@ -93,21 +103,23 @@ export class CookieConsent extends React.Component<
       return;
     }
 
-    if (!this.checkIsInEU()) {
+    if (!inEU()) {
       this.autoSetCookieFlag = true;
 
-      setTimeout(() => UserUtils.SetConsentCookie(), 2000);
+      setTimeout(() => {
+        UserUtils.SetConsentCookie();
+      }, 2000);
     }
   }
 
-  private checkIsInEU() {
-    const isInEu = inEU();
-
-    return isInEu;
-  }
-
   public render() {
-    if (this.state.consentValidity === CookieConsentValidity.Current) {
+    if (
+      EnumUtils.looseEquals(
+        this.state.consentValidity,
+        CookieConsentValidity.Current,
+        CookieConsentValidity
+      )
+    ) {
       return null;
     }
 
@@ -118,7 +130,7 @@ export class CookieConsent extends React.Component<
       ? Localizer.Messages.CookieConsentUpdateMessage
       : Localizer.Messages.CookieConsentMessage;
 
-    if (!this.checkIsInEU()) {
+    if (!inEU()) {
       baseString = expired
         ? Localizer.Messages.CookieConsentUpdateMessagePassive
         : Localizer.Messages.CookieConsentMessagePassive;
@@ -141,7 +153,7 @@ export class CookieConsent extends React.Component<
       [styles.on]: this.state.on,
     });
 
-    const isInEu = this.checkIsInEU();
+    const isInEu = inEU();
 
     return (
       <div className={classes}>

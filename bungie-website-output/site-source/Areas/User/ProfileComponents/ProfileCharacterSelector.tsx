@@ -109,9 +109,7 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
         />
         <div className={styles.text}>
           <h4>{characterProps.class}</h4>
-          <h5>
-            {characterProps.race} {characterProps.gender}
-          </h5>
+          <h5>{characterProps.race}</h5>
         </div>
         {characterProps.light}
       </Anchor>

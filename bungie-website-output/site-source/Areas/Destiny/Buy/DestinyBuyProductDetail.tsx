@@ -15,6 +15,7 @@ import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import * as React from "react";
 import { Platform, Content } from "@Platform";
 import { Localizer } from "@bungie/localization";
@@ -337,6 +338,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
       const icon = "keyboard_arrow_up";
 
+      const includeButtons = UrlUtils.QueryToObject()?.t_nov9_btns === "true";
+
       return (
         <SystemDisabledHandler systems={["BuyFlow"]}>
           <SpinnerContainer loading={!destinyProductFamily}>
@@ -574,6 +577,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                               imgIndexInPagination={i}
                               orientation={"vertical"}
                               skuItem={a}
+                              showSkuBtn={includeButtons}
                             />
                           </GridCol>
                         )

@@ -17,8 +17,10 @@ import { UserUtils } from "@Utilities/UserUtils";
 import { Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import classNames from "classnames";
 
 interface SendMessageProps {
+  className: string;
   recipientsBnetMembershipId: string;
   showModal: boolean;
   onClose: () => void;
@@ -26,12 +28,6 @@ interface SendMessageProps {
 
 export const SendMessage: React.FC<SendMessageProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const placeholder =
-    "Send Message modal placeholder -  will fill with forms later";
-  const recipient = "Recipient";
-  const body = "Message";
-
-  const profileLoc = Localizer.Profile;
 
   const [modalIsOpen, toggleModalVisibility] = useState<boolean>(
     props.showModal
@@ -66,20 +62,21 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
     toggleModalPermission(UserUtils.isAuthenticated(globalState));
   }, [globalState.loggedInUser]);
 
-  const messagePlaceholder = "MESSAGE";
-  const sendMessageButton = "SEND";
-
   const onClose = () => {
     toggleModalVisibility(false);
     props.onClose();
   };
+
+  const classes = classNames(styles.sendMessageModal, {
+    [props.className]: props.className,
+  });
 
   return (
     <Modal
       open={modalIsOpen}
       onClose={() => onClose()}
       contentClassName={styles.sendMessageModalContent}
-      className={styles.sendMessageModal}
+      className={classes}
     >
       {!canShowModal && (
         <Auth
@@ -96,7 +93,7 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
           validationSchema={Yup.object({
             message: Yup.string(),
           })}
-          onSubmit={(values, { setSubmitting }) => {
+          onSubmit={(values, { setSubmitting, resetForm }) => {
             sendMessage(
               {
                 subject: "",
@@ -106,8 +103,10 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
                 ],
                 body: values.message,
               },
-
-              () => setSubmitting(false)
+              () => {
+                resetForm();
+                setSubmitting(false);
+              }
             );
           }}
         >

@@ -295,6 +295,10 @@ export class AccountSidebar extends React.Component<
       return null;
     }
 
+    const bungieGlobalNameObject = UserUtils.getBungieNameFromBnetGeneralUser(
+      loggedInUser?.user
+    );
+
     return (
       <div className={styles.userInfoHeader}>
         <div
@@ -310,10 +314,8 @@ export class AccountSidebar extends React.Component<
           />
           <div className={styles.textContent}>
             <div className={styles.userDisplayName}>
-              {
-                UserUtils.getBungieNameFromBnetGeneralUser(loggedInUser?.user)
-                  ?.bungieGlobalName
-              }
+              {bungieGlobalNameObject?.bungieGlobalName +
+                bungieGlobalNameObject?.bungieGlobalCodeWithHashtag}
             </div>
             <div className={styles.userClans}>{clanNames.join(", ")}</div>
           </div>

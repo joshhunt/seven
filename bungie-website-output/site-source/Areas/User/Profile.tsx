@@ -33,7 +33,11 @@ import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
+import {
+  Spinner,
+  SpinnerContainer,
+  SpinnerDisplayMode,
+} from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -112,7 +116,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
   >(null);
 
   const [showMessageModal, toggleShowMessageModal] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isValidUser, setIsValidUser] = useState(true);
 
@@ -144,8 +148,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   useEffect(() => {
     if (membershipId && membershipType) {
-      setIsLoading(true);
-
       ProfileDestinyMembershipDataStore.actions.loadUserData(
         {
           membershipId,
@@ -167,13 +169,22 @@ const Profile: React.FC<ProfileProps> = (props) => {
       setIsValidUser(false);
     }
 
-    if (destinyMembership?.membershipData) {
+    //we want the requested user, not the destinyMembership that was previously loaded; the params.mid is the source of truth
+    const isRequestedUser =
+      destinyMembership?.membershipData?.destinyMemberships?.find(
+        (d) => d.membershipId === params?.mid
+      ) ||
+      destinyMembership?.membershipData?.bungieNetUser?.membershipId ===
+        params?.mid;
+
+    if (destinyMembership?.membershipData && isRequestedUser) {
       updateUrlWithAllParams(bungieGlobalNameObject.bungieGlobalName);
       loadDestinyProfileData();
       //destiny data has its own loading spinner so stop the profile loading spinner
+
       setIsLoading(false);
     }
-  }, [destinyMembership, isLoading]);
+  }, [destinyMembership]);
 
   useEffect(() => {
     getCredentialTypesForUser();
@@ -351,6 +362,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
                   {profileLoc.SendMessage}
                 </Button>
                 <SendMessage
+                  className={styles.sendMessageContainer}
                   recipientsBnetMembershipId={bungieNetUser.membershipId}
                   showModal={showMessageModal}
                   onClose={() => toggleShowMessageModal(false)}

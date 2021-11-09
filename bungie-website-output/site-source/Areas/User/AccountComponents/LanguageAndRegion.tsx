@@ -24,12 +24,16 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
     ViewerPermissionContext
   );
   const { loggedInUser } = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
-  const [selectedLocale, setSelectedLocale] = useState("");
+  const [selectedLocale, setSelectedLocale] = useState(
+    LocalizationState.urlLocale ||
+      LocalizationState.cookieLocale ||
+      loggedInUser?.user?.locale ||
+      "en"
+  );
   const [inherit, setInherit] = useState(true);
-  const localeOnRender = loggedInUser?.user?.locale ?? "en";
 
   useEffect(() => {
-    if (isAdmin) {
+    if (membershipIdFromQuery && isAdmin) {
       Platform.UserService.GetMembershipDataById(
         membershipIdFromQuery,
         BungieMembershipType.BungieNext
@@ -41,7 +45,7 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e));
     } else {
-      setSelectedLocale(localeOnRender);
+      setSelectedLocale(selectedLocale);
       setInherit(loggedInUser?.user?.localeInheritDefault ?? true);
     }
   }, [membershipIdFromQuery, isSelf, isAdmin, loggedInUserId]);
@@ -78,9 +82,8 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
 
       Platform.UserService.UpdateUser(request)
         .then(() => {
-          GlobalStateDataStore.actions
-            .refreshCurrentUser(true)
-            .async.then(showSettingsChangedToast);
+          showSettingsChangedToast();
+          /*	GlobalStateDataStore.actions.refreshCurrentUser(true).async.then(showSettingsChangedToast);*/
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e));

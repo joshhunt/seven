@@ -123,10 +123,7 @@ export class CrossSaveAccountLinkItem extends React.Component<
           this.props.stateIdentifier,
           resetAuth
         ).url
-      : RouteHelper.GetAccountLink(
-          this.credentialType,
-          this.props.stateIdentifier
-        ).url;
+      : RouteHelper.SignInPreview(this.credentialType).url;
 
     BrowserUtils.openWindow(url, "linkui", () => {
       this.props.onAccountLinked &&

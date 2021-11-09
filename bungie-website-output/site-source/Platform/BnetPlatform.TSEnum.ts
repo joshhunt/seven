@@ -1675,6 +1675,8 @@ export enum DestinyGameVersions {
   YearTwoAnnualPass = 16,
   Shadowkeep = 32,
   BeyondLight = 64,
+  Anniversary30th = 128,
+  TheWitchQueen = 256,
 }
 
 export enum DestinyRace {

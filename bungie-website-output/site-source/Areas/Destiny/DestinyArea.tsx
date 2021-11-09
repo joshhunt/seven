@@ -31,6 +31,9 @@ class DestinyArea extends React.Component<RouteComponentProps> {
     const beyondLightPath = RouteDefs.Areas.Destiny.getAction("BeyondLight")
       .path;
     const witchQueenPath = RouteDefs.Areas.Destiny.getAction("WitchQueen").path;
+    const witchQueenSkuTestPath = RouteDefs.Areas.Destiny.getAction(
+      "WitchQueenComparison"
+    ).path;
 
     return (
       <React.Fragment>
@@ -73,6 +76,14 @@ class DestinyArea extends React.Component<RouteComponentProps> {
             component={() =>
               import(
                 "@Areas/Destiny/Buy/DestinyBuyProductDetail" /* webpackChunkName: "Destiny-BuyDetail" */
+              )
+            }
+          />
+          <AsyncRoute
+            path={witchQueenSkuTestPath}
+            component={() =>
+              import(
+                "@Areas/Destiny/WitchQueen/WitchQueenSkuComparisonTest" /* webpackChunkName: "Destiny-WitchQueen-SkuTest" */
               )
             }
           />

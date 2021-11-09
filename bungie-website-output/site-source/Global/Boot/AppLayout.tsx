@@ -39,6 +39,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 // @ts-ignore
 import ScrollMemory from "react-router-scroll-memory";
 import "./AppLayout.scss";
+import { ErrorBnetOffline } from "../../UI/Errors/ErrorBnetOffline";
 import { CookieConsent } from "./CookieConsent";
 import { Footer } from "./Footer";
 import { Responsive } from "./Responsive";
@@ -243,7 +244,13 @@ class AppLayout extends React.Component<
 
   public render() {
     if (this.settingsLoaded && !this.systemEnabled) {
-      throw new SystemDisabledError(this.rendererCoreSystemName);
+      if (
+        this.state.globalState?.coreSettings?.systems?.[
+          this.rendererCoreSystemName
+        ]?.enabled !== null
+      ) {
+        return <ErrorBnetOffline />;
+      }
     }
 
     const responsiveClasses =

@@ -107,8 +107,8 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
         ? AccountLinkingFlags.CrossSaved
         : AccountLinkingFlags.None;
       const isPublic = !!globalStateData?.credentialTypes?.find(
-        (c) => c.credentialType === validCredentialType && c.isPublic
-      )
+        (c) => c.credentialType === validCredentialType
+      )?.isPublic
         ? AccountLinkingFlags.Public
         : AccountLinkingFlags.None;
 

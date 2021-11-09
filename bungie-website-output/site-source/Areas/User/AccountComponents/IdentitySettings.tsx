@@ -68,14 +68,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   const [onPageUser, setOnPageUser] = useState<User.GeneralUser>();
   const [bungieName, setBungieName] = useState<IBungieName>(null);
 
-  /*	const displayNameSuggestions =
-			[globalStateData.loggedInUser?.user?.xboxDisplayName,
-				globalStateData.loggedInUser?.user?.psnDisplayName,
-				globalStateData.loggedInUser?.user?.steamDisplayName,
-				globalStateData.loggedInUser?.user?.stadiaDisplayName,
-				globalStateData.loggedInUser?.user?.twitchDisplayName]
-				.filter(dn => dn && dn !== globalStateData.loggedInUser?.user?.displayName);*/
-
   /* Functions */
   const showSettingsChangedToast = () => {
     Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
@@ -120,12 +112,8 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   const handleAvatarPageChange = (pageNumber: { selected: number }) => {
-    setLoading(true);
     const newOffset = Math.ceil(pageNumber.selected * avatarsPerPage);
     setAvatarOffset(newOffset);
-    /* There's a kind of off-putting way that the avatars load in one at a time with this method, so I set a timeout to hide it from view
-		Themes do it too but less egregiously */
-    setTimeout(() => setLoading(false), 500);
   };
 
   const loadAvatars = () => {
