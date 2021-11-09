@@ -260,6 +260,17 @@
     "path": "/7/en/Destiny/WitchQueen"
   },
   {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "WitchQueenComparison",
+    "params": {
+      "path": "WitchQueen/Comparison",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/WitchQueen/Comparison"
+  },
+  {
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
