@@ -4,7 +4,6 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
 import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
-import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { AclEnum, AuthorizationStatus } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
@@ -18,10 +17,9 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
 import React, { useContext, useEffect, useState } from "react";
+import { RouteHelper } from "@Global/Routes/RouteHelper";
 
 interface AuthorizedApplicationsProps {
   /** The mid of the onPageUser */
@@ -148,9 +146,12 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                         </span>
                       )}
                     </span>
-                    <span className={styles.appHistory}>
+                    <a
+                      className={styles.appHistory}
+                      href={RouteHelper.ApplicationHistory().url}
+                    >
                       {Localizer.Accountlinking.GetHistory}
-                    </span>
+                    </a>
                   </span>
                 }
                 icon={
