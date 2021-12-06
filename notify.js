@@ -79,24 +79,53 @@ async function notify(_currentRoutes) {
     .filter(Boolean)
     .join("\n\n");
 
-  console.log(description);
+  const title = "Bungie.net website has been updated";
+  const url = "https://github.com/joshhunt/seven";
+
+  const MAX_MESSAGE_LENGTH = 3500;
+  let messageLength = description.length + title.length + url.length;
 
   let discordMessage = new discord.MessageBuilder()
-    .setTitle("Bungie.net website has been updated")
-    .setURL("https://github.com/joshhunt/seven")
+    .setTitle(title)
+    .setURL(url)
     .setDescription(description);
 
   Object.entries(changedFiles).forEach(([changeType, files]) => {
-    discordMessage = discordMessage.addField(
-      `Files ${changeType}`,
-      files.join("\n")
-    );
+    const fieldTitle = `Files ${changeType}`;
+    let fieldBody = "";
+
+    let filesIncluded = 0;
+
+    for (const file of files) {
+      const newTotal =
+        messageLength + fieldTitle.length + fieldBody.length + file.length + 1;
+
+      if (newTotal < MAX_MESSAGE_LENGTH) {
+        fieldBody = fieldBody + "\n" + file;
+        filesIncluded += 1;
+      } else {
+        fieldBody =
+          fieldBody + "\n" + `plus ${files.length - filesIncluded} more files`;
+      }
+    }
+
+    discordMessage = discordMessage.addField(fieldTitle, fieldBody);
+    messageLength += fieldTitle.length + fieldBody.length;
   });
 
   if (process.env.SILENT_NOTIFICATIONS || !discordHook) {
     console.log("Suppressing discord notification", discordMessage);
   } else {
-    await discordHook.send(discordMessage);
+    try {
+      await discordHook.send(discordMessage);
+    } catch (err) {
+      let fallbackDiscordMessage = new discord.MessageBuilder()
+        .setTitle(title)
+        .setURL(url)
+        .setDescription("Unknown changes - previous message failed");
+
+      await discordHook.send(fallbackDiscordMessage);
+    }
   }
 }
 
