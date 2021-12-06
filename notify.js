@@ -2,6 +2,7 @@ const _ = require("lodash");
 const fs = require("fs-extra");
 const discord = require("discord-webhook-node");
 const simpleGit = require("simple-git");
+const util = require("util");
 
 const discordHook =
   process.env.DISCORD_WEBHOOK &&
@@ -82,7 +83,9 @@ async function notify(_currentRoutes) {
   const title = "Bungie.net website has been updated";
   const url = "https://github.com/joshhunt/seven";
 
-  const MAX_MESSAGE_LENGTH = 3500;
+  const MAX_MESSAGE_LENGTH = 5000;
+  const MAX_FIELD_VALUE_LENGTH = 1024;
+
   let messageLength = description.length + title.length + url.length;
 
   let discordMessage = new discord.MessageBuilder()
@@ -97,19 +100,33 @@ async function notify(_currentRoutes) {
     let filesIncluded = 0;
 
     for (const file of files) {
-      const newTotal =
-        messageLength + fieldTitle.length + fieldBody.length + file.length + 1;
+      if (fieldBody) {
+        fieldBody += "\n";
+      }
 
-      if (newTotal < MAX_MESSAGE_LENGTH) {
-        fieldBody = fieldBody + "\n" + file;
+      const truncationMessage = `plus ${
+        files.length - filesIncluded
+      } more files`;
+
+      const newFieldBodyLength =
+        fieldBody.length + file.length + truncationMessage.length;
+      const newEmbedTotalLength =
+        messageLength + fieldTitle.length + newFieldBodyLength;
+
+      if (
+        newFieldBodyLength < MAX_FIELD_VALUE_LENGTH &&
+        newEmbedTotalLength < MAX_MESSAGE_LENGTH
+      ) {
+        fieldBody = fieldBody + file;
         filesIncluded += 1;
       } else {
-        fieldBody =
-          fieldBody + "\n" + `plus ${files.length - filesIncluded} more files`;
+        fieldBody = fieldBody + truncationMessage;
+        break;
       }
     }
 
     discordMessage = discordMessage.addField(fieldTitle, fieldBody);
+    console.log("field", fieldTitle, "length is", fieldBody.length);
     messageLength += fieldTitle.length + fieldBody.length;
   });
 
@@ -123,6 +140,7 @@ async function notify(_currentRoutes) {
     } catch (err) {
       console.error("Error testing discord notification");
       console.error(err);
+      console.error(util.inspect(discordMessage, false, null, true));
       let fallbackDiscordMessage = new discord.MessageBuilder()
         .setTitle(title)
         .setURL(url)
