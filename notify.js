@@ -113,12 +113,16 @@ async function notify(_currentRoutes) {
     messageLength += fieldTitle.length + fieldBody.length;
   });
 
+  console.log("messageLength", messageLength);
+
   if (process.env.SILENT_NOTIFICATIONS || !discordHook) {
     console.log("Suppressing discord notification", discordMessage);
   } else {
     try {
       await discordHook.send(discordMessage);
     } catch (err) {
+      console.error("Error testing discord notification");
+      console.error(err);
       let fallbackDiscordMessage = new discord.MessageBuilder()
         .setTitle(title)
         .setURL(url)
