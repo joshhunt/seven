@@ -1,10 +1,12 @@
+// tslint:disable: max-file-line-count
+
+import { Localizer } from "@bungie/localization/Localizer";
 import { DetailedError } from "@CustomErrors";
 import * as Globals from "@Enum";
 import {
   GlobalState,
   GlobalStateComponentProps,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization/Localizer";
 import { Fireteam, Friends, GroupsV2, Ignores, User } from "@Platform";
 import * as H from "history";
 import Cookies from "js-cookie";
@@ -31,19 +33,37 @@ export enum CookieConsentValidity {
   Current,
 }
 
+export enum EmailValidationState {
+  None,
+  NotVerified,
+  Verified,
+  Verifying,
+}
+
 export class UserUtils {
-  /** Returns true if the user is authenticated */
-  public static isAuthenticated(
-    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
-  ) {
-    return gs.loggedInUser !== undefined;
-  }
+  public static readonly emptyBungieNameObject = {
+    bungieGlobalName: null,
+    bungieGlobalCode: null,
+    bungieGlobalCodeWithHashtag: null,
+  } as IBungieName;
 
   /** Returns true if the user is authenticated */
   public static get hasAuthenticationCookie() {
     const membershipId = Cookies.get("bungleme");
 
     return membershipId !== undefined && membershipId !== "0";
+  }
+
+  /** Returns the logged in user's membership ID */
+  public static get loggedInUserMembershipIdFromCookie() {
+    return Cookies.get("bungleme");
+  }
+
+  /** Returns true if the user is authenticated */
+  public static isAuthenticated(
+    gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
+  ) {
+    return gs.loggedInUser !== undefined;
   }
 
   public static getAuthChangeStatus(
@@ -72,16 +92,24 @@ export class UserUtils {
     return status;
   }
 
+  /** Returns the logged in user's email validation status */
+  public static getEmailValidationState(
+    emailStatus: number
+  ): EmailValidationState {
+    if (emailStatus === 9) {
+      return EmailValidationState.Verified;
+    } else if (emailStatus === 2) {
+      return EmailValidationState.Verifying;
+    } else {
+      return EmailValidationState.NotVerified;
+    }
+  }
+
   /** Returns the logged in user's membership ID */
   public static loggedInUserMembershipId(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
     return gs.loggedInUser ? gs.loggedInUser?.user?.membershipId : null;
-  }
-
-  /** Returns the logged in user's membership ID */
-  public static get loggedInUserMembershipIdFromCookie() {
-    return Cookies.get("bungleme");
   }
 
   /** Returns the logged in user's display name */
@@ -103,12 +131,6 @@ export class UserUtils {
       bungieGlobalCodeWithHashtag: bungieGlobalCodeWithHashtag,
     };
   };
-
-  public static readonly emptyBungieNameObject = {
-    bungieGlobalName: null,
-    bungieGlobalCode: null,
-    bungieGlobalCodeWithHashtag: null,
-  } as IBungieName;
 
   public static getBungieNameFromBnetGeneralUser(
     user: User.GeneralUser
@@ -144,7 +166,6 @@ export class UserUtils {
       return UserUtils.emptyBungieNameObject;
     }
   }
-
   public static getBungieNameFromGroupUserInfoCard = (
     user: GroupsV2.GroupUserInfoCard
   ): IBungieName => {

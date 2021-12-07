@@ -603,5 +603,4 @@ class CrossSaveCommit extends React.Component<
   }
 }
 
-// tslint:disable-next-line: max-file-line-count
 export default withRouter(CrossSaveCommit);

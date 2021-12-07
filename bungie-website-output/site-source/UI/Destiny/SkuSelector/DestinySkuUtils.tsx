@@ -6,9 +6,10 @@ import { Content, Platform } from "@Platform";
 import {
   IDestinySkuConfig,
   IDestinySkuProduct,
+  IDestinySkuProductStoreRegion,
+  IDestinySkuValidRegion,
 } from "./DestinySkuConfigDataStore";
 import { DetailedError } from "@CustomErrors";
-import { RouteHelper, IMultiSiteLink } from "@Routes/RouteHelper";
 import { RouteComponentProps } from "react-router";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import DestinySkuSelectorModal from "./DestinySkuSelectorModal";
@@ -222,25 +223,35 @@ export class DestinySkuUtils {
   }
 
   /**
-   * Returns the URL for a store if it uses the global region. If not, return null.
+   * Returns the URL for a store. If not global, return null.
    * @param sku The sku in question
    * @param store The store in question
    * @param config The sku config
+   * @param query? optional passing through of query params as string
+   * @param regionKey? non-global regions
    */
-  public static tryGetGlobalRegionUrl(
+  public static getStoreUrlForSku(
     sku: string,
     store: string,
-    config: IDestinySkuConfig
-  ): IMultiSiteLink {
-    let url: IMultiSiteLink = null;
+    config: IDestinySkuConfig,
+    regionKey: string,
+    query?: string
+  ): string {
+    let url = null;
+    const region = DestinySkuUtils.getRegionsForProduct(
+      sku,
+      store,
+      config
+    ).find((r) => r.key === regionKey);
 
-    const regions = DestinySkuUtils.getRegionsForProduct(sku, store, config);
-
-    if (
-      regions.length <= 1 &&
-      regions[0]?.key === DestinySkuUtils.REGION_GLOBAL_KEY
-    ) {
-      url = RouteHelper.Sku(sku, store, regions[0].key);
+    if (region) {
+      const urlTemplate =
+        region?.templateOverride ??
+        config.stores.find((el) => el.key === store).urlTemplate;
+      const finalUri = region?.sku
+        ? urlTemplate.replace("{sku}", region?.sku)
+        : null;
+      url = query ? `${finalUri}/?${query}` : finalUri;
     }
 
     return url;

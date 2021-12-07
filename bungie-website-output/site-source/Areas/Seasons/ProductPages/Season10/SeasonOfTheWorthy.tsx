@@ -3,7 +3,6 @@
 // Created by a-larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { ResponsiveSize } from "@bungie/responsive";
@@ -131,14 +130,12 @@ class SeasonOfTheWorthyInner extends React.Component<
       })
     );
 
-    PCMigrationUserDataStore.setForceHiddenState(true);
     window.addEventListener("scroll", this.onScroll);
   }
 
   public componentWillUnmount() {
     DataStore.destroyAll(...this.destroys);
 
-    PCMigrationUserDataStore.setForceHiddenState(false);
     window.removeEventListener("scroll", this.onScroll);
   }
 

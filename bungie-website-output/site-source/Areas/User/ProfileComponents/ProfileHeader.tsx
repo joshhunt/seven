@@ -17,14 +17,21 @@ interface ProfileHeaderProps {
 }
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
+  let dateString = "";
+  let monthString = "";
+
+  if (props.joinDate.length) {
+    const { day, month, year } = DateTime.fromISO(props.joinDate);
+    monthString = Localizer.time[`MonthFull${month}`];
+    dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
+      day: day,
+      month: monthString,
+      year: year,
+    });
+  }
+
   const joinDateString = props.joinDate.length
-    ? Localizer.Format(Localizer.Profile.JoinedDate, {
-        date: DateTime.fromISO(props.joinDate).toLocaleString({
-          locale: Localizer.CurrentCultureName,
-          month: "long",
-          year: "numeric",
-        }),
-      })
+    ? Localizer.Format(Localizer.Profile.JoinedDate, { date: dateString })
     : "";
 
   return (

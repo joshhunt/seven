@@ -4,7 +4,6 @@ import { Redirect, Route, RouteComponentProps } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
-import PcRegister from "./PcRegister";
 import StadiaRegister from "./StadiaRegister";
 import EventsRouter from "@Areas/Seasons/Events/EventsRouter";
 import { AsyncRoute } from "@Routes/AsyncRoute";
@@ -21,8 +20,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
       .url;
     const forsakenPath = RouteDefs.Areas.Destiny.getAction("Forsaken").path;
     const shadowkeepPath = RouteDefs.Areas.Destiny.getAction("Shadowkeep").path;
-    const seasonPassPath = RouteDefs.Areas.Destiny.getAction("SeasonPass").path;
-    const pcRegister = RouteDefs.Areas.Destiny.getAction("PcRegister").path;
     const stadiaRegister = RouteDefs.Areas.Destiny.getAction("StadiaRegister")
       .path;
     const infoFlowUrl = RouteDefs.Areas.Destiny.getAction("Info").path;
@@ -97,7 +94,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           />
           <Route path={beyondLightPath} component={BeyondLightFlickerWrapper} />
           <Route path={companionPath} component={Companion} />
-          <Route path={pcRegister} component={PcRegister} />
           <Route path={stadiaRegister} component={StadiaRegister} />
           <Route path={infoFlowUrl} component={EventsRouter} />
           <Route path={revealPath} component={Reveal} />

@@ -207,14 +207,6 @@
     "areaName": "Destiny",
     "areaObjectName": "Destiny",
     "componentImportPath": "@Areas/Destiny/DestinyArea",
-    "action": "PcRegister",
-    "params": {},
-    "path": "/7/en/Destiny/PcRegister"
-  },
-  {
-    "areaName": "Destiny",
-    "areaObjectName": "Destiny",
-    "componentImportPath": "@Areas/Destiny/DestinyArea",
     "action": "ProductPage",
     "params": {},
     "path": "/7/en/Destiny/ProductPage"
@@ -391,14 +383,6 @@
     "action": "Terms",
     "params": {},
     "path": "/7/en/Legal/Terms"
-  },
-  {
-    "areaName": "PCMove",
-    "areaObjectName": "PCMigration",
-    "componentImportPath": "@Areas/PCMigration/PCMigrationArea",
-    "action": "index",
-    "params": {},
-    "path": "/7/en/PCMove"
   },
   {
     "areaName": "Registration",

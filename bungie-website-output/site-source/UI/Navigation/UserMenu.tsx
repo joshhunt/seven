@@ -275,39 +275,16 @@ class SignInTriggers extends React.Component<{
 
   private showSteamButton(): React.ReactElement {
     const steamEnabled = ConfigUtils.SystemStatus("SteamIdAuth");
-    const prePCMigration = ConfigUtils.SystemStatus("PrePCMigration");
-    const steamLocalStorageKey = ConfigUtils.GetParameter(
-      `PCMigrationLoginInterrupt`,
-      `PCMigrationSteamLocalStorageKey`,
-      ""
-    );
 
     if (steamEnabled) {
-      if (
-        prePCMigration &&
-        this.showPCMigrationModalToUser(steamLocalStorageKey)
-      ) {
-        return (
-          <div
-            className={stylesMenuItem.menuItem}
-            onClick={() => this.showSteamAlert()}
-          >
-            {Localizer.Registration.networksigninoptionsteam}
-            <span className={stylesMenuItem.newOption}>
-              {Localizer.Registration.new}
-            </span>
-          </div>
-        );
-      } else {
-        return (
-          <AuthTrigger
-            key={BungieCredentialType.SteamId}
-            credential={BungieCredentialType.SteamId}
-          >
-            {Localizer.Registration.networksigninoptionsteam}
-          </AuthTrigger>
-        );
-      }
+      return (
+        <AuthTrigger
+          key={BungieCredentialType.SteamId}
+          credential={BungieCredentialType.SteamId}
+        >
+          {Localizer.Registration.networksigninoptionsteam}
+        </AuthTrigger>
+      );
     } else {
       return null;
     }
@@ -329,15 +306,6 @@ class SignInTriggers extends React.Component<{
   ) {
     this.steamModal.current.close();
 
-    this.updateLocalStorage(
-      false,
-      ConfigUtils.GetParameter(
-        `PCMigrationLoginInterrupt`,
-        `PCMigrationSteamLocalStorageKey`,
-        ""
-      )
-    );
-
     const mId = tempGlobalState.loggedInUser.user.membershipId;
 
     window.location.href =
@@ -346,12 +314,5 @@ class SignInTriggers extends React.Component<{
 
   public updateLocalStorage(newValue: boolean, localStorageKey: string) {
     LocalStorageUtils.setItem(localStorageKey, newValue ? "true" : "false");
-  }
-
-  private showPCMigrationModalToUser(localStorageKey: string): boolean {
-    return (
-      LocalStorageUtils.getItem(localStorageKey) === null ||
-      LocalStorageUtils.getItem(localStorageKey) !== "false"
-    );
   }
 }

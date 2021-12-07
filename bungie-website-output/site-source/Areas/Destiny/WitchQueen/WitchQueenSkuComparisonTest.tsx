@@ -98,10 +98,10 @@ const WitchQueenSkuComparisonTest: React.FC = () => {
           wqSkuTags.forEach((tag, i) => {
             const skuAtPos = comparisonSkus[i];
 
-            if (tag !== skuAtPos.skuTag) {
+            if (skuAtPos && tag !== skuAtPos.skuTag) {
               // index of sku that should be at the current position
               const skuIndex = comparisonSkus.findIndex(
-                (s) => s.skuTag === tag
+                (s) => s?.skuTag === tag
               );
 
               skuIndex !== -1 && swapElements(i, skuIndex);

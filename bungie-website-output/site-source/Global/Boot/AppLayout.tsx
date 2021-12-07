@@ -15,7 +15,6 @@ import { Environment } from "@Helpers";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SeoDataError, SystemDisabledError } from "@UI/Errors/CustomErrors";
-import EmailValidationGlobalAlertsBar from "@UI/GlobalAlerts/EmailValidationGlobalAlertsBar";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
@@ -43,6 +42,7 @@ import { ErrorBnetOffline } from "../../UI/Errors/ErrorBnetOffline";
 import { CookieConsent } from "./CookieConsent";
 import { Footer } from "./Footer";
 import { Responsive } from "./Responsive";
+import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 
 interface IInternalAppLayoutState {
   currentPath: string;
@@ -281,11 +281,6 @@ class AppLayout extends React.Component<
     }
 
     const { globalError } = this.state;
-    const supportId = ConfigUtils.GetParameter(
-      "WebRendererCore",
-      "BrowserSupportHelpArticleID",
-      0
-    );
     const showDebugger = this.state.firehoseContentItems.length > 0;
 
     return (
@@ -346,7 +341,8 @@ class AppLayout extends React.Component<
               loadingLabel={Localizer.Destiny.LoadingDestinyData}
             />
           )}
-          <EmailValidationGlobalAlertsBar />
+
+          <EmailValidationGlobalBar />
           <MainNavigation
             history={this.props.history}
             currentPath={this.state.currentPath}

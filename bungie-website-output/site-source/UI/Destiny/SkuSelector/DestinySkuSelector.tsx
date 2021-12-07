@@ -85,6 +85,9 @@ export default class DestinySkuSelector extends React.Component<
       this.props.skuTag,
       skuConfig
     );
+    const params = new URLSearchParams(location.search).toString();
+    const utmParams =
+      params.toString().indexOf("utm") !== -1 ? params.toString() : null;
 
     return (
       <div className={styles.buyModalContent}>
@@ -109,6 +112,7 @@ export default class DestinySkuSelector extends React.Component<
             definition={def}
             skuConfig={skuConfig}
             className={styles.selectorOptions}
+            utmParams={utmParams}
           />
           {productIsOnSale && (
             <div className={styles.disclaimer}>

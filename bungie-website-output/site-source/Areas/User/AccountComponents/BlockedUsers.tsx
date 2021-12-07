@@ -3,6 +3,8 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/AccountComponents/BlockedUsers.module.scss";
+import { FriendLineItem } from "../../../UI/UIKit/Companion/FriendLineItem";
+import { UserUtils } from "../../../Utilities/UserUtils";
 import accountStyles from "../Account.module.scss";
 import * as Globals from "@Enum";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -16,6 +18,7 @@ import { Grid, GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
+import { BungieFriendLineItem } from "./Internal/BungieFriends/BungieFriendLineItem";
 
 interface BlockedUsersProps {}
 
@@ -90,10 +93,20 @@ export const BlockedUsers: React.FC<BlockedUsersProps> = (props) => {
             {blockedUsers
               .slice(offset, offset + blockedUsersPerPage)
               .map((user, i) => {
+                const {
+                  bungieGlobalName,
+                  bungieGlobalCodeWithHashtag,
+                } = UserUtils.getBungieNameFromBnetIgnoredPlayer(user)
+                  .bungieGlobalName
+                  ? UserUtils.getBungieNameFromBnetIgnoredPlayer(user)
+                  : { bungieGlobalName: "", bungieGlobalCodeWithHashtag: "" };
+
                 return (
-                  <TwoLineItem
-                    key={user?.membershipId}
-                    itemTitle={user.bungieName}
+                  <FriendLineItem
+                    key={i}
+                    icon={null}
+                    bungieName={bungieGlobalName + bungieGlobalCodeWithHashtag}
+                    membershipId={user?.membershipId}
                     itemSubtitle={getLocalizedDateString(user.dateBlocked)}
                     flair={
                       <div className={styles.twoButtons}>

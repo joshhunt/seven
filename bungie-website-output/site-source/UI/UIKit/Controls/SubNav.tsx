@@ -86,17 +86,15 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
 
     const LinkList = () => {
       return (
-        <div>
-          <div className={linkClasses}>
-            {links.map((link, index) => (
-              <SubNavLink
-                key={index}
-                link={link}
-                classes={this.props.classes}
-                isSpan={renderAsSpans}
-              />
-            ))}
-          </div>
+        <div className={linkClasses}>
+          {links.map((link, index) => (
+            <SubNavLink
+              key={index}
+              link={link}
+              classes={this.props.classes}
+              isSpan={renderAsSpans}
+            />
+          ))}
         </div>
       );
     };

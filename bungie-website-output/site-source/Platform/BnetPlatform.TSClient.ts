@@ -299,6 +299,10 @@ export declare namespace User {
     destinyMemberships: User.UserInfoCard[];
   }
 
+  export interface UserSearchPrefixRequest {
+    displayNamePrefix: string;
+  }
+
   /**
 	Very basic info about a user as returned by the Account server.
 	*/
@@ -396,6 +400,12 @@ export declare namespace User {
     steamFireteamBanExpireDate?: string;
 
     stadiaFireteamBanExpireDate?: string;
+  }
+
+  export interface ExactSearchRequest {
+    displayName: string;
+
+    displayNameCode: number;
   }
 
   export interface IAnonymousIdentifier {
@@ -2193,6 +2203,8 @@ export declare namespace Contracts {
 
     displayName: string;
 
+    displayNameCode?: number;
+
     dateCreated: string;
 
     dateExpires: string;
@@ -2210,6 +2222,8 @@ export declare namespace Contracts {
     group: GroupsV2.GroupV2;
 
     displayName: string;
+
+    displayNameCode?: number;
 
     dateCreated: string;
 
@@ -2229,6 +2243,8 @@ export declare namespace Contracts {
 
     displayName: string;
 
+    displayNameCode?: number;
+
     dateCreated: string;
 
     dateExpires: string;
@@ -2247,6 +2263,8 @@ export declare namespace Contracts {
 
     displayName: string;
 
+    displayNameCode?: number;
+
     dateCreated: string;
 
     dateExpires: string;
@@ -2262,6 +2280,8 @@ export declare namespace Contracts {
 
   export interface IgnoreDetailResponse {
     displayName: string;
+
+    displayNameCode?: number;
 
     dateCreated: string;
 
@@ -11720,6 +11740,21 @@ export declare namespace Items {
   }
 
   /**
+	Instanced items can have perks: benefits that the item bestows.
+	
+	These are related to DestinySandboxPerkDefinition, and sometimes - but not always - have human readable info.
+	When they do, they are the icons and text that you see in an item's tooltip.
+	
+	Talent Grids, Sockets, and the item itself can apply Perks, which are then summarized here for your convenience.
+	*/
+  export interface DestinyItemPerksComponent {
+    /**
+		The list of perks to display in an item tooltip - and whether or not they have been activated.
+		*/
+    perks: Perks.DestinyPerkReference[];
+  }
+
+  /**
 	Items can have objectives and progression.  When you request this block, you will obtain
 	information about any Objectives and progression tied to this item.
 	*/
@@ -11861,21 +11896,6 @@ export declare namespace Items {
 		The amount of energy still available for inserting new plugs.
 		*/
     energyUnused: number;
-  }
-
-  /**
-	Instanced items can have perks: benefits that the item bestows.
-	
-	These are related to DestinySandboxPerkDefinition, and sometimes - but not always - have human readable info.
-	When they do, they are the icons and text that you see in an item's tooltip.
-	
-	Talent Grids, Sockets, and the item itself can apply Perks, which are then summarized here for your convenience.
-	*/
-  export interface DestinyItemPerksComponent {
-    /**
-		The list of perks to display in an item tooltip - and whether or not they have been activated.
-		*/
-    perks: Perks.DestinyPerkReference[];
   }
 
   /**
@@ -12970,6 +12990,15 @@ export declare namespace Characters {
     };
 
     /**
+		Sometimes, you have items in your inventory that don't have instances, but still have perks (for example: Trials passage cards).
+		This gives you the perk information for uninstanced items.
+		
+		This dictionary is keyed by item hash, which you can use to look up the corresponding item definition.
+		The value is the list of perks states for the item.
+		*/
+    uninstancedItemPerks: { [key: number]: Items.DestinyItemPerksComponent };
+
+    /**
 		The set of checklists that can be examined for this specific character, keyed by the hash identifier
 		of the Checklist (DestinyChecklistDefinition)
 		
@@ -13529,6 +13558,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface DictionaryComponentResponseUInt32DestinyItemPerksComponent {
+    data: { [key: number]: Items.DestinyItemPerksComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface DictionaryComponentResponseInt64DestinyPresentationNodesComponent {
     data: { [key: string]: Presentation.DestinyPresentationNodesComponent };
 
@@ -13563,14 +13600,6 @@ export declare namespace Components {
 
   export interface DictionaryComponentResponseInt64DestinyItemInstanceComponent {
     data: { [key: string]: Items.DestinyItemInstanceComponent };
-
-    privacy: Globals.ComponentPrivacySetting;
-
-    disabled?: boolean;
-  }
-
-  export interface DictionaryComponentResponseInt64DestinyItemPerksComponent {
-    data: { [key: string]: Items.DestinyItemPerksComponent };
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -13635,6 +13664,14 @@ export declare namespace Components {
 
   export interface DictionaryComponentResponseInt64DestinyItemObjectivesComponent {
     data: { [key: string]: Items.DestinyItemObjectivesComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
+  export interface DictionaryComponentResponseInt64DestinyItemPerksComponent {
+    data: { [key: string]: Items.DestinyItemPerksComponent };
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -13827,14 +13864,6 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
-  export interface DictionaryComponentResponseInt32DestinyItemPerksComponent {
-    data: { [key: number]: Items.DestinyItemPerksComponent };
-
-    privacy: Globals.ComponentPrivacySetting;
-
-    disabled?: boolean;
-  }
-
   export interface DictionaryComponentResponseInt32DestinyItemRenderComponent {
     data: { [key: number]: Items.DestinyItemRenderComponent };
 
@@ -13891,6 +13920,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface DictionaryComponentResponseInt32DestinyItemPerksComponent {
+    data: { [key: number]: Items.DestinyItemPerksComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface SingleComponentResponseDestinyVendorComponent {
     data: Vendors.DestinyVendorComponent;
 
@@ -13933,14 +13970,6 @@ export declare namespace Components {
 
   export interface DictionaryComponentResponseUInt32DestinyItemInstanceComponent {
     data: { [key: number]: Items.DestinyItemInstanceComponent };
-
-    privacy: Globals.ComponentPrivacySetting;
-
-    disabled?: boolean;
-  }
-
-  export interface DictionaryComponentResponseUInt32DestinyItemPerksComponent {
-    data: { [key: number]: Items.DestinyItemPerksComponent };
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -16145,6 +16174,41 @@ export declare namespace Challenges {
   }
 }
 
+export declare namespace Perks {
+  /**
+	The list of perks to display in an item tooltip - and whether or not they have been activated.
+	
+	Perks apply a variety of effects to a character, and are generally either intrinsic to the item
+	or provided in activated talent nodes or sockets.
+	*/
+  export interface DestinyPerkReference {
+    /**
+		The hash identifier for the perk, which can be used to look up DestinySandboxPerkDefinition if it exists.
+		Be warned, perks frequently do not have user-viewable information.  You should examine whether you actually
+		found a name/description in the perk's definition before you show it to the user.
+		*/
+    perkHash: number;
+
+    /**
+		The icon for the perk.
+		*/
+    iconPath: string;
+
+    /**
+		Whether this perk is currently active.  (We may return perks that you have not actually activated yet:
+		these represent perks that you should show in the item's tooltip, but that the user has not yet
+		activated.)
+		*/
+    isActive: boolean;
+
+    /**
+		Some perks provide benefits, but aren't visible in the UI.  This value will let you know if this is
+		perk should be shown in your UI.
+		*/
+    visible: boolean;
+  }
+}
+
 export declare namespace Character {
   /**
 	Raw data about the customization options chosen for a character's face and appearance.
@@ -16209,12 +16273,12 @@ export declare namespace Character {
 export declare namespace Sets {
   export interface DestinyBaseItemComponentSetUInt32 {
     objectives: Components.DictionaryComponentResponseUInt32DestinyItemObjectivesComponent;
+
+    perks: Components.DictionaryComponentResponseUInt32DestinyItemPerksComponent;
   }
 
   export interface DestinyItemComponentSetInt64 {
     instances: Components.DictionaryComponentResponseInt64DestinyItemInstanceComponent;
-
-    perks: Components.DictionaryComponentResponseInt64DestinyItemPerksComponent;
 
     renderData: Components.DictionaryComponentResponseInt64DestinyItemRenderComponent;
 
@@ -16231,12 +16295,12 @@ export declare namespace Sets {
     plugStates: Components.DictionaryComponentResponseUInt32DestinyItemPlugComponent;
 
     objectives: Components.DictionaryComponentResponseInt64DestinyItemObjectivesComponent;
+
+    perks: Components.DictionaryComponentResponseInt64DestinyItemPerksComponent;
   }
 
   export interface DestinyItemComponentSetInt32 {
     instances: Components.DictionaryComponentResponseInt32DestinyItemInstanceComponent;
-
-    perks: Components.DictionaryComponentResponseInt32DestinyItemPerksComponent;
 
     renderData: Components.DictionaryComponentResponseInt32DestinyItemRenderComponent;
 
@@ -16253,12 +16317,12 @@ export declare namespace Sets {
     plugStates: Components.DictionaryComponentResponseUInt32DestinyItemPlugComponent;
 
     objectives: Components.DictionaryComponentResponseInt32DestinyItemObjectivesComponent;
+
+    perks: Components.DictionaryComponentResponseInt32DestinyItemPerksComponent;
   }
 
   export interface DestinyItemComponentSetUInt32 {
     instances: Components.DictionaryComponentResponseUInt32DestinyItemInstanceComponent;
-
-    perks: Components.DictionaryComponentResponseUInt32DestinyItemPerksComponent;
 
     renderData: Components.DictionaryComponentResponseUInt32DestinyItemRenderComponent;
 
@@ -16275,41 +16339,8 @@ export declare namespace Sets {
     plugStates: Components.DictionaryComponentResponseUInt32DestinyItemPlugComponent;
 
     objectives: Components.DictionaryComponentResponseUInt32DestinyItemObjectivesComponent;
-  }
-}
 
-export declare namespace Perks {
-  /**
-	The list of perks to display in an item tooltip - and whether or not they have been activated.
-	
-	Perks apply a variety of effects to a character, and are generally either intrinsic to the item
-	or provided in activated talent nodes or sockets.
-	*/
-  export interface DestinyPerkReference {
-    /**
-		The hash identifier for the perk, which can be used to look up DestinySandboxPerkDefinition if it exists.
-		Be warned, perks frequently do not have user-viewable information.  You should examine whether you actually
-		found a name/description in the perk's definition before you show it to the user.
-		*/
-    perkHash: number;
-
-    /**
-		The icon for the perk.
-		*/
-    iconPath: string;
-
-    /**
-		Whether this perk is currently active.  (We may return perks that you have not actually activated yet:
-		these represent perks that you should show in the item's tooltip, but that the user has not yet
-		activated.)
-		*/
-    isActive: boolean;
-
-    /**
-		Some perks provide benefits, but aren't visible in the UI.  This value will let you know if this is
-		perk should be shown in your UI.
-		*/
-    visible: boolean;
+    perks: Components.DictionaryComponentResponseUInt32DestinyItemPerksComponent;
   }
 }
 
@@ -20345,7 +20376,7 @@ class UserServiceInternal {
     );
 
   /**
-   * Given the prefix of a global display name, returns all users who share that name.
+   * [OBSOLETE] Do not use this to search users, use SearchByGlobalNamePost instead.
    * @param displayNamePrefix The display name prefix you're looking for.
    * @param page The zero-based page of results you desire.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -20364,6 +20395,28 @@ class UserServiceInternal {
       "User",
       "SearchByGlobalNamePrefix",
       undefined,
+      clientState
+    );
+
+  /**
+   * Given the prefix of a global display name, returns all users who share that name.
+   * @param page The zero-based page of results you desire.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SearchByGlobalNamePost = (
+    input: User.UserSearchPrefixRequest,
+    page: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserSearchResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/Search/GlobalName/${e(page)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "SearchByGlobalNamePost",
+      input,
       clientState
     );
 }
@@ -25339,7 +25392,7 @@ class Destiny2ServiceInternal {
     );
 
   /**
-   * Returns a list of Destiny memberships given a global Bungie Display Name. This method will hide overridden memberships due to cross save.
+   * [OBSOLETE] Do not use this method to search players, use SearchDestinyPlayerByBungieName instead.
    * @param membershipType A valid non-BungieNet membership type, or All. Indicates which memberships to return.  You probably want this set to All.
    * @param displayName The full bungie global display name to look up, include the # and the code at the end. This is an exact match lookup.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -25358,6 +25411,28 @@ class Destiny2ServiceInternal {
       "Destiny2",
       "SearchDestinyPlayer",
       undefined,
+      clientState
+    );
+
+  /**
+   * Returns a list of Destiny memberships given a global Bungie Display Name. This method will hide overridden memberships due to cross save.
+   * @param membershipType A valid non-BungieNet membership type, or All. Indicates which memberships to return.  You probably want this set to All.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SearchDestinyPlayerByBungieName = (
+    input: User.ExactSearchRequest,
+    membershipType: Globals.BungieMembershipType,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserInfoCard[]> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/SearchDestinyPlayerByBungieName/${e(membershipType)}/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "SearchDestinyPlayerByBungieName",
+      input,
       clientState
     );
 

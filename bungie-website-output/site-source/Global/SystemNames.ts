@@ -2,6 +2,7 @@ export type SystemNamesKeys = keyof typeof SystemNames;
 export type ValidSystemNames = typeof SystemNames[SystemNamesKeys];
 
 export const SystemNames = {
+  AccountServices: "AccountServices",
   Applications: "Applications",
   Authentication: "Authentication",
   BeyondLightRevealYoutube: "BeyondLightRevealYoutube",
@@ -37,8 +38,6 @@ export const SystemNames = {
   Messages: "Messages",
   Notifications: "Notifications",
   PartnerOfferClaims: "PartnerOfferClaims",
-  PCMigration: "PCMigration",
-  PCMigrationYoutubeIdFallback: "PCMigrationYoutubeIdFallback",
   PlayTestsSetting: "PlayTestsSetting",
   SeasonUndyingVideo: "SeasonUndyingVideo",
   PSNAuth: "PSNAuth",
@@ -48,16 +47,11 @@ export const SystemNames = {
   SteamIdAuth: "SteamIdAuth",
   StadiaIdAuth: "StadiaIdAuth",
   StrangerEditionForSale: "StrangerEditionForSale",
-  PrePCMigration: "PrePCMigration",
-  PCMigrationLoginInterrupt: "PCMigrationLoginInterrupt",
   Season10GoLive: "Season10GoLive",
   Season11Page: "Season11Page",
   Season13Page: "Season13Page",
   StadiaLimited: "StadiaLimited",
-  PCMigrationEntitlements: "PCMigrationEntitlements",
-  PCMigrationEmailValidation: "PCMigrationEmailValidation",
   RealTimeCounts: "RealTimeCounts",
-  PCMigrationGlobalAlertsBar: "PCMigrationGlobalAlertsBar",
   SessionTracking: "SessionTracking",
   DestinyMarketingPages: "DestinyMarketingPages",
   CookieConsent: "CookieConsent",
@@ -76,7 +70,6 @@ export const SystemNames = {
   SeasonHuntYoutube: "SeasonHuntYoutube",
   SeasonHuntSeasonPassYoutube: "SeasonHuntSeasonPassYoutube",
   LegendaryEditionEnabled: "LegendaryEditionEnabled",
-  PCMigrationSunsetPhase1: "PCMigrationSunsetPhase1",
   GoogleRecaptcha: "GoogleRecaptcha",
   SeasonHuntHawkmoonTrailer: "SeasonHuntHawkmoonTrailer",
   SmsResendCodeRecaptcha: "SmsResendCodeRecaptcha",
@@ -103,4 +96,5 @@ export const SystemNames = {
   CrossSaveMSHelp: "CrossSaveMSHelp",
   PlatformFriendImporter: "PlatformFriendImporter",
   PlatformFriendBulkImporter: "PlatformFriendBulkImporter",
+  AllowGlobalBungieDisplayNameEditing: "AllowGlobalBungieDisplayNameEditing",
 } as const;

@@ -1,6 +1,8 @@
 import { Localizer } from "@bungie/localization";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as H from "history";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
 import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
@@ -120,6 +122,9 @@ export class RouteHelper {
   );
   public static BungieFriends = BasicReactPath(
     RouteDefs.AreaGroups.User.areas.Account.getAction("BungieFriends")
+  );
+  public static EmailAndSms = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("EmailSms")
   );
 
   public static ReferAFriend = LegacyPathWithQuery("/Profile/ReferAFriend");
@@ -308,8 +313,9 @@ export class RouteHelper {
     BuyDetailRouteParams,
     BuyDetailQueryParams
   >(RouteDefs.Areas.Destiny.getAction("BuyDetail"));
-  public static Sku = (sku: string, store: string, region: string) =>
-    LegacyPath(`/Sku/${sku}/${store}/${region}`);
+  public static Sku = (sku: string, store: string, region: string) => {
+    return LegacyPathWithQuery(`/Sku/${sku}/${store}/${region}`);
+  };
   public static ExternalRelay = (relayName: string, params: any) =>
     LegacyPath(`/ExternalRelay/${relayName}?${UrlUtils.ObjectToQuery(params)}`);
   public static ExternalRelayBuyD2 = (version = "All", store?: string) =>

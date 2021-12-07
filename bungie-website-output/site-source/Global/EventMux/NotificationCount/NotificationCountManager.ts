@@ -43,6 +43,8 @@ class NotificationCountManagerBase {
     this.cacheDataSource.initialize();
     this.eventDataSource.initialize();
     this.viewModel.initialize();
+
+    this.start();
   }
 
   public start() {

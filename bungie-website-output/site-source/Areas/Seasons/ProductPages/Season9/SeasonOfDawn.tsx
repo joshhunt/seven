@@ -2,7 +2,6 @@
 // tslint:disable: max-file-line-count
 
 import { DestinyNewsAndMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
-import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
@@ -99,8 +98,6 @@ class SeasonOfDawnInternal extends React.Component<
       this.setState({ supportsWebp })
     );
 
-    PCMigrationUserDataStore.setForceHiddenState(true);
-
     // Grab calendar image from the firehose
     Platform.ContentService.GetContentByTagAndType(
       "season9calendar",
@@ -135,8 +132,6 @@ class SeasonOfDawnInternal extends React.Component<
     DataStore.destroyAll(...this.destroys);
 
     window.removeEventListener("scroll", this.onScroll);
-
-    PCMigrationUserDataStore.setForceHiddenState(false);
   }
 
   private readonly onScroll = () => {

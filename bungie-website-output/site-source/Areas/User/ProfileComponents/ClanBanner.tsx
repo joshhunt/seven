@@ -192,14 +192,12 @@ export const ClanBannerDisplay: React.FC<ClanBannerProps> = (props) => {
       }
 
       if (color !== undefined && color !== null) {
-        //console.log(color);
-
         ctx.globalCompositeOperation = "source-in";
         ctx.fillStyle = `rgb(${color})`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
 
     return canvas;

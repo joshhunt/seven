@@ -1,6 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
+import { EmailVerified } from "@UI/User/EmailVerified";
 import * as React from "react";
 import styles from "./Benefits.module.scss";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
@@ -210,6 +211,7 @@ class Benefits extends React.Component<Props, IBenefitsState> {
             </div>
           )}
           <GridCol cols={12}>
+            <EmailVerified className={styles.emailVerified} />
             <SettingsBanners
               emailUsage={parseInt(
                 this.props.globalState.loggedInUser.emailUsage,

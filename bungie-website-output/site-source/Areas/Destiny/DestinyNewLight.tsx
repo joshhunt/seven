@@ -6,7 +6,6 @@ import {
   StackedCardBlock,
   VideoCarousel,
 } from "@Areas/Destiny/BeyondLight/Components";
-import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
@@ -84,14 +83,11 @@ class DestinyNewLightInternal extends React.Component<
     this.destroys.push(
       Responsive.observe((responsive) => this.setState({ responsive }))
     );
-
-    PCMigrationUserDataStore.setForceHiddenState(true);
   }
 
   public componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
     DataStore.destroyAll(...this.destroys);
-    PCMigrationUserDataStore.setForceHiddenState(false);
   }
 
   private readonly onMenuLock = (fixed: boolean) => {

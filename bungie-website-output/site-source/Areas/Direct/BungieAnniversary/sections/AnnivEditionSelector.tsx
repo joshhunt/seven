@@ -19,21 +19,24 @@ import classNames from "classnames";
 import React, { LegacyRef, useEffect, useState } from "react";
 import styles from "./AnnivEditionSelector.module.scss";
 
-enum WQEditions {
+enum AnnivEditions {
   witchqueendeluxeanniversary,
   anniversarypack,
 }
 
-interface WQEditionSelectorProps {
+interface AnnivEditionSelectorProps {
   sectionTitle: string;
   annivPackTabTitle: string;
   deluxePackTabTitle: string;
   bgImage: string;
 }
 
-const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
+const AnnivEditionSelector: React.FC<AnnivEditionSelectorProps> = (props) => {
   const [selectedEdition, setSelectedEdition] = useState(
-    EnumUtils.getStringValue(WQEditions.witchqueendeluxeanniversary, WQEditions)
+    EnumUtils.getStringValue(
+      AnnivEditions.witchqueendeluxeanniversary,
+      AnnivEditions
+    )
   );
   const [skuConfig, setSkuConfig] = useState(DestinySkuConfigDataStore.state);
   const [skuItems, setSkuItems] = useState(null);
@@ -87,13 +90,13 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
 
   if (
     !skuItems ||
-    (!WQEditions[selectedEdition] && WQEditions[selectedEdition] !== 0) ||
+    (!AnnivEditions[selectedEdition] && AnnivEditions[selectedEdition] !== 0) ||
     typeof selectedEdition !== "string"
   ) {
     return null;
   }
 
-  const wqComparisonSkus = skuItems?.filter((value: any) =>
+  const annivComparisonSkus = skuItems?.filter((value: any) =>
     annivProductFamily?.comparisonSection?.find(
       (v) => value.skuTag === v.SkuTag
     )
@@ -102,22 +105,26 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
   const tabs = [
     {
       title: props.deluxePackTabTitle,
-      edition: WQEditions.witchqueendeluxeanniversary,
+      edition: AnnivEditions.witchqueendeluxeanniversary,
     },
-    { title: props.annivPackTabTitle, edition: WQEditions.anniversarypack },
+    { title: props.annivPackTabTitle, edition: AnnivEditions.anniversarypack },
   ];
 
   const editionsBgImage = props.bgImage ? `url(${props.bgImage})` : undefined;
 
   return (
-    <section
-      className={styles.editionSelector}
-      style={{ backgroundImage: editionsBgImage }}
-    >
+    <section className={styles.editionSelector}>
+      <div
+        className={styles.sectionBg}
+        style={{ backgroundImage: editionsBgImage }}
+      />
       <h3 className={styles.sectionTitle}>{props.sectionTitle}</h3>
       <div className={styles.tabsWrapper}>
         {tabs.map(({ title, edition }, i) => {
-          const editionAsString = EnumUtils.getStringValue(edition, WQEditions);
+          const editionAsString = EnumUtils.getStringValue(
+            edition,
+            AnnivEditions
+          );
 
           return (
             <Button
@@ -133,8 +140,8 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
         })}
       </div>
       <div className={styles.comparisonWrapper}>
-        {wqComparisonSkus?.map((value: any, i: number) => (
-          <WQEditionDisplay
+        {annivComparisonSkus?.map((value: any, i: number) => (
+          <AnnivEditionDisplay
             key={i}
             productDef={value}
             selectedEdition={selectedEdition}
@@ -145,12 +152,12 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
   );
 };
 
-interface IWQEditionDisplay {
+interface IAnnivEditionDisplay {
   selectedEdition: "anniversarypack" | "witchqueendeluxeanniversary";
   productDef: IDestinyProductDefinition;
 }
 
-const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
+const AnnivEditionDisplay: React.FC<IAnnivEditionDisplay> = (props) => {
   const responsive = useDataStore(Responsive);
 
   const {
@@ -209,4 +216,4 @@ const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
   );
 };
 
-export default WQEditionSelector;
+export default AnnivEditionSelector;

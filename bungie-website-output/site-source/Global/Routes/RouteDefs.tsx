@@ -23,7 +23,6 @@ export class RouteDefs {
     Direct: "Direct",
     GameHistory: "GameHistory",
     Legal: "Legal",
-    PCMigration: "PCMove",
     UserResearch: "UserResearch",
     Seasons: "Seasons",
     Static: "Static",
@@ -91,7 +90,6 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Shadowkeep"),
         (area) => new ActionRoute(area, "SeasonPass"),
         (area) => new ActionRoute(area, "GameHistory"),
-        (area) => new ActionRoute(area, "PcRegister"),
         (area) => new ActionRoute(area, "StadiaRegister"),
         (area) => new ActionRoute(area, "BeyondLight"),
         (area) =>
@@ -166,16 +164,6 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "IntellectualPropertyTrademarks"),
         (area) => new ActionRoute(area, "PaymentServicesAct"),
       ],
-    }),
-    PCMigration: new Area({
-      name: RouteDefs.AreaNames.PCMigration,
-      lazyComponent: createAsyncComponent(
-        () =>
-          import(
-            "@Areas/PCMigration/PCMigrationArea" /* webpackChunkName: "PCMigration" */
-          )
-      ),
-      routes: [(area) => new ActionRoute(area, "index")],
     }),
     Seasons: new Area({
       name: RouteDefs.AreaNames.Seasons,

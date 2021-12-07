@@ -4,7 +4,6 @@ import { LegalV2Subnav } from "@Areas/Legal/LegalV2Subnav";
 import { Localizer } from "@bungie/localization";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import React, { useRef } from "react";
 
 export const LegalAreaV2: React.FC = () => {
@@ -21,16 +20,12 @@ export const LegalAreaV2: React.FC = () => {
       </BungieHelmet>
       <div className={styles.headerBungie} ref={bannerRef} />
       <div className={styles.container}>
-        <Grid className={styles.subNav}>
-          <GridCol cols={12}>
-            <LegalV2Subnav />
-          </GridCol>
-        </Grid>
-        <Grid className={styles.legalContent}>
-          <GridCol cols={12}>
-            <LegalV2Detail bannerRef={bannerRef} />
-          </GridCol>
-        </Grid>
+        <div className={styles.subNav}>
+          <LegalV2Subnav />
+        </div>
+        <div className={styles.legalContent}>
+          <LegalV2Detail bannerRef={bannerRef} />
+        </div>
       </div>
     </React.Fragment>
   );

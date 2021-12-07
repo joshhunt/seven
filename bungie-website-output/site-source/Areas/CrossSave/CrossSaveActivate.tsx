@@ -352,11 +352,6 @@ class CrossSaveActivate extends React.Component<
 
     window.onbeforeunload = () => Localizer.Crosssave.BeforeLeaveMessage;
 
-    const requiresMigration =
-      flowState &&
-      flowState.validation &&
-      flowState.validation.requiresPCMigration;
-
     // Not 100% sure why this location thing is required, but if it isn't there, Posed won't work
     return (
       <React.Fragment>

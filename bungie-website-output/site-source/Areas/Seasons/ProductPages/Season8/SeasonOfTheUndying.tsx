@@ -1,7 +1,6 @@
 // This is all one page and doesn't use reusable content so separating it into different files is not recommended in this case.
 // tslint:disable: max-file-line-count
 
-import { PCMigrationUserDataStore } from "@Areas/PCMigration/Shared/PCMigrationUserDataStore";
 import { Respond } from "@Boot/Respond";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
@@ -91,16 +90,12 @@ class SeasonOfTheUndyingInternal extends React.Component<
     BrowserUtils.supportsWebp().then((supportsWebp) =>
       this.setState({ supportsWebp })
     );
-
-    PCMigrationUserDataStore.setForceHiddenState(true);
   }
 
   public componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
 
     DataStore.destroyAll(...this.destroys);
-
-    PCMigrationUserDataStore.setForceHiddenState(false);
   }
 
   private readonly onMenuLock = (fixed: boolean) => {

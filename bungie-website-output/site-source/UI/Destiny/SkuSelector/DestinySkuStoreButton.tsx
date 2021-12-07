@@ -15,6 +15,7 @@ interface IDestinySkuStoreButtonProps extends RouteComponentProps {
   sku: string;
   config: IDestinySkuConfig;
   disabled: boolean;
+  utmParams?: string;
 }
 
 interface IDestinySkuStoreButtonState {}
@@ -42,9 +43,15 @@ class DestinySkuStoreButton extends React.Component<
   };
 
   public render() {
-    const { region, store, sku } = this.props;
+    const { region, store, sku, config, utmParams } = this.props;
 
-    const url = RouteHelper.Sku(sku, store, region).url;
+    const url = DestinySkuUtils.getStoreUrlForSku(
+      sku,
+      store,
+      config,
+      region,
+      utmParams
+    );
 
     return (
       <Button

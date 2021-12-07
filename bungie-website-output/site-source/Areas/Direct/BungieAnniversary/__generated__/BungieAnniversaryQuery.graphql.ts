@@ -7,7 +7,7 @@ export type BungieAnniversaryQueryVariables = {
   locale: string;
 };
 export type BungieAnniversaryQueryResponse = {
-  readonly bungie_30th_anniversary: {
+  readonly bungie_30th_anniversary_v2: {
     readonly title: string | null;
     readonly meta_imageConnection: {
       readonly edges: ReadonlyArray<{
@@ -16,6 +16,7 @@ export type BungieAnniversaryQueryResponse = {
         } | null;
       } | null> | null;
     } | null;
+    readonly subnav_btn_text: string | null;
     readonly hero: {
       readonly hero_logoConnection: {
         readonly edges: ReadonlyArray<{
@@ -39,46 +40,86 @@ export type BungieAnniversaryQueryResponse = {
           } | null;
         } | null> | null;
       } | null;
+      readonly trailer_btn: {
+        readonly title: string | null;
+        readonly trailer_id: string | null;
+      } | null;
+      readonly buy_btn: {
+        readonly title: string | null;
+        readonly url: string | null;
+      } | null;
+      readonly availability_text: string | null;
     } | null;
-    readonly first_section: {
-      readonly headline: string | null;
-      readonly main_heading: string | null;
+    readonly dungeon_section: {
+      readonly subnav_detail: {
+        readonly subnav_label: string | null;
+        readonly section_id: string | null;
+      } | null;
+      readonly small_title: string | null;
+      readonly section_title: string | null;
+      readonly section_bg_desktopConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly section_bg_mobileConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
       readonly main_blurb: string | null;
-      readonly secondary_heading: string | null;
-      readonly secondary_blurb: string | null;
-      readonly trailer_id: {
+      readonly info_block: ReadonlyArray<{
+        readonly imgConnection: {
+          readonly edges: ReadonlyArray<{
+            readonly node: {
+              readonly url: string | null;
+            } | null;
+          } | null> | null;
+        } | null;
         readonly title: string | null;
-        readonly href: string | null;
+        readonly blurb: string | null;
+      } | null> | null;
+    } | null;
+    readonly bungie_logoConnection: {
+      readonly edges: ReadonlyArray<{
+        readonly node: {
+          readonly url: string | null;
+        } | null;
+      } | null> | null;
+    } | null;
+    readonly requirement_headline: string | null;
+    readonly gjallarhorn_section: {
+      readonly subnav_detail: {
+        readonly section_label: string | null;
+        readonly section_id: string | null;
       } | null;
-      readonly bungie_fist_logoConnection: {
+      readonly bg_desktopConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly section_bottom_bg_desktopConnection: {
+      readonly bg_mobileConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly section_bottom_bg_mobileConnection: {
+      readonly gjallarhorn_logoConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly section_top_bg_desktopConnection: {
-        readonly edges: ReadonlyArray<{
-          readonly node: {
-            readonly url: string | null;
-          } | null;
-        } | null> | null;
-      } | null;
-      readonly section_top_bg_mobileConnection: {
+      readonly blurb: string | null;
+      readonly weapon_imgConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
@@ -86,55 +127,77 @@ export type BungieAnniversaryQueryResponse = {
         } | null> | null;
       } | null;
     } | null;
-    readonly anniversary_pack_section: {
-      readonly section_top_bg_desktopConnection: {
+    readonly rewards_section: {
+      readonly section_bg_desktopConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly section_top_bg_mobileConnection: {
+      readonly section_bg_mobileConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly vintage_bungie_logoConnection: {
-        readonly edges: ReadonlyArray<{
-          readonly node: {
-            readonly url: string | null;
-          } | null;
-        } | null> | null;
-      } | null;
-      readonly section_heading: string | null;
+      readonly small_title: string | null;
+      readonly section_title: string | null;
+      readonly blurb: string | null;
       readonly text_image_group: ReadonlyArray<{
+        readonly imgConnection: {
+          readonly edges: ReadonlyArray<{
+            readonly node: {
+              readonly url: string | null;
+            } | null;
+          } | null> | null;
+        } | null;
         readonly blurb_heading: string | null;
-        readonly blurb_text: string | null;
-        readonly thumbnailConnection: {
-          readonly edges: ReadonlyArray<{
-            readonly node: {
-              readonly url: string | null;
-            } | null;
-          } | null> | null;
-        } | null;
-        readonly screenshotConnection: {
-          readonly edges: ReadonlyArray<{
-            readonly node: {
-              readonly url: string | null;
-            } | null;
-          } | null> | null;
-        } | null;
+        readonly blurb: string | null;
       } | null> | null;
-      readonly section_bottom_bg_desktopConnection: {
+    } | null;
+    readonly free_to_play_section: {
+      readonly subnav_detail: {
+        readonly subnav_label: string | null;
+        readonly section_id: string | null;
+      } | null;
+      readonly top_bg_desktopConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
           } | null;
         } | null> | null;
       } | null;
-      readonly section_bottom_bg_mobileConnection: {
+      readonly top_bg_mobileConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly small_title: string | null;
+      readonly section_title: string | null;
+      readonly secondary_heading: string | null;
+      readonly text_image_group: ReadonlyArray<{
+        readonly imgConnection: {
+          readonly edges: ReadonlyArray<{
+            readonly node: {
+              readonly url: string | null;
+            } | null;
+          } | null> | null;
+        } | null;
+        readonly blurb_heading: string | null;
+        readonly blurb: string | null;
+      } | null> | null;
+      readonly bottom_bg_desktopConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly bottom_bg_mobileConnection: {
         readonly edges: ReadonlyArray<{
           readonly node: {
             readonly url: string | null;
@@ -142,24 +205,64 @@ export type BungieAnniversaryQueryResponse = {
         } | null> | null;
       } | null;
     } | null;
-    readonly collection_section: {
-      readonly headline: string | null;
-      readonly section_heading: string | null;
-      readonly section_blurb: string | null;
-      readonly learn_more_btn: {
-        readonly title: string | null;
-        readonly href: string | null;
+    readonly rewards_list_section: {
+      readonly section_bg_desktopConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
       } | null;
-      readonly collection_carousel_slide: ReadonlyArray<{
-        readonly slide_heading: string | null;
-        readonly slide_imageConnection: {
-          readonly edges: ReadonlyArray<{
-            readonly node: {
-              readonly url: string | null;
-            } | null;
+      readonly section_bg_mobileConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly crestConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly pack_owners_heading: string | null;
+      readonly free_heading: string | null;
+      readonly disclaimer: string | null;
+      readonly rewards_table: {
+        readonly reward_group: ReadonlyArray<{
+          readonly group_name: string | null;
+          readonly is_free: boolean | null;
+          readonly rows: ReadonlyArray<{
+            readonly reward_name: string | null;
+            readonly is_free: boolean | null;
           } | null> | null;
-        } | null;
-      } | null> | null;
+        } | null> | null;
+      } | null;
+    } | null;
+    readonly celebration_section: {
+      readonly subnav_detail: {
+        readonly subnav_label: string | null;
+        readonly section_id: string | null;
+      } | null;
+      readonly section_bg_desktopConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly section_bg_mobileConnection: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly url: string | null;
+          } | null;
+        } | null> | null;
+      } | null;
+      readonly trailer_id: string | null;
+      readonly section_title: string | null;
+      readonly blurb: string | null;
     } | null;
     readonly editions_section_title: string | null;
     readonly editions_section_bg_desktopConnection: {
@@ -191,7 +294,7 @@ export type BungieAnniversaryQuery = {
 query BungieAnniversaryQuery(
   $locale: String!
 ) {
-  bungie_30th_anniversary(uid: "blt31e725130b182abf", locale: $locale) {
+  bungie_30th_anniversary_v2(uid: "blt94f096071905697b", locale: $locale) {
     title
     meta_imageConnection {
       edges {
@@ -200,6 +303,7 @@ query BungieAnniversaryQuery(
         }
       }
     }
+    subnav_btn_text
     hero {
       hero_logoConnection {
         edges {
@@ -223,46 +327,86 @@ query BungieAnniversaryQuery(
           }
         }
       }
+      trailer_btn {
+        title
+        trailer_id
+      }
+      buy_btn {
+        title
+        url
+      }
+      availability_text
     }
-    first_section {
-      headline
-      main_heading
+    dungeon_section {
+      subnav_detail {
+        subnav_label
+        section_id
+      }
+      small_title
+      section_title
+      section_bg_desktopConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      section_bg_mobileConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
       main_blurb
-      secondary_heading
-      secondary_blurb
-      trailer_id {
+      info_block {
+        imgConnection {
+          edges {
+            node {
+              url
+            }
+          }
+        }
         title
-        href
+        blurb
       }
-      bungie_fist_logoConnection {
+    }
+    bungie_logoConnection {
+      edges {
+        node {
+          url
+        }
+      }
+    }
+    requirement_headline
+    gjallarhorn_section {
+      subnav_detail {
+        section_label
+        section_id
+      }
+      bg_desktopConnection {
         edges {
           node {
             url
           }
         }
       }
-      section_bottom_bg_desktopConnection {
+      bg_mobileConnection {
         edges {
           node {
             url
           }
         }
       }
-      section_bottom_bg_mobileConnection {
+      gjallarhorn_logoConnection {
         edges {
           node {
             url
           }
         }
       }
-      section_top_bg_desktopConnection {
-        edges {
-          node {
-            url
-          }
-        }
-      }
-      section_top_bg_mobileConnection {
+      blurb
+      weapon_imgConnection {
         edges {
           node {
             url
@@ -270,55 +414,77 @@ query BungieAnniversaryQuery(
         }
       }
     }
-    anniversary_pack_section {
-      section_top_bg_desktopConnection {
+    rewards_section {
+      section_bg_desktopConnection {
         edges {
           node {
             url
           }
         }
       }
-      section_top_bg_mobileConnection {
+      section_bg_mobileConnection {
         edges {
           node {
             url
           }
         }
       }
-      vintage_bungie_logoConnection {
-        edges {
-          node {
-            url
-          }
-        }
-      }
-      section_heading
+      small_title
+      section_title
+      blurb
       text_image_group {
+        imgConnection {
+          edges {
+            node {
+              url
+            }
+          }
+        }
         blurb_heading
-        blurb_text
-        thumbnailConnection {
-          edges {
-            node {
-              url
-            }
-          }
-        }
-        screenshotConnection {
-          edges {
-            node {
-              url
-            }
-          }
-        }
+        blurb
       }
-      section_bottom_bg_desktopConnection {
+    }
+    free_to_play_section {
+      subnav_detail {
+        subnav_label
+        section_id
+      }
+      top_bg_desktopConnection {
         edges {
           node {
             url
           }
         }
       }
-      section_bottom_bg_mobileConnection {
+      top_bg_mobileConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      small_title
+      section_title
+      secondary_heading
+      text_image_group {
+        imgConnection {
+          edges {
+            node {
+              url
+            }
+          }
+        }
+        blurb_heading
+        blurb
+      }
+      bottom_bg_desktopConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      bottom_bg_mobileConnection {
         edges {
           node {
             url
@@ -326,24 +492,64 @@ query BungieAnniversaryQuery(
         }
       }
     }
-    collection_section {
-      headline
-      section_heading
-      section_blurb
-      learn_more_btn {
-        title
-        href
-      }
-      collection_carousel_slide {
-        slide_heading
-        slide_imageConnection {
-          edges {
-            node {
-              url
-            }
+    rewards_list_section {
+      section_bg_desktopConnection {
+        edges {
+          node {
+            url
           }
         }
       }
+      section_bg_mobileConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      crestConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      pack_owners_heading
+      free_heading
+      disclaimer
+      rewards_table {
+        reward_group {
+          group_name
+          is_free
+          rows {
+            reward_name
+            is_free
+          }
+        }
+      }
+    }
+    celebration_section {
+      subnav_detail {
+        subnav_label
+        section_id
+      }
+      section_bg_desktopConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      section_bg_mobileConnection {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      trailer_id
+      section_title
+      blurb
     }
     editions_section_title
     editions_section_bg_desktopConnection {
@@ -383,7 +589,14 @@ const node: ConcreteRequest = (function () {
       name: "title",
       storageKey: null,
     } as any,
-    v2 = [
+    v2 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "url",
+      storageKey: null,
+    } as any,
+    v3 = [
       {
         alias: null,
         args: null,
@@ -399,86 +612,107 @@ const node: ConcreteRequest = (function () {
             kind: "LinkedField",
             name: "node",
             plural: false,
-            selections: [
-              {
-                alias: null,
-                args: null,
-                kind: "ScalarField",
-                name: "url",
-                storageKey: null,
-              },
-            ],
+            selections: [v2 /*: any*/],
             storageKey: null,
           },
         ],
         storageKey: null,
       } as any,
     ],
-    v3 = {
+    v4 = {
       alias: null,
       args: null,
       kind: "ScalarField",
-      name: "headline",
+      name: "trailer_id",
       storageKey: null,
     } as any,
-    v4 = [
-      v1 /*: any*/,
+    v5 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "section_id",
+      storageKey: null,
+    } as any,
+    v6 = [
       {
         alias: null,
         args: null,
         kind: "ScalarField",
-        name: "href",
+        name: "subnav_label",
         storageKey: null,
       } as any,
+      v5 /*: any*/,
     ],
-    v5 = {
-      alias: null,
-      args: null,
-      concreteType: "SysAssetConnection",
-      kind: "LinkedField",
-      name: "section_bottom_bg_desktopConnection",
-      plural: false,
-      selections: v2 /*: any*/,
-      storageKey: null,
-    } as any,
-    v6 = {
-      alias: null,
-      args: null,
-      concreteType: "SysAssetConnection",
-      kind: "LinkedField",
-      name: "section_bottom_bg_mobileConnection",
-      plural: false,
-      selections: v2 /*: any*/,
-      storageKey: null,
-    } as any,
     v7 = {
       alias: null,
       args: null,
-      concreteType: "SysAssetConnection",
-      kind: "LinkedField",
-      name: "section_top_bg_desktopConnection",
-      plural: false,
-      selections: v2 /*: any*/,
+      kind: "ScalarField",
+      name: "small_title",
       storageKey: null,
     } as any,
     v8 = {
       alias: null,
       args: null,
-      concreteType: "SysAssetConnection",
-      kind: "LinkedField",
-      name: "section_top_bg_mobileConnection",
-      plural: false,
-      selections: v2 /*: any*/,
+      kind: "ScalarField",
+      name: "section_title",
       storageKey: null,
     } as any,
     v9 = {
       alias: null,
       args: null,
-      kind: "ScalarField",
-      name: "section_heading",
+      concreteType: "SysAssetConnection",
+      kind: "LinkedField",
+      name: "section_bg_desktopConnection",
+      plural: false,
+      selections: v3 /*: any*/,
       storageKey: null,
     } as any,
-    v10 = [
+    v10 = {
+      alias: null,
+      args: null,
+      concreteType: "SysAssetConnection",
+      kind: "LinkedField",
+      name: "section_bg_mobileConnection",
+      plural: false,
+      selections: v3 /*: any*/,
+      storageKey: null,
+    } as any,
+    v11 = {
+      alias: null,
+      args: null,
+      concreteType: "SysAssetConnection",
+      kind: "LinkedField",
+      name: "imgConnection",
+      plural: false,
+      selections: v3 /*: any*/,
+      storageKey: null,
+    } as any,
+    v12 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "blurb",
+      storageKey: null,
+    } as any,
+    v13 = [
+      v11 /*: any*/,
+      {
+        alias: null,
+        args: null,
+        kind: "ScalarField",
+        name: "blurb_heading",
+        storageKey: null,
+      } as any,
+      v12 /*: any*/,
+    ],
+    v14 = {
+      alias: null,
+      args: null,
+      kind: "ScalarField",
+      name: "is_free",
+      storageKey: null,
+    } as any,
+    v15 = [
       {
         alias: null,
         args: [
@@ -490,12 +724,12 @@ const node: ConcreteRequest = (function () {
           {
             kind: "Literal",
             name: "uid",
-            value: "blt31e725130b182abf",
+            value: "blt94f096071905697b",
           },
         ],
-        concreteType: "Bungie30thAnniversary",
+        concreteType: "Bungie30thAnniversaryV2",
         kind: "LinkedField",
-        name: "bungie_30th_anniversary",
+        name: "bungie_30th_anniversary_v2",
         plural: false,
         selections: [
           v1 /*: any*/,
@@ -506,13 +740,20 @@ const node: ConcreteRequest = (function () {
             kind: "LinkedField",
             name: "meta_imageConnection",
             plural: false,
-            selections: v2 /*: any*/,
+            selections: v3 /*: any*/,
             storageKey: null,
           },
           {
             alias: null,
             args: null,
-            concreteType: "Bungie30thAnniversaryHero",
+            kind: "ScalarField",
+            name: "subnav_btn_text",
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "Bungie30thAnniversaryV2Hero",
             kind: "LinkedField",
             name: "hero",
             plural: false,
@@ -524,7 +765,7 @@ const node: ConcreteRequest = (function () {
                 kind: "LinkedField",
                 name: "hero_logoConnection",
                 plural: false,
-                selections: v2 /*: any*/,
+                selections: v3 /*: any*/,
                 storageKey: null,
               },
               {
@@ -541,7 +782,7 @@ const node: ConcreteRequest = (function () {
                 kind: "LinkedField",
                 name: "hero_bg_image_desktopConnection",
                 plural: false,
-                selections: v2 /*: any*/,
+                selections: v3 /*: any*/,
                 storageKey: null,
               },
               {
@@ -551,7 +792,34 @@ const node: ConcreteRequest = (function () {
                 kind: "LinkedField",
                 name: "hero_bg_image_mobileConnection",
                 plural: false,
-                selections: v2 /*: any*/,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "Bungie30thAnniversaryV2HeroTrailerBtn",
+                kind: "LinkedField",
+                name: "trailer_btn",
+                plural: false,
+                selections: [v1 /*: any*/, v4 /*: any*/],
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "Bungie30thAnniversaryV2HeroBuyBtn",
+                kind: "LinkedField",
+                name: "buy_btn",
+                plural: false,
+                selections: [v1 /*: any*/, v2 /*: any*/],
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "availability_text",
                 storageKey: null,
               },
             ],
@@ -560,19 +828,26 @@ const node: ConcreteRequest = (function () {
           {
             alias: null,
             args: null,
-            concreteType: "Bungie30thAnniversaryFirstSection",
+            concreteType: "Bungie30thAnniversaryV2DungeonSection",
             kind: "LinkedField",
-            name: "first_section",
+            name: "dungeon_section",
             plural: false,
             selections: [
-              v3 /*: any*/,
               {
                 alias: null,
                 args: null,
-                kind: "ScalarField",
-                name: "main_heading",
+                concreteType:
+                  "Bungie30thAnniversaryV2DungeonSectionSubnavDetail",
+                kind: "LinkedField",
+                name: "subnav_detail",
+                plural: false,
+                selections: v6 /*: any*/,
                 storageKey: null,
               },
+              v7 /*: any*/,
+              v8 /*: any*/,
+              v9 /*: any*/,
+              v10 /*: any*/,
               {
                 alias: null,
                 args: null,
@@ -583,6 +858,176 @@ const node: ConcreteRequest = (function () {
               {
                 alias: null,
                 args: null,
+                concreteType: "Bungie30thAnniversaryV2DungeonSectionInfoBlock",
+                kind: "LinkedField",
+                name: "info_block",
+                plural: true,
+                selections: [v11 /*: any*/, v1 /*: any*/, v12 /*: any*/],
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "SysAssetConnection",
+            kind: "LinkedField",
+            name: "bungie_logoConnection",
+            plural: false,
+            selections: v3 /*: any*/,
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            kind: "ScalarField",
+            name: "requirement_headline",
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "Bungie30thAnniversaryV2GjallarhornSection",
+            kind: "LinkedField",
+            name: "gjallarhorn_section",
+            plural: false,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                concreteType:
+                  "Bungie30thAnniversaryV2GjallarhornSectionSubnavDetail",
+                kind: "LinkedField",
+                name: "subnav_detail",
+                plural: false,
+                selections: [
+                  {
+                    alias: null,
+                    args: null,
+                    kind: "ScalarField",
+                    name: "section_label",
+                    storageKey: null,
+                  },
+                  v5 /*: any*/,
+                ],
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "bg_desktopConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "bg_mobileConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "gjallarhorn_logoConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              v12 /*: any*/,
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "weapon_imgConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "Bungie30thAnniversaryV2RewardsSection",
+            kind: "LinkedField",
+            name: "rewards_section",
+            plural: false,
+            selections: [
+              v9 /*: any*/,
+              v10 /*: any*/,
+              v7 /*: any*/,
+              v8 /*: any*/,
+              v12 /*: any*/,
+              {
+                alias: null,
+                args: null,
+                concreteType:
+                  "Bungie30thAnniversaryV2RewardsSectionTextImageGroup",
+                kind: "LinkedField",
+                name: "text_image_group",
+                plural: true,
+                selections: v13 /*: any*/,
+                storageKey: null,
+              },
+            ],
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "Bungie30thAnniversaryV2FreeToPlaySection",
+            kind: "LinkedField",
+            name: "free_to_play_section",
+            plural: false,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                concreteType:
+                  "Bungie30thAnniversaryV2FreeToPlaySectionSubnavDetail",
+                kind: "LinkedField",
+                name: "subnav_detail",
+                plural: false,
+                selections: v6 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "top_bg_desktopConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "top_bg_mobileConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              v7 /*: any*/,
+              v8 /*: any*/,
+              {
+                alias: null,
+                args: null,
                 kind: "ScalarField",
                 name: "secondary_heading",
                 storageKey: null,
@@ -590,165 +1035,157 @@ const node: ConcreteRequest = (function () {
               {
                 alias: null,
                 args: null,
-                kind: "ScalarField",
-                name: "secondary_blurb",
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                concreteType: "Link",
-                kind: "LinkedField",
-                name: "trailer_id",
-                plural: false,
-                selections: v4 /*: any*/,
-                storageKey: null,
-              },
-              {
-                alias: null,
-                args: null,
-                concreteType: "SysAssetConnection",
-                kind: "LinkedField",
-                name: "bungie_fist_logoConnection",
-                plural: false,
-                selections: v2 /*: any*/,
-                storageKey: null,
-              },
-              v5 /*: any*/,
-              v6 /*: any*/,
-              v7 /*: any*/,
-              v8 /*: any*/,
-            ],
-            storageKey: null,
-          },
-          {
-            alias: null,
-            args: null,
-            concreteType: "Bungie30thAnniversaryAnniversaryPackSection",
-            kind: "LinkedField",
-            name: "anniversary_pack_section",
-            plural: false,
-            selections: [
-              v7 /*: any*/,
-              v8 /*: any*/,
-              {
-                alias: null,
-                args: null,
-                concreteType: "SysAssetConnection",
-                kind: "LinkedField",
-                name: "vintage_bungie_logoConnection",
-                plural: false,
-                selections: v2 /*: any*/,
-                storageKey: null,
-              },
-              v9 /*: any*/,
-              {
-                alias: null,
-                args: null,
                 concreteType:
-                  "Bungie30thAnniversaryAnniversaryPackSectionTextImageGroup",
+                  "Bungie30thAnniversaryV2FreeToPlaySectionTextImageGroup",
                 kind: "LinkedField",
                 name: "text_image_group",
                 plural: true,
-                selections: [
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "blurb_heading",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    kind: "ScalarField",
-                    name: "blurb_text",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    concreteType: "SysAssetConnection",
-                    kind: "LinkedField",
-                    name: "thumbnailConnection",
-                    plural: false,
-                    selections: v2 /*: any*/,
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    concreteType: "SysAssetConnection",
-                    kind: "LinkedField",
-                    name: "screenshotConnection",
-                    plural: false,
-                    selections: v2 /*: any*/,
-                    storageKey: null,
-                  },
-                ],
+                selections: v13 /*: any*/,
                 storageKey: null,
               },
-              v5 /*: any*/,
-              v6 /*: any*/,
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "bottom_bg_desktopConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "bottom_bg_mobileConnection",
+                plural: false,
+                selections: v3 /*: any*/,
+                storageKey: null,
+              },
             ],
             storageKey: null,
           },
           {
             alias: null,
             args: null,
-            concreteType: "Bungie30thAnniversaryCollectionSection",
+            concreteType: "Bungie30thAnniversaryV2RewardsListSection",
             kind: "LinkedField",
-            name: "collection_section",
+            name: "rewards_list_section",
             plural: false,
             selections: [
-              v3 /*: any*/,
               v9 /*: any*/,
+              v10 /*: any*/,
               {
                 alias: null,
                 args: null,
-                kind: "ScalarField",
-                name: "section_blurb",
+                concreteType: "SysAssetConnection",
+                kind: "LinkedField",
+                name: "crestConnection",
+                plural: false,
+                selections: v3 /*: any*/,
                 storageKey: null,
               },
               {
                 alias: null,
                 args: null,
-                concreteType: "Link",
-                kind: "LinkedField",
-                name: "learn_more_btn",
-                plural: false,
-                selections: v4 /*: any*/,
+                kind: "ScalarField",
+                name: "pack_owners_heading",
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "free_heading",
+                storageKey: null,
+              },
+              {
+                alias: null,
+                args: null,
+                kind: "ScalarField",
+                name: "disclaimer",
                 storageKey: null,
               },
               {
                 alias: null,
                 args: null,
                 concreteType:
-                  "Bungie30thAnniversaryCollectionSectionCollectionCarouselSlide",
+                  "Bungie30thAnniversaryV2RewardsListSectionRewardsTable",
                 kind: "LinkedField",
-                name: "collection_carousel_slide",
-                plural: true,
+                name: "rewards_table",
+                plural: false,
                 selections: [
                   {
                     alias: null,
                     args: null,
-                    kind: "ScalarField",
-                    name: "slide_heading",
-                    storageKey: null,
-                  },
-                  {
-                    alias: null,
-                    args: null,
-                    concreteType: "SysAssetConnection",
+                    concreteType:
+                      "Bungie30thAnniversaryV2RewardsListSectionRewardsTableRewardGroup",
                     kind: "LinkedField",
-                    name: "slide_imageConnection",
-                    plural: false,
-                    selections: v2 /*: any*/,
+                    name: "reward_group",
+                    plural: true,
+                    selections: [
+                      {
+                        alias: null,
+                        args: null,
+                        kind: "ScalarField",
+                        name: "group_name",
+                        storageKey: null,
+                      },
+                      v14 /*: any*/,
+                      {
+                        alias: null,
+                        args: null,
+                        concreteType:
+                          "Bungie30thAnniversaryV2RewardsListSectionRewardsTableRewardGroupRows",
+                        kind: "LinkedField",
+                        name: "rows",
+                        plural: true,
+                        selections: [
+                          {
+                            alias: null,
+                            args: null,
+                            kind: "ScalarField",
+                            name: "reward_name",
+                            storageKey: null,
+                          },
+                          v14 /*: any*/,
+                        ],
+                        storageKey: null,
+                      },
+                    ],
                     storageKey: null,
                   },
                 ],
                 storageKey: null,
               },
+            ],
+            storageKey: null,
+          },
+          {
+            alias: null,
+            args: null,
+            concreteType: "Bungie30thAnniversaryV2CelebrationSection",
+            kind: "LinkedField",
+            name: "celebration_section",
+            plural: false,
+            selections: [
+              {
+                alias: null,
+                args: null,
+                concreteType:
+                  "Bungie30thAnniversaryV2CelebrationSectionSubnavDetail",
+                kind: "LinkedField",
+                name: "subnav_detail",
+                plural: false,
+                selections: v6 /*: any*/,
+                storageKey: null,
+              },
+              v9 /*: any*/,
+              v10 /*: any*/,
+              v4 /*: any*/,
+              v8 /*: any*/,
+              v12 /*: any*/,
             ],
             storageKey: null,
           },
@@ -766,7 +1203,7 @@ const node: ConcreteRequest = (function () {
             kind: "LinkedField",
             name: "editions_section_bg_desktopConnection",
             plural: false,
-            selections: v2 /*: any*/,
+            selections: v3 /*: any*/,
             storageKey: null,
           },
           {
@@ -776,7 +1213,7 @@ const node: ConcreteRequest = (function () {
             kind: "LinkedField",
             name: "editions_section_bg_mobileConnection",
             plural: false,
-            selections: v2 /*: any*/,
+            selections: v3 /*: any*/,
             storageKey: null,
           },
           {
@@ -817,7 +1254,7 @@ const node: ConcreteRequest = (function () {
       kind: "Fragment",
       metadata: null,
       name: "BungieAnniversaryQuery",
-      selections: v10 /*: any*/,
+      selections: v15 /*: any*/,
       type: "Query",
       abstractKey: null,
     },
@@ -826,18 +1263,18 @@ const node: ConcreteRequest = (function () {
       argumentDefinitions: v0 /*: any*/,
       kind: "Operation",
       name: "BungieAnniversaryQuery",
-      selections: v10 /*: any*/,
+      selections: v15 /*: any*/,
     },
     params: {
-      cacheID: "705c966d4c8dc1223c94ccd0cdedf97b",
+      cacheID: "fc6ec66f92ecd7f9101cfd20e764ff9a",
       id: null,
       metadata: {},
       name: "BungieAnniversaryQuery",
       operationKind: "query",
       text:
-        'query BungieAnniversaryQuery(\n  $locale: String!\n) {\n  bungie_30th_anniversary(uid: "blt31e725130b182abf", locale: $locale) {\n    title\n    meta_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    hero {\n      hero_logoConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      hero_logo_alt_text\n      hero_bg_image_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      hero_bg_image_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n    }\n    first_section {\n      headline\n      main_heading\n      main_blurb\n      secondary_heading\n      secondary_blurb\n      trailer_id {\n        title\n        href\n      }\n      bungie_fist_logoConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bottom_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bottom_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_top_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_top_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n    }\n    anniversary_pack_section {\n      section_top_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_top_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      vintage_bungie_logoConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_heading\n      text_image_group {\n        blurb_heading\n        blurb_text\n        thumbnailConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n        screenshotConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n      }\n      section_bottom_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bottom_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n    }\n    collection_section {\n      headline\n      section_heading\n      section_blurb\n      learn_more_btn {\n        title\n        href\n      }\n      collection_carousel_slide {\n        slide_heading\n        slide_imageConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n      }\n    }\n    editions_section_title\n    editions_section_bg_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    editions_section_bg_mobileConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    bundle_edition_tab\n    pack_edition_tab\n    media_section_small_title_one\n    media_section_small_title_two\n  }\n}\n',
+        'query BungieAnniversaryQuery(\n  $locale: String!\n) {\n  bungie_30th_anniversary_v2(uid: "blt94f096071905697b", locale: $locale) {\n    title\n    meta_imageConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    subnav_btn_text\n    hero {\n      hero_logoConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      hero_logo_alt_text\n      hero_bg_image_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      hero_bg_image_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      trailer_btn {\n        title\n        trailer_id\n      }\n      buy_btn {\n        title\n        url\n      }\n      availability_text\n    }\n    dungeon_section {\n      subnav_detail {\n        subnav_label\n        section_id\n      }\n      small_title\n      section_title\n      section_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      main_blurb\n      info_block {\n        imgConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n        title\n        blurb\n      }\n    }\n    bungie_logoConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    requirement_headline\n    gjallarhorn_section {\n      subnav_detail {\n        section_label\n        section_id\n      }\n      bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      gjallarhorn_logoConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      blurb\n      weapon_imgConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n    }\n    rewards_section {\n      section_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      small_title\n      section_title\n      blurb\n      text_image_group {\n        imgConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n        blurb_heading\n        blurb\n      }\n    }\n    free_to_play_section {\n      subnav_detail {\n        subnav_label\n        section_id\n      }\n      top_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      top_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      small_title\n      section_title\n      secondary_heading\n      text_image_group {\n        imgConnection {\n          edges {\n            node {\n              url\n            }\n          }\n        }\n        blurb_heading\n        blurb\n      }\n      bottom_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      bottom_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n    }\n    rewards_list_section {\n      section_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      crestConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      pack_owners_heading\n      free_heading\n      disclaimer\n      rewards_table {\n        reward_group {\n          group_name\n          is_free\n          rows {\n            reward_name\n            is_free\n          }\n        }\n      }\n    }\n    celebration_section {\n      subnav_detail {\n        subnav_label\n        section_id\n      }\n      section_bg_desktopConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      section_bg_mobileConnection {\n        edges {\n          node {\n            url\n          }\n        }\n      }\n      trailer_id\n      section_title\n      blurb\n    }\n    editions_section_title\n    editions_section_bg_desktopConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    editions_section_bg_mobileConnection {\n      edges {\n        node {\n          url\n        }\n      }\n    }\n    bundle_edition_tab\n    pack_edition_tab\n    media_section_small_title_one\n    media_section_small_title_two\n  }\n}\n',
     },
   } as any;
 })();
-(node as any).hash = "d0404dc0c86f7680aad9610f7855114f";
+(node as any).hash = "c5a25b5c499466275f7348722a4f2ee0";
 export default node;

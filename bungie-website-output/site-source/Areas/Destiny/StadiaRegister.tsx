@@ -1,30 +1,29 @@
-import * as React from "react";
-import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
-import styles from "Areas/Destiny/PcRegister.module.scss";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
+import { PlatformError } from "@CustomErrors";
+import { BungieCredentialType } from "@Enum";
 import {
   GlobalStateComponentProps,
   GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { RouteComponentProps } from "react-router";
-import { EmailVerificationState } from "@Areas/PCMigration/Shared/PCMigrationModalStagePage";
-import { PCMigrationUtilities } from "@Areas/PCMigration/Shared/PCMigrationUtilities";
-import { RouteHelper } from "@Routes/RouteHelper";
-import classNames from "classnames";
-import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { Platform } from "@Platform";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
 import { Img } from "@Helpers";
-import { BungieCredentialType } from "@Enum";
-import { UserUtils } from "@Utilities/UserUtils";
+import { Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { EmailValidationState, UserUtils } from "@Utilities/UserUtils";
+import styles from "Areas/Destiny/StadiaRegister.module.scss";
+import classNames from "classnames";
+import * as React from "react";
+import { RouteComponentProps } from "react-router";
+
 interface IStadiaRegisterProps
   extends GlobalStateComponentProps<"loggedInUser" | "credentialTypes">,
     RouteComponentProps {}
@@ -67,11 +66,9 @@ class StadiaRegister extends React.Component<
 
     const authenticated =
       UserUtils.isAuthenticated(globalState) && globalState.loggedInUser;
-    const emailVerified =
-      this.userEmailState === EmailVerificationState.Verified;
-    const hasStadia = PCMigrationUtilities.HasCredentialType(
-      globalState.credentialTypes,
-      BungieCredentialType.StadiaId
+    const emailVerified = this.userEmailState === EmailValidationState.Verified;
+    const hasStadia = globalState?.credentialTypes?.find(
+      (c) => c.credentialType === BungieCredentialType.StadiaId
     );
 
     const showBungieRewards = hasStadia && authenticated && emailVerified;
@@ -224,10 +221,8 @@ class StadiaRegister extends React.Component<
         </ParallaxContainer>
 
         <div className={styles.setupTopText}>
-          <h3 className={classNames(styles.setupTitle, styles.title)}>
-            {Localizer.PcRegister.BungieRewards}
-          </h3>
-          <p className={classNames(styles.setupDesc, styles.subtitle)}>
+          <h3 className={styles.title}>{Localizer.PcRegister.BungieRewards}</h3>
+          <p className={styles.subtitle}>
             {Localizer.PcRegister.BungieRewardsSectionDescription}
           </p>
         </div>
@@ -298,10 +293,10 @@ class StadiaRegister extends React.Component<
   }
 
   public get userEmailState() {
-    let emailStatus = EmailVerificationState.None;
+    let emailStatus = EmailValidationState.None;
 
     if (this.props.globalState && this.props.globalState.loggedInUser) {
-      emailStatus = PCMigrationUtilities.GetEmailValidationStatus(
+      emailStatus = UserUtils.getEmailValidationState(
         this.props.globalState.loggedInUser.emailStatus
       );
     }

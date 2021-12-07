@@ -13,6 +13,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { GridCol, GridDivider } from "@UI/UIKit/Layout/Grid/Grid";
+import { EmailVerified } from "@UI/User/EmailVerified";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -107,7 +108,9 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
         <h3>{Localizer.account.emailSms}</h3>
       </GridCol>
       <GridDivider cols={12} className={accountStyles.mainDivider} />
-
+      <GridCol cols={12} className={accountStyles.emailVerified}>
+        <EmailVerified hideSubtitle={true} />
+      </GridCol>
       <Formik
         initialValues={{
           displayName: globalStateData?.loggedInUser?.user?.displayName,

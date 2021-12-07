@@ -82,7 +82,9 @@ const SeasonOfTheLost: React.FC<SeasonOfTheLostProps> = (props) => {
       >
         <body
           className={classNames(
-            SpecialBodyClasses(BodyClasses.NoSpacer),
+            SpecialBodyClasses(
+              BodyClasses.NoSpacer | BodyClasses.HideServiceAlert
+            ),
             styles.season15,
             { [styles.hiddenOverflow]: isBodyOverflowHidden }
           )}

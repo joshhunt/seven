@@ -934,6 +934,7 @@ export enum PlatformErrorCodes {
   IgnoreNotFound = 1007,
   IgnoreUserGloballyIgnored = 1008,
   IgnoreUserIgnored = 1009,
+  TargetUserIgnored = 1010,
   NotificationSettingInvalid = 1100,
   PsnApiExpiredAccessToken = 1204,
   PSNExForbidden = 1205,
@@ -1321,6 +1322,10 @@ export enum PlatformErrorCodes {
   ErrorBungieFriendsUnableToRemoveRequest = 3904,
   ErrorBungieFriendsUnableToRemove = 3905,
   ErrorBungieFriendsIdenticalSourceTarget = 3906,
+  ErrorBungieFriendsSelf = 3907,
+  ErrorBungieBlockSelf = 3908,
+  ErrorBungieFriendsListFull = 3910,
+  ErrorBungieBlockListFull = 3911,
 }
 
 export enum PhoneValidationStatusEnum {

@@ -139,17 +139,13 @@ class LegalArea extends React.Component<RouteComponentProps, LegalAreaState> {
             </GridCol>
           </Grid>
         </div>
-        <div className={styles.container}>
-          <Grid className={styles.subNav}>
-            <GridCol cols={12}>
-              <SubNav
-                history={this.props.history}
-                links={links}
-                vertical={true}
-                mobileDropdownBreakpoint={ResponsiveSize.medium}
-              />
-            </GridCol>
-          </Grid>
+        <div className={styles.subNav}>
+          <SubNav
+            history={this.props.history}
+            links={links}
+            vertical={true}
+            mobileDropdownBreakpoint={ResponsiveSize.medium}
+          />
           <Grid className={styles.legalContent}>
             <GridCol cols={12}>
               <AnimatedRouter>

@@ -10,7 +10,6 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Config, Contract, Platform, User } from "@Platform";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
@@ -20,6 +19,7 @@ import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { Field, Form, Formik } from "formik";
@@ -59,14 +59,21 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   const [themeOffset, setThemeOffset] = useState(0);
 
   const [nameChangeStatus, setNameChangeStatus] = useState<NameChangeStatus>(
-    "canEdit"
+    ConfigUtils.SystemStatus("AllowGlobalBungieDisplayNameEditing")
+      ? "canEdit"
+      : "locked"
   );
+
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
 
   const [onPageUser, setOnPageUser] = useState<User.GeneralUser>();
   const [bungieName, setBungieName] = useState<IBungieName>(null);
+
+  const [displayNameSuggestions, setDisplayNameSuggestions] = useState<
+    string[]
+  >([]);
 
   /* Functions */
   const showSettingsChangedToast = () => {
@@ -176,12 +183,38 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
       .catch((e) => Modal.error(e));
   };
 
+  const getSuggestedNames = (userMembershipData: User.UserMembershipData) => {
+    let suggestedNames = userMembershipData?.destinyMemberships?.map((dm) => {
+      if (dm.membershipType !== BungieMembershipType.BungieNext) {
+        if (dm.membershipType === BungieMembershipType.TigerStadia) {
+          //stadia displayNames always have the #NNNN
+          return dm.displayName?.split("#")?.[0];
+        }
+
+        return dm.displayName ?? "";
+      }
+    });
+
+    //dedupe
+    suggestedNames = [...new Set(suggestedNames)];
+
+    //remove the current displayName
+    suggestedNames = suggestedNames.filter((sn) => {
+      return (
+        sn !== globalStateData?.loggedInUser?.user?.displayName ??
+        userMembershipData?.bungieNetUser?.displayName ??
+        ""
+      );
+    });
+
+    setDisplayNameSuggestions(suggestedNames);
+  };
+
   /* Hooks */
 
   useEffect(() => {
     loadAvatars();
     loadThemes();
-    setNameChangeStatus("locked");
   }, [onPageUser]);
 
   useEffect(() => {
@@ -192,6 +225,16 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
           globalStateData.loggedInUser.user
         )
       );
+
+      Platform.UserService.GetMembershipDataById(
+        globalStateData.loggedInUser.user.membershipId,
+        BungieMembershipType.BungieNext
+      )
+        .then((data) => {
+          getSuggestedNames(data);
+        })
+        .catch(ConvertToPlatformError)
+        .catch((e) => Modal.error(e));
     } else if (isAdmin) {
       Platform.UserService.GetMembershipDataById(
         membershipIdFromQuery,
@@ -202,6 +245,8 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
           setBungieName(
             UserUtils.getBungieNameFromBnetGeneralUser(data.bungieNetUser)
           );
+
+          getSuggestedNames(data);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e));
@@ -261,7 +306,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     <FormikTextInput
                       name={"displayName"}
                       type={"text"}
-                      disabled={true}
+                      disabled={nameChangeStatus === "locked"}
                       classes={{ input: styles.textInput }}
                       placeholder={formikProps.values.displayName}
                       onChange={(e) => {
@@ -295,22 +340,34 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       </Anchor>
                     </div>
                   )}
-                  {/*									{
-										nameChangeStatus === "canEdit" && (
-											<>
-												<p>{(displayNameSuggestions.length > 0) && Localizer.userpages.suggestedNames}</p>
-												<div>
-													{displayNameSuggestions.map((name, i) => <a className={styles.suggestedNames} key={i} onClick={(e) =>
-													{
-														formikProps.setFieldValue("displayName", name, true);
-														(name !== bungieName?.bungieGlobalName)
-														? setNameChangeStatus("confirm")
-														: setNameChangeStatus("canEdit");
-													}}>{name}</a>)}
-												</div>
-											</>
-										)
-									}*/}
+                  {nameChangeStatus === "canEdit" && (
+                    <>
+                      <p>
+                        {displayNameSuggestions.length > 0 &&
+                          Localizer.userpages.suggestedNames}
+                      </p>
+                      <div>
+                        {displayNameSuggestions.map((name, i) => (
+                          <a
+                            className={styles.suggestedNames}
+                            key={i}
+                            onClick={(e) => {
+                              formikProps.setFieldValue(
+                                "displayName",
+                                name,
+                                true
+                              );
+                              name !== bungieName?.bungieGlobalName
+                                ? setNameChangeStatus("confirm")
+                                : setNameChangeStatus("canEdit");
+                            }}
+                          >
+                            {name}
+                          </a>
+                        ))}
+                      </div>
+                    </>
+                  )}
                   {nameChangeStatus === "confirm" && (
                     <div className={styles.confirmButtons}>
                       <button type="submit" className={styles.textOnly}>
