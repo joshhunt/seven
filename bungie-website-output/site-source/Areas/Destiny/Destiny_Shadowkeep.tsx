@@ -411,19 +411,6 @@ class DestinyShadowkeepInner extends React.Component<
                 ? "29rem auto 2rem"
                 : "41rem auto 2rem"
             }
-            blurb={Localizer.FormatReact(
-              Localizer.Shadowkeep.SupersBlurbPartOne,
-              {
-                linkToForsaken: (
-                  <Anchor
-                    className={styles.linkToShadowkeep}
-                    url={RouteHelper.Forsaken()}
-                  >
-                    {Localizer.Shadowkeep.SupersBlurbPartTwo}
-                  </Anchor>
-                ),
-              }
-            )}
           >
             <div className={styles.imageContainer}>
               <div className={styles.supersThumbnail}>
@@ -723,13 +710,13 @@ class DestinyShadowkeepInner extends React.Component<
                   <div className={styles.buyMainContent}>
                     <div
                       dangerouslySetInnerHTML={sanitizeHTML(
-                        Localizer.Destiny.legendaryEditionDesc1
+                        Localizer.Shadowkeep.legendaryEditionDesc1
                       )}
                     />
                     <div className={styles.descBottom}>
                       <div
                         dangerouslySetInnerHTML={sanitizeHTML(
-                          Localizer.Destiny.legendaryEditionDesc2
+                          Localizer.Shadowkeep.legendaryEditionDesc2
                         )}
                       />
                     </div>
