@@ -79,6 +79,7 @@ export declare namespace DestinyDefinitions {
     Dungeon = 82,
     Sundial = 83,
     TrialsOfOsiris = 84,
+    Dares = 85,
   }
 
   enum DestinyTalentNodeStepWeaponPerformances {
@@ -553,6 +554,7 @@ export declare namespace DestinyDefinitions {
   enum DestinyVendorProgressionType {
     Default = 0,
     Ritual = 1,
+    NoSeasonalRefresh = 2,
   }
 
   enum VendorDisplayCategorySortOrder {
@@ -617,6 +619,7 @@ export declare namespace DestinyDefinitions {
     SeasonalRewardExpiration = 16384,
     BestDeal = 32768,
     Popular = 65536,
+    Free = 131072,
   }
 
   enum DestinySocketCategoryStyle {

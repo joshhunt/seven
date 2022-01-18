@@ -385,6 +385,57 @@
     "path": "/7/en/Legal/Terms"
   },
   {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "TempNewsArticle",
+    "params": {
+      "path": ":articleUrl",
+      "isOverride": true
+    },
+    "path": "/7/en/News/:articleUrl"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "bungie",
+    "params": {},
+    "path": "/7/en/News/bungie"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "community",
+    "params": {},
+    "path": "/7/en/News/community"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "destiny",
+    "params": {},
+    "path": "/7/en/News/destiny"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "tech",
+    "params": {},
+    "path": "/7/en/News/tech"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "updates",
+    "params": {},
+    "path": "/7/en/News/updates"
+  },
+  {
     "areaName": "Registration",
     "areaObjectName": "Registration",
     "componentImportPath": "@Areas/Registration/RegistrationArea",

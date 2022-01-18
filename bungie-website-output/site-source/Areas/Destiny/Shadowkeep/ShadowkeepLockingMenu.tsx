@@ -171,12 +171,11 @@ export class ShadowkeepLockingMenu extends React.Component<
           </div>
           <div className={styles.menuItems}>{menuItems}</div>
           <Button
-            url={"#buy"}
+            url={`/7/${Localizer.CurrentCultureName}/Destiny/Buy/Shadowkeep`}
             buttonType={"gold"}
             style={{ marginLeft: "2rem" }}
             size={BasicSize.Small}
             caps={true}
-            onClick={this.onClickLink}
           >
             {Localizer.Shadowkeep.PreOrder}
           </Button>

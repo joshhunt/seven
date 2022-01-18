@@ -5,21 +5,20 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
 import styles from "@Areas/User/AccountComponents/AccountLinking.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { Localizer } from "@bungie/localization";
 import { AclEnum, AuthorizationStatus } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
+import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { Applications, Platform } from "@Platform";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
-import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { DateTime } from "luxon";
 import React, { useContext, useEffect, useState } from "react";
-import { RouteHelper } from "@Global/Routes/RouteHelper";
+import { AuthorizedAppFlair } from "./AccountLinking/AuthorizedAppFlair";
 
 interface AuthorizedApplicationsProps {
   /** The mid of the onPageUser */
@@ -51,7 +50,7 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [applicationData, setApplicationData] = useState<
     Applications.Authorization[]
-  >(null);
+  >([]);
   const isAuthorized = (authStatus: AuthorizationStatus) =>
     EnumUtils.looseEquals(
       authStatus,
@@ -61,6 +60,8 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
   const { membershipIdFromQuery, loggedInUserId, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
+  const appsUnlinked: string[] = [];
+  const appsWithError: string[] = [];
 
   useEffect(() => {
     getApplicationAuthorization();
@@ -77,6 +78,14 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
       .catch((e) => Modal.error(e));
   };
 
+  const updateButton = (appId: string, state: "unlink" | "error") => {
+    if (state === "unlink") {
+      appsUnlinked.push(appId);
+    } else if (state === "error") {
+      appsWithError.push(appId);
+    }
+  };
+
   const removeApplicationAuthorization = (applicationId: string) => {
     isSelf &&
       Platform.ApplicationService.RevokeAuthorization(
@@ -86,10 +95,14 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
         .then((errors) => {
           if (errors === 0) {
             getApplicationAuthorization();
+            updateButton(applicationId, "unlink");
           }
         })
         .catch(ConvertToPlatformError)
-        .catch((e) => Modal.error(e));
+        .catch((e) => {
+          Modal.error(e);
+          updateButton(applicationId, "error");
+        });
   };
 
   const canSeeAndEditApplications = globalStateData?.loggedInUser?.userAcls?.includes(
@@ -107,17 +120,14 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
           {Localizer.Accountlinking.AuthorizedApplications}
         </GridCol>
 
-        <GridCol cols={8} medium={12} className={styles.paginatedContent}>
+        <GridCol cols={8} medium={12}>
           {applicationData?.map((app, i) => {
             return (
               <TwoLineItem
                 key={i}
                 itemTitle={
                   <span>
-                    <a href={app.link} className={styles.appName}>
-                      {" "}
-                      {app.name}{" "}
-                    </a>
+                    <a href={app.link}> {app.name} </a>
                     <Icon iconName={"external-link"} iconType={"fa"} />
                   </span>
                 }
@@ -164,18 +174,17 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                   />
                 }
                 flair={
-                  <Button
-                    className={styles.removeButton}
-                    buttonType={"gold"}
-                    size={BasicSize.Small}
-                    onClick={() => {
-                      removeApplicationAuthorization(
-                        app.applicationId.toString()
-                      );
+                  <AuthorizedAppFlair
+                    id={app.applicationId.toString()}
+                    name={app.name}
+                    unlink={(id: string) => {
+                      removeApplicationAuthorization(id);
                     }}
-                  >
-                    {Localizer.UserPages.Unlink}
-                  </Button>
+                    unlinked={appsUnlinked.includes(
+                      app.applicationId.toString()
+                    )}
+                    error={appsWithError.includes(app.applicationId.toString())}
+                  />
                 }
               />
             );

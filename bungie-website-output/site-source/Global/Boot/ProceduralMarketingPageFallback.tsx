@@ -1,16 +1,25 @@
-import { ProceduralMarketingPageFallbackQuery } from "@Boot/__generated__/ProceduralMarketingPageFallbackQuery.graphql";
-import { useFragmentMap } from "@bungie/contentstack";
+import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization";
+import { RendererLogLevel } from "@Enum";
+import { Logger } from "@Global/Logger";
 import { Error404 } from "@UI/Errors/Error404";
 import { PmpAnchor } from "@UI/Marketing/Fragments/PmpAnchor";
 import { PmpCallToAction } from "@UI/Marketing/Fragments/PmpCallToAction";
+import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
 import { PmpNavigationBar } from "@UI/Marketing/Fragments/PmpNavigationBar";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { imageFromConnection } from "@Utilities/GraphQLUtils";
-import React from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { useAsyncError } from "@Utilities/ReactUtils";
+import { BnetStackProceduralMarketingPage } from "Generated/contentstack-types";
+import { ContentStackClient } from "Platform/ContentStack/ContentStackClient";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+
+// Due to lack of _content_type_uid field in generated typings, we have to manually add it :(
+type HasContentTypeUid = { _content_type_uid: string };
+type WithContentTypeUids<T extends any[]> = T[number] extends HasContentTypeUid
+  ? T
+  : (T[number] & HasContentTypeUid)[];
 
 interface Props {
   /**
@@ -30,86 +39,62 @@ interface Props {
 export const ProceduralMarketingPageFallback: React.FC<Props> = (props) => {
   const params = useParams<{ slug: string }>();
 
+  const [data, setData] = useState<[BnetStackProceduralMarketingPage[]]>();
+
+  const throwError = useAsyncError();
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("procedural_marketing_page")
+      .Query()
+      .where("url", "/" + params.slug)
+      .where("locale", BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .includeReference("content")
+      .toJSON()
+      .find()
+      .then(setData)
+      .catch((error) => {
+        Logger.logToServer(error, RendererLogLevel.Error);
+        throwError(error);
+      });
+  }, [params.slug]);
+
+  const entries = data?.[0] ?? ([] as BnetStackProceduralMarketingPage[]);
+  const pageDef = entries?.[0];
+
+  const { title, seo_description, content, social_media_preview_image } =
+    pageDef ?? {};
+
   /**
-   * Fetch marketing page content by slug. To add new fragments, create a fragment component and reference the
-   * fragment's name below.
+   * Fragments are added to the object map here. The keys are fragment types and the values are React components.
    */
-  const data = useLazyLoadQuery<ProceduralMarketingPageFallbackQuery>(
-    graphql`
-      query ProceduralMarketingPageFallbackQuery(
-        $slug: String!
-        $locale: String!
-      ) {
-        all_procedural_marketing_page(where: { url: $slug, locale: $locale }) {
-          items {
-            title
-            url
-            seo_description
-            social_media_preview_imageConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            contentConnection {
-              edges {
-                node {
-                  __typename
-                  ...PmpAnchorFragment
-                  ...PmpNavigationBarFragment
-                  ...PmpCallToActionFragment
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
+  const { ReferenceMappedList } = useReferenceMap(
     {
-      slug: `/${params.slug}`,
-      locale: BungieNetLocaleMap(Localizer.CurrentCultureName),
-    }
+      pmp_navigation_bar: PmpNavigationBar,
+      pmp_anchor: PmpAnchor,
+      pmp_call_to_action: PmpCallToAction,
+      pmp_media_carousel: PmpMediaCarousel,
+    },
+    (content as WithContentTypeUids<typeof pageDef.content>) ?? []
   );
 
-  const pageDef = data?.all_procedural_marketing_page?.items?.[0];
+  if (!data) {
+    return null;
+  }
 
   if (!pageDef) {
     return props.fallback ?? <Error404 />;
   }
 
-  const {
-    title,
-    seo_description,
-    contentConnection,
-    social_media_preview_imageConnection,
-  } = pageDef;
-
-  const { url: ogImage } = imageFromConnection(
-    social_media_preview_imageConnection
-  );
-
-  /**
-   * Fragments are added to the object map here. The keys are fragment types and the values are React components.
-   */
-  const { FragmentMappedList } = useFragmentMap(
-    {
-      PmpNavigationBar,
-      PmpAnchor,
-      PmpCallToAction,
-    },
-    pageDef.contentConnection
-  );
-
   return (
     <>
       <BungieHelmet
         title={title}
-        image={ogImage}
+        image={social_media_preview_image?.url}
         description={seo_description}
       />
 
-      <FragmentMappedList />
+      <ReferenceMappedList />
     </>
   );
 };

@@ -3,6 +3,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import * as H from "history";
+import NewsArticle from "../../Areas/News/NewsArticle";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
 import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
@@ -13,6 +14,7 @@ import {
   BuyDetailQueryParams,
   IProfileParams,
   IReportParams,
+  NewsParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -279,6 +281,9 @@ export class RouteHelper {
    *
    * */
   public static News = LegacyPathWithQuery("/News");
+  public static TemporaryNewsArticle = BasicReactPath<NewsParams>(
+    RouteDefs.Areas.News.getAction("TempNewsArticle")
+  );
   public static NewsArticle = (articleId: number) =>
     LegacyPath(`/Explore/Detail/News/${articleId}`);
   public static AboutDestiny = LegacyPathWithQuery("/pub/AboutDestiny");

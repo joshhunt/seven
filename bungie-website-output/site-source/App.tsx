@@ -1,7 +1,7 @@
 import AppLayout from "@Boot/AppLayout";
 import { ProceduralMarketingPageFallback } from "@Boot/ProceduralMarketingPageFallback";
 import { RelayEnvironmentFactory } from "@bungie/contentstack";
-import BungieNetRelayEnvironmentPreset from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetRelayEnvironmentPreset";
+import { BungieNetRelayEnvironmentPreset } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetRelayEnvironmentPreset";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
@@ -24,7 +24,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 const createRelayEnvironment = async (
   coreSettings: Models.CoreSettingsConfiguration
 ) => {
-  const preset = await BungieNetRelayEnvironmentPreset({
+  const preset = BungieNetRelayEnvironmentPreset({
     cachedSettingsObject: coreSettings,
   });
   const relayEnvironmentFactory = new RelayEnvironmentFactory(preset);

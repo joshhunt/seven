@@ -17,19 +17,20 @@ export interface ILocaleParams {
 export class RouteDefs {
   private static readonly AreaNames = {
     Admin: "Admin",
+    BeyondLight: "BeyondLight",
     Codes: "Codes",
     CrossSave: "CrossSave",
     Destiny: "Destiny",
     Direct: "Direct",
     GameHistory: "GameHistory",
     Legal: "Legal",
-    UserResearch: "UserResearch",
+    News: "News",
+    Registration: "Registration",
     Seasons: "Seasons",
     Static: "Static",
-    Registration: "Registration",
-    BeyondLight: "BeyondLight",
-    User: "User",
     Sms: "Sms",
+    User: "User",
+    UserResearch: "UserResearch",
   };
 
   public static Areas = {
@@ -165,6 +166,38 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "PaymentServicesAct"),
       ],
     }),
+    News: new Area({
+      name: RouteDefs.AreaNames.News,
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/News/NewsArea" /* webpackChunkName: "News" */)
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "destiny"),
+        (area) => new ActionRoute(area, "bungie"),
+        (area) => new ActionRoute(area, "community"),
+        (area) => new ActionRoute(area, "updates"),
+        (area) => new ActionRoute(area, "tech"),
+        (area) =>
+          new ActionRoute(area, "TempNewsArticle", {
+            path: ":articleUrl",
+            isOverride: true,
+          }),
+      ],
+    }),
+    Registration: new Area({
+      name: RouteDefs.AreaNames.Registration,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Registration/RegistrationArea" /* webpackChunkName: "Registration" */
+          )
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "RegistrationPage"),
+        (area) => new ActionRoute(area, "Benefits"),
+        (area) => new ActionRoute(area, "Apps"),
+      ],
+    }),
     Seasons: new Area({
       name: RouteDefs.AreaNames.Seasons,
       lazyComponent: createAsyncComponent(
@@ -196,6 +229,15 @@ export class RouteDefs {
       routes: [(area) => new ActionRoute(area, "index")],
       webmasterSystem: SystemNames.SmsVerification,
     }),
+    Static: new Area({
+      name: RouteDefs.AreaNames.Static,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import("@Areas/Static/StaticArea" /* webpackChunkName: "Static" */)
+      ),
+      indexParams: { path: ":page?" },
+      routes: [],
+    }),
     UserResearch: new Area({
       name: RouteDefs.AreaNames.UserResearch,
       lazyComponent: createAsyncComponent(
@@ -207,29 +249,6 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "UserResearch"),
         (area) => new ActionRoute(area, "UserResearchCanTravel"),
-      ],
-    }),
-    Static: new Area({
-      name: RouteDefs.AreaNames.Static,
-      lazyComponent: createAsyncComponent(
-        () =>
-          import("@Areas/Static/StaticArea" /* webpackChunkName: "Static" */)
-      ),
-      indexParams: { path: ":page?" },
-      routes: [],
-    }),
-    Registration: new Area({
-      name: RouteDefs.AreaNames.Registration,
-      lazyComponent: createAsyncComponent(
-        () =>
-          import(
-            "@Areas/Registration/RegistrationArea" /* webpackChunkName: "Registration" */
-          )
-      ),
-      routes: [
-        (area) => new ActionRoute(area, "RegistrationPage"),
-        (area) => new ActionRoute(area, "Benefits"),
-        (area) => new ActionRoute(area, "Apps"),
       ],
     }),
   } as const;

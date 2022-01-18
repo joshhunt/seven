@@ -68,7 +68,7 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
   const [accountLinkingFlagMap, setAccountLinkingFlagMap] = useState<
     Record<BungieCredentialType, AccountLinkingFlags>
   >(null);
-  const [settingsChanged, setSettingsChanged] = useState(false);
+  const [showSaveButton, setShowSaveButton] = useState(false);
   const [loginCredType, setLoginCredType] = useState<BungieCredentialType>(
     null
   );
@@ -293,7 +293,7 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
         break;
     }
 
-    setSettingsChanged(true);
+    setShowSaveButton(true);
   };
 
   const saveSettings = () => {
@@ -357,13 +357,18 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
       <SaveButtonBar
         className={sharedStyles.saveButtonBar}
         saveButton={
-          <Button buttonType={"gold"} onClick={saveSettings}>
+          <Button
+            buttonType={"gold"}
+            onClick={() => {
+              saveSettings();
+              setShowSaveButton(false);
+            }}
+          >
             {Localizer.userPages.savesettings}
           </Button>
         }
-        on={settingsChanged}
+        showing={showSaveButton}
       />
-      {/* Having the modal inside the Spinner Container was messing with the pointer-events */}
       <ConfirmPlatformLinkingModal
         open={linkingModalOpen}
         credential={credentialToLink}

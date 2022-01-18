@@ -49,7 +49,6 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
         callback();
-
         Modal.error(e);
       });
   };
@@ -93,6 +92,7 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
           validationSchema={Yup.object({
             message: Yup.string(),
           })}
+          enableReinitialize
           onSubmit={(values, { setSubmitting, resetForm }) => {
             sendMessage(
               {

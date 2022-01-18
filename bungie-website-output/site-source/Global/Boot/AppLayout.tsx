@@ -1,20 +1,21 @@
+import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer, StringFetcher } from "@bungie/localization";
 import {
   DestinyDefinitions,
   ManifestPayload,
 } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { DataStore } from "@bungie/datastore";
 import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import {
   GlobalState,
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
-import { Localizer, StringFetcher } from "@bungie/localization";
 import { Environment } from "@Helpers";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
-import { SeoDataError, SystemDisabledError } from "@UI/Errors/CustomErrors";
+import { SeoDataError } from "@UI/Errors/CustomErrors";
+import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
@@ -37,12 +38,11 @@ import Helmet from "react-helmet";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 // @ts-ignore
 import ScrollMemory from "react-router-scroll-memory";
-import "./AppLayout.scss";
 import { ErrorBnetOffline } from "../../UI/Errors/ErrorBnetOffline";
+import "./AppLayout.scss";
 import { CookieConsent } from "./CookieConsent";
 import { Footer } from "./Footer";
 import { Responsive } from "./Responsive";
-import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 
 interface IInternalAppLayoutState {
   currentPath: string;
