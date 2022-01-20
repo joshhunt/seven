@@ -27,6 +27,7 @@ async function getFilesChanged() {
     })
       .mapValues((files) =>
         files
+          .filter((f) => !f.endsWith(".scss"))
           .filter((f) => f.startsWith("bungie-website-output/site-source/"))
           .map((f) => f.replace("bungie-website-output/site-source/", ""))
       )
@@ -104,9 +105,9 @@ async function notify(_currentRoutes) {
         fieldBody += "\n";
       }
 
-      const truncationMessage = `plus ${
+      const truncationMessage = `_plus ${
         files.length - filesIncluded
-      } more files`;
+      } more files_`;
 
       const newFieldBodyLength =
         fieldBody.length + file.length + truncationMessage.length;
