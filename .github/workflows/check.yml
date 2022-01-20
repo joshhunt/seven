@@ -30,10 +30,10 @@ jobs:
 
       - name: Check if there were changes
         id: changes-check
-        run: echo ::set-output name=dirty::"$(git status --porcelain)"
+        run: echo ::set-output name=changes::"$(git status --porcelain | wc -l)"
 
       - name: Commit everything
-        if: steps.changes-check.outputs.dirty
+        if: steps.changes-check.outputs.changes > 1
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -43,7 +43,7 @@ jobs:
           git commit -m "Site changed from automated check" || true
 
       - name: Push changes
-        if: steps.changes-check.outputs.dirty
+        if: steps.changes-check.outputs.changes > 1
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

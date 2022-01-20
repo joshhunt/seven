@@ -46,8 +46,6 @@ function countObjectArrays(obj) {
 async function notify(_currentRoutes) {
   const changedFiles = await getFilesChanged();
 
-  console.log(changedFiles);
-
   const currentRoutes = _.sortBy(_currentRoutes, (v) => v.path);
   const currentPaths = currentRoutes.map((v) => v.path);
 
