@@ -15,9 +15,11 @@ async function validateChangedFiles() {
     onlyIndexHtmlChanged
   ) {
     console.log("Only index.html has changed, so lets revert its changes");
-    await simpleGit().checkout(
+    const result = await simpleGit().checkout(
       "HEAD"[("--", "bungie-website-output/index.html")]
     );
+
+    console.log(result);
   }
 }
 
