@@ -24,7 +24,7 @@ async function main() {
   }
 
   console.log("Site has changed, extracting source");
-  // await unpackFromHtml(bungieHtml);
+  await unpackFromHtml(bungieHtml);
 
   console.log("Writing index.html");
   const prettyHtml = tryPrettier("index.html", bungieHtml);

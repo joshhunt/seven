@@ -73,7 +73,7 @@ async function notify(_currentRoutes) {
     countObjectArrays(pathsDiff) === 0 &&
     countObjectArrays(changedFiles) === 0
   ) {
-    console.log("Nothing changed, so suppressing notification");
+    console.log("Nothing changed so not going to send a notification");
     return;
   }
 
