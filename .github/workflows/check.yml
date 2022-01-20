@@ -38,9 +38,9 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add **/*.scss
-          git commit -m "SCSS changed from automated check"
+          git commit -m "SCSS changed from automated check" || true
           git add .
-          git commit -m "Site changed from automated check"
+          git commit -m "Site changed from automated check" || true
 
       - name: Push changes
         if: steps.changes-check.outputs.dirty
