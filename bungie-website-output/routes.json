@@ -1,0 +1,596 @@
+[
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/Admin/AdminArea",
+    "action": "Report",
+    "params": {
+      "path": ":reportId?"
+    },
+    "path": "/7/en/Admin/Report/:reportId?"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/Admin/AdminArea",
+    "action": "Reports",
+    "params": {},
+    "path": "/7/en/Admin/Reports"
+  },
+  {
+    "areaName": "Codes",
+    "areaObjectName": "Codes",
+    "componentImportPath": "@Areas/Codes/CodesArea",
+    "action": "History",
+    "params": {
+      "path": ":membershipId?"
+    },
+    "path": "/7/en/Codes/History/:membershipId?"
+  },
+  {
+    "areaName": "Codes",
+    "areaObjectName": "Codes",
+    "componentImportPath": "@Areas/Codes/CodesArea",
+    "action": "Partners",
+    "params": {
+      "path": ":membershipId?"
+    },
+    "path": "/7/en/Codes/Partners/:membershipId?"
+  },
+  {
+    "areaName": "Codes",
+    "areaObjectName": "Codes",
+    "componentImportPath": "@Areas/Codes/CodesArea",
+    "action": "Redeem",
+    "params": {},
+    "path": "/7/en/Codes/Redeem"
+  },
+  {
+    "areaName": "CrossSave",
+    "areaObjectName": "CrossSave",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Activate",
+    "params": {
+      "path": ":step?/:skuName?"
+    },
+    "path": "/7/en/CrossSave/Activate/:step?/:skuName?"
+  },
+  {
+    "areaName": "CrossSave",
+    "areaObjectName": "CrossSave",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Confirmation",
+    "params": {},
+    "path": "/7/en/CrossSave/Confirmation"
+  },
+  {
+    "areaName": "CrossSave",
+    "areaObjectName": "CrossSave",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Deactivate",
+    "params": {},
+    "path": "/7/en/CrossSave/Deactivate"
+  },
+  {
+    "areaName": "CrossSave",
+    "areaObjectName": "CrossSave",
+    "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
+    "action": "Recap",
+    "params": {},
+    "path": "/7/en/CrossSave/Recap"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "BeyondLight",
+    "params": {},
+    "path": "/7/en/Destiny/BeyondLight"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "PhaseTwo",
+    "params": {
+      "path": "BeyondLight/Europa",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/BeyondLight/Europa"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "PhaseThree",
+    "params": {
+      "path": "BeyondLight/Gear",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/BeyondLight/Gear"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Media",
+    "params": {
+      "path": "BeyondLight/Media",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/BeyondLight/Media"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "PhaseOne",
+    "params": {
+      "path": "BeyondLight/Stasis",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/BeyondLight/Stasis"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "BeyondLightPhaseFour",
+    "params": {
+      "path": "BeyondLight/Story",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/BeyondLight/Story"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Buy",
+    "params": {},
+    "path": "/7/en/Destiny/Buy"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "BuyDetail",
+    "params": {
+      "path": "Buy/:productFamilyTag",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/Buy/:productFamilyTag"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Companion",
+    "params": {},
+    "path": "/7/en/Destiny/Companion"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Forsaken",
+    "params": {},
+    "path": "/7/en/Destiny/Forsaken"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "GameHistory",
+    "params": {},
+    "path": "/7/en/Destiny/GameHistory"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Info",
+    "params": {
+      "path": ":eventTag"
+    },
+    "path": "/7/en/Destiny/Info/:eventTag"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "NewLight",
+    "params": {},
+    "path": "/7/en/Destiny/NewLight"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "ProductPage",
+    "params": {},
+    "path": "/7/en/Destiny/ProductPage"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Reveal",
+    "params": {},
+    "path": "/7/en/Destiny/Reveal"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "SeasonPass",
+    "params": {},
+    "path": "/7/en/Destiny/SeasonPass"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Shadowkeep",
+    "params": {},
+    "path": "/7/en/Destiny/Shadowkeep"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "StadiaRegister",
+    "params": {},
+    "path": "/7/en/Destiny/StadiaRegister"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "WitchQueen",
+    "params": {},
+    "path": "/7/en/Destiny/WitchQueen"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "WitchQueenComparison",
+    "params": {
+      "path": "WitchQueen/Comparison",
+      "isOverride": true
+    },
+    "path": "/7/en/Destiny/WitchQueen/Comparison"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "Analyze",
+    "params": {},
+    "path": "/7/en/Direct/Analyze"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "Anniversary",
+    "params": {},
+    "path": "/7/en/Direct/Anniversary"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "DestinyShowcase",
+    "params": {},
+    "path": "/7/en/Direct/DestinyShowcase"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "RaidRace",
+    "params": {},
+    "path": "/7/en/Direct/RaidRace"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "Rewards",
+    "params": {},
+    "path": "/7/en/Direct/Rewards"
+  },
+  {
+    "areaName": "Direct",
+    "areaObjectName": "Direct",
+    "componentImportPath": "@Areas/Direct/DirectArea",
+    "action": "Video",
+    "params": {
+      "path": ":videoContentId"
+    },
+    "path": "/7/en/Direct/Video/:videoContentId"
+  },
+  {
+    "areaName": "GameHistory",
+    "areaObjectName": "GameHistory",
+    "componentImportPath": "@Areas/GameHistory/GameHistoryArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/GameHistory"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "CodeOfConduct",
+    "params": {},
+    "path": "/7/en/Legal/CodeOfConduct"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "CookiePolicy",
+    "params": {},
+    "path": "/7/en/Legal/CookiePolicy"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "IntellectualPropertyTrademarks",
+    "params": {},
+    "path": "/7/en/Legal/IntellectualPropertyTrademarks"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "Licenses",
+    "params": {},
+    "path": "/7/en/Legal/Licenses"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "PaymentServicesAct",
+    "params": {},
+    "path": "/7/en/Legal/PaymentServicesAct"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "PrivacyPolicy",
+    "params": {},
+    "path": "/7/en/Legal/PrivacyPolicy"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "SLA",
+    "params": {},
+    "path": "/7/en/Legal/SLA"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "Terms",
+    "params": {},
+    "path": "/7/en/Legal/Terms"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "TempNewsArticle",
+    "params": {
+      "path": ":articleUrl",
+      "isOverride": true
+    },
+    "path": "/7/en/News/:articleUrl"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "bungie",
+    "params": {},
+    "path": "/7/en/News/bungie"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "community",
+    "params": {},
+    "path": "/7/en/News/community"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "destiny",
+    "params": {},
+    "path": "/7/en/News/destiny"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "tech",
+    "params": {},
+    "path": "/7/en/News/tech"
+  },
+  {
+    "areaName": "News",
+    "areaObjectName": "News",
+    "componentImportPath": "@Areas/News/NewsArea",
+    "action": "updates",
+    "params": {},
+    "path": "/7/en/News/updates"
+  },
+  {
+    "areaName": "Registration",
+    "areaObjectName": "Registration",
+    "componentImportPath": "@Areas/Registration/RegistrationArea",
+    "action": "Apps",
+    "params": {},
+    "path": "/7/en/Registration/Apps"
+  },
+  {
+    "areaName": "Registration",
+    "areaObjectName": "Registration",
+    "componentImportPath": "@Areas/Registration/RegistrationArea",
+    "action": "Benefits",
+    "params": {},
+    "path": "/7/en/Registration/Benefits"
+  },
+  {
+    "areaName": "Registration",
+    "areaObjectName": "Registration",
+    "componentImportPath": "@Areas/Registration/RegistrationArea",
+    "action": "RegistrationPage",
+    "params": {},
+    "path": "/7/en/Registration/RegistrationPage"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "Event",
+    "params": {
+      "path": ":slug"
+    },
+    "path": "/7/en/Seasons/Event/:slug"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "Events",
+    "params": {
+      "path": ":eventTag"
+    },
+    "path": "/7/en/Seasons/Events/:eventTag"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "News",
+    "params": {
+      "path": ":slug"
+    },
+    "path": "/7/en/Seasons/News/:slug"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "PreviousSeason",
+    "params": {},
+    "path": "/7/en/Seasons/PreviousSeason"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "Progress",
+    "params": {},
+    "path": "/7/en/Seasons/Progress"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfArrivals",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfArrivals"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfDawn",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfDawn"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheChosen",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheChosen"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheHunt",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheHunt"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheLost",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheLost"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheSplicer",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheSplicer"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheUndying",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheUndying"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheWorthy",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheWorthy"
+  },
+  {
+    "areaName": "Sms",
+    "areaObjectName": "Sms",
+    "componentImportPath": "@Areas/Sms/SmsArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Sms"
+  },
+  {
+    "areaName": "UserResearch",
+    "areaObjectName": "UserResearch",
+    "componentImportPath": "@Areas/UserResearch/UserResearchArea",
+    "action": "UserResearch",
+    "params": {},
+    "path": "/7/en/UserResearch/UserResearch"
+  },
+  {
+    "areaName": "UserResearch",
+    "areaObjectName": "UserResearch",
+    "componentImportPath": "@Areas/UserResearch/UserResearchArea",
+    "action": "UserResearchCanTravel",
+    "params": {},
+    "path": "/7/en/UserResearch/UserResearchCanTravel"
+  }
+]
