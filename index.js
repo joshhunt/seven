@@ -28,7 +28,7 @@ async function main() {
 
   console.log("Writing index.html");
   const prettyHtml = tryPrettier("index.html", bungieHtml);
-  await fs.writeFile(localHtmlFilePath, bungieHtml);
+  await fs.writeFile(localHtmlFilePath, prettyHtml);
 
   console.log("Extracting routes");
   const routes = await extractRoutes();

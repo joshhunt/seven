@@ -141,6 +141,8 @@ function tryPrettier(name, source) {
 
   if (ext === ".scss") {
     prettierParser = "css";
+  } else if (ext === ".html") {
+    prettierParser = "html";
   }
 
   try {
