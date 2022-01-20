@@ -4,7 +4,7 @@ const fs = require("fs-extra");
 const { unpackFromHtml, tryPrettier } = require("./unpack-website");
 const extractRoutes = require("./extractRoutes");
 const notify = require("./notify");
-const prettier = require("prettier");
+const validateChangedFiles = require("./validateChangedFiles");
 
 const BASE_URL = "https://www.bungie.net/7/en/Destiny/NewLight";
 
@@ -24,11 +24,13 @@ async function main() {
   }
 
   console.log("Site has changed, extracting source");
-  await unpackFromHtml(bungieHtml);
+  // await unpackFromHtml(bungieHtml);
 
   console.log("Writing index.html");
   const prettyHtml = tryPrettier("index.html", bungieHtml);
   await fs.writeFile(localHtmlFilePath, prettyHtml);
+
+  await validateChangedFiles();
 
   console.log("Extracting routes");
   const routes = await extractRoutes();

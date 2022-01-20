@@ -64,8 +64,6 @@ function processSourceMap(sourceMap) {
 }
 
 async function getOriginalFilesFromSourcePath(runtimePath) {
-  console.log("getOriginalFilesFromSourcePath:", { runtimePath });
-
   const sourceMapUrl = await getSourceMapURLFromSourceURL(runtimePath);
   const { data: runtimeSourceMap } = await axios.get(sourceMapUrl);
   return processSourceMap(runtimeSourceMap);

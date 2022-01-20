@@ -139,8 +139,6 @@ async function getRoutesFromRouteDefs() {
   const areasAst = classAst.body.find((node) => node.key.name === "Areas");
   const areasObjectAst = areasAst.value;
 
-  console.log(areasObjectAst);
-
   const areasObject = areasObjectAst.expression.properties.map(
     (objectPropertyAst) => {
       const isExpected =
@@ -301,19 +299,8 @@ async function parseAreaComponent(route, routes) {
         const route = findRoute(routes, areaName, action);
 
         if (!route) {
-          console.log("");
-          console.log("");
-          console.log({ areaName, action });
-          console.log("");
-          console.log("");
           throw new Error("No found route");
         }
-
-        console.log({
-          areaName,
-          action,
-          routePath: route.path,
-        });
 
         // process.exit(0);
       }
@@ -323,19 +310,7 @@ async function parseAreaComponent(route, routes) {
 
 async function extractRoutes() {
   const routes = await getRoutesFromRouteDefs();
-  console.log(routes);
-
   return routes;
-
-  // await parseAreaComponent(
-  //   { componentImportPath: "@Areas/Codes/CodesArea" },
-  //   routes
-  // );
-
-  // console.log("\n\n\n\n\n");
-  // for (const route of routes) {
-  //   await parseAreaComponent(route, routes);
-  // }
 }
 
 module.exports = extractRoutes;

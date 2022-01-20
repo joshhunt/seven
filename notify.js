@@ -137,11 +137,8 @@ async function notify(_currentRoutes) {
     }
 
     discordMessage = discordMessage.addField(fieldTitle, fieldBody);
-    console.log("field", fieldTitle, "length is", fieldBody.length);
     messageLength += fieldTitle.length + fieldBody.length;
   });
-
-  console.log("messageLength", messageLength);
 
   if (process.env.SILENT_NOTIFICATIONS || !discordHook) {
     console.log("Suppressing discord notification", discordMessage);
