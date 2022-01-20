@@ -69,7 +69,10 @@ async function notify(_currentRoutes) {
     }
   });
 
-  if (countObjectArrays(pathsDiff) === 0 && countObjectArrays(changedFiles)) {
+  if (
+    countObjectArrays(pathsDiff) === 0 &&
+    countObjectArrays(changedFiles) === 0
+  ) {
     console.log("Nothing changed, so suppressing notification");
     return;
   }

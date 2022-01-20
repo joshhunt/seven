@@ -49,16 +49,18 @@ async function getSourceMapURLFromSourceURL(sourceUrl) {
 }
 
 function processSourceMap(sourceMap) {
-  return sourceMap.sources.map((path, index) => {
-    const safePath = pathLib.normalize(path).replace(/^(\.\.(\/|\\|$))+/, "");
+  return sourceMap.sources
+    .map((path, index) => {
+      const safePath = pathLib.normalize(path).replace(/^(\.\.(\/|\\|$))+/, "");
 
-    return {
-      path,
-      safePath,
-      index,
-      content: sourceMap.sourcesContent[index],
-    };
-  });
+      return {
+        path,
+        safePath,
+        index,
+        content: sourceMap.sourcesContent[index],
+      };
+    })
+    .filter((v) => !v.path.includes("node_modules"));
 }
 
 async function getOriginalFilesFromSourcePath(runtimePath) {
