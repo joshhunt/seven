@@ -19,6 +19,7 @@
     "cheerio": "^1.0.0-rc.3",
     "css-tree": "^1.0.0-alpha.39",
     "discord-webhook-node": "^1.1.8",
+    "filenamify": "^5.1.0",
     "fs-extra": "^9.0.1",
     "klaw": "^3.0.0",
     "lodash": "^4.17.15",

@@ -5,6 +5,9 @@ const fs = require("fs-extra");
 const cheerio = require("cheerio");
 const mkdirp = require("mkdirp");
 const prettier = require("prettier");
+const importFilenamify = import("filenamify");
+
+let filenamify;
 
 const BASE_URL = "https://www.bungie.net/7/en/Destiny/NewLight";
 
@@ -51,7 +54,9 @@ async function getSourceMapURLFromSourceURL(sourceUrl) {
 function processSourceMap(sourceMap) {
   return sourceMap.sources
     .map((path, index) => {
-      const safePath = pathLib.normalize(path).replace(/^(\.\.(\/|\\|$))+/, "");
+      let safePath = pathLib.normalize(path).replace(/^(\.\.(\/|\\|$))+/, "");
+      const pathComponents = safePath.split("/").map((v) => filenamify(v));
+      safePath = pathLib.join(...pathComponents);
 
       return {
         path,
@@ -205,6 +210,7 @@ async function writeJSConfig() {
 }
 
 async function unpackFromHtml(htmlPage) {
+  filenamify = (await importFilenamify).default;
   const jsSourceMapURLs = await getJSSourceMapUrlsFromHTML(htmlPage);
 
   await Promise.all(jsSourceMapURLs.map(saveFilesFromSourceMapUrl));

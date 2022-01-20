@@ -21,14 +21,11 @@
       "@modules/*": [
         "./bungie-website-output/site-source/modules/*"
       ],
-      "@rich-text-types/*": [
-        "./bungie-website-output/site-source/rich-text-types/*"
-      ],
       "@src/*": [
         "./bungie-website-output/site-source/src/*"
       ],
-      "@webpack:/*": [
-        "./bungie-website-output/site-source/webpack:/*"
+      "@webpack/*": [
+        "./bungie-website-output/site-source/webpack/*"
       ]
     }
   },
