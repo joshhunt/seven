@@ -39,6 +39,10 @@ async function getFilesChanged() {
   }
 }
 
+function countObjectArrays(obj) {
+  return Object.values(obj).reduce((acc, arr) => acc + arr.length, 0);
+}
+
 async function notify(_currentRoutes) {
   const changedFiles = await getFilesChanged();
 
@@ -66,6 +70,11 @@ async function notify(_currentRoutes) {
       pathsDiff.removed.push(previousPath);
     }
   });
+
+  if (countObjectArrays(pathsDiff) === 0 && countObjectArrays(changedFiles)) {
+    console.log("Nothing changed, so suppressing notification");
+    return;
+  }
 
   await fs.writeJSON("./bungie-website-output/routes.json", currentRoutes, {
     spaces: 2,
