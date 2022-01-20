@@ -6,8 +6,6 @@ async function validateChangedFiles() {
   const onlyIndexHtmlChanged =
     modified.length === 1 && modified[0] === "bungie-website-output/index.html";
 
-  console.log({ modified, onlyIndexHtmlChanged });
-
   if (
     created.length === 0 &&
     deleted.length === 0 &&
@@ -19,8 +17,6 @@ async function validateChangedFiles() {
       "--",
       "bungie-website-output/index.html",
     ]);
-
-    console.log(result);
   }
 }
 
