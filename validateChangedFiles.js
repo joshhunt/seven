@@ -15,7 +15,7 @@ async function validateChangedFiles() {
     onlyIndexHtmlChanged
   ) {
     console.log("Only index.html has changed, so lets revert its changes");
-    await simpleGit().checkout("HEAD -- my-file.txt");
+    await simpleGit().checkout("HEAD -- bungie-website-output/index.html");
   }
 }
 
