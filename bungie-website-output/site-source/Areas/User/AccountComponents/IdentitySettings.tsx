@@ -3,17 +3,18 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ViewerPermissionContext } from "@Areas/User/Account";
+import { IdentityPagination } from "@Areas/User/AccountComponents/Internal/IdentityPagination";
 import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButtonBar";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { PlatformError } from "@CustomErrors";
-import { BungieMembershipType, PlatformErrorCodes } from "@Enum";
+import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Contract, Platform, User } from "@Platform";
+import { Config, Contract, Platform, User } from "@Platform";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
@@ -21,15 +22,18 @@ import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
 import accountStyles from "../Account.module.scss";
 import styles from "./IdentitySettings.module.scss";
-import { Avatars } from "./Internal/Avatars";
-import { Themes } from "./Internal/Themes";
 
-type NameChangeStatus = "canEdit" | "locked" | "confirm" | "updated";
+type NameChangeStatus = "canEdit" | "locked" | "confirm";
+
+interface IAvatarArrayValue {
+  id: number;
+  value: string;
+}
 
 interface IdentitySettingsProps {}
 
@@ -44,16 +48,29 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
 
   const aboutMaxLength = 256;
+
+  const [avatars, setAvatars] = useState<IAvatarArrayValue[]>([]);
+  const avatarsPerPage = 48;
+  const [avatarOffset, setAvatarOffset] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const [themes, setThemes] = useState<Config.UserTheme[]>([]);
+  const themesPerPage = 12;
+  const [themeOffset, setThemeOffset] = useState(0);
+
   const [nameChangeStatus, setNameChangeStatus] = useState<NameChangeStatus>(
     ConfigUtils.SystemStatus("AllowGlobalBungieDisplayNameEditing")
       ? "canEdit"
       : "locked"
   );
+
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
+
   const [onPageUser, setOnPageUser] = useState<User.GeneralUser>();
   const [bungieName, setBungieName] = useState<IBungieName>(null);
+
   const [displayNameSuggestions, setDisplayNameSuggestions] = useState<
     string[]
   >([]);
@@ -65,52 +82,19 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
     });
   };
 
-  const checkGlobalNameEditable = () => {
-    if (bungieName?.bungieGlobalName) {
-      const userNameEditRequest: User.UserNameEditRequest = {
-        displayName: bungieName.bungieGlobalName,
-      };
-
-      Platform.UserService.ValidateBungieName(userNameEditRequest)
-        .then((result) => {
-          if (!result) {
-            setNameChangeStatus("locked");
-          }
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          if (e.errorCode === PlatformErrorCodes.ErrorNoAvailableNameChanges) {
-            setNameChangeStatus("locked");
-          }
-        });
-    }
-  };
-
   const trySaveSettings = (
     userEditRequest: Contract.UserEditRequest,
     setSubmitting: (isSubmitting: boolean) => void
   ) => {
-    const updatingName =
-      userEditRequest.displayName !== bungieName.bungieGlobalName;
-    if (!updatingName) {
-      // the server throws an error if we pass in a display name that matched the current one
-      userEditRequest.displayName = null;
-    }
     isSelf &&
       Platform.UserService.UpdateUser(userEditRequest)
         .then(() => {
-          if (updatingName) {
-            setNameChangeStatus("updated");
-          }
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
             .async.then(showSettingsChangedToast);
         })
         .catch(ConvertToPlatformError)
-        .catch((e) => {
-          setNameChangeStatus("canEdit");
-          Modal.error(e);
-        })
+        .catch((e) => Modal.error(e))
         .finally(() => setSubmitting(false));
   };
 
@@ -134,6 +118,71 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
     );
   };
 
+  const handleAvatarPageChange = (pageNumber: { selected: number }) => {
+    const newOffset = Math.ceil(pageNumber.selected * avatarsPerPage);
+    setAvatarOffset(newOffset);
+  };
+
+  const loadAvatars = () => {
+    setLoading(true);
+    Platform.UserService.GetAvailableAvatars()
+      .then((data) => {
+        // We want to show the newest avatars first, the data comes in with oldest first
+
+        const avatarsNewToOld: IAvatarArrayValue[] = [];
+        let avatarIndex = 0;
+        // Format of data is {number: string} in order to be able to do pagination math with the indices of the avatar data,
+        //I convert it to an array of ids and value pairs like so {id: number, value: string}[]
+        Object.keys(data)
+          .reverse()
+          .forEach((key, i) => {
+            const initialProfilePicture =
+              onPageUser?.profilePicture === 0
+                ? 70432
+                : onPageUser?.profilePicture;
+            if (Number(key) === initialProfilePicture) {
+              avatarIndex = i;
+            }
+            avatarsNewToOld[i] = { id: Number(key), value: data[Number(key)] };
+          });
+        setAvatars(avatarsNewToOld);
+
+        handleAvatarPageChange({
+          selected: Math.floor(avatarIndex / avatarsPerPage),
+        });
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e))
+      .finally(() => setLoading(false));
+  };
+
+  const handleThemePageChange = (pageNumber: { selected: number }) => {
+    const newOffset = Math.ceil(pageNumber.selected * themesPerPage);
+    setThemeOffset(newOffset);
+  };
+
+  // profileThemeName on the user object will be the number 0 if it has not been selected, otherwise it is a string
+  const _getThemePathFromThemeName = (themeName: string | number): string => {
+    return `/img/UserThemes/${themeName}/mobiletheme.jpg`;
+  };
+
+  const loadThemes = () => {
+    Platform.UserService.GetAvailableThemes()
+      .then((data) => {
+        setThemes(data);
+
+        const themeIndex = data.findIndex(
+          (theme) => onPageUser?.profileTheme === theme.userThemeId
+        );
+        handleThemePageChange({
+          selected:
+            themeIndex !== -1 ? Math.floor(themeIndex / themesPerPage) : 0,
+        });
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e));
+  };
+
   const getSuggestedNames = (userMembershipData: User.UserMembershipData) => {
     let suggestedNames = userMembershipData?.destinyMemberships?.map((dm) => {
       if (dm.membershipType !== BungieMembershipType.BungieNext) {
@@ -145,8 +194,10 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         return dm.displayName ?? "";
       }
     });
+
     //dedupe
     suggestedNames = [...new Set(suggestedNames)];
+
     //remove the current displayName
     suggestedNames = suggestedNames.filter((sn) => {
       return (
@@ -160,6 +211,11 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   /* Hooks */
+
+  useEffect(() => {
+    loadAvatars();
+    loadThemes();
+  }, [onPageUser]);
 
   useEffect(() => {
     if (isSelf) {
@@ -197,19 +253,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
     }
   }, [globalStateData.loggedInUser, membershipIdFromQuery]);
 
-  useEffect(() => {
-    if (bungieName?.bungieGlobalName) {
-      checkGlobalNameEditable();
-    }
-  }, [bungieName]);
-
   return (
     <div>
       <GridCol cols={12}>
         <h3>{Localizer.account.identitySettings}</h3>
       </GridCol>
       <GridDivider cols={12} className={accountStyles.mainDivider} />
-      {UserUtils.isAuthenticated(globalStateData) && onPageUser && (
+      {UserUtils.isAuthenticated(globalStateData) && onPageUser ? (
         <Formik
           initialValues={{
             displayName: bungieName?.bungieGlobalName,
@@ -225,9 +275,8 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
             locale: null,
             emailAddress: null,
           }}
-          enableReinitialize
           validationSchema={Yup.object({
-            displayName: Yup.string().nullable().required("Required"),
+            displayName: Yup.string().required("Required"),
             about: Yup.string().max(
               aboutMaxLength,
               `Must be ${aboutMaxLength} characters or less`
@@ -275,11 +324,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                 </GridCol>
                 <GridCol cols={2} medium={0} />
                 <GridCol cols={10} medium={12}>
-                  {nameChangeStatus === "updated" && (
-                    <div className={styles.subtitleContainer}>
-                      <p>{Localizer.Account.NameSuccessfullyChanged}</p>
-                    </div>
-                  )}
                   {nameChangeStatus === "locked" && (
                     <div className={styles.subtitleContainer}>
                       <p>{subtitleToBungieName()}</p>
@@ -355,12 +399,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                   {Localizer.Userpages.Status}
                 </GridCol>
                 <GridCol cols={10} medium={12}>
-                  <div
-                    className={classNames(
-                      styles.iconContainer,
-                      styles.inputContainer
-                    )}
-                  >
+                  <div className={styles.iconContainer}>
                     <FormikTextInput
                       name={"statusText"}
                       type={"text"}
@@ -369,7 +408,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     />
                     <Icon iconName={"pencil"} iconType={"fa"} />
                   </div>
-                  <p>{Localizer.Account.StatusSubtitle}</p>
                 </GridCol>
                 <GridDivider cols={12} />
                 <GridCol cols={2} medium={12} className={styles.sectionTitle}>
@@ -394,9 +432,100 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                   </div>
                 </GridCol>
                 <GridDivider cols={12} />
-                <Avatars user={onPageUser} formikProps={formikProps} />
+                <GridCol cols={2} medium={12} className={styles.sectionTitle}>
+                  {Localizer.Userpages.Avatar}
+                </GridCol>
+                <GridCol
+                  cols={10}
+                  medium={12}
+                  className={styles.paginatedContent}
+                >
+                  <SpinnerContainer loading={loading}>
+                    {avatars
+                      .slice(avatarOffset, avatarOffset + avatarsPerPage)
+                      .map((av, i) => {
+                        return (
+                          <label
+                            key={i}
+                            className={classNames({
+                              [styles.hideWhileLoading]: loading,
+                            })}
+                          >
+                            <Field
+                              type="radio"
+                              name={"profilePicture"}
+                              value={av.id}
+                              onChange={(e: React.ChangeEvent<any>) => {
+                                // Radio type fields will, by default, convert the value to a string, this maintains the stored value as a number
+                                formikProps.handleChange(e);
+                                formikProps.setFieldValue(
+                                  "profilePicture",
+                                  Number(e.target.value)
+                                );
+                              }}
+                            />
+                            <img
+                              src={av.value}
+                              className={classNames(styles.avatar, {
+                                [styles.selected]:
+                                  av.id === formikProps.values?.profilePicture,
+                              })}
+                            />
+                          </label>
+                        );
+                      })}
+                  </SpinnerContainer>
+                  <IdentityPagination
+                    forcePage={Math.ceil(avatarOffset / avatarsPerPage)}
+                    onPageChange={(e) => handleAvatarPageChange(e)}
+                    pageCount={Math.ceil(
+                      Object.keys(avatars)?.length / avatarsPerPage
+                    )}
+                  />
+                </GridCol>
                 <GridDivider cols={12} />
-                <Themes user={onPageUser} formikProps={formikProps} />
+                <GridCol cols={2} medium={12} className={styles.sectionTitle}>
+                  {Localizer.Userpages.Theme}
+                </GridCol>
+                <GridCol cols={10} className={styles.paginatedContent}>
+                  <div>
+                    <label htmlFor={"profileTheme"} />
+                    {themes
+                      .slice(themeOffset, themeOffset + themesPerPage)
+                      .map((th, i) => {
+                        return (
+                          <label key={i}>
+                            <Field
+                              type="radio"
+                              name={"profileTheme"}
+                              value={th.userThemeId}
+                              onChange={(e: React.ChangeEvent<any>) => {
+                                // Radio type fields will, by default, convert the value to a string, this maintains the stored value as a number
+                                formikProps.handleChange(e);
+                                formikProps.setFieldValue(
+                                  "profileTheme",
+                                  Number(e.target.value)
+                                );
+                              }}
+                            />
+                            <img
+                              src={_getThemePathFromThemeName(th.userThemeName)}
+                              className={classNames(styles.theme, {
+                                [styles.selected]:
+                                  th.userThemeId ===
+                                  formikProps.values?.profileTheme,
+                              })}
+                            />
+                          </label>
+                        );
+                      })}
+                  </div>
+                  <IdentityPagination
+                    forcePage={Math.floor(themeOffset / themesPerPage)}
+                    onPageChange={(e) => handleThemePageChange(e)}
+                    pageCount={Math.ceil(themes.length / themesPerPage)}
+                  />
+                </GridCol>
                 <SaveButtonBar
                   saveButton={
                     <button
@@ -416,13 +545,14 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       </Button>
                     </button>
                   }
-                  showing={formikProps.dirty && formikProps.isValid}
+                  on={formikProps.dirty && formikProps.isValid}
+                  className={styles.identityBar}
                 />
               </Form>
             );
           }}
         </Formik>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -698,10 +698,6 @@ export enum PlatformErrorCodes {
   NonTransactionalEmailSendFailure = 235,
   UnknownErrorSettingGlobalDisplayName = 236,
   DuplicateGlobalDisplayName = 237,
-  ErrorRunningNameValidationChecks = 238,
-  ErrorDatabaseGlobalName = 239,
-  ErrorNoAvailableNameChanges = 240,
-  ErrorNameAlreadySetToInput = 241,
   MessagingUnknownError = 300,
   MessagingSelfError = 301,
   MessagingSendThrottle = 302,
@@ -2348,10 +2344,6 @@ export enum DestinyVendorItemState {
 		This indicates that the sale item is popular.
 		*/
   Popular = 65536,
-  /**
-		This indicates that the sale item is free.
-		*/
-  Free = 131072,
 }
 
 export enum TierType {
@@ -2518,11 +2510,6 @@ export enum DestinyVendorProgressionType {
 		For example: Crucible (Shaxx), Gambit (Drifter), and Season 13 Battlegrounds (War Table).
 		*/
   Ritual = 1,
-  /**
-		A vendor progression with no seasonal refresh.
-		For example: Xur in the Eternity destination for the 30th Anniversary.
-		*/
-  NoSeasonalRefresh = 2,
 }
 
 /**
@@ -3509,7 +3496,6 @@ export enum DestinyActivityModeType {
   Dungeon = 82,
   Sundial = 83,
   TrialsOfOsiris = 84,
-  Dares = 85,
 }
 
 /**
@@ -3952,56 +3938,6 @@ export enum SpamReductionLevel {
 }
 
 /**
-	Entitlement purchases by marketplace.
-	*/
-export enum BungieMarketplaceType {
-  /**
-		Unknown marketplace type
-		*/
-  Unknown = 0,
-  /**
-		Fake Marketplace used for testing
-		*/
-  Fake = 1,
-  /**
-		Xbox Live Marketplace from 2005-2013. This includes devices: Xbox 360 (all iterations)
-		*/
-  Xbox_Xbox360 = 2,
-  /**
-		PSN Marketplace from 2006-2013. This includes devices: Playstation 3 (all iterations)
-		*/
-  PSN_PS3 = 3,
-  /**
-		Xbox Live Marketplace from 2013-Present. This includes devices: Xbox One (all iterations)
-		*/
-  Xbox_XboxOne = 4,
-  /**
-		PSN Marketplace from 2013-Present. This includes devices: Playstation 4 (all iterations)
-		*/
-  PSN_PS4 = 5,
-  /**
-		BattleNet Marketplace from 2017-Present. This is a PC marketplace
-		*/
-  PC_BattleNet = 6,
-  /**
-		Steam Marketplace from 2019-Present. This is a PC marketplace
-		*/
-  PC_Steam = 7,
-  /**
-		Stadia Marketplace from 2019-Present. This is a PC marketplace
-		*/
-  PC_Stadia = 8,
-  /**
-		Microsoft Store Marketplace from 2021-Present. This is a PC marketplace.
-		*/
-  PC_MicrosoftStore = 9,
-  /**
-		Bungie "Marketplace" used to represent grants we make to players
-		*/
-  Bungie = 77,
-}
-
-/**
 	A hint for the UI as to what display information ought to be shown.  Defaults to showing
 	 the static MilestoneDefinition's display properties.
 	
@@ -4089,4 +4025,11 @@ export enum GlobalAlertLevel {
 export enum GlobalAlertType {
   GlobalAlert = 0,
   StreamingAlert = 1,
+}
+
+export enum SurveyCompletionFlags {
+  None = 0,
+  UserResearchWebPageOne = 1,
+  UserResearchWebPageTwo = 2,
+  UserResearchWebVersionTwo = 4,
 }

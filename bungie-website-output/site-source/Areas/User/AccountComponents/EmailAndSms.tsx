@@ -121,7 +121,6 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
           emailAddress: globalStateData?.loggedInUser?.email,
           emailFlags: initialOptInValues,
         }}
-        enableReinitialize
         validationSchema={Yup.object({
           email: Yup.string(),
         })}
@@ -210,18 +209,10 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                   )}
                 </GridCol>
               </GridCol>
-
-              <GridCol className={styles.smsContainer} cols={12}>
-                <h3>{Localizer.sms.VerifyYourSms}</h3>
-              </GridCol>
-              <GridDivider cols={12} className={accountStyles.mainDivider} />
-              <GridCol cols={12}>
-                <div>
-                  <h4 className={styles.subtitle}>{Localizer.sms.subtitle}</h4>
-                  <SmsPage accountView={true} />
-                </div>
-              </GridCol>
               <SaveButtonBar
+                className={classNames(styles.emailBar, {
+                  [styles.show]: formikProps.dirty && formikProps.isValid,
+                })}
                 saveButton={
                   <button
                     type="submit"
@@ -240,9 +231,22 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                     </Button>
                   </button>
                 }
-                showing={formikProps.dirty && formikProps.isValid}
+                on={formikProps.dirty && formikProps.isValid}
               />
             </Form>
+
+            <GridCol className={styles.smsContainer} cols={12}>
+              <h3 className={styles.smsHeader}>
+                {Localizer.sms.VerifyYourSms}
+              </h3>
+            </GridCol>
+            <GridDivider cols={12} className={accountStyles.mainDivider} />
+            <GridCol cols={12}>
+              <div className={styles.smsSection}>
+                <h4 className={styles.subtitle}>{Localizer.sms.subtitle}</h4>
+                <SmsPage accountView={true} />
+              </div>
+            </GridCol>
           </>
         )}
       </Formik>

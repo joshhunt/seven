@@ -26,7 +26,6 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import * as React from "react";
 import SeasonCalendar from "./Progress/SeasonCalendar";
@@ -155,10 +154,7 @@ class SeasonsUtilityPage extends React.Component<
   public render() {
     const isAnonymous = !UserUtils.isAuthenticated(this.props.globalState);
 
-    if (
-      ConfigUtils.SystemStatus("AccountServices") &&
-      !this.state.destinyMembershipData?.loaded
-    ) {
+    if (!this.state.destinyMembershipData?.loaded) {
       return (
         <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
       );

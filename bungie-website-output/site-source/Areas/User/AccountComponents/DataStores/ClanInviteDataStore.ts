@@ -58,6 +58,9 @@ class _ClanInviteDataStore extends DataStore<ClanInviteDataStorePayload> {
     );
 
     Promise.all(promises)
+      .then((data) => {
+        console.log(data);
+      })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
   };

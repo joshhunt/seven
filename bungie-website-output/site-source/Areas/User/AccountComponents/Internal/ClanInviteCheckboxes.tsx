@@ -50,8 +50,8 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
 
             values.forEach((bool, i) => (clanSettings[mts[i]] = bool));
 
-            ClanInviteDataStore.actions.updateInitialSettings(clanSettings);
             ClanInviteDataStore.actions.updateCurrentSettings(clanSettings);
+            ClanInviteDataStore.actions.updateInitialSettings(clanSettings);
           })
           .catch((e) => console.error(e));
       })

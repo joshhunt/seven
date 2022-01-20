@@ -22,24 +22,18 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
     return UserUtils.getEmailValidationState(loggedInUser.emailStatus);
   };
 
-  // the specific global alert bar should not control its visibility status, but it should define the requirements for it to show initially and
-  // then defer to localStorage which is updated by GlobalBar itself
+  // the specific global alert bar should not control its visibility status, but it should define the requirements for it to show initially and then defer to localStorage which is updated by GlobalBar itself
   const isVisibleInitially = () => {
-    const isNotVerified =
-      getEmailValidationState() === EmailValidationState.None ||
-      getEmailValidationState() === EmailValidationState.Verifying;
+    if (JSON.parse(window.localStorage.getItem(localStorageKey)) !== null) {
+      return JSON.parse(window.localStorage.getItem(localStorageKey));
+    } else {
+      const isNotVerified =
+        getEmailValidationState() === EmailValidationState.None ||
+        getEmailValidationState() === EmailValidationState.Verifying;
+      window.localStorage.setItem(localStorageKey, isNotVerified.toString());
 
-    if (isNotVerified) {
-      if (JSON.parse(window.localStorage.getItem(localStorageKey)) !== null) {
-        return JSON.parse(window.localStorage.getItem(localStorageKey));
-      } else {
-        window.localStorage.setItem(localStorageKey, "true");
-
-        return true;
-      }
+      return isNotVerified;
     }
-
-    return false;
   };
 
   return (
