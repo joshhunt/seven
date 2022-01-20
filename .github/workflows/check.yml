@@ -26,6 +26,7 @@ jobs:
       - name: Check Bungie website
         run: yarn run check
         env:
+          SILENT_NOTIFICATIONS: true
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
 
       - name: Check if there were changes
