@@ -18,8 +18,10 @@ import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { Form, Formik, FormikProps, FormikValues } from "formik";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BNetAccountPrivacy } from "@Enum";
+import { ObjectUtils } from "../../../Utilities/ObjectUtils";
+import { SaveButtonBar } from "./Internal/SaveButtonBar";
 import styles from "./Privacy.module.scss";
 import accountStyles from "../Account.module.scss";
 interface PrivacyProps {}
@@ -27,6 +29,25 @@ interface PrivacyProps {}
 export const Privacy: React.FC<PrivacyProps> = (props) => {
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
   const clanInviteData = useDataStore(ClanInviteDataStore);
+
+  const [showSaveBar, setShowSaveBar] = useState(false);
+
+  useEffect(() => {
+    /* What a nice hack... don't use this for nested objects or objects containing arrays */
+    const clanPrivacyChanged =
+      clanInviteData?.clanInviteSettings &&
+      clanInviteData?.initialClanSettings &&
+      ObjectUtils.objectToKvpString(clanInviteData?.initialClanSettings) !==
+        ObjectUtils.objectToKvpString(clanInviteData?.clanInviteSettings);
+
+    /* Since there are multiple factors impacting whether or not the save settings bar should be showing, it makes sense to track all possible states here */
+
+    if (clanPrivacyChanged) {
+      setShowSaveBar(true);
+    } else {
+      setShowSaveBar(false);
+    }
+  }, [clanInviteData]);
 
   const showSettingsChangedToast = () => {
     Toast.show(Localizer.Userresearch.SettingsHaveChanged, {
@@ -50,12 +71,18 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
         if (!errors) {
           GlobalStateDataStore.actions
             .refreshCurrentUser(true)
-            .async.then(showSettingsChangedToast);
+            .async.then((data) => {
+              showSettingsChangedToast();
+            });
         }
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e))
-      .finally(() => setSubmitting(false));
+      .finally(() => {
+        setSubmitting(false);
+      });
+
+    setShowSaveBar(false);
   };
 
   const consolidateFlagValues = (
@@ -88,12 +115,12 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
       {UserUtils.isAuthenticated(globalStateData) ? (
         <Formik
           initialValues={{
-            displayName: globalStateData?.loggedInUser?.user?.displayName,
-            about: globalStateData?.loggedInUser?.user?.about,
-            statusText: globalStateData?.loggedInUser?.user?.statusText,
+            displayName: null,
+            about: null,
+            statusText: null,
             membershipId: globalStateData?.loggedInUser?.user?.membershipId,
-            locale: globalStateData?.loggedInUser?.user?.locale,
-            emailAddress: globalStateData?.loggedInUser?.email,
+            locale: null,
+            emailAddress: null,
             rejectAllFriendRequestsString: globalStateData?.loggedInUser?.rejectAllFriendRequests?.toString(),
             showActivity: globalStateData?.loggedInUser?.user?.showActivity,
             HideDestinyActivityHistoryFeed: !EnumUtils.hasFlag(
@@ -109,6 +136,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
               globalStateData?.loggedInUser?.privacy
             ),
           }}
+          enableReinitialize
           onSubmit={(
             {
               HideDestinyActivityHistoryFeed,
@@ -272,23 +300,30 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                   <GridDivider cols={12} />
                 </div>
 
-                <div className={styles.saveButton}>
-                  <button
-                    type="submit"
-                    className={styles.textOnly}
-                    disabled={!formikProps.isValid || formikProps.isSubmitting}
-                  >
-                    <Button
-                      buttonType={"gold"}
-                      loading={formikProps.isSubmitting}
+                <SaveButtonBar
+                  saveButton={
+                    <button
+                      type="submit"
+                      className={styles.textOnly}
                       disabled={
                         !formikProps.isValid || formikProps.isSubmitting
                       }
                     >
-                      {Localizer.userPages.savesettings}
-                    </Button>
-                  </button>
-                </div>
+                      <Button
+                        buttonType={"gold"}
+                        loading={formikProps.isSubmitting}
+                        disabled={
+                          !formikProps.isValid || formikProps.isSubmitting
+                        }
+                      >
+                        {Localizer.userPages.savesettings}
+                      </Button>
+                    </button>
+                  }
+                  showing={
+                    showSaveBar || (formikProps.dirty && formikProps.isValid)
+                  }
+                />
               </Form>
             );
           }}

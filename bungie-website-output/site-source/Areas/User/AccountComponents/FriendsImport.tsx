@@ -8,6 +8,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, PlatformFriendType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { BasicSize } from "@UIKit/UIKitUtils";
@@ -71,11 +72,9 @@ export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
 
   const openLinkPreview = (platform: PlatformFriendType) => {
     BrowserUtils.openWindow(
-      `/${
-        Localizer.CurrentCultureName
-      }/User/SignInAndPreview/${UserUtils.getCredentialTypeFromPlatformFriendType(
-        platform
-      )}`,
+      RouteHelper.SignInPreview(
+        UserUtils.getCredentialTypeFromPlatformFriendType(platform)
+      ).url,
       "linkpreviewui",
       () => {
         GlobalStateDataStore.refreshUserAndRelatedData(true).then(() => {

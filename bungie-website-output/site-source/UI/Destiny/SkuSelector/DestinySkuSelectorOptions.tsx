@@ -64,10 +64,12 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
     });
     const outerClasses = classNames(styles.options, className);
     const productFamilyTag = definition.subtitle.replace(/\s/g, "");
+    const selectedStoreHasSingleRegion =
+      (this.state.selectedStore?.validRegions?.length ?? 0) <= 1;
 
     return (
       <div className={outerClasses}>
-        {!this.state.selectedStore && (
+        {(!this.state.selectedStore || selectedStoreHasSingleRegion) && (
           <StoreButtonsForSku
             subtitle={subtitle}
             stores={stores}
@@ -78,7 +80,7 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
             utmParams={utmParams}
           />
         )}
-        {this.state.selectedStore && (
+        {this.state.selectedStore && !selectedStoreHasSingleRegion && (
           <>
             <Button disabled={true} className={styles.selectedStore}>
               {this.state.selectedStore.key}

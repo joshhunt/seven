@@ -15,6 +15,7 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
+import { InitializeContentStackClient } from "Platform/ContentStack/ContentStackClient";
 import * as React from "react";
 
 interface IGlobalState {
@@ -255,6 +256,9 @@ class GlobalStateDataStoreInternal extends DataStore<
     if (!didLoadFromStorage) {
       await this.actions.refreshSettings().async;
     }
+
+    // This really shouldn't go here, but until the death of GlobalStateDataStore, it needs to.
+    InitializeContentStackClient();
 
     await this.refreshUserAndRelatedData(false);
 

@@ -141,6 +141,10 @@ export declare namespace User {
     IsOAuth: boolean;
   }
 
+  export interface UserNameEditRequest {
+    displayName: string;
+  }
+
   export interface DestinyEmblemSourceRequest {
     MembershipType: Globals.BungieMembershipType;
 
@@ -4142,6 +4146,15 @@ export declare namespace Responses {
     };
 
     /**
+		Mostly the same information as platformEntitlements, except keyed by marketplace.
+		*/
+    platformEntitlementsByMarketplace: {
+      [K in EnumStrings<
+        typeof Globals.BungieMarketplaceType
+      >]?: Responses.DestinyPlatformEntitlements;
+    };
+
+    /**
 		Seasons are accessible/purchased on a per-profile basis,
 		*/
     profileSeasons: { [key: string]: Seasons.DestinySeasonEntitlements };
@@ -5100,6 +5113,10 @@ export declare namespace Models {
     loreRootNodeHash: number;
 
     currentRankProgressionHashes: number[];
+
+    insertPlugFreeProtectedPlugItemHashes: number[];
+
+    insertPlugFreeBlockedSocketTypeHashes: number[];
 
     undiscoveredCollectibleImage: string;
 
@@ -16425,6 +16442,9 @@ export declare namespace Actions {
   }
 
   export interface DestinyItemActionRequest {
+    /**
+		The instance ID of the item for this action request.
+		*/
     itemId: string;
 
     characterId: string;
@@ -16499,6 +16519,19 @@ export declare namespace Actions {
 		2) Perform any operation needed to use the Plug, including removing the plug item and running reward sheets.
 		*/
     plugItemHash: number;
+  }
+
+  export interface DestinyInsertPlugsFreeActionRequest {
+    /**
+		The plugs being inserted.
+		*/
+    plug: Actions.DestinyInsertPlugsRequestEntry;
+
+    itemId: string;
+
+    characterId: string;
+
+    membershipType: Globals.BungieMembershipType;
   }
 }
 
@@ -17504,148 +17537,6 @@ export declare namespace Renderer {
   }
 
   export interface DefinitionSetCrossSaveUserData {
-    objectives: { [key: number]: Definitions.DestinyObjectiveDefinition };
-
-    unlockValues: { [key: number]: Definitions.DestinyUnlockValueDefinition };
-
-    locations: { [key: number]: Definitions.DestinyLocationDefinition };
-
-    unlocks: { [key: number]: Definitions.DestinyUnlockDefinition };
-
-    unlockMappings: {
-      [key: number]: Unlocks.DestinyUnlockExpressionMappingDefinition;
-    };
-
-    perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
-
-    stats: { [key: number]: Definitions.DestinyStatDefinition };
-
-    equipmentSlots: {
-      [key: number]: Definitions.DestinyEquipmentSlotDefinition;
-    };
-
-    buckets: { [key: number]: Definitions.DestinyInventoryBucketDefinition };
-
-    vendors: { [key: number]: Definitions.DestinyVendorDefinition };
-
-    destinations: { [key: number]: Definitions.DestinyDestinationDefinition };
-
-    activities: { [key: number]: Definitions.DestinyActivityDefinition };
-
-    places: { [key: number]: Definitions.DestinyPlaceDefinition };
-
-    activityGraphs: { [key: number]: Director.DestinyActivityGraphDefinition };
-
-    activityTypes: { [key: number]: Definitions.DestinyActivityTypeDefinition };
-
-    activityModes: { [key: number]: Definitions.DestinyActivityModeDefinition };
-
-    items: { [key: number]: Definitions.DestinyInventoryItemDefinition };
-
-    collectibles: { [key: number]: Collectibles.DestinyCollectibleDefinition };
-
-    lore: { [key: number]: Lore.DestinyLoreDefinition };
-
-    itemCategories: {
-      [key: number]: Definitions.DestinyItemCategoryDefinition;
-    };
-
-    breakerTypes: { [key: number]: BreakerTypes.DestinyBreakerTypeDefinition };
-
-    damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
-
-    seasons: { [key: number]: Seasons.DestinySeasonDefinition };
-
-    progressionMappings: {
-      [key: number]: Definitions.DestinyProgressionMappingDefinition;
-    };
-
-    itemTierTypes: { [key: number]: Items.DestinyItemTierTypeDefinition };
-
-    statGroups: { [key: number]: Definitions.DestinyStatGroupDefinition };
-
-    artifacts: { [key: number]: Artifacts.DestinyArtifactDefinition };
-
-    factions: { [key: number]: Definitions.DestinyFactionDefinition };
-
-    progressions: { [key: number]: Definitions.DestinyProgressionDefinition };
-
-    socketTypes: { [key: number]: Sockets.DestinySocketTypeDefinition };
-
-    socketCategories: {
-      [key: number]: Sockets.DestinySocketCategoryDefinition;
-    };
-
-    vendorGroups: { [key: number]: Definitions.DestinyVendorGroupDefinition };
-
-    progressionLevelRequirements: {
-      [key: number]: Progression.DestinyProgressionLevelRequirementDefinition;
-    };
-
-    powerCaps: { [key: number]: PowerCaps.DestinyPowerCapDefinition };
-
-    sources: { [key: number]: Definitions.DestinyRewardSourceDefinition };
-
-    presentationNodes: {
-      [key: number]: Presentation.DestinyPresentationNodeDefinition;
-    };
-
-    records: { [key: number]: Records.DestinyRecordDefinition };
-
-    traits: { [key: number]: Traits.DestinyTraitDefinition };
-
-    materialRequirementSets: {
-      [key: number]: Definitions.DestinyMaterialRequirementSetDefinition;
-    };
-
-    traitCategories: { [key: number]: Traits.DestinyTraitCategoryDefinition };
-
-    genders: { [key: number]: Definitions.DestinyGenderDefinition };
-
-    metrics: { [key: number]: Metrics.DestinyMetricDefinition };
-
-    energyTypes: { [key: number]: EnergyTypes.DestinyEnergyTypeDefinition };
-
-    plugSets: { [key: number]: Sockets.DestinyPlugSetDefinition };
-
-    talentGrids: { [key: number]: Definitions.DestinyTalentGridDefinition };
-
-    seasonPasses: { [key: number]: Seasons.DestinySeasonPassDefinition };
-
-    activityModifiers: {
-      [key: number]: ActivityModifiers.DestinyActivityModifierDefinition;
-    };
-
-    checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
-
-    races: { [key: number]: Definitions.DestinyRaceDefinition };
-
-    classes: { [key: number]: Definitions.DestinyClassDefinition };
-
-    milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
-
-    unlockExpressions: {
-      [key: number]: Definitions.DestinyUnlockExpressionDefinition;
-    };
-  }
-
-  export interface PCMigrationUserDataDefined {
-    data: Renderer.PCMigrationUserData;
-
-    definitions: Renderer.DefinitionSetPCMigrationUserData;
-  }
-
-  export interface PCMigrationUserData {
-    profileResponses: {
-      [K in EnumStrings<
-        typeof Globals.BungieMembershipType
-      >]?: Responses.DestinyProfileResponse;
-    };
-
-    entitlements: Responses.DestinyEntitlementsResponse;
-  }
-
-  export interface DefinitionSetPCMigrationUserData {
     objectives: { [key: number]: Definitions.DestinyObjectiveDefinition };
 
     unlockValues: { [key: number]: Definitions.DestinyUnlockValueDefinition };
@@ -19637,6 +19528,46 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "UpdateUser",
+      input,
+      clientState
+    );
+
+  /**
+   * Given a bungie name, does every validation step for changing the name, including having available name changes, but doesn't actually commit the change.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ValidateBungieName = (
+    input: User.UserNameEditRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ValidateBungieName/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "ValidateBungieName",
+      input,
+      clientState
+    );
+
+  /**
+   * Changes the signed in user's bungie name assuming it passes validation, including the user having available name changes. Duplicates identical functionality in UpdateUser.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ChangeBungieName = (
+    input: User.UserNameEditRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ChangeBungieName/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "ChangeBungieName",
       input,
       clientState
     );
@@ -21721,8 +21652,6 @@ class ExternalSocialServiceInternal {
       clientState
     );
 }
-
-class SurveyServiceInternal {}
 
 class ForumServiceInternal {
   /**
@@ -24107,7 +24036,7 @@ class AdminServiceInternal {
     clientState?: any
   ): Promise<Contracts.ReportedItemResponse[]> =>
     ApiIntermediary.doGetRequest(
-      `/Admin/Report/${e(reportId)}`,
+      `/Admin/Report/${e(reportId)}/`,
       [],
       optionalQueryAppend,
       "Admin",
@@ -24128,7 +24057,7 @@ class AdminServiceInternal {
     clientState?: any
   ): Promise<Config.ReportTrigger> =>
     ApiIntermediary.doGetRequest(
-      `/Admin/ReportTrigger/${e(autoTriggerId)}`,
+      `/Admin/ReportTrigger/${e(autoTriggerId)}/`,
       [],
       optionalQueryAppend,
       "Admin",
@@ -25913,6 +25842,26 @@ class Destiny2ServiceInternal {
     );
 
   /**
+   * Insert a 'free' plug into an item's socket.  This does not require 'Advanced Write Action' authorization and is available to 3rd-party apps, but will only work on 'free and reversible' socket actions (Perks, Armor Mods, Shaders, Ornaments, etc.). You must have a valid Destiny Account, and the character must either be in a social space, in orbit, or offline.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static InsertSocketPlugFree = (
+    input: Actions.DestinyInsertPlugsFreeActionRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Responses.DestinyItemChangeResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/Actions/Items/InsertSocketPlugFree/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "InsertSocketPlugFree",
+      input,
+      clientState
+    );
+
+  /**
    * Gets the available post game carnage report for the activity ID.
    * @param activityId The ID of the activity whose PGCR is requested.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -27311,27 +27260,6 @@ class RendererServiceInternal {
     );
 
   /**
-   * Returns data relevant to the PCMigration page
-   * @param membershipId The membership ID for the Bungie.net user.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static PCMigrationUserData = (
-    membershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<Renderer.PCMigrationUserDataDefined> =>
-    ApiIntermediary.doGetRequest(
-      `/Renderer/PCMigrationUserData/${e(membershipId)}/`,
-      [],
-      optionalQueryAppend,
-      "Renderer",
-      "PCMigrationUserData",
-      undefined,
-      clientState
-    );
-
-  /**
    * Returns data about a user's Season stats
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -27854,7 +27782,6 @@ export class Platform {
   public static NotificationService = NotificationServiceInternal;
   public static ContentService = ContentServiceInternal;
   public static ExternalSocialService = ExternalSocialServiceInternal;
-  public static SurveyService = SurveyServiceInternal;
   public static ForumService = ForumServiceInternal;
   public static ActivityService = ActivityServiceInternal;
   public static GroupV2Service = GroupV2ServiceInternal;

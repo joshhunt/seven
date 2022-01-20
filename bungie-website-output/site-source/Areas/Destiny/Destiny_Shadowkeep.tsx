@@ -614,118 +614,83 @@ class DestinyShadowkeepInner extends React.Component<
         {
           // PURCHASE
         }
-        <div id={"buy"}>
-          <Section className={styles.sectionShadowkeep}>
-            <div className={styles.center}>
-              <div className={styles.underlineBuy} />
-              <SectionTitle isSmall={false}>
-                {Localizer.Shadowkeep.ShadowkeepSmallTitle}
-              </SectionTitle>
-              <p className={styles.textCallout}>
-                {Localizer.Shadowkeep.ShadowkeepTextCallout}
-              </p>
-            </div>
+        {/*<div id={"buy"}>*/}
+        {/*	<Section className={styles.sectionShadowkeep}>*/}
 
-            <div
-              className={classNames(
-                styles.tabs,
-                isStandardEditionShowing ? styles.std : styles.dde
-              )}
-            >
-              <a className={styles.standardTab} onClick={this.showStandard}>
-                {Localizer.Destiny.StandardEdition}
-              </a>
-              <a className={styles.deluxeTab} onClick={this.showUpgradeEdition}>
-                {Localizer.Destiny.buyFlowLegendaryEditionTitle}
-              </a>
-            </div>
-            <div className={styles.shadowkeepBuyContainer}>
-              <div className={styles.shadowkeepBuy}>
-                <div
-                  className={classNames(
-                    styles.cover,
-                    isStandardEditionShowing ? styles.std : styles.dde
-                  )}
-                  style={{
-                    backgroundImage: isStandardEditionShowing
-                      ? `url("7/ca/destiny/products/shadowkeep/shadowkeep_buy_cover_${Localizer.CurrentCultureName}.jpg")`
-                      : `url("7/ca/destiny/products/shadowkeep/legendaryEdition_buy_cover_${Localizer.CurrentCultureName}.jpg")`,
-                  }}
-                />
-                <div className={styles.disclaimerGrid}>
-                  <ul>
-                    <li>{Localizer.Destiny.shadowkeepPurchaseLegalDetail}</li>
-                    <li>{Localizer.Destiny.shadowkeepLegalDetail}</li>
-                    <li>{Localizer.Destiny.imagesLegalDetail}</li>
-                  </ul>
-                </div>
-              </div>
-              <div className={styles.shadowkeepBuyDescription}>
-                <p className={styles.editionTitle}>
-                  <span className={styles.destinyTitle}>
-                    {Localizer.Shadowkeep.DestinyBuyTItleIntro}
-                  </span>
-                  <span>
-                    {isStandardEditionShowing
-                      ? Localizer.Shadowkeep.ShadowkeepBuyTitle
-                      : Localizer.Destiny.buyFlowLegendaryEditionTitle}
-                  </span>
-                </p>
-                <div className={styles.thickTopBorder} />
-                {!ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
-                  !isStandardEditionShowing && (
-                    <Button size={BasicSize.Medium} buttonType={"disabled"}>
-                      {Localizer.bungierewards.ComingSoon_NAME}
-                    </Button>
-                  )}
-                {((ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
-                  !isStandardEditionShowing) ||
-                  isStandardEditionShowing) && (
-                  <BuyButton
-                    className={styles.preorderButton}
-                    onClick={() => this.onClickStoreItem(buttonSkuTag)}
-                    buttonType={"gold"}
-                    sheen={0.35}
-                    analyticsId={buttonSkuTag}
-                  >
-                    {Localizer.Shadowkeep.CTAButtonLabel}
-                  </BuyButton>
-                )}
-                {isStandardEditionShowing ? (
-                  <div className={styles.buyMainContent}>
-                    <div
-                      dangerouslySetInnerHTML={sanitizeHTML(
-                        Localizer.Shadowkeep.StandardEditionDesc1
-                      )}
-                    />
-                    <div className={styles.descBottom}>
-                      <div
-                        dangerouslySetInnerHTML={sanitizeHTML(
-                          Localizer.Shadowkeep.StandardEditionDesc2
-                        )}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.buyMainContent}>
-                    <div
-                      dangerouslySetInnerHTML={sanitizeHTML(
-                        Localizer.Shadowkeep.legendaryEditionDesc1
-                      )}
-                    />
-                    <div className={styles.descBottom}>
-                      <div
-                        dangerouslySetInnerHTML={sanitizeHTML(
-                          Localizer.Shadowkeep.legendaryEditionDesc2
-                        )}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Section>
-        </div>
+        {/*		<div className={styles.center}>*/}
+        {/*			<div className={styles.underlineBuy}/>*/}
+        {/*			<SectionTitle isSmall={false}>{Localizer.Shadowkeep.ShadowkeepSmallTitle}</SectionTitle>*/}
+        {/*			<p className={styles.textCallout}>{Localizer.Shadowkeep.ShadowkeepTextCallout}</p>*/}
+        {/*		</div>*/}
+
+        {/*		<div className={classNames(styles.tabs, isStandardEditionShowing ? styles.std : styles.dde)}>*/}
+        {/*			<a className={styles.standardTab} onClick={this.showStandard}>{Localizer.Destiny.StandardEdition}</a>*/}
+        {/*			<a className={styles.deluxeTab} onClick={this.showUpgradeEdition}>{Localizer.Destiny.buyFlowLegendaryEditionTitle}</a>*/}
+        {/*		</div>*/}
+        {/*		<div className={styles.shadowkeepBuyContainer}>*/}
+        {/*			<div className={styles.shadowkeepBuy}>*/}
+        {/*				<div*/}
+        {/*					className={classNames(styles.cover, isStandardEditionShowing ? styles.std : styles.dde)}*/}
+        {/*					style={{*/}
+        {/*						backgroundImage: isStandardEditionShowing*/}
+        {/*										 ? `url("7/ca/destiny/products/shadowkeep/shadowkeep_buy_cover_${Localizer.CurrentCultureName}.jpg")`*/}
+        {/*										 : `url("7/ca/destiny/products/shadowkeep/legendaryEdition_buy_cover_${Localizer.CurrentCultureName}.jpg")`*/}
+        {/*					}}*/}
+        {/*				/>*/}
+        {/*				<div className={styles.disclaimerGrid}>*/}
+        {/*					<ul>*/}
+        {/*						<li>{Localizer.Destiny.shadowkeepPurchaseLegalDetail}</li>*/}
+        {/*						<li>{Localizer.Destiny.shadowkeepLegalDetail}</li>*/}
+        {/*						<li>{Localizer.Destiny.imagesLegalDetail}</li>*/}
+        {/*					</ul>*/}
+        {/*				</div>*/}
+        {/*			</div>*/}
+        {/*			<div className={styles.shadowkeepBuyDescription}>*/}
+        {/*				<p className={styles.editionTitle}>*/}
+        {/*					<span className={styles.destinyTitle}>{Localizer.Shadowkeep.DestinyBuyTItleIntro}</span>*/}
+        {/*					<span>*/}
+        {/*						{*/}
+        {/*							isStandardEditionShowing*/}
+        {/*							? Localizer.Shadowkeep.ShadowkeepBuyTitle*/}
+        {/*							: Localizer.Destiny.buyFlowLegendaryEditionTitle*/}
+        {/*						}*/}
+        {/*					</span>*/}
+        {/*				</p>*/}
+        {/*				<div className={styles.thickTopBorder}/>*/}
+        {/*				{(!ConfigUtils.SystemStatus("LegendaryEditionEnabled") && !isStandardEditionShowing) &&*/}
+        {/*				<Button size={BasicSize.Medium} buttonType={"disabled"}>{Localizer.bungierewards.ComingSoon_NAME}</Button>*/}
+        {/*				}*/}
+        {/*				{((ConfigUtils.SystemStatus("LegendaryEditionEnabled") && !isStandardEditionShowing) || isStandardEditionShowing) &&*/}
+        {/*				<BuyButton*/}
+        {/*					className={styles.preorderButton}*/}
+        {/*					onClick={() => this.onClickStoreItem(buttonSkuTag)}*/}
+        {/*					buttonType={"gold"}*/}
+        {/*					sheen={0.35}*/}
+        {/*					analyticsId={buttonSkuTag}*/}
+        {/*				>*/}
+        {/*					{Localizer.Shadowkeep.CTAButtonLabel}*/}
+        {/*				</BuyButton>*/}
+        {/*				}*/}
+        {/*				{*/}
+        {/*					isStandardEditionShowing*/}
+        {/*					? <div className={styles.buyMainContent}>*/}
+        {/*						<div dangerouslySetInnerHTML={sanitizeHTML(Localizer.Shadowkeep.StandardEditionDesc1)}/>*/}
+        {/*						<div className={styles.descBottom}>*/}
+        {/*							<div dangerouslySetInnerHTML={sanitizeHTML(Localizer.Shadowkeep.StandardEditionDesc2)}/>*/}
+        {/*						</div>*/}
+        {/*					</div>*/}
+        {/*					: <div className={styles.buyMainContent}>*/}
+        {/*						<div dangerouslySetInnerHTML={sanitizeHTML(Localizer.Shadowkeep.legendaryEditionDesc1)}/>*/}
+        {/*						<div className={styles.descBottom}>*/}
+        {/*							<div dangerouslySetInnerHTML={sanitizeHTML(Localizer.Shadowkeep.legendaryEditionDesc2)}/>*/}
+        {/*						</div>*/}
+        {/*					</div>*/}
+        {/*				}*/}
+        {/*			</div>*/}
+
+        {/*		</div>*/}
+        {/*	</Section>*/}
+        {/*</div>*/}
 
         {
           // NEWS & MEDIA

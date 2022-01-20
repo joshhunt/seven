@@ -96,10 +96,7 @@ class ForsakenPageInternal extends React.Component<{}, IForsakenPageState> {
           renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
           buttonProps={{
             children: Localizer.Destiny.BuyNow,
-            onClick: () =>
-              document
-                .getElementById("buy")
-                .scrollIntoView({ behavior: "smooth" }),
+            url: `/7/${Localizer.CurrentCultureName}/Destiny/Buy/Forsaken`,
           }}
           accentColor={"gold"}
         />
@@ -236,76 +233,50 @@ class ForsakenPageInternal extends React.Component<{}, IForsakenPageState> {
         {
           //buy
         }
-        <div className={styles.buyForsaken} id={"buy"}>
-          <div className={styles.forsakenBuyTitle}>
-            {Localizer.Destiny.SelectEdition}
-          </div>
-          <div
-            className={classNames(
-              styles.tabs,
-              this.state.forsakenIsShowing ? styles.std : styles.ue
-            )}
-          >
-            <div
-              role={"button"}
-              className={styles.standardTab}
-              onClick={this.showForsaken}
-            >
-              {Localizer.Destiny.ForsakenTitle}
-            </div>
-            <div
-              role={"button"}
-              className={styles.collectionTab}
-              onClick={this.showUpgradeEdition}
-            >
-              {Localizer.Destiny.buyFlowLegendaryEditionTitle}
-            </div>
-          </div>
-          <div className={styles.shadowkeepBuyContainer}>
-            <div className={styles.shadowkeepBuy}>
-              <div
-                className={classNames(
-                  styles.cover,
-                  this.state.forsakenIsShowing ? styles.std : styles.ue
-                )}
-                style={{
-                  backgroundImage: this.state.forsakenIsShowing
-                    ? `url("7/ca/destiny/products/forsaken/forsakenpack_buy_cover_${Localizer.CurrentCultureName}.jpg")`
-                    : `url("7/ca/destiny/products/forsaken/legendaryed_buy_cover_${Localizer.CurrentCultureName}.jpg")`,
-                }}
-              />
-            </div>
-            <div className={styles.shadowkeepBuyDescription}>
-              <h1 className={styles.editionTitle}>
-                <span className={styles.destinyTitle}>
-                  {Localizer.Shadowkeep.DestinyBuyTItleIntro}
-                </span>
-                <span>
-                  {this.state.forsakenIsShowing
-                    ? Localizer.Destiny.ForsakenPackTitle
-                    : Localizer.Destiny.buyFlowLegendaryEditionTitle}
-                </span>
-              </h1>
-              {!ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
-                !this.state.forsakenIsShowing && (
-                  <Button size={BasicSize.Medium} buttonType={"disabled"}>
-                    {Localizer.bungierewards.ComingSoon_NAME}
-                  </Button>
-                )}
-              {((ConfigUtils.SystemStatus("LegendaryEditionEnabled") &&
-                !this.state.forsakenIsShowing) ||
-                this.state.forsakenIsShowing) && (
-                <Button
-                  className={styles.preorderButton}
-                  onClick={() => this.onClickStoreItem(buttonSkuTag)}
-                  analyticsId={buttonSkuTag}
-                >
-                  {Localizer.Destiny.ForsakenLearnMore}
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
+        {/*<div className={styles.buyForsaken} id={"buy"}>*/}
+        {/*	<div className={styles.forsakenBuyTitle}>*/}
+        {/*		{Localizer.Destiny.SelectEdition}*/}
+        {/*	</div>*/}
+        {/*	<div className={classNames(styles.tabs, this.state.forsakenIsShowing ? styles.std : styles.ue)}>*/}
+        {/*		<div role={"button"} className={styles.standardTab} onClick={this.showForsaken}>{Localizer.Destiny.ForsakenTitle}</div>*/}
+        {/*		<div role={"button"} className={styles.collectionTab} onClick={this.showUpgradeEdition}>{Localizer.Destiny.buyFlowLegendaryEditionTitle}</div>*/}
+        {/*	</div>*/}
+        {/*	<div className={styles.shadowkeepBuyContainer}>*/}
+        {/*		<div className={styles.shadowkeepBuy}>*/}
+        {/*			<div className={classNames(styles.cover, this.state.forsakenIsShowing ? styles.std : styles.ue)}*/}
+        {/*				 style={{*/}
+        {/*					 backgroundImage: this.state.forsakenIsShowing*/}
+        {/*									  ? `url("7/ca/destiny/products/forsaken/forsakenpack_buy_cover_${Localizer.CurrentCultureName}.jpg")`*/}
+        {/*									  : `url("7/ca/destiny/products/forsaken/legendaryed_buy_cover_${Localizer.CurrentCultureName}.jpg")`*/}
+        {/*				 }}*/}
+        {/*			/>*/}
+        {/*		</div>*/}
+        {/*		<div className={styles.shadowkeepBuyDescription}>*/}
+        {/*			<h1 className={styles.editionTitle}>*/}
+        {/*				<span className={styles.destinyTitle}>{Localizer.Shadowkeep.DestinyBuyTItleIntro}</span>*/}
+        {/*				<span>*/}
+        {/*					{*/}
+        {/*						this.state.forsakenIsShowing*/}
+        {/*						? Localizer.Destiny.ForsakenPackTitle*/}
+        {/*						: Localizer.Destiny.buyFlowLegendaryEditionTitle*/}
+        {/*					}*/}
+        {/*				</span>*/}
+        {/*			</h1>*/}
+        {/*			{(!ConfigUtils.SystemStatus("LegendaryEditionEnabled") && !this.state.forsakenIsShowing) &&*/}
+        {/*			<Button size={BasicSize.Medium} buttonType={"disabled"}>{Localizer.bungierewards.ComingSoon_NAME}</Button>*/}
+        {/*			}*/}
+        {/*			{((ConfigUtils.SystemStatus("LegendaryEditionEnabled") && !this.state.forsakenIsShowing) || this.state.forsakenIsShowing) &&*/}
+        {/*			<Button*/}
+        {/*				className={styles.preorderButton}*/}
+        {/*				onClick={() => this.onClickStoreItem(buttonSkuTag)}*/}
+        {/*				analyticsId={buttonSkuTag}*/}
+        {/*			>*/}
+        {/*				{Localizer.Destiny.ForsakenLearnMore}*/}
+        {/*			</Button>*/}
+        {/*			}*/}
+        {/*		</div>*/}
+        {/*	</div>*/}
+        {/*</div>*/}
 
         <div className={styles.mediaSection}>
           <div className={styles.mediaContent}>

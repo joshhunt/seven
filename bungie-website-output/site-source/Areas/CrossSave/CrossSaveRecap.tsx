@@ -1,6 +1,8 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
+import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
 import { BungieMembershipType, DestinyGameVersions } from "@Enum";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
@@ -157,54 +159,7 @@ class CrossSaveRecap extends React.Component<
             </p>
           </GridCol>
         </Grid>
-        <Grid strictMode={true}>
-          <GridCol
-            cols={3}
-            pico={12}
-            tiny={12}
-            mobile={9}
-            medium={6}
-            large={4}
-            className={styles.centerWhenSmall}
-          >
-            <CrossSaveAccountCard
-              flowState={flowState}
-              membershipType={flowState.primaryMembershipType}
-              hideAccountInfo={true}
-              showCharacterOrigin={true}
-              headerOverride={
-                <CrossSaveCardHeader>
-                  <h3>{Localizer.Crosssave.CharactersHeader}</h3>
-                </CrossSaveCardHeader>
-              }
-            />
-          </GridCol>
-          <GridCol
-            cols={3}
-            pico={12}
-            tiny={12}
-            mobile={9}
-            medium={6}
-            large={4}
-            className={styles.centerWhenSmall}
-          >
-            {clan && (
-              <CrossSaveAccountCard
-                flowState={flowState}
-                membershipType={flowState.primaryMembershipType}
-                hideAccountInfo={true}
-                hideCharacters={true}
-                headerOverride={
-                  <CrossSaveCardHeader>
-                    <h3>{Localizer.Crosssave.ClanHeader}</h3>
-                  </CrossSaveCardHeader>
-                }
-              >
-                <CrossSaveClanCard clan={clan} />
-              </CrossSaveAccountCard>
-            )}
-          </GridCol>
-        </Grid>
+
         <Grid>
           <GridCol cols={12}>
             <p className={styles.connectedAccounts}>
@@ -212,6 +167,7 @@ class CrossSaveRecap extends React.Component<
             </p>
           </GridCol>
         </Grid>
+
         <Grid strictMode={true}>
           {pairableMembershipTypes.map((mt) => (
             <GridCol
@@ -302,6 +258,73 @@ class CrossSaveRecap extends React.Component<
           ))}
           <br />
         </Grid>
+        <Grid>
+          <GridCol cols={12}>
+            <p className={styles.connectedAccounts}>
+              {Localizer.Crosssave.CharactersUppercaseHeader}
+            </p>
+          </GridCol>
+        </Grid>
+        <Grid strictMode={true}>
+          <GridCol
+            cols={3}
+            pico={12}
+            tiny={12}
+            mobile={9}
+            medium={6}
+            large={4}
+            className={styles.centerWhenSmall}
+          >
+            <CrossSaveAccountCard
+              flowState={flowState}
+              membershipType={flowState.primaryMembershipType}
+              hideAccountInfo={true}
+              showCharacterOrigin={true}
+              headerOverride={
+                <CrossSaveCardHeader>
+                  <h3>{Localizer.Crosssave.CharactersHeader}</h3>
+                </CrossSaveCardHeader>
+              }
+            />
+          </GridCol>
+          <GridCol
+            cols={3}
+            pico={12}
+            tiny={12}
+            mobile={9}
+            medium={6}
+            large={4}
+            className={styles.centerWhenSmall}
+          >
+            {clan && (
+              <CrossSaveAccountCard
+                flowState={flowState}
+                membershipType={flowState.primaryMembershipType}
+                hideAccountInfo={true}
+                hideCharacters={true}
+                headerOverride={
+                  <CrossSaveCardHeader>
+                    <h3>{Localizer.Crosssave.ClanHeader}</h3>
+                  </CrossSaveCardHeader>
+                }
+              >
+                <CrossSaveClanCard clan={clan} />
+              </CrossSaveAccountCard>
+            )}
+          </GridCol>
+        </Grid>
+        {/*<Grid>
+					<GridCol cols={12}>
+						<p className={styles.connectedAccounts}>{Localizer.Crosssave.EntitlementsHeader}</p>
+					</GridCol>
+				</Grid>
+				<Grid>
+					<GridCol cols={12}>
+						<EntitlementsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
+						<hr />
+						<SeasonsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
+					</GridCol>
+				</Grid>*/}
         <Grid>
           <GridCol cols={12}>
             <div className={styles.deactivateButton}>

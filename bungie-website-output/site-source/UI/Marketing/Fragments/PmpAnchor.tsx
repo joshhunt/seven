@@ -1,21 +1,9 @@
-import { PmpAnchorFragment$key } from "@UI/Marketing/Fragments/__generated__/PmpAnchorFragment.graphql";
+import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
+import { BnetStackPmpAnchor } from "Generated/contentstack-types";
 import React from "react";
-import { graphql, useFragment } from "react-relay";
 
-interface Props {
-  $key: PmpAnchorFragment$key;
-}
+type Props = DataReference<"pmp_anchor", BnetStackPmpAnchor>;
 
-export const PmpAnchor: React.FC<Props> = ({ $key }) => {
-  const data = useFragment(
-    graphql`
-      fragment PmpAnchorFragment on PmpAnchor {
-        __typename
-        title
-      }
-    `,
-    $key
-  );
-
+export const PmpAnchor: React.FC<Props> = ({ data }) => {
   return <a id={data?.title} />;
 };
