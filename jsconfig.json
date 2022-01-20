@@ -21,9 +21,6 @@
       "@modules/*": [
         "./bungie-website-output/site-source/modules/*"
       ],
-      "@node_modules/*": [
-        "./bungie-website-output/site-source/node_modules/*"
-      ],
       "@rich-text-types/*": [
         "./bungie-website-output/site-source/rich-text-types/*"
       ],
