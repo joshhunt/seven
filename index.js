@@ -1,9 +1,10 @@
 const axios = require("axios");
 const pathLib = require("path");
 const fs = require("fs-extra");
-const unpackFromHtml = require("./unpack-website");
+const { unpackFromHtml, tryPrettier } = require("./unpack-website");
 const extractRoutes = require("./extractRoutes");
 const notify = require("./notify");
+const prettier = require("prettier");
 
 const BASE_URL = "https://www.bungie.net/7/en/Destiny/NewLight";
 
@@ -26,6 +27,7 @@ async function main() {
   await unpackFromHtml(bungieHtml);
 
   console.log("Writing index.html");
+  const prettyHtml = tryPrettier("index.html", bungieHtml);
   await fs.writeFile(localHtmlFilePath, bungieHtml);
 
   console.log("Extracting routes");

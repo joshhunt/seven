@@ -210,4 +210,4 @@ async function unpackFromHtml(htmlPage) {
   await writeJSConfig();
 }
 
-module.exports = unpackFromHtml;
+module.exports = { unpackFromHtml, tryPrettier };
