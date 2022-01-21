@@ -168,7 +168,7 @@ function treeifyPathList(paths) {
   const tree = {};
   for (const p of pathList) {
     const path = p.split('/');
-    _.set(tree, path, path.pop());
+    _.set(tree, path, false);
   }
   return tree;
 }
@@ -177,10 +177,16 @@ function printTree(tree, indent = 0) {
   let didFirst = false;
   return Object.entries(tree)
     .map(([segment, children]) => {
-      let ret = `${'⠀⠀'.repeat(indent)}${indent === 0 ? '' : didFirst ? '⠀⠀•' : '└•'} ${segment}`;
-      if (typeof children === 'object') {
-        ret += '\n' + printTree(children, indent + 1);
+      let ret = `${'⠀⠀'.repeat(indent)}${indent === 0 ? '' : didFirst ? '⠀⠀•' : '└⠀•'} ${segment}`;
+
+      while (typeof children === 'object' && Object.keys(children).length === 1) {
+        const childKey = Object.keys(children)[0];
+        ret += '/' + childKey;
+        children = children[childKey];
       }
+
+      if (typeof children === 'object') ret += '\n' + printTree(children, indent + 1);
+
       didFirst = true;
       return ret;
     })
