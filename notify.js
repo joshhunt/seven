@@ -110,7 +110,9 @@ async function notify(_currentRoutes) {
 
     let filesIncluded = 0;
 
-    for (const file of files) {
+    const filesTreeText = printTree(treeifyPathList(files)).split("\n");
+
+    for (const file of filesTreeText) {
       if (fieldBody) {
         fieldBody += "\n";
       }
@@ -160,3 +162,40 @@ async function notify(_currentRoutes) {
 }
 
 module.exports = notify;
+
+function treeifyPathList(paths) {
+  const pathList = Array.isArray(paths) ? paths : paths.split("\n");
+  const tree = {};
+  for (const p of pathList) {
+    const path = p.split("/");
+    _.set(tree, path, false);
+  }
+  return tree;
+}
+
+function printTree(tree, indent = 0) {
+  let didFirst = false;
+  return Object.entries(tree)
+    .map(([segment, children]) => {
+      const bullet = indent % 2 ? "◦" : "•";
+      let ret = `${"⠀⠀".repeat(indent)}${
+        indent === 0 ? "" : didFirst ? "⠀⠀" : "└⠀"
+      }${bullet} ${segment}`;
+
+      while (
+        typeof children === "object" &&
+        Object.keys(children).length === 1
+      ) {
+        const childKey = Object.keys(children)[0];
+        ret += "/" + childKey;
+        children = children[childKey];
+      }
+
+      if (typeof children === "object")
+        ret += "\n" + printTree(children, indent + 1);
+
+      didFirst = true;
+      return ret;
+    })
+    .join("\n");
+}
