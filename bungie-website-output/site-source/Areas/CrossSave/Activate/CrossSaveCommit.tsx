@@ -1,4 +1,6 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
+import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
 import { Responsive } from "@Boot/Responsive";
 import { DataStore } from "@bungie/datastore";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
@@ -18,6 +20,7 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Spinner } from "@UI/UIKit/Controls/Spinner";
+import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
@@ -371,42 +374,7 @@ class CrossSaveCommit extends React.Component<
             flowState={flowState}
             membershipType={membershipType}
             showSilver={true}
-          >
-            <div className={styles.sticksToEnd}>
-              <div className={styles.seasonsTitle}>
-                {Localizer.Crosssave.OwnedSeasonsHeader}
-              </div>
-              <div className={styles.seasonsContainer}>
-                {seasonsOwnedRendered || noSeasonsRendered}
-              </div>
-              <div className={styles.entitlementsTitle}>
-                {Localizer.Crosssave.PlatformEntitlementsHeading}
-              </div>
-              <div className={styles.entitlementsContainer}>
-                {entitlementsOwnedRendered}
-
-                {
-                  /* Check if a user has any of the above entitlements, since it is the closest way to guess whether they have access to The Red War or not */
-                  hasEntitlements && (
-                    <div className={styles.entitlementTag}>
-                      {Localizer.Format(Localizer.Crosssave.OwnedLabel, {
-                        platformName:
-                          Localizer.Crosssave[Globals.DestinyGameVersions[1]],
-                      })}
-                    </div>
-                  )
-                }
-
-                {!hasEntitlements && (
-                  <div
-                    className={classNames(styles.none, styles.entitlementTag)}
-                  >
-                    {Localizer.Crosssave.NoEntitlements}
-                  </div>
-                )}
-              </div>
-            </div>
-          </CrossSaveAccountCard>
+          />
         </div>
       );
     });
@@ -554,6 +522,12 @@ class CrossSaveCommit extends React.Component<
             </CrossSaveStaggerPose>
           </div>
         </div>
+
+        {/*<GridCol cols={12}>
+					<EntitlementsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
+					<hr />
+					<SeasonsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
+				</GridCol>*/}
 
         <CrossSaveStaggerPose index={2}>
           <StaggerWrapper>

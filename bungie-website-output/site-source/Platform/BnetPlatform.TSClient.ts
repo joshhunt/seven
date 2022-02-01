@@ -145,6 +145,12 @@ export declare namespace User {
     displayName: string;
   }
 
+  export interface UserNameEditResponse {
+    bungieGlobalDisplayName: string;
+
+    bungieGlobalDisplayNameCode?: number;
+  }
+
   export interface DestinyEmblemSourceRequest {
     MembershipType: Globals.BungieMembershipType;
 
@@ -19561,7 +19567,7 @@ class UserServiceInternal {
     input: User.UserNameEditRequest,
     optionalQueryAppend?: string,
     clientState?: any
-  ): Promise<boolean> =>
+  ): Promise<User.UserNameEditResponse> =>
     ApiIntermediary.doPostRequest(
       `/User/ChangeBungieName/`,
       [],

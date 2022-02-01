@@ -1,8 +1,12 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/AccountComponents/FriendsImport.module.scss";
+import { BungieFriendsDataStore } from "@Areas/User/AccountComponents/Internal/BungieFriends/BungieFriendsDataStore";
+import { FriendInviteThrottleQueue } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/FriendInviteThrottleQueue";
 import { FriendsImportUtils } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/FriendsImportUtils";
+import { PlatformFriendsDataStore } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/PlatformFriendsDataStore";
 import { PlatformFriendsList } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/PlatformFriendsList";
 import { PlatformFriendsPager } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/PlatformFriendsPager";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -11,17 +15,12 @@ import { PlatformErrorCodes, PlatformFriendType } from "@Enum";
 import { Friends, Platform } from "@Platform";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Spinner } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CgChevronDown } from "react-icons/cg";
-import { ConvertToPlatformError } from "../../../../../Platform/ApiIntermediary";
-import { Modal } from "../../../../../UI/UIKit/Controls/Modal/Modal";
-import { ActionSuccessModal } from "../ActionSuccessModal";
-import { BungieFriendsDataStore } from "../BungieFriends/BungieFriendsDataStore";
-import { FriendInviteThrottleQueue } from "./FriendInviteThrottleQueue";
-import { PlatformFriendsDataStore } from "./PlatformFriendsDataStore";
 
 interface LinkedPlatformExpanderProps {
   title: string;
@@ -89,6 +88,45 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
 
     updateOpenPlatformList(updatedPlatformList);
   };
+
+  const [availablePlatformFriends, setAvailablePlatformFriends] = useState(
+    false
+  );
+
+  const hasAvailablePlatformFriends = () => {
+    let availablePlatformFriendsCount = 0;
+
+    if (friendsResponse?.platformFriends?.length > 0) {
+      friendsResponse.platformFriends.forEach((friend, i) => {
+        if (
+          FriendsImportUtils.hasBungieAccount(friend) &&
+          !FriendsImportUtils.isPendingFriend(
+            bungieFriendsData.pendingRequests,
+            bungieFriendsData.outgoingRequests,
+            friend
+          ) &&
+          !FriendsImportUtils.isAlreadyFriend(
+            bungieFriendsData.friends,
+            friend
+          ) &&
+          !platformFriendsData?.recentlySentMembershipIds?.includes(
+            friend?.bungieNetMembershipId
+          ) &&
+          !platformFriendsData?.recentlyCanceledMembershipIds?.includes(
+            friend?.bungieNetMembershipId
+          )
+        ) {
+          availablePlatformFriendsCount++;
+        }
+      });
+    }
+
+    setAvailablePlatformFriends(availablePlatformFriendsCount > 0);
+  };
+
+  useEffect(() => {
+    hasAvailablePlatformFriends();
+  }, [bungieFriendsData, platformFriendsData]);
 
   const inviteAll = async (platformFriends: Friends.PlatformFriend[]) => {
     //empty the error list we are retrying
@@ -220,18 +258,19 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
       />
       {openPlatformList.includes(linkedPlatform) && !needsReauth && (
         <>
-          {ConfigUtils.SystemStatus("PlatformFriendBulkImporter") && (
-            <div className={styles.batchAddHeader}>
-              <h3>{friendsLoc.BungieAccounts}</h3>
-              <Button
-                buttonType={"text"}
-                className={styles.inviteAllButton}
-                onClick={() => inviteAll(friendsResponse?.platformFriends)}
-              >
-                {friendsLoc.InviteAllOnThisPage}
-              </Button>
-            </div>
-          )}
+          {ConfigUtils.SystemStatus("PlatformFriendBulkImporter") &&
+            availablePlatformFriends && (
+              <div className={styles.batchAddHeader}>
+                <h3>{friendsLoc.BungieAccounts}</h3>
+                <Button
+                  buttonType={"text"}
+                  className={styles.inviteAllButton}
+                  onClick={() => inviteAll(friendsResponse?.platformFriends)}
+                >
+                  {friendsLoc.InviteAllOnThisPage}
+                </Button>
+              </div>
+            )}
           <PlatformFriendsList platform={linkedPlatform} />
           <PlatformFriendsPager platform={linkedPlatform} />
         </>

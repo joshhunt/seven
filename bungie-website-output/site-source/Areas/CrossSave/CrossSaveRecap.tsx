@@ -313,7 +313,8 @@ class CrossSaveRecap extends React.Component<
             )}
           </GridCol>
         </Grid>
-        {/*<Grid>
+        {/*
+				<Grid>
 					<GridCol cols={12}>
 						<p className={styles.connectedAccounts}>{Localizer.Crosssave.EntitlementsHeader}</p>
 					</GridCol>
@@ -324,7 +325,8 @@ class CrossSaveRecap extends React.Component<
 						<hr />
 						<SeasonsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
 					</GridCol>
-				</Grid>*/}
+				</Grid>
+				*/}
         <Grid>
           <GridCol cols={12}>
             <div className={styles.deactivateButton}>

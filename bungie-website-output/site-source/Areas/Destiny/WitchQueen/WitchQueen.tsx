@@ -176,6 +176,7 @@ const WitchQueen: React.FC = () => {
                     }
                   }
                   caption
+                  video_id
                 }
               }
             }
@@ -330,6 +331,23 @@ const WitchQueen: React.FC = () => {
                     {image_and_text_blocks?.map((blockObj, j: number) => {
                       const isFlexReverse = j % 2 !== 0;
 
+                      const screenshotsInSection = image_and_text_blocks.filter(
+                        (b) => !b.video_id
+                      );
+                      const screenshot = imageFromConnection(
+                        blockObj.screenshot_imgConnection
+                      )?.url;
+                      let screenshotIndex = screenshotsInSection.findIndex(
+                        (s) =>
+                          screenshot &&
+                          screenshot ===
+                            imageFromConnection(s.screenshot_imgConnection)?.url
+                      );
+
+                      if (screenshotIndex === -1) {
+                        screenshotIndex = undefined;
+                      }
+
                       return (
                         <WQFlexInfoImgBlock
                           key={j}
@@ -338,14 +356,12 @@ const WitchQueen: React.FC = () => {
                           thumbnail={WQImgUrlFromQueryProp(
                             blockObj?.thumbnail_imgConnection
                           )}
-                          screenshotsInSection={image_and_text_blocks.map(
-                            (block) =>
-                              WQImgUrlFromQueryProp(
-                                block?.screenshot_imgConnection
-                              )
+                          screenshotsInSection={screenshotsInSection.map((s) =>
+                            WQImgUrlFromQueryProp(s?.screenshot_imgConnection)
                           )}
-                          screenshotIndex={j}
+                          screenshotIndex={screenshotIndex}
                           direction={isFlexReverse ? "reverse" : "normal"}
+                          videoId={blockObj?.video_id || undefined}
                           caption={blockObj?.caption}
                         />
                       );

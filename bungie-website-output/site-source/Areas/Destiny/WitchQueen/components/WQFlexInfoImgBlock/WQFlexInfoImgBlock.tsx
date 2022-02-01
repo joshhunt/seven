@@ -14,6 +14,7 @@ interface WQFlexInfoImgBlockProps {
   screenshotIndex: number;
   direction: "normal" | "reverse";
   caption: string;
+  videoId?: string;
 }
 
 export const WQFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
@@ -40,7 +41,8 @@ export const WQFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
         }}
         thumbnail={props.thumbnail}
         screenshots={props.screenshotsInSection}
-        screenshotIndex={props.screenshotIndex}
+        screenshotIndex={!props.videoId ? props.screenshotIndex : undefined}
+        videoId={props.videoId}
         caption={props.caption}
       />
     </div>

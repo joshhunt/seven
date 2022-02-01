@@ -4,7 +4,8 @@ import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import React from "react";
 import { Route } from "react-router";
-import { RouteComponentProps } from "react-router-dom";
+import { RouteComponentProps, Switch } from "react-router-dom";
+import { Error404 } from "../../UI/Errors/Error404";
 import News from "./News";
 
 class NewsArea extends React.Component<RouteComponentProps> {
@@ -17,6 +18,7 @@ class NewsArea extends React.Component<RouteComponentProps> {
     return (
       <React.Fragment>
         <SwitchWithErrors>
+          <Route component={Error404} />
           <AsyncRoute
             path={indexPath}
             exact={true}

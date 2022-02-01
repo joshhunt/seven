@@ -30,9 +30,9 @@ export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
     UrlUtils.GetUrlAction(location)
   );
   const pageQueryToNumber = Number(params.get("page"));
-  const [page, setPage] = useState(1);
-  const hasPrevious = page - 1 >= 1;
-  const hasNext = page + 1 <= Math.ceil(total / articlesPerPage);
+  const [page, setPage] = useState(pageQueryToNumber || 1);
+  const hasPrevious = page > 1;
+  const hasNext = page < Math.ceil(total / articlesPerPage);
 
   const BasicNewsQuery = (currentPage: number) => {
     return ContentStackClient()
@@ -90,10 +90,13 @@ export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
 
   return (
     <div className={styles.articleListAndPager}>
+      {/* Article List */}
       {articles?.map((article: any, i: number) => (
         <NewsPreview key={i} articleData={article} />
       ))}
-      {(hasNext || hasPrevious) && (
+
+      {/* Pager */}
+      {total > articlesPerPage && (
         <div className={styles.container}>
           <div
             className={classNames(
@@ -109,17 +112,21 @@ export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
           >
             {Localizer.usertools.previouspage}
           </div>
-          {Array(Math.ceil(total / articlesPerPage)).map((item, i) => {
-            return (
-              <div
-                key={i + 1}
-                className={styles.pagerButton}
-                onClick={() => changePage(i + 1)}
-              >
-                {(i + 1).toString()}
-              </div>
-            );
-          })}
+          {Array.apply(null, Array(Math.ceil(total / articlesPerPage))).map(
+            (item: null, i: number) => {
+              return (
+                <div
+                  key={i + 1}
+                  className={classNames(styles.pagerButton, {
+                    [styles.current]: i + 1 === (pageQueryToNumber || 1),
+                  })}
+                  onClick={() => changePage(i + 1)}
+                >
+                  {(i + 1).toString()}
+                </div>
+              );
+            }
+          )}
           <div
             className={classNames(
               styles.pagerButton,

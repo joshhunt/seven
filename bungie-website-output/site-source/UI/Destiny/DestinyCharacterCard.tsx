@@ -65,9 +65,7 @@ export class DestinyCharacterCard extends React.Component<
             <div className={styles.class}>
               {classDef.genderedClassNamesByGenderHash[character.genderHash]}
             </div>
-            <div className={styles.about}>
-              {raceDef.genderedRaceNamesByGenderHash[character.genderHash]}
-            </div>
+            <div className={styles.about}>{raceDef.displayProperties.name}</div>
           </div>
           <div className={styles.stats}>
             <div className={styles.light}>
