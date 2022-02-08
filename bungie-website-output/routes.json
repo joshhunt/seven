@@ -266,17 +266,17 @@
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
-    "action": "Analyze",
+    "action": "Anniversary",
     "params": {},
-    "path": "/7/en/Direct/Analyze"
+    "path": "/7/en/Direct/Anniversary"
   },
   {
     "areaName": "Direct",
     "areaObjectName": "Direct",
     "componentImportPath": "@Areas/Direct/DirectArea",
-    "action": "Anniversary",
+    "action": "Circles",
     "params": {},
-    "path": "/7/en/Direct/Anniversary"
+    "path": "/7/en/Direct/Circles"
   },
   {
     "areaName": "Direct",

@@ -16,8 +16,8 @@ class DirectArea extends React.Component<IDirectRouterProps> {
           />
 
           <AsyncRoute
-            path={RouteDefs.Areas.Direct.getAction("Analyze").path}
-            component={() => import("./BeyondLightArg/BeyondLightARG")}
+            path={RouteDefs.Areas.Direct.getAction("Circles").path}
+            component={() => import("./WQArg/WQArg")}
           />
 
           <AsyncRoute

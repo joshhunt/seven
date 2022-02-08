@@ -135,7 +135,7 @@ export class RouteDefs {
       ),
       routes: [
         (area) => new ActionRoute(area, "Video", { path: ":videoContentId" }),
-        (area) => new ActionRoute(area, "Analyze"),
+        (area) => new ActionRoute(area, "Circles"),
         (area) => new ActionRoute(area, "RaidRace"),
         (area) => new ActionRoute(area, "Rewards"),
         (area) => new ActionRoute(area, "DestinyShowcase"),
