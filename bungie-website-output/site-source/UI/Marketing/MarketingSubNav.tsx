@@ -19,7 +19,7 @@ export type NavPrimaryColors =
   | "splicerBlue"
   | "queenPurple"
   | "darkBlue";
-export type NavAccentColors = "gold" | "teal" | "s11green";
+export type NavAccentColors = "gold" | "teal" | "s11green" | "hotPink";
 
 interface IMarketingSubNavProps {
   /** The anchors from which we're creating the menu */

@@ -19,7 +19,8 @@ export type ButtonTypes =
   | "green"
   | "teal"
   | "slateblue"
-  | "queenGreen";
+  | "queenGreen"
+  | "hotPink";
 
 export type ButtonProps = IButtonProps & Partial<DefaultButtonProps>;
 

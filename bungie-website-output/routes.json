@@ -181,6 +181,14 @@
     "areaName": "Destiny",
     "areaObjectName": "Destiny",
     "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "FreeToPlay",
+    "params": {},
+    "path": "/7/en/Destiny/FreeToPlay"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
     "action": "GameHistory",
     "params": {},
     "path": "/7/en/Destiny/GameHistory"

@@ -16,6 +16,7 @@ class DestinyArea extends React.Component<RouteComponentProps> {
     const buyFlowPath = RouteDefs.Areas.Destiny.getAction("Buy").path;
     const buyDetailPath = RouteDefs.Areas.Destiny.getAction("BuyDetail").path;
     const newLightPath = RouteDefs.Areas.Destiny.getAction("NewLight").path;
+    const freeToPlayPath = RouteDefs.Areas.Destiny.getAction("FreeToPlay").path;
     const newLightUrl = RouteDefs.Areas.Destiny.getAction("NewLight").resolve()
       .url;
     const forsakenPath = RouteDefs.Areas.Destiny.getAction("Forsaken").path;
@@ -40,6 +41,14 @@ class DestinyArea extends React.Component<RouteComponentProps> {
             component={() =>
               import(
                 "@Areas/Destiny/DestinyNewLight" /* webpackChunkName: "Destiny-NewLight" */
+              )
+            }
+          />
+          <AsyncRoute
+            path={freeToPlayPath}
+            component={() =>
+              import(
+                "@Areas/Destiny/FreeToPlay/FreeToPlay" /* webpackChunkName: "Destiny-FreeToPlay" */
               )
             }
           />

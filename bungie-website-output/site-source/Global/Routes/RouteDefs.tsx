@@ -87,6 +87,7 @@ export class RouteDefs {
           }),
         (area) => new ActionRoute(area, "Companion"),
         (area) => new ActionRoute(area, "NewLight"),
+        (area) => new ActionRoute(area, "FreeToPlay"),
         (area) => new ActionRoute(area, "Forsaken"),
         (area) => new ActionRoute(area, "Shadowkeep"),
         (area) => new ActionRoute(area, "SeasonPass"),

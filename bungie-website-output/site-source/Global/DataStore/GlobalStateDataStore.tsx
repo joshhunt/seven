@@ -57,8 +57,6 @@ class GlobalStateDataStoreInternal extends DataStore<
 
   public Provider: React.Provider<IGlobalState>;
   public Consumer: React.Consumer<IGlobalState>;
-  private static readonly CoreSettingsLocalStorageKey =
-    "LastFetchedCoreSettings";
 
   private isInitialized = false;
 
@@ -97,19 +95,6 @@ class GlobalStateDataStoreInternal extends DataStore<
       };
     },
     /**
-     * Update CoreSettings from the value stored in localStorage, for faster loading
-     */
-    setSettingsFromStorage: () => {
-      const stored = GlobalStateDataStoreInternal.fetchStoredCoreSettings();
-      if (stored) {
-        return {
-          coreSettings: stored,
-        };
-      }
-
-      return {};
-    },
-    /**
      * Reload settings from the server
      */
     refreshSettings: async () => {
@@ -126,9 +111,6 @@ class GlobalStateDataStoreInternal extends DataStore<
         overrideSystemNames.forEach((systemName) => {
           coreSettings.systems[systemName] = userSystemOverrides[systemName];
         });
-
-        // Store settings in localstorage to make the site start faster the next time
-        GlobalStateDataStoreInternal.storeCoreSettings(coreSettings);
 
         return {
           coreSettings,
@@ -250,12 +232,7 @@ class GlobalStateDataStoreInternal extends DataStore<
       true
     );
 
-    const didLoadFromStorage = !!(await this.actions.setSettingsFromStorage()
-      .async);
-
-    if (!didLoadFromStorage) {
-      await this.actions.refreshSettings().async;
-    }
+    await this.actions.refreshSettings().async;
 
     // This really shouldn't go here, but until the death of GlobalStateDataStore, it needs to.
     InitializeContentStackClient();
@@ -263,8 +240,6 @@ class GlobalStateDataStoreInternal extends DataStore<
     await this.refreshUserAndRelatedData(false);
 
     this.actions.updateLoaded(true);
-
-    this.actions.refreshSettings();
   }
 
   protected getObserversToUpdate(data: Partial<IGlobalState>) {
@@ -288,27 +263,6 @@ class GlobalStateDataStoreInternal extends DataStore<
 
     this.Provider = Provider;
     this.Consumer = Consumer;
-  }
-
-  private static storeCoreSettings(settings: Models.CoreSettingsConfiguration) {
-    const stringified = JSON.stringify(settings);
-
-    LocalStorageUtils.setItem(
-      GlobalStateDataStoreInternal.CoreSettingsLocalStorageKey,
-      stringified
-    );
-  }
-
-  private static fetchStoredCoreSettings() {
-    const stringified = LocalStorageUtils.getItem(
-      GlobalStateDataStoreInternal.CoreSettingsLocalStorageKey
-    );
-
-    if (stringified) {
-      return JSON.parse(stringified) as Models.CoreSettingsConfiguration;
-    }
-
-    return null;
   }
 }
 
