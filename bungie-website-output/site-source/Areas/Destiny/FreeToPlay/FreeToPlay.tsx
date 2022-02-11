@@ -13,6 +13,8 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
+import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -346,9 +348,10 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
         accentColor={"hotPink"}
         buttonProps={{
           children: sub_nav?.btn_text,
-          url: RouteHelper.DestinyBuyDetail({
-            productFamilyTag: "PlayForFree",
-          }),
+          onClick: () =>
+            DestinySkuSelectorModal.show({
+              skuTag: DestinySkuTags.NewLightDetail,
+            }),
           buttonType: "hotPink",
         }}
         withGutter={true}
@@ -554,7 +557,9 @@ export const FreeToPlayBuyBtn: React.FC<{
       children={btn_text}
       className={classNames(styles.buyBtn, className)}
       buttonType={"hotPink"}
-      url={RouteHelper.DestinyBuyDetail({ productFamilyTag: "PlayForFree" })}
+      onClick={() =>
+        DestinySkuSelectorModal.show({ skuTag: DestinySkuTags.NewLightDetail })
+      }
     />
   );
 };
