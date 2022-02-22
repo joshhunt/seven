@@ -42,6 +42,7 @@ export const CrossSaveValidGameVersions: DestinyGameVersions[] = [
   DestinyGameVersions.Forsaken,
   DestinyGameVersions.BeyondLight,
   DestinyGameVersions.TheWitchQueen,
+  DestinyGameVersions.Anniversary30th,
 ];
 
 class CrossSaveFlowStateDataStoreInternal extends DataStore<

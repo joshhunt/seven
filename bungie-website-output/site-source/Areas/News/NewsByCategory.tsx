@@ -9,6 +9,7 @@ import { useHistory, useLocation } from "react-router";
 import { Logger } from "../../Global/Logger";
 import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
+import TwitterFeed from "../../UI/Content/TwitterFeed";
 import { EnumUtils } from "../../Utilities/EnumUtils";
 import { UrlUtils } from "../../Utilities/UrlUtils";
 import { NewsCategory } from "./News";
@@ -89,60 +90,63 @@ export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   };
 
   return (
-    <div className={styles.articleListAndPager}>
-      {/* Article List */}
-      {articles?.map((article: any, i: number) => (
-        <NewsPreview key={i} articleData={article} />
-      ))}
+    <div className={styles.pageContainer}>
+      <div className={styles.articleListAndPager}>
+        {/* Article List */}
+        {articles?.map((article: any, i: number) => (
+          <NewsPreview key={i} articleData={article} />
+        ))}
 
-      {/* Pager */}
-      {total > articlesPerPage && (
-        <div className={styles.container}>
-          <div
-            className={classNames(
-              styles.pagerButton,
-              { [styles.disabled]: !hasPrevious },
-              styles.prevNext
-            )}
-            onClick={() => {
-              if (hasPrevious) {
-                changePage(page - 1);
+        {/* Pager */}
+        {total > articlesPerPage && (
+          <div className={styles.container}>
+            <div
+              className={classNames(
+                styles.pagerButton,
+                { [styles.disabled]: !hasPrevious },
+                styles.prevNext
+              )}
+              onClick={() => {
+                if (hasPrevious) {
+                  changePage(page - 1);
+                }
+              }}
+            >
+              {Localizer.usertools.previouspage}
+            </div>
+            {Array.apply(null, Array(Math.ceil(total / articlesPerPage))).map(
+              (item: null, i: number) => {
+                return (
+                  <div
+                    key={i + 1}
+                    className={classNames(styles.pagerButton, {
+                      [styles.current]: i + 1 === (pageQueryToNumber || 1),
+                    })}
+                    onClick={() => changePage(i + 1)}
+                  >
+                    {(i + 1).toString()}
+                  </div>
+                );
               }
-            }}
-          >
-            {Localizer.usertools.previouspage}
-          </div>
-          {Array.apply(null, Array(Math.ceil(total / articlesPerPage))).map(
-            (item: null, i: number) => {
-              return (
-                <div
-                  key={i + 1}
-                  className={classNames(styles.pagerButton, {
-                    [styles.current]: i + 1 === (pageQueryToNumber || 1),
-                  })}
-                  onClick={() => changePage(i + 1)}
-                >
-                  {(i + 1).toString()}
-                </div>
-              );
-            }
-          )}
-          <div
-            className={classNames(
-              styles.pagerButton,
-              { [styles.disabled]: !hasNext },
-              styles.prevNext
             )}
-            onClick={() => {
-              if (hasNext) {
-                changePage(page + 1);
-              }
-            }}
-          >
-            {Localizer.usertools.nextpage}
+            <div
+              className={classNames(
+                styles.pagerButton,
+                { [styles.disabled]: !hasNext },
+                styles.prevNext
+              )}
+              onClick={() => {
+                if (hasNext) {
+                  changePage(page + 1);
+                }
+              }}
+            >
+              {Localizer.usertools.nextpage}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <TwitterFeed account={"/Bungie"} />
     </div>
   );
 };

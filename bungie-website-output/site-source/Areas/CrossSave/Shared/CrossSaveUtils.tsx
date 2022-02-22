@@ -353,4 +353,31 @@ export class CrossSaveUtils {
 
     return result;
   }
+
+  /**
+   * Returns all membershipType that are unlinked
+   * @param flowState
+   */
+  public static getUnLinkedPairableMembershipTypes(
+    flowState: ICrossSaveFlowState
+  ): BungieMembershipType[] {
+    const allMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
+      flowState
+    );
+
+    return allMembershipTypes
+      .filter((m) => {
+        if (
+          !flowState.linkedDestinyProfiles?.profiles?.find(
+            (p) => p.membershipType === m
+          ) &&
+          !flowState.linkedDestinyProfiles?.profilesWithErrors?.find(
+            (p) => p.infoCard.membershipType === m
+          )
+        ) {
+          return m;
+        }
+      })
+      ?.map((f) => f);
+  }
 }

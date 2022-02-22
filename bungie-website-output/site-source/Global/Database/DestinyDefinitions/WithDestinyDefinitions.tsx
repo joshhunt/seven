@@ -9,6 +9,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import React from "react";
 import {
   AllDefinitionsFetcherized,
@@ -71,6 +72,7 @@ export const withDestinyDefinitions = <
       this.state = {
         isLoading: DestinyDefinitions.state.isLoading,
         isLoaded: DestinyDefinitions.state.isLoaded,
+        locale: DestinyDefinitions.state.locale,
         receivedInitialState: false,
         indexedDBNotSupported: false,
       };
@@ -94,11 +96,15 @@ export const withDestinyDefinitions = <
         !this.state.indexedDBNotSupported &&
         !this.state.receivedInitialState
       ) {
+        const updatedLocale =
+          Localizer.CurrentCultureName !== DestinyDefinitions.state.locale;
+
         const loadedDefinitions = Object.keys(DestinyDefinitions.definitions);
 
-        const needsDefs = observerProps.types.some(
-          (defType) => loadedDefinitions.indexOf(defType) < 0
-        );
+        const needsDefs =
+          observerProps.types.some(
+            (defType) => loadedDefinitions.indexOf(defType) < 0
+          ) || updatedLocale;
 
         if (!needsDefs) {
           this.setState({
@@ -116,6 +122,7 @@ export const withDestinyDefinitions = <
             this.setState({
               ...data,
               receivedInitialState: true,
+              locale: Localizer.CurrentCultureName,
             });
           },
           observerProps,

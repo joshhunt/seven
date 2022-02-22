@@ -12,6 +12,7 @@ import * as React from "react";
 import styles from "./MarketingSubNav.module.scss";
 
 export type NavPrimaryColors =
+  | "lightgray"
   | "taupe"
   | "ash"
   | "purple"
@@ -19,7 +20,12 @@ export type NavPrimaryColors =
   | "splicerBlue"
   | "queenPurple"
   | "darkBlue";
-export type NavAccentColors = "gold" | "teal" | "s11green" | "hotPink";
+export type NavAccentColors =
+  | "gold"
+  | "teal"
+  | "s11green"
+  | "hotPink"
+  | "purple";
 
 interface IMarketingSubNavProps {
   /** The anchors from which we're creating the menu */

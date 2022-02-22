@@ -113,11 +113,11 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
       </GridCol>
       <Formik
         initialValues={{
-          displayName: globalStateData?.loggedInUser?.user?.displayName,
-          about: globalStateData?.loggedInUser?.user?.about,
-          statusText: globalStateData?.loggedInUser?.user?.statusText,
+          displayName: null,
+          about: null,
+          statusText: null,
           membershipId: globalStateData?.loggedInUser?.user?.membershipId,
-          locale: globalStateData?.loggedInUser?.user?.locale,
+          locale: null,
           emailAddress: globalStateData?.loggedInUser?.email,
           emailFlags: initialOptInValues,
         }}

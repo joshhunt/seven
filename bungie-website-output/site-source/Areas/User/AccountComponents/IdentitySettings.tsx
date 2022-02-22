@@ -45,9 +45,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
 
   const aboutMaxLength = 256;
   const [nameChangeStatus, setNameChangeStatus] = useState<NameChangeStatus>(
-    ConfigUtils.SystemStatus("AllowGlobalBungieDisplayNameEditing")
-      ? "canEdit"
-      : "locked"
+    "locked"
   );
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
@@ -66,23 +64,25 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   const checkGlobalNameEditable = () => {
-    if (bungieName?.bungieGlobalName) {
-      const userNameEditRequest: User.UserNameEditRequest = {
-        displayName: bungieName.bungieGlobalName,
-      };
+    if (ConfigUtils.SystemStatus("AllowGlobalBungieDisplayNameEditing")) {
+      if (bungieName?.bungieGlobalName) {
+        const userNameEditRequest: User.UserNameEditRequest = {
+          displayName: bungieName.bungieGlobalName,
+        };
 
-      Platform.UserService.ValidateBungieName(userNameEditRequest)
-        .then((result) => {
-          if (!result) {
-            setNameChangeStatus("locked");
-          }
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          if (e.errorCode === PlatformErrorCodes.ErrorNoAvailableNameChanges) {
-            setNameChangeStatus("locked");
-          }
-        });
+        Platform.UserService.ValidateBungieName(userNameEditRequest)
+          .then((result) => {
+            setNameChangeStatus(result ? "canEdit" : "locked");
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e: PlatformError) => {
+            if (
+              e.errorCode === PlatformErrorCodes.ErrorNoAvailableNameChanges
+            ) {
+              setNameChangeStatus("locked");
+            }
+          });
+      }
     }
   };
 

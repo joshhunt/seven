@@ -20,7 +20,7 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Spinner } from "@UI/UIKit/Controls/Spinner";
-import { GridCol } from "@UIKit/Layout/Grid/Grid";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
@@ -522,13 +522,13 @@ class CrossSaveCommit extends React.Component<
             </CrossSaveStaggerPose>
           </div>
         </div>
-
-        {/*<GridCol cols={12}>
-					<EntitlementsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
-					<hr />
-					<SeasonsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
-				</GridCol>*/}
-
+        {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
+          <div className={styles.entitlementTables}>
+            <EntitlementsTable flowState={flowState} />
+            <hr />
+            <SeasonsTable flowState={flowState} />
+          </div>
+        )}
         <CrossSaveStaggerPose index={2}>
           <StaggerWrapper>
             <StaggerItem>

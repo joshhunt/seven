@@ -133,28 +133,26 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                 }
                 itemSubtitle={
                   <span className={styles.appAuthContainer}>
+                    <span className={styles.appStatus}>
+                      {
+                        Localizer.AccountLinking[
+                          `${EnumUtils.getStringValue(
+                            app.authorizationStatus,
+                            AuthorizationStatus
+                          )}`
+                        ]
+                      }
+                    </span>
+                    {isAuthorized(app.authorizationStatus) && (
+                      <span className={styles.appExpires}>
+                        {getLocalizedDateString(
+                          app.authExpirationDate,
+                          "expire"
+                        )}
+                      </span>
+                    )}
                     <span className={styles.appApproved}>
                       {getLocalizedDateString(app.authorizationDate, "approve")}
-                    </span>
-                    <span>
-                      <span className={styles.appStatus}>
-                        {
-                          Localizer.AccountLinking[
-                            `${EnumUtils.getStringValue(
-                              app.authorizationStatus,
-                              AuthorizationStatus
-                            )}`
-                          ]
-                        }
-                      </span>
-                      {isAuthorized(app.authorizationStatus) && (
-                        <span className={styles.appExpires}>
-                          {getLocalizedDateString(
-                            app.authExpirationDate,
-                            "expire"
-                          )}
-                        </span>
-                      )}
                     </span>
                     <a
                       className={styles.appHistory}
@@ -180,9 +178,12 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                     unlink={(id: string) => {
                       removeApplicationAuthorization(id);
                     }}
-                    unlinked={appsUnlinked.includes(
+                    unlinkedRecently={appsUnlinked.includes(
                       app.applicationId.toString()
                     )}
+                    revoked={
+                      app.authorizationStatus === AuthorizationStatus.Revoked
+                    }
                     error={appsWithError.includes(app.applicationId.toString())}
                   />
                 }

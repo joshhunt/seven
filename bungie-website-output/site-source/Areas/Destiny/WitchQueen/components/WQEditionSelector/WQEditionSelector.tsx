@@ -73,11 +73,6 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
           );
 
         setSkuItems(skuItemsArr);
-
-        const collectorsSkuInfo = skuItemsArr.find(
-          (sku) => sku.skuTag === "witchqueencollectors"
-        );
-        setCollectorsSku(collectorsSkuInfo);
       }
     });
   };
@@ -161,35 +156,6 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
           />
         ))}
       </div>
-
-      <div
-        className={styles.collectorsEdition}
-        style={{ backgroundImage: ceBgImage }}
-      >
-        <div className={styles.sectionTopBorder} />
-        <div className={styles.ceFlexWrapper}>
-          <div className={styles.textContent}>
-            <h4>{collectorsSku?.edition}</h4>
-            <p
-              className={styles.blurb}
-              dangerouslySetInnerHTML={sanitizeHTML(collectorsSku?.bigblurb)}
-            />
-            <Button
-              url={collectorsSku?.relatedPage}
-              disabled={collectorsSku?.buyButtonDisabled}
-              className={styles.ceBtn}
-            >
-              {collectorsSku?.buttonLabel}
-            </Button>
-          </div>
-          <div
-            className={styles.ceImg}
-            style={{ backgroundImage: ceEditionImage }}
-          >
-            <div className={styles.aspectRatioBox} />
-          </div>
-        </div>
-      </div>
     </section>
   );
 };
@@ -251,7 +217,7 @@ const WQEditionDisplay: React.FC<IWQEditionDisplay> = (props) => {
         </Button>
         <p
           className={styles.blurb}
-          dangerouslySetInnerHTML={{ __html: bigblurb }}
+          dangerouslySetInnerHTML={sanitizeHTML(bigblurb)}
         />
       </div>
     </div>

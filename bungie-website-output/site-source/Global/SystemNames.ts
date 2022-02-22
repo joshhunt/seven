@@ -97,4 +97,5 @@ export const SystemNames = {
   PlatformFriendImporter: "PlatformFriendImporter",
   PlatformFriendBulkImporter: "PlatformFriendBulkImporter",
   AllowGlobalBungieDisplayNameEditing: "AllowGlobalBungieDisplayNameEditing",
+  CrossSaveEntitlementTables: "CrossSaveEntitlementTables",
 } as const;

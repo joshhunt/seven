@@ -15,16 +15,24 @@ interface WQFlexInfoImgBlockProps {
   direction: "normal" | "reverse";
   caption: string;
   videoId?: string;
+  //alt style show all boxes in a row like clickable thumbnails but has a text heading and blurb and has square-sized thumbs
+  isAltStyle: boolean;
 }
 
 export const WQFlexInfoImgBlock: React.FC<WQFlexInfoImgBlockProps> = (
   props
 ) => {
   const wrapperStyles: React.CSSProperties =
-    props.direction === "reverse" ? { flexDirection: "row-reverse" } : {};
+    props.direction === "reverse" && !props.isAltStyle
+      ? { flexDirection: "row-reverse" }
+      : {};
+
+  const wrapperClassName = props.isAltStyle
+    ? styles.flexInfoImgBlockOneLine
+    : styles.flexInfoImgBlock;
 
   return (
-    <div className={styles.flexInfoImgBlock} style={wrapperStyles}>
+    <div className={wrapperClassName} style={wrapperStyles}>
       <div
         className={classNames(styles.blurbWrapper, {
           [styles.reversed]: props.direction === "reverse",

@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { HTMLAttributes } from "react";
+import { BnetStackFile } from "../Generated/contentstack-types";
 
 export interface BasicImageConnection {
   readonly edges: ReadonlyArray<{
@@ -16,6 +17,39 @@ export const imageFromConnection = <T extends BasicImageConnection>(
   connection: T
 ) => {
   return connection?.edges?.[0]?.node ?? {};
+};
+
+export const bgImageFromConnection = (connection: BasicImageConnection) => {
+  const img = imageFromConnection(connection)?.url;
+
+  return img ? `url(${img})` : undefined;
+};
+
+export const responsiveBgImageFromConnection = (
+  desktopConnection: BasicImageConnection,
+  mobileConnection: BasicImageConnection,
+  mobile: boolean
+) => {
+  const img = imageFromConnection(mobile ? mobileConnection : desktopConnection)
+    ?.url;
+
+  return img ? `url(${img})` : undefined;
+};
+
+export const bgImageFromStackFile = (file: BnetStackFile) => {
+  const img = file?.url;
+
+  return img ? `url(${img})` : undefined;
+};
+
+export const responsiveBgImageFromStackFile = (
+  desktopFile: BnetStackFile,
+  mobileFile: BnetStackFile,
+  mobile: boolean
+) => {
+  const img = mobile ? mobileFile?.url : desktopFile?.url;
+
+  return img ? `url(${img})` : undefined;
 };
 
 // Due to lack of _content_type_uid field in generated typings, we have to manually add it :(

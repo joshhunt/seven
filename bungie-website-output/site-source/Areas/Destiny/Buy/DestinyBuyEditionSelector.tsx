@@ -26,7 +26,6 @@ interface IDestinyBuyEditionSelectorProps {
   buttonLabel: string;
   disclaimer?: string;
   collectorsEdition?: IDestinyProductDefinition;
-  strangerEdition?: IDestinyProductDefinition;
 }
 
 /**

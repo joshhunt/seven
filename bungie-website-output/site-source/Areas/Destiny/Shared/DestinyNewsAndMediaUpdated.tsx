@@ -53,6 +53,7 @@ interface IDestinyNewsAndMediaUpdatedProps
     tabBtn?: string;
     selectedTab?: string;
     sectionTitle?: string;
+    thumbnail?: string;
   };
 }
 
@@ -261,6 +262,7 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                           })}
                         >
                           <MediaButton
+                            classes={{ btnBg: this.props.classes?.thumbnail }}
                             videoId={a.detail}
                             thumbnail={a.thumbnail}
                             index={i}
@@ -299,6 +301,7 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                   {this.props.screenshots &&
                     this.props.screenshots.map((a, i) => (
                       <MediaButton
+                        classes={{ btnBg: this.props.classes?.thumbnail }}
                         key={i}
                         singleOrAllScreenshots={this.props.screenshots?.map(
                           (s) => s.detail
@@ -319,6 +322,7 @@ class DestinyNewsAndMediaUpdatedInternal extends React.Component<
                   {this.props.wallpapers &&
                     this.props.wallpapers.map((a, i) => (
                       <MediaButton
+                        classes={{ btnBg: this.props.classes?.thumbnail }}
                         key={i}
                         onClick={() => this.openInNewTab(a.detail)}
                         thumbnail={a.thumbnail}
@@ -428,7 +432,7 @@ const MediaButton = (props: IMediaButtonProps) => {
 
   return (
     <ClickableMediaThumbnail
-      classes={{ btnWrapper: buttonClasses }}
+      classes={{ btnWrapper: buttonClasses, btnBg: props.classes?.btnBg }}
       screenshotIndex={index}
       {...rest}
     >

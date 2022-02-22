@@ -65,6 +65,8 @@ export interface ManifestPayload {
   /** If true, loading is finished */
   isLoaded: boolean;
 
+  locale: string;
+
   /** If true, an error has occured */
   hasError?: boolean;
 }
@@ -77,6 +79,7 @@ export class DestinyDefinitionsObserver extends BroadcasterObserver<
 type ManifestResult = {
   isCurrent: boolean;
   manifest: Config.DestinyManifest;
+  locale: string;
 };
 
 /**
@@ -127,6 +130,7 @@ class DestinyDefinitionsInternal extends DataStore<
     super({
       isLoading: false,
       isLoaded: false,
+      locale: Localizer.CurrentCultureName,
     });
 
     this.worker.onerror = this.actions.setError;
@@ -244,12 +248,14 @@ class DestinyDefinitionsInternal extends DataStore<
   private async loadOrFetchDb(
     props: IDestinyDefinitionsObserverProps<DestinyDefinitionType>
   ) {
+    const localeUpdated = this.state.locale !== Localizer.CurrentCultureName;
+
     // Don't request types that have already been requested
     const filteredTypes = props.types.filter(
       (type) => !this.requestedTypes.includes(type)
     );
 
-    if (filteredTypes.length === 0) {
+    if (filteredTypes.length === 0 && !localeUpdated) {
       // All these types have already been requested!
 
       return;
@@ -370,7 +376,10 @@ class DestinyDefinitionsInternal extends DataStore<
    * Attempt to grab the DB from the user's browser. If it doesn't exist, or if it's old, fetch a new one.
    */
   private async loadManifest(): Promise<ManifestResult> {
-    if (this.cachedManifestResult) {
+    if (
+      this.cachedManifestResult &&
+      this.cachedManifestResult?.locale === Localizer.CurrentCultureName
+    ) {
       return this.cachedManifestResult;
     }
 
@@ -380,16 +389,19 @@ class DestinyDefinitionsInternal extends DataStore<
 
     let isCurrent = false;
 
+    const locale = Localizer.CurrentCultureName;
+
     const db = await DestinyDatabase;
 
     const manifestTable = db.table("manifest");
     if (manifestTable) {
       try {
         const existingVersion = await manifestTable.toCollection().first();
+
         isCurrent =
           existingVersion !== undefined &&
           manifest.version === existingVersion.version &&
-          Localizer.CurrentCultureName === existingVersion.locale;
+          locale === existingVersion.locale;
       } catch (e) {
         console.warn(e);
         // unable to get existing version - ignore
@@ -408,6 +420,7 @@ class DestinyDefinitionsInternal extends DataStore<
     const result = {
       isCurrent,
       manifest,
+      locale,
     };
 
     this.cachedManifestResult = result;

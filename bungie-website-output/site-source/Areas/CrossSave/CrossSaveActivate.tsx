@@ -4,7 +4,7 @@ import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
+import { Localizer, StringFetcher } from "@bungie/localization";
 import { Logger } from "@Global/Logger";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
@@ -130,6 +130,15 @@ class CrossSaveActivate extends React.Component<
         this.setState({
           flowState,
         });
+      })
+    );
+
+    this.subs.push(
+      StringFetcher.observe((stringFletcherPayload) => {
+        if (!stringFletcherPayload?.loaded) {
+          //there are new strings and definitions - reload the page completely
+          window.location.reload();
+        }
       })
     );
   }

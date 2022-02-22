@@ -70,7 +70,6 @@ interface IDestinyBuyProductDetailState {
   noContentItem: boolean;
   menuLocked: boolean;
   showStickyNav: boolean;
-  strangerEdition: IDestinyProductDefinition;
   collectorsEdition: IDestinyProductDefinition;
 }
 
@@ -100,7 +99,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
       menuLocked: false,
       selectedSkuIndex: DestinyBuyDataStore.state.selectedSkuIndex || 0,
       showStickyNav: false,
-      strangerEdition: null,
       collectorsEdition: null,
     };
   }
@@ -147,17 +145,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
           noContentItem: true,
         })
       );
-
-    Platform.ContentService.GetContentByTagAndType(
-      "sku-beyondlightstranger",
-      "DestinySkuItem",
-      Localizer.CurrentCultureName,
-      false
-    ).then((data) => {
-      this.setState({
-        strangerEdition: DestinySkuUtils.skuDefinitionFromContent(data),
-      });
-    });
 
     window.addEventListener("scroll", this.onScroll);
   }
@@ -289,10 +276,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
         skuItems,
         selectedSkuIndex,
         showStickyNav,
-        strangerEdition,
       } = this.state;
       const mobileSize = this.props.globalState.responsive.mobile;
-      const tinySize = this.props.globalState.responsive.tiny;
 
       /* Convert content items stored in the Product Family firehose item into the types each component is expecting */
       const mediaDetailItem =
@@ -401,7 +386,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         destinyProductFamily.expansionSelectorDisclaimer
                       }
                       collectorsEdition={collectorsEdition}
-                      strangerEdition={strangerEdition}
                     />
                   </div>
                 </ParallaxContainer>
@@ -584,49 +568,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     )}
                   </>
                 )}
-
-                {collectorsEdition && (
-                  <>
-                    <div className={styles.borderTop}>
-                      <div className={styles.sectionTitle}>
-                        {destinyProductFamily.collectorsEditionSectionTitle}
-                      </div>
-                    </div>
-                    <GridCol
-                      cols={12}
-                      className={styles.collectorsEditionSection}
-                    >
-                      <DestinyBuyDetailItem
-                        imagesForPagination={collectorsEdition.imagePath}
-                        orientation={"textblock-media"}
-                        skuItem={collectorsEdition}
-                        collectorsEdition={true}
-                      />
-                    </GridCol>
-                  </>
-                )}
-
-                {strangerEdition &&
-                  this.state.destinyProductFamily.productFamilyTag ===
-                    "beyondlight" && (
-                    <>
-                      <div className={styles.borderTop}>
-                        <div className={styles.sectionTitle}>
-                          {strangerEdition.edition}
-                        </div>
-                      </div>
-                      <GridCol
-                        cols={12}
-                        className={styles.collectorsEditionSection}
-                      >
-                        <DestinyBuyDetailItem
-                          orientation={"textblock-media"}
-                          skuItem={strangerEdition}
-                          strangerEdition={true}
-                        />
-                      </GridCol>
-                    </>
-                  )}
               </Grid>
             </div>
           </SpinnerContainer>

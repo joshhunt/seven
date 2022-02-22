@@ -214,6 +214,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheChosen"),
         (area) => new ActionRoute(area, "SeasonOfTheSplicer"),
         (area) => new ActionRoute(area, "SeasonOfTheLost"),
+        (area) => new ActionRoute(area, "SeasonOfTheRisen"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),

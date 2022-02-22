@@ -1,12 +1,12 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import DestinyCharacterCard from "@UI/Destiny/DestinyCharacterCard";
 import * as React from "react";
 import { Characters } from "@Platform";
 import classNames from "classnames";
 import styles from "./CrossSaveAccountCard.module.scss";
 import { CrossSavePlatformInfo } from "./CrossSavePlatformInfo";
-import { DestinyCharacterCard } from "@UI/Destiny/DestinyCharacterCard";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
@@ -134,7 +134,6 @@ export class CrossSaveAccountCard extends React.Component<
                   className={styles.characterItem}
                   key={kvp[0]}
                   character={kvp[1]}
-                  definitions={definitions}
                 />
               ))}
               {characterKvps.length === 0 && (

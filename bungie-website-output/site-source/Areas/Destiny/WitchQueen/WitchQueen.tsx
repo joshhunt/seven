@@ -327,7 +327,12 @@ const WitchQueen: React.FC = () => {
                 )}
 
                 {(image_and_text_blocks?.length ?? 0) > 0 && (
-                  <div className={styles.bottomContentWrapper}>
+                  <div
+                    className={classNames(
+                      styles[`imageTextBlock${section_class}`],
+                      styles.bottomContentWrapper
+                    )}
+                  >
                     {image_and_text_blocks?.map((blockObj, j: number) => {
                       const isFlexReverse = j % 2 !== 0;
 
@@ -363,6 +368,7 @@ const WitchQueen: React.FC = () => {
                           direction={isFlexReverse ? "reverse" : "normal"}
                           videoId={blockObj?.video_id || undefined}
                           caption={blockObj?.caption}
+                          isAltStyle={section_class === "campaignSection"}
                         />
                       );
                     })}

@@ -18,6 +18,7 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -104,6 +105,10 @@ class CrossSaveRecap extends React.Component<
         });
       case DestinyGameVersions.TheWitchQueen:
         return RouteHelper.DestinyBuyDetail({ productFamilyTag: "witchqueen" });
+      case DestinyGameVersions.Anniversary30th:
+        return RouteHelper.DestinyBuyDetail({
+          productFamilyTag: "anniversary",
+        });
       default:
         return RouteHelper.DestinyBuy();
     }
@@ -313,20 +318,18 @@ class CrossSaveRecap extends React.Component<
             )}
           </GridCol>
         </Grid>
-        {/*
-				<Grid>
-					<GridCol cols={12}>
-						<p className={styles.connectedAccounts}>{Localizer.Crosssave.EntitlementsHeader}</p>
-					</GridCol>
-				</Grid>
-				<Grid>
-					<GridCol cols={12}>
-						<EntitlementsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
-						<hr />
-						<SeasonsTable entitlementsResponse={flowState.entitlements} linkedProfiles={flowState.linkedDestinyProfiles} />
-					</GridCol>
-				</Grid>
-				*/}
+        {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
+          <>
+            <Grid>
+              <GridCol cols={12}>
+                <EntitlementsTable flowState={flowState} />
+                <hr />
+                <SeasonsTable flowState={flowState} />
+              </GridCol>
+            </Grid>
+          </>
+        )}
+
         <Grid>
           <GridCol cols={12}>
             <div className={styles.deactivateButton}>

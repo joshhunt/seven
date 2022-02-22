@@ -1,5 +1,3 @@
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-
 const sm: any = require("./sm");
 
 export interface ArgData {
@@ -17,7 +15,7 @@ export class BeyondLightArgUtils {
     decodedInput: string
   ): Promise<ArgData> {
     const response = await fetch(
-      `/en/Content/ArgData?page=blarg&multiInput=${input}_${decodedInput}`
+      `/en/Content/ArgData?page=wqarg&multiInput=${input}_${decodedInput}`
     );
     const json = (await response.json()) as ArgData;
 

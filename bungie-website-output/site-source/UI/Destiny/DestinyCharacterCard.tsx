@@ -1,18 +1,21 @@
+import {
+  D2DatabaseComponentProps,
+  withDestinyDefinitions,
+} from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import * as React from "react";
-import { Characters, Definitions } from "@Platform";
+import { Characters } from "@Platform";
 import styles from "./DestinyCharacterCard.module.scss";
 import classNames from "classnames";
 import { StringUtils } from "@Utilities/StringUtils";
 
-interface CharacterDefinitions {
-  races: { [key: number]: Definitions.DestinyRaceDefinition };
-  classes: { [key: number]: Definitions.DestinyClassDefinition };
-  items: { [key: number]: Definitions.DestinyInventoryItemDefinition };
-}
-
-interface IDestinyCharacterCardProps extends React.HTMLProps<HTMLDivElement> {
+interface IDestinyCharacterCardProps
+  extends React.HTMLProps<HTMLDivElement>,
+    D2DatabaseComponentProps<
+      | "DestinyClassDefinition"
+      | "DestinyRaceDefinition"
+      | "DestinyInventoryItemLiteDefinition"
+    > {
   character: Characters.DestinyCharacterComponent;
-  definitions: CharacterDefinitions;
   children?: undefined; // Disallow children
 }
 
@@ -24,7 +27,7 @@ interface IDestinyCharacterCardState {}
  * @param {IDestinyCharacterCardProps} props
  * @returns
  */
-export class DestinyCharacterCard extends React.Component<
+class DestinyCharacterCard extends React.Component<
   IDestinyCharacterCardProps,
   IDestinyCharacterCardState
 > {
@@ -35,37 +38,45 @@ export class DestinyCharacterCard extends React.Component<
   }
 
   public render() {
-    const { character, definitions, className, ...rest } = this.props;
+    const { character, className, definitions, ...rest } = this.props;
 
-    let raceDef: Definitions.DestinyRaceDefinition = null;
-    let classDef: Definitions.DestinyClassDefinition = null;
-    let emblemDef: Definitions.DestinyInventoryItemDefinition = null;
-    if (definitions) {
-      raceDef = definitions.races[character?.raceHash];
-      classDef = definitions.classes[character?.classHash];
-      emblemDef = definitions.items[character?.emblemHash];
+    if (!definitions || !character) {
+      return null;
     }
+
+    const raceDef = definitions.DestinyRaceDefinition.get(character?.raceHash);
+    const classDef = definitions.DestinyClassDefinition.get(
+      character?.classHash
+    );
+    const emblemDef = definitions.DestinyInventoryItemLiteDefinition.get(
+      character?.emblemHash
+    );
 
     const classes = classNames(styles.character, className);
 
     return (
       <div
         className={classes}
-        style={{ backgroundImage: `url(${emblemDef.secondarySpecial})` }}
+        style={{ backgroundImage: `url(${emblemDef?.secondarySpecial ?? ""})` }}
         {...rest}
       >
         <div className={styles.avatar}>
           <div
             className={styles.avatarImage}
-            style={{ backgroundImage: `url(${emblemDef.secondaryOverlay})` }}
+            style={{
+              backgroundImage: `url(${emblemDef?.secondaryOverlay ?? ""})`,
+            }}
           />
         </div>
         <div className={styles.text}>
           <div className={styles.identity}>
             <div className={styles.class}>
-              {classDef.genderedClassNamesByGenderHash[character.genderHash]}
+              {classDef?.genderedClassNamesByGenderHash[character.genderHash] ??
+                ""}
             </div>
-            <div className={styles.about}>{raceDef.displayProperties.name}</div>
+            <div className={styles.about}>
+              {raceDef?.displayProperties?.name ?? ""}
+            </div>
           </div>
           <div className={styles.stats}>
             <div className={styles.light}>
@@ -80,3 +91,11 @@ export class DestinyCharacterCard extends React.Component<
     );
   }
 }
+
+export default withDestinyDefinitions(DestinyCharacterCard, {
+  types: [
+    "DestinyClassDefinition",
+    "DestinyRaceDefinition",
+    "DestinyInventoryItemLiteDefinition",
+  ],
+});

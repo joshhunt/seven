@@ -43,7 +43,7 @@ export const EmailVerified: React.FC<EmailVerifiedProps> = (props) => {
     ? ""
     : Localizer.FormatReact(registrationLoc.EmailVerifiedDesc, {
         emailSettingsLink: (
-          <Anchor url={RouteHelper.EmailAndSms().url}>
+          <Anchor url={RouteHelper.EmailAndSms()}>
             {registrationLoc.UpdateItHere}
           </Anchor>
         ),

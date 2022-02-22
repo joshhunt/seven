@@ -10,7 +10,8 @@ import { BasicSize } from "../../../../../UI/UIKit/UIKitUtils";
 interface AuthorizedAppFlairProps {
   id: string;
   name: string;
-  unlinked: boolean;
+  unlinkedRecently: boolean;
+  revoked: boolean;
   error: boolean;
   unlink: (appId: string) => void;
 }
@@ -19,14 +20,15 @@ export const AuthorizedAppFlair: React.FC<AuthorizedAppFlairProps> = ({
   id,
   name,
   unlink,
-  unlinked,
+  unlinkedRecently,
+  revoked,
   error,
 }) => {
-  if (unlinked) {
+  if (unlinkedRecently) {
     return <p>{Localizer.friends.successDesc}</p>;
   } else if (error) {
     return <p>{Localizer.Userpages.SomethingWentWrong}</p>;
-  } else {
+  } else if (!revoked) {
     return (
       <Button
         buttonType={"red"}
