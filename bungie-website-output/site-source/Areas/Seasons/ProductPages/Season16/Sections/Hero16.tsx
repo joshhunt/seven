@@ -1,6 +1,7 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
+import { UrlUtils } from "@Utilities/UrlUtils";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -85,7 +86,7 @@ export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
               btnBg: styles.heroBtnBg,
             }}
             thumbnail={data?.play_btn.thumbnail?.url}
-            href={RouteHelper.DestinyBuy().url}
+            href={RouteHelper.DestinyBuy()}
             analyticsId={data?.play_btn?.analytics_id}
           >
             <div className={styles.heroBtnContent}>

@@ -1,6 +1,8 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
+import { IMultiSiteLink } from "@Routes/RouteHelper";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { Icon } from "@UIKit/Controls/Icon";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
@@ -26,7 +28,7 @@ export interface ClickableMediaThumbnailProps {
     contentWrapper?: string;
   };
   showShadowBehindPlayIcon?: boolean;
-  href?: string;
+  href?: string | IMultiSiteLink;
   analyticsId?: string;
 }
 
@@ -98,7 +100,6 @@ export const ClickableMediaThumbnail: React.FC<ClickableMediaThumbnailProps> = (
   );
 
   const btnAttributes = {
-    href: props.href,
     className: classNames(styles.mediaBtn, classes?.btnWrapper),
     onClick: !props.href
       ? handleBtnClick
@@ -109,7 +110,9 @@ export const ClickableMediaThumbnail: React.FC<ClickableMediaThumbnailProps> = (
   };
 
   return props.href ? (
-    <a {...btnAttributes}>{innerContent}</a>
+    <Anchor {...btnAttributes} url={props.href}>
+      {innerContent}
+    </Anchor>
   ) : (
     <div {...btnAttributes}>{innerContent}</div>
   );

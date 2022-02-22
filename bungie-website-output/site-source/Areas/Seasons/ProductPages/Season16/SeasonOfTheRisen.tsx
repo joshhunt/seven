@@ -94,7 +94,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
   const mediaScreenshtos: IDestinyNewsMedia[] = media
     ?.filter((m) => m.screenshot)
     .map((m) => ({
-      thumbnail: `${m.screenshot?.image}?width=500`,
+      thumbnail: `${m.screenshot?.image?.url}?width=500`,
       isVideo: false,
       detail: m.screenshot?.image?.url,
     }));

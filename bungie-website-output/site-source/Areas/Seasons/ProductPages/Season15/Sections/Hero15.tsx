@@ -3,6 +3,7 @@
 
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 import { Icon } from "@UIKit/Controls/Icon";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
@@ -78,7 +79,7 @@ export const Hero15: React.FC<Hero15Props> = (props) => {
               btnBg: styles.heroBtnBg,
             }}
             thumbnail={"/7/ca/destiny/bgs/season15/s15_hero_button_play.jpg"}
-            href={"/7/en/Destiny/Buy"}
+            href={RouteHelper.DestinyBuy()}
             analyticsId={playNowBtnAnalyticsId}
           >
             <div className={styles.heroBtnContent}>

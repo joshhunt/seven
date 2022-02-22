@@ -375,155 +375,165 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
         />
       </BungieHelmet>
 
-      <Hero inputRef={(ref) => setHeroRef(ref)} data={hero} />
+      <div className={styles.shadowkeepContent}>
+        <Hero inputRef={(ref) => setHeroRef(ref)} data={hero} />
 
-      <MarketingSubNav
-        ids={Object.keys(idToElementsMapping)}
-        renderLabel={(id, index) => {
-          const label = subnav?.labels.find(
-            (l) => l.label_id === `${id}_nav_label`
-          );
+        <MarketingSubNav
+          ids={Object.keys(idToElementsMapping)}
+          renderLabel={(id, index) => {
+            const label = subnav?.labels.find(
+              (l) => l.label_id === `${id}_nav_label`
+            );
 
-          return label?.label;
-        }}
-        buttonProps={{
-          children: subnav?.btn_title,
-          buttonType: "gold",
-          url: RouteHelper.DestinyBuyDetail({ productFamilyTag: "Shadowkeep" }),
-        }}
-        primaryColor={"taupe"}
-        accentColor={"gold"}
-      />
-
-      <div
-        className={styles.storySection}
-        id={"story"}
-        ref={(el) => (idToElementsMapping["story"] = el)}
-      >
-        <div
-          className={styles.sectionBg}
-          style={{ backgroundImage: storyBg }}
-        />
-        <div
-          className={styles.mobileFlamesBg}
-          style={{ backgroundImage: `url(${storyFlamesBg})` }}
-        />
-        <div className={styles.contentWrapper}>
-          <h3 className={styles.smallTitle}>{story_section?.small_title}</h3>
-          <div className={styles.titleDivider} />
-          <h2
-            className={styles.sectionTitle}
-            dangerouslySetInnerHTML={sanitizeHTML(story_section?.section_title)}
-          />
-          <p className={styles.blurb}>{story_section?.blurb}</p>
-          <div className={styles.thumbnailOuterWrapper}>
-            <div className={styles.thumbnailWrapper}>
-              <ClickableMediaThumbnail
-                videoId={story_section?.thumb_video_id}
-                thumbnail={
-                  imageFromConnection(story_section?.thumbnailConnection)?.url
-                }
-                showShadowBehindPlayIcon
-              />
-              <p className={styles.blurbHeading}>
-                {story_section?.thumbnail_heading}
-              </p>
-              <p className={styles.blurb}>{story_section?.thumbnail_blurb}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        className={styles.moonSection}
-        id={"gear"}
-        ref={(el) => (idToElementsMapping["gear"] = el)}
-      >
-        <div
-          className={classNames(styles.sectionBg, styles.top)}
-          style={{ backgroundImage: gearBg }}
-        />
-        <div
-          className={classNames(styles.sectionBg, styles.bottom)}
-          style={{ backgroundImage: endgameBg }}
-        />
-        <div className={styles.contentWrapper}>
-          <div className={styles.topContent}>
-            <h3 className={styles.smallTitle}>{gear_section?.small_title}</h3>
-            <div className={styles.titleDivider} />
-            <h2
-              className={styles.sectionTitle}
-              dangerouslySetInnerHTML={sanitizeHTML(
-                gear_section?.section_title
-              )}
-            />
-            <div>
-              {gear_section?.info_blocks?.map((block, i) => {
-                return (
-                  <ShadowkeepInfoBlock
-                    key={i}
-                    blurb={block.blurb}
-                    blurbHeading={block.heading}
-                    direction={i % 2 !== 0 ? "normal" : "reverse"}
-                    singleOrAllScreenshots={gearScreenshots}
-                    screenshotIndex={i}
-                    thumbnail={imageFromConnection(block.imageConnection)?.url}
-                  />
-                );
-              })}
-            </div>
-          </div>
-          <div
-            className={styles.bottomContent}
-            id={"endgame"}
-            ref={(el) => (idToElementsMapping["endgame"] = el)}
-          >
-            <div
-              className={styles.icon}
-              style={{ backgroundImage: endgameIcon }}
-            />
-            <h3 className={styles.smallTitle}>
-              {endgame_section?.small_title}
-            </h3>
-            <div className={styles.titleDivider} />
-            <h2
-              className={styles.sectionTitle}
-              dangerouslySetInnerHTML={sanitizeHTML(
-                endgame_section?.section_title
-              )}
-            />
-            <div>
-              {endgame_section?.info_blocks?.map((block, i) => {
-                return (
-                  <ShadowkeepInfoBlock
-                    key={i}
-                    blurb={block.blurb}
-                    blurbHeading={block.heading}
-                    direction={i % 2 === 0 ? "normal" : "reverse"}
-                    singleOrAllScreenshots={endgameScreenshots}
-                    screenshotIndex={i}
-                    thumbnail={imageFromConnection(block.imageConnection)?.url}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className={styles.cta} style={{ backgroundImage: ctaBg }}>
-        <div className={styles.ctaContent}>
-          <img
-            className={styles.logo}
-            src={imageFromConnection(cta?.logoConnection)?.url}
-          />
-          <Button
-            url={RouteHelper.DestinyBuyDetail({
+            return label?.label;
+          }}
+          buttonProps={{
+            children: subnav?.btn_title,
+            buttonType: "gold",
+            url: RouteHelper.DestinyBuyDetail({
               productFamilyTag: "Shadowkeep",
-            })}
-            children={cta?.btn_title}
-            className={styles.ctaBtn}
-            buttonType={"gold"}
+            }),
+          }}
+          primaryColor={"taupe"}
+          accentColor={"gold"}
+        />
+
+        <div
+          className={styles.storySection}
+          id={"story"}
+          ref={(el) => (idToElementsMapping["story"] = el)}
+        >
+          <div
+            className={styles.sectionBg}
+            style={{ backgroundImage: storyBg }}
           />
+          <div
+            className={styles.mobileFlamesBg}
+            style={{ backgroundImage: `url(${storyFlamesBg})` }}
+          />
+          <div className={styles.contentWrapper}>
+            <h3 className={styles.smallTitle}>{story_section?.small_title}</h3>
+            <div className={styles.titleDivider} />
+            <h2
+              className={styles.sectionTitle}
+              dangerouslySetInnerHTML={sanitizeHTML(
+                story_section?.section_title
+              )}
+            />
+            <p className={styles.blurb}>{story_section?.blurb}</p>
+            <div className={styles.thumbnailOuterWrapper}>
+              <div className={styles.thumbnailWrapper}>
+                <ClickableMediaThumbnail
+                  videoId={story_section?.thumb_video_id}
+                  thumbnail={
+                    imageFromConnection(story_section?.thumbnailConnection)?.url
+                  }
+                  showShadowBehindPlayIcon
+                />
+                <p className={styles.blurbHeading}>
+                  {story_section?.thumbnail_heading}
+                </p>
+                <p className={styles.blurb}>{story_section?.thumbnail_blurb}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={styles.moonSection}
+          id={"gear"}
+          ref={(el) => (idToElementsMapping["gear"] = el)}
+        >
+          <div
+            className={classNames(styles.sectionBg, styles.top)}
+            style={{ backgroundImage: gearBg }}
+          />
+          <div
+            className={classNames(styles.sectionBg, styles.bottom)}
+            style={{ backgroundImage: endgameBg }}
+          />
+          <div className={styles.contentWrapper}>
+            <div className={styles.topContent}>
+              <h3 className={styles.smallTitle}>{gear_section?.small_title}</h3>
+              <div className={styles.titleDivider} />
+              <h2
+                className={styles.sectionTitle}
+                dangerouslySetInnerHTML={sanitizeHTML(
+                  gear_section?.section_title
+                )}
+              />
+              <div>
+                {gear_section?.info_blocks?.map((block, i) => {
+                  return (
+                    <ShadowkeepInfoBlock
+                      key={i}
+                      blurb={block.blurb}
+                      blurbHeading={block.heading}
+                      direction={i % 2 !== 0 ? "normal" : "reverse"}
+                      singleOrAllScreenshots={gearScreenshots}
+                      screenshotIndex={i}
+                      thumbnail={
+                        imageFromConnection(block.imageConnection)?.url
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </div>
+            <div
+              className={styles.bottomContent}
+              id={"endgame"}
+              ref={(el) => (idToElementsMapping["endgame"] = el)}
+            >
+              <div
+                className={styles.icon}
+                style={{ backgroundImage: endgameIcon }}
+              />
+              <h3 className={styles.smallTitle}>
+                {endgame_section?.small_title}
+              </h3>
+              <div className={styles.titleDivider} />
+              <h2
+                className={styles.sectionTitle}
+                dangerouslySetInnerHTML={sanitizeHTML(
+                  endgame_section?.section_title
+                )}
+              />
+              <div>
+                {endgame_section?.info_blocks?.map((block, i) => {
+                  return (
+                    <ShadowkeepInfoBlock
+                      key={i}
+                      blurb={block.blurb}
+                      blurbHeading={block.heading}
+                      direction={i % 2 === 0 ? "normal" : "reverse"}
+                      singleOrAllScreenshots={endgameScreenshots}
+                      screenshotIndex={i}
+                      thumbnail={
+                        imageFromConnection(block.imageConnection)?.url
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.cta} style={{ backgroundImage: ctaBg }}>
+          <div className={styles.ctaContent}>
+            <img
+              className={styles.logo}
+              src={imageFromConnection(cta?.logoConnection)?.url}
+            />
+            <Button
+              url={RouteHelper.DestinyBuyDetail({
+                productFamilyTag: "Shadowkeep",
+              })}
+              children={cta?.btn_title}
+              className={styles.ctaBtn}
+              buttonType={"gold"}
+            />
+          </div>
         </div>
       </div>
       <div
