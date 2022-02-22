@@ -62,5 +62,7 @@ export const AuthorizedAppFlair: React.FC<AuthorizedAppFlairProps> = ({
         {Localizer.Userpages.Unlink}
       </Button>
     );
+  } else {
+    return null;
   }
 };
