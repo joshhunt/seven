@@ -68,7 +68,7 @@ const validPasswordLines = [
   '//input received/"Hold IKO-006-XX750210p"',
   "Processing...",
   "ERROR: You have insufficient permissions for this task.",
-  "ALERT: THIS ACCOUNT HAS PERFORMED TOO MANY ILLEGAL REQUESTS. 24 HOUR LOCK-OUT INITIATED.",
+  "ALERT: THIS ACCOUNT HAS PERFORMED TOO MANY ILLEGAL REQUESTS. LOCK-OUT INITIATED.",
 ];
 
 const WQArg: React.FC<WQArgProps> = (props) => {
