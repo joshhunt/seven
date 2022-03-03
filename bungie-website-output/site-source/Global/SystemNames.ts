@@ -98,4 +98,6 @@ export const SystemNames = {
   PlatformFriendBulkImporter: "PlatformFriendBulkImporter",
   AllowGlobalBungieDisplayNameEditing: "AllowGlobalBungieDisplayNameEditing",
   CrossSaveEntitlementTables: "CrossSaveEntitlementTables",
+  UseGlobalBungieDisplayNames: "UseGlobalBungieDisplayNames",
+  WorldsFirstStream: "WorldsFirstStream",
 } as const;

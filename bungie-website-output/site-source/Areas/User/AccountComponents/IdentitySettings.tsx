@@ -24,12 +24,20 @@ import classNames from "classnames";
 import { Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
+import { Img } from "../../../Utilities/helpers";
 import accountStyles from "../Account.module.scss";
 import styles from "./IdentitySettings.module.scss";
 import { Avatars } from "./Internal/Avatars";
+import { SuggestedNamesProfanityQueue } from "./Internal/SuggestedNamesProfanityQueue";
 import { Themes } from "./Internal/Themes";
 
 type NameChangeStatus = "canEdit" | "locked" | "confirm" | "updated";
+
+/** Used to keep suggested names paired with their associated platform icons */
+interface nameIconPair {
+  name: string;
+  icon: string;
+}
 
 interface IdentitySettingsProps {}
 
@@ -52,8 +60,9 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   );
   const [onPageUser, setOnPageUser] = useState<User.GeneralUser>();
   const [bungieName, setBungieName] = useState<IBungieName>(null);
+  const [validatingNames, setValidatingNames] = useState(false);
   const [displayNameSuggestions, setDisplayNameSuggestions] = useState<
-    string[]
+    nameIconPair[]
   >([]);
 
   /* Functions */
@@ -135,28 +144,76 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   const getSuggestedNames = (userMembershipData: User.UserMembershipData) => {
-    let suggestedNames = userMembershipData?.destinyMemberships?.map((dm) => {
-      if (dm.membershipType !== BungieMembershipType.BungieNext) {
-        if (dm.membershipType === BungieMembershipType.TigerStadia) {
-          //stadia displayNames always have the #NNNN
-          return dm.displayName?.split("#")?.[0];
+    setValidatingNames(true);
+
+    const suggestedNames = userMembershipData?.destinyMemberships?.flatMap(
+      (dm) => {
+        switch (dm.membershipType) {
+          case BungieMembershipType.TigerPsn:
+            return [
+              {
+                name: dm.displayName ?? "",
+                icon: Img(`bungie/icons/logos/playstation/icon.png`),
+              },
+            ];
+          case BungieMembershipType.TigerSteam:
+            return [
+              {
+                name: dm.displayName ?? "",
+                icon: Img(`bungie/icons/logos/steam/icon.png`),
+              },
+            ];
+          case BungieMembershipType.TigerStadia:
+            return [
+              {
+                //stadia displayNames always have the #NNNN
+                name: dm.displayName?.split("#")?.[0],
+                icon: Img(`bungie/icons/logos/stadia/icon.png`),
+              },
+            ];
+          case BungieMembershipType.TigerXbox:
+            return [
+              {
+                name: dm.displayName ?? "",
+                icon: Img(`bungie/icons/logos/xbox/icon.png`),
+              },
+            ];
+          default:
+            return [];
         }
-
-        return dm.displayName ?? "";
       }
-    });
-    //dedupe
-    suggestedNames = [...new Set(suggestedNames)];
-    //remove the current displayName
-    suggestedNames = suggestedNames.filter((sn) => {
-      return (
-        sn !== globalStateData?.loggedInUser?.user?.displayName ??
-        userMembershipData?.bungieNetUser?.displayName ??
-        ""
-      );
-    });
+    );
 
-    setDisplayNameSuggestions(suggestedNames);
+    if (globalStateData?.loggedInUser?.twitchDisplayName) {
+      suggestedNames.push({
+        name: globalStateData?.loggedInUser?.twitchDisplayName,
+        icon: Img(`bungie/icons/logos/twitch/icon.png`),
+      });
+    }
+    suggestedNames.filter((sn) => !!sn?.name);
+    const validNameSuggestions: nameIconPair[] = [];
+    const nameValidationQueue = new SuggestedNamesProfanityQueue();
+
+    nameValidationQueue
+      .all(
+        suggestedNames.map((nameIcon, i) => {
+          return () => {
+            return Platform.UserService.ValidateBungieName({
+              displayName: nameIcon.name,
+            })
+              .then((isValid) => {
+                isValid && validNameSuggestions.push(nameIcon);
+              })
+              .catch((e: Error) => {
+                // some of the other platform names we found aren't valid bungie names
+              });
+          };
+        })
+      )
+      .finally(() => {
+        setDisplayNameSuggestions(validNameSuggestions);
+        setValidatingNames(false);
+      });
   };
 
   /* Hooks */
@@ -296,34 +353,38 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       </Anchor>
                     </div>
                   )}
-                  {nameChangeStatus === "canEdit" && (
-                    <>
-                      <p>
-                        {displayNameSuggestions.length > 0 &&
-                          Localizer.userpages.suggestedNames}
-                      </p>
-                      <div>
-                        {displayNameSuggestions.map((name, i) => (
-                          <a
-                            className={styles.suggestedNames}
-                            key={i}
-                            onClick={(e) => {
-                              formikProps.setFieldValue(
-                                "displayName",
-                                name,
-                                true
-                              );
-                              name !== bungieName?.bungieGlobalName
-                                ? setNameChangeStatus("confirm")
-                                : setNameChangeStatus("canEdit");
-                            }}
-                          >
-                            {name}
-                          </a>
-                        ))}
-                      </div>
-                    </>
-                  )}
+                  {validatingNames
+                    ? Localizer.Userpages.LookingForSuggestedNames
+                    : nameChangeStatus === "canEdit" &&
+                      displayNameSuggestions.length > 0 && (
+                        <>
+                          <p>{Localizer.userpages.suggestedNames}</p>
+                          <div>
+                            {displayNameSuggestions.map((nip, i) => (
+                              <a
+                                className={styles.suggestedNames}
+                                key={i}
+                                onClick={(e) => {
+                                  formikProps.setFieldValue(
+                                    "displayName",
+                                    nip.name,
+                                    true
+                                  );
+                                  nip.name !== bungieName?.bungieGlobalName
+                                    ? setNameChangeStatus("confirm")
+                                    : setNameChangeStatus("canEdit");
+                                }}
+                              >
+                                <img
+                                  src={nip.icon}
+                                  className={styles.platformIcon}
+                                />
+                                <p>{nip.name}</p>
+                              </a>
+                            ))}
+                          </div>
+                        </>
+                      )}
                   {nameChangeStatus === "confirm" && (
                     <div className={styles.confirmButtons}>
                       <button type="submit" className={styles.textOnly}>

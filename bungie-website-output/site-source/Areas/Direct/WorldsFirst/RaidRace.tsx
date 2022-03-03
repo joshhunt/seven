@@ -1,20 +1,25 @@
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
+import { Responsive } from "@Boot/Responsive";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemNames } from "@Global/SystemNames";
-import { Img } from "@Helpers";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { MarketingOptInButton } from "@UI/User/MarketingOptInButton";
-import { Button } from "@UIKit/Controls/Button/Button";
+import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { __ } from "@Utilities/LocalLocWorkaround";
-import classNames from "classnames";
-import moment from "moment";
+import {
+  bgImageFromStackFile,
+  responsiveBgImageFromStackFile,
+} from "@Utilities/GraphQLUtils";
+import { DateTime } from "luxon";
 import React, { useEffect, useRef, useState } from "react";
 import { Redirect } from "react-router";
+import { BnetStackDisciplesRaidRacePage } from "../../../Generated/contentstack-types";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./RaidRace.module.scss";
 
 /**
@@ -22,99 +27,127 @@ import styles from "./RaidRace.module.scss";
  * @constructor
  */
 const WorldsFirst: React.FC = () => {
-  // if webmaster system for page is disabled, redirect to season 14 product page
+  const { mobile } = useDataStore(Responsive);
+  const [data, setData] = useState<BnetStackDisciplesRaidRacePage>();
+
+  // if webmaster system for page is disabled, redirect to WQ product page
   const enabled = ConfigUtils.SystemStatus("DirectWorldsFirst");
   if (!enabled) {
-    return <Redirect to={RouteHelper.SeasonOfTheSplicer().url} />;
+    return <Redirect to={RouteHelper.WitchQueen().url} />;
   }
 
-  // get date and time race starts
-  const liveTimeString = ConfigUtils.GetParameter(
-    "DirectWorldsFirst",
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("disciples_raid_race_page")
+      .Entry("blt722dd3bab6410855")
+      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .toJSON()
+      .fetch()
+      .then((res) => {
+        setData(res);
+      });
+  }, []);
+
+  // check if stream is live
+  const streamStartTime = ConfigUtils.GetParameter(
+    "WorldsFirstStream",
     "WorldsFirstReleaseDateTime",
     ""
   );
-  const liveTime = moment(liveTimeString);
-  const now = moment();
-  // check if race is live
-  const isLive = now.isAfter(liveTime);
+  const streamStartDateTime = DateTime.fromISO(streamStartTime);
+  const now = DateTime.now();
 
-  const title = `${Localizer.Season14.WatchTheRace} // ${Localizer.Season14.RaidRaceLaunchDate}`;
-  const titleImg = `/7/ca/destiny/bgs/raidrace/vog_logo_${Localizer.CurrentCultureName}.svg`;
-  const destinyLogo =
-    Localizer.CurrentCultureName === "ko"
-      ? "/7/ca/destiny/bgs/raidrace/destiny_guardians_logo.svg"
-      : "/7/ca/destiny/bgs/raidrace/destiny_2_logo.svg";
-  const twitchBtnUrl = "https://www.twitch.tv/directory/game/Destiny%202";
+  const isStreamDisabled = !ConfigUtils.SystemStatus(
+    SystemNames.WorldsFirstStream
+  );
+
+  // render stream as long as webmaster system is NOT disabled and time is after stream start time
+  const isLive = !isStreamDisabled && now >= streamStartDateTime;
+
+  const {
+    title,
+    meta_img,
+    destiny_logo,
+    main_blurb,
+    page_bg,
+    page_subtitle,
+    page_title,
+    race_time_blocks,
+    raid_logo,
+    twitch_caption,
+    twitch_logo,
+    wq_logo,
+    twitch_btn_url,
+  } = data ?? {};
+
+  if (!data) {
+    return <SpinnerContainer loading={true} />;
+  }
 
   return (
-    <div className={classNames(styles.wrapper, { [styles.isLive]: isLive })}>
-      <BungieHelmet
-        title={title}
-        image={Img("/destiny/bgs/raidrace/vog_venus_skull_metadata_16x9.jpg")}
-      >
-        <body
-          className={classNames(
-            SpecialBodyClasses(BodyClasses.NoSpacer),
-            styles.raidRace
-          )}
-        />
+    <div className={styles.raidRace}>
+      <BungieHelmet title={title} image={meta_img?.url}>
+        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
-      <div>
-        <div className={classNames(styles.hero, { [styles.isLive]: isLive })}>
-          <div className={styles.heroBg} />
-          <div className={styles.heroTitleContent}>
+
+      <div
+        className={styles.contentWrapper}
+        style={{
+          backgroundImage: responsiveBgImageFromStackFile(
+            page_bg?.desktop,
+            page_bg?.mobile,
+            mobile
+          ),
+        }}
+      >
+        <div className={styles.hero}>
+          <img className={styles.destinyLogo} src={destiny_logo?.url} />
+          <div className={styles.logoDividerWrapper}>
             <div
-              className={styles.destinyLogo}
-              style={{ backgroundImage: `url(${destinyLogo})` }}
+              className={styles.logoDivider}
+              style={{ backgroundImage: bgImageFromStackFile(wq_logo) }}
             />
-            <div
-              className={styles.title}
-              style={{ backgroundImage: `url(${titleImg})` }}
-            />
-            <h2>{Localizer.Season14.RaidRaceTitle}</h2>
           </div>
+          <h1
+            className={styles.title}
+            dangerouslySetInnerHTML={sanitizeHTML(page_title)}
+          />
+          <h2 className={styles.subtitle}>{page_subtitle}</h2>
         </div>
 
-        {isLive && <LiveRaidReveal />}
+        {isLive && <LiveRaidReveal data={data} />}
 
-        {!isLive && <PreReveal />}
+        {!isLive && <PreReveal data={data} />}
 
-        <div className={styles.streamBtn}>
-          <a href={twitchBtnUrl}>{Localizer.Season14.WatchOnTwitch}</a>
+        <a className={styles.streamBtn} href={twitch_btn_url}>
+          {twitch_caption}
           <span>
-            <a href={twitchBtnUrl}>
-              <img src={"/7/ca/destiny/bgs/raidrace/twitch_logo.png"} />
-            </a>
+            <img src={twitch_logo?.url} />
           </span>
-        </div>
+        </a>
 
         <div className={styles.lowerContentWrapper}>
           <div className={styles.raidIconFlexWrapper}>
-            <div className={styles.raidIcon} />
+            <div
+              className={styles.raidIcon}
+              style={{ backgroundImage: bgImageFromStackFile(raid_logo) }}
+            />
           </div>
           <div className={styles.contentFlexWrapper}>
             <p
               className={styles.mainBlurb}
-              dangerouslySetInnerHTML={sanitizeHTML(
-                Localizer.Season14.RaidRaceBlurb
-              )}
+              dangerouslySetInnerHTML={sanitizeHTML(main_blurb)}
             />
-            <p className={styles.freeForAll}>
-              {Localizer.Season14.RaidRaceFreeForAll}
-            </p>
             <div className={styles.startTimes}>
-              <div className={styles.startTime}>
-                <h2>{Localizer.Season14.RaidRaceWatchPartyTime}</h2>
-                <p>{Localizer.Season14.RaidRaceWatchPartyText}</p>
-              </div>
-              <div className={styles.startTime}>
-                <h2>{Localizer.Season14.RaidRaceRaceBeginsTime}</h2>
-                <p>{Localizer.Season14.RaidRaceRaceBeginsText}</p>
-              </div>
+              {race_time_blocks?.map((b, i) => {
+                return (
+                  <div className={styles.startTime} key={i}>
+                    <h2>{race_time_blocks?.[i]?.time}</h2>
+                    <p>{race_time_blocks?.[i]?.subtitle}</p>
+                  </div>
+                );
+              })}
             </div>
-
-            {isLive && <BundleUpsell />}
           </div>
         </div>
       </div>
@@ -126,13 +159,15 @@ const WorldsFirst: React.FC = () => {
  * Shown if the time for the Raid is still in the future
  * @constructor
  */
-const PreReveal = () => {
+const PreReveal = ({ data }: { data: BnetStackDisciplesRaidRacePage }) => {
   return (
     <div className={styles.preReleaseContent}>
-      <p className={styles.dateText}>
-        {Localizer.Season14.RaidRaceBeginsDateText}
-      </p>
-      <p className={styles.date}>{Localizer.Season14.RaidRaceStartDate}</p>
+      <p
+        className={styles.dateText}
+        dangerouslySetInnerHTML={sanitizeHTML(
+          data?.pre_reveal?.race_begins_blurb
+        )}
+      />
       <MarketingOptInButton />
     </div>
   );
@@ -142,7 +177,7 @@ const PreReveal = () => {
  * Shown if the time for the Raid is in the past
  * @constructor
  */
-const LiveRaidReveal = () => {
+const LiveRaidReveal = ({ data }: { data: BnetStackDisciplesRaidRacePage }) => {
   const twitchChannelName = useRef("professorbroman");
   const arrowsRef = useRef<null | HTMLDivElement>(null);
 
@@ -153,49 +188,16 @@ const LiveRaidReveal = () => {
   return (
     <div className={styles.liveRevealWrapper}>
       <div ref={arrowsRef}>
-        <a className={styles.watchRaceText} onClick={scrollToStream}>
-          {Localizer.Beyondlight.WatchTheRaceToWorldFirst}
-        </a>
+        <div className={styles.watchRaceBtnWrapper}>
+          <a className={styles.watchRaceText} onClick={scrollToStream}>
+            {data?.watch_race_heading}
+          </a>
+        </div>
         <DestinyArrows classes={{ root: styles.arrows }} />
       </div>
       <div className={styles.streamFrameWrapper}>
         <div className={styles.aspectRatioWrapper}>
           <TwitchFrame username={twitchChannelName.current} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/**
- * Upsell shown at bottom of page if raid is live
- * @constructor
- */
-const BundleUpsell = () => {
-  const logo = `url("/7/ca/destiny/bgs/raidrace/vog_bundle_logo_${Localizer.CurrentCultureName}.svg")`;
-  const btnAnalyticsId = ConfigUtils.GetParameter(
-    SystemNames.DirectWorldsFirst,
-    "WorldsFirstUpsellBtnAnalyticsId",
-    ""
-  );
-
-  return (
-    <div className={styles.upsell}>
-      <div className={styles.aspectRatioWrapper} />
-      <div className={styles.bundleFlexWrapper}>
-        <div className={styles.contentWrapper}>
-          <div
-            className={styles.bundleLogo}
-            style={{ backgroundImage: logo }}
-          />
-          <Button
-            className={styles.bundleBtn}
-            url={"/SilverBundle-Atheon"}
-            analyticsId={btnAnalyticsId}
-            buttonType={"clear"}
-          >
-            {Localizer.Season14.RaidRaceUpsellBtnText}
-          </Button>
         </div>
       </div>
     </div>
