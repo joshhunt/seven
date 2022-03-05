@@ -34,18 +34,6 @@ export function isDate(o) {
 
 // CAPABILITIES
 
-export function hasIntl() {
-  try {
-    return typeof Intl !== "undefined" && Intl.DateTimeFormat;
-  } catch (e) {
-    return false;
-  }
-}
-
-export function hasFormatToParts() {
-  return !isUndefined(Intl.DateTimeFormat.prototype.formatToParts);
-}
-
 export function hasRelative() {
   try {
     return typeof Intl !== "undefined" && !!Intl.RelativeTimeFormat;
@@ -205,7 +193,7 @@ export function untruncateYear(year) {
 export function parseZoneInfo(ts, offsetFormat, locale, timeZone = null) {
   const date = new Date(ts),
     intlOpts = {
-      hour12: false,
+      hourCycle: "h23",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -217,24 +205,12 @@ export function parseZoneInfo(ts, offsetFormat, locale, timeZone = null) {
     intlOpts.timeZone = timeZone;
   }
 
-  const modified = Object.assign({ timeZoneName: offsetFormat }, intlOpts),
-    intl = hasIntl();
+  const modified = { timeZoneName: offsetFormat, ...intlOpts };
 
-  if (intl && hasFormatToParts()) {
-    const parsed = new Intl.DateTimeFormat(locale, modified)
-      .formatToParts(date)
-      .find((m) => m.type.toLowerCase() === "timezonename");
-    return parsed ? parsed.value : null;
-  } else if (intl) {
-    // this probably doesn't work for all locales
-    const without = new Intl.DateTimeFormat(locale, intlOpts).format(date),
-      included = new Intl.DateTimeFormat(locale, modified).format(date),
-      diffed = included.substring(without.length),
-      trimmed = diffed.replace(/^[, \u200e]+/, "");
-    return trimmed;
-  } else {
-    return null;
-  }
+  const parsed = new Intl.DateTimeFormat(locale, modified)
+    .formatToParts(date)
+    .find((m) => m.type.toLowerCase() === "timezonename");
+  return parsed ? parsed.value : null;
 }
 
 // signedOffset('-5', '30') -> -330
@@ -260,11 +236,10 @@ export function asNumber(value) {
   return numericValue;
 }
 
-export function normalizeObject(obj, normalizer, nonUnitKeys) {
+export function normalizeObject(obj, normalizer) {
   const normalized = {};
   for (const u in obj) {
     if (hasOwnProperty(obj, u)) {
-      if (nonUnitKeys.indexOf(u) >= 0) continue;
       const v = obj[u];
       if (v === undefined || v === null) continue;
       normalized[normalizer(u)] = asNumber(v);
