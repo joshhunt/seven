@@ -1,6 +1,6 @@
 import * as English from "./english.js";
 import * as Formats from "./formats.js";
-import { padStart } from "./util.js";
+import { hasFormatToParts, padStart } from "./util.js";
 
 function stringifyTokens(splits, tokenToString) {
   let s = "";
@@ -94,22 +94,25 @@ export default class Formatter {
     if (this.systemLoc === null) {
       this.systemLoc = this.loc.redefaultToSystem();
     }
-    const df = this.systemLoc.dtFormatter(dt, { ...this.opts, ...opts });
+    const df = this.systemLoc.dtFormatter(
+      dt,
+      Object.assign({}, this.opts, opts)
+    );
     return df.format();
   }
 
   formatDateTime(dt, opts = {}) {
-    const df = this.loc.dtFormatter(dt, { ...this.opts, ...opts });
+    const df = this.loc.dtFormatter(dt, Object.assign({}, this.opts, opts));
     return df.format();
   }
 
   formatDateTimeParts(dt, opts = {}) {
-    const df = this.loc.dtFormatter(dt, { ...this.opts, ...opts });
+    const df = this.loc.dtFormatter(dt, Object.assign({}, this.opts, opts));
     return df.formatToParts();
   }
 
   resolvedOptions(dt, opts = {}) {
-    const df = this.loc.dtFormatter(dt, { ...this.opts, ...opts });
+    const df = this.loc.dtFormatter(dt, Object.assign({}, this.opts, opts));
     return df.resolvedOptions();
   }
 
@@ -119,7 +122,7 @@ export default class Formatter {
       return padStart(n, p);
     }
 
-    const opts = { ...this.opts };
+    const opts = Object.assign({}, this.opts);
 
     if (p > 0) {
       opts.padTo = p;
@@ -131,7 +134,9 @@ export default class Formatter {
   formatDateTimeFromString(dt, fmt) {
     const knownEnglish = this.loc.listingMode() === "en",
       useDateTimeFormatter =
-        this.loc.outputCalendar && this.loc.outputCalendar !== "gregory",
+        this.loc.outputCalendar &&
+        this.loc.outputCalendar !== "gregory" &&
+        hasFormatToParts(),
       string = (opts, extract) => this.loc.extract(dt, opts, extract),
       formatOffset = (opts) => {
         if (dt.isOffsetFixed && dt.offset === 0 && opts.allowZ) {
@@ -143,7 +148,7 @@ export default class Formatter {
       meridiem = () =>
         knownEnglish
           ? English.meridiemForDateTime(dt)
-          : string({ hour: "numeric", hourCycle: "h12" }, "dayperiod"),
+          : string({ hour: "numeric", hour12: true }, "dayperiod"),
       month = (length, standalone) =>
         knownEnglish
           ? English.monthForDateTime(dt, length)
