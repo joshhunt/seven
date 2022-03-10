@@ -6,10 +6,10 @@ import Zone from "./zone.js";
 import FixedOffsetZone from "./zones/fixedOffsetZone.js";
 import IANAZone from "./zones/IANAZone.js";
 import InvalidZone from "./zones/invalidZone.js";
-import SystemZone from "./zones/systemZone.js";
+import LocalZone from "./zones/localZone.js";
 import Settings from "./settings.js";
 
-const VERSION = "2.0.1";
+const VERSION = "1.26.0";
 
 export {
   VERSION,
@@ -21,6 +21,6 @@ export {
   FixedOffsetZone,
   IANAZone,
   InvalidZone,
-  SystemZone,
+  LocalZone,
   Settings,
 };

@@ -76,7 +76,7 @@ function clone(inst, alts) {
     loc: inst.loc,
     invalid: inst.invalid,
   };
-  return new DateTime({ ...current, ...alts, old: current });
+  return new DateTime(Object.assign({}, current, alts, { old: current }));
 }
 
 // find the right offset a given local time. The o input is our guess, which determines which
@@ -134,15 +134,14 @@ function adjustTime(inst, dur) {
     year = inst.c.year + Math.trunc(dur.years),
     month =
       inst.c.month + Math.trunc(dur.months) + Math.trunc(dur.quarters) * 3,
-    c = {
-      ...inst.c,
+    c = Object.assign({}, inst.c, {
       year,
       month,
       day:
         Math.min(inst.c.day, daysInMonth(year, month)) +
         Math.trunc(dur.days) +
         Math.trunc(dur.weeks) * 7,
-    },
+    }),
     millisToAdd = Duration.fromObject({
       years: dur.years - Math.trunc(dur.years),
       quarters: dur.quarters - Math.trunc(dur.quarters),
@@ -173,12 +172,13 @@ function parseDataToDateTime(parsed, parsedZone, opts, format, text) {
   const { setZone, zone } = opts;
   if (parsed && Object.keys(parsed).length !== 0) {
     const interpretationZone = parsedZone || zone,
-      inst = DateTime.fromObject(parsed, {
-        ...opts,
-        zone: interpretationZone,
-        // setZone is a valid option in the calling methods, but not in fromObject
-        setZone: undefined,
-      });
+      inst = DateTime.fromObject(
+        Object.assign(parsed, opts, {
+          zone: interpretationZone,
+          // setZone is a valid option in the calling methods, but not in fromObject
+          setZone: undefined,
+        })
+      );
     return setZone ? inst : inst.setZone(zone);
   } else {
     return DateTime.invalid(
@@ -333,37 +333,28 @@ function normalizeUnit(unit) {
 // this is a dumbed down version of fromObject() that runs about 60% faster
 // but doesn't do any validation, makes a bunch of assumptions about what units
 // are present, and so on.
-
-// this is a dumbed down version of fromObject() that runs about 60% faster
-// but doesn't do any validation, makes a bunch of assumptions about what units
-// are present, and so on.
-function quickDT(obj, opts) {
-  const zone = normalizeZone(opts.zone, Settings.defaultZone),
-    loc = Locale.fromObject(opts),
-    tsNow = Settings.now();
-
-  let ts, o;
-
+function quickDT(obj, zone) {
   // assume we have the higher-order units
-  if (!isUndefined(obj.year)) {
-    for (const u of orderedUnits) {
-      if (isUndefined(obj[u])) {
-        obj[u] = defaultUnitValues[u];
-      }
+  for (const u of orderedUnits) {
+    if (isUndefined(obj[u])) {
+      obj[u] = defaultUnitValues[u];
     }
-
-    const invalid = hasInvalidGregorianData(obj) || hasInvalidTimeData(obj);
-    if (invalid) {
-      return DateTime.invalid(invalid);
-    }
-
-    const offsetProvis = zone.offset(tsNow);
-    [ts, o] = objToTS(obj, offsetProvis, zone);
-  } else {
-    ts = tsNow;
   }
 
-  return new DateTime({ ts, zone, loc, o });
+  const invalid = hasInvalidGregorianData(obj) || hasInvalidTimeData(obj);
+  if (invalid) {
+    return DateTime.invalid(invalid);
+  }
+
+  const tsNow = Settings.now(),
+    offsetProvis = zone.offset(tsNow),
+    [ts, o] = objToTS(obj, offsetProvis, zone);
+
+  return new DateTime({
+    ts,
+    zone,
+    o,
+  });
 }
 
 function diffRelative(start, end, opts) {
@@ -393,19 +384,7 @@ function diffRelative(start, end, opts) {
       return format(count, unit);
     }
   }
-  return format(start > end ? -0 : 0, opts.units[opts.units.length - 1]);
-}
-
-function lastOpts(argList) {
-  let opts = {},
-    args;
-  if (argList.length > 0 && typeof argList[argList.length - 1] === "object") {
-    opts = argList[argList.length - 1];
-    args = Array.from(argList).slice(0, argList.length - 1);
-  } else {
-    args = Array.from(argList);
-  }
-  return [opts, args];
+  return format(0, opts.units[opts.units.length - 1]);
 }
 
 /**
@@ -513,25 +492,33 @@ export default class DateTime {
    * @param {number} [minute=0] - The minute of the hour, meaning a number between 0 and 59
    * @param {number} [second=0] - The second of the minute, meaning a number between 0 and 59
    * @param {number} [millisecond=0] - The millisecond of the second, meaning a number between 0 and 999
-   * @example DateTime.local()                                  //~> now
-   * @example DateTime.local({ zone: "America/New_York" })      //~> now, in US east coast time
-   * @example DateTime.local(2017)                              //~> 2017-01-01T00:00:00
-   * @example DateTime.local(2017, 3)                           //~> 2017-03-01T00:00:00
-   * @example DateTime.local(2017, 3, 12, { locale: "fr")       //~> 2017-03-12T00:00:00, with a French locale
-   * @example DateTime.local(2017, 3, 12, 5)                    //~> 2017-03-12T05:00:00
-   * @example DateTime.local(2017, 3, 12, 5, { zone: "utc" })   //~> 2017-03-12T05:00:00, in UTC
-   * @example DateTime.local(2017, 3, 12, 5, 45)                //~> 2017-03-12T05:45:00
-   * @example DateTime.local(2017, 3, 12, 5, 45, 10)            //~> 2017-03-12T05:45:10
-   * @example DateTime.local(2017, 3, 12, 5, 45, 10, 765)       //~> 2017-03-12T05:45:10.765
+   * @example DateTime.local()                            //~> now
+   * @example DateTime.local(2017)                        //~> 2017-01-01T00:00:00
+   * @example DateTime.local(2017, 3)                     //~> 2017-03-01T00:00:00
+   * @example DateTime.local(2017, 3, 12)                 //~> 2017-03-12T00:00:00
+   * @example DateTime.local(2017, 3, 12, 5)              //~> 2017-03-12T05:00:00
+   * @example DateTime.local(2017, 3, 12, 5, 45)          //~> 2017-03-12T05:45:00
+   * @example DateTime.local(2017, 3, 12, 5, 45, 10)      //~> 2017-03-12T05:45:10
+   * @example DateTime.local(2017, 3, 12, 5, 45, 10, 765) //~> 2017-03-12T05:45:10.765
    * @return {DateTime}
    */
-  static local() {
-    const [opts, args] = lastOpts(arguments),
-      [year, month, day, hour, minute, second, millisecond] = args;
-    return quickDT(
-      { year, month, day, hour, minute, second, millisecond },
-      opts
-    );
+  static local(year, month, day, hour, minute, second, millisecond) {
+    if (isUndefined(year)) {
+      return new DateTime({});
+    } else {
+      return quickDT(
+        {
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          second,
+          millisecond,
+        },
+        Settings.defaultZone
+      );
+    }
   }
 
   /**
@@ -543,30 +530,36 @@ export default class DateTime {
    * @param {number} [minute=0] - The minute of the hour, meaning a number between 0 and 59
    * @param {number} [second=0] - The second of the minute, meaning a number between 0 and 59
    * @param {number} [millisecond=0] - The millisecond of the second, meaning a number between 0 and 999
-   * @param {Object} options - configuration options for the DateTime
-   * @param {string} [options.locale] - a locale to set on the resulting DateTime instance
-   * @param {string} [options.outputCalendar] - the output calendar to set on the resulting DateTime instance
-   * @param {string} [options.numberingSystem] - the numbering system to set on the resulting DateTime instance
-   * @example DateTime.utc()                                            //~> now
-   * @example DateTime.utc(2017)                                        //~> 2017-01-01T00:00:00Z
-   * @example DateTime.utc(2017, 3)                                     //~> 2017-03-01T00:00:00Z
-   * @example DateTime.utc(2017, 3, 12)                                 //~> 2017-03-12T00:00:00Z
-   * @example DateTime.utc(2017, 3, 12, 5)                              //~> 2017-03-12T05:00:00Z
-   * @example DateTime.utc(2017, 3, 12, 5, 45)                          //~> 2017-03-12T05:45:00Z
-   * @example DateTime.utc(2017, 3, 12, 5, 45, { locale: "fr" } )       //~> 2017-03-12T05:45:00Z with a French locale
-   * @example DateTime.utc(2017, 3, 12, 5, 45, 10)                      //~> 2017-03-12T05:45:10Z
-   * @example DateTime.utc(2017, 3, 12, 5, 45, 10, 765, { locale: "fr") //~> 2017-03-12T05:45:10.765Z with a French locale
+   * @example DateTime.utc()                            //~> now
+   * @example DateTime.utc(2017)                        //~> 2017-01-01T00:00:00Z
+   * @example DateTime.utc(2017, 3)                     //~> 2017-03-01T00:00:00Z
+   * @example DateTime.utc(2017, 3, 12)                 //~> 2017-03-12T00:00:00Z
+   * @example DateTime.utc(2017, 3, 12, 5)              //~> 2017-03-12T05:00:00Z
+   * @example DateTime.utc(2017, 3, 12, 5, 45)          //~> 2017-03-12T05:45:00Z
+   * @example DateTime.utc(2017, 3, 12, 5, 45, 10)      //~> 2017-03-12T05:45:10Z
+   * @example DateTime.utc(2017, 3, 12, 5, 45, 10, 765) //~> 2017-03-12T05:45:10.765Z
    * @return {DateTime}
    */
-  static utc() {
-    const [opts, args] = lastOpts(arguments),
-      [year, month, day, hour, minute, second, millisecond] = args;
-
-    opts.zone = FixedOffsetZone.utcInstance;
-    return quickDT(
-      { year, month, day, hour, minute, second, millisecond },
-      opts
-    );
+  static utc(year, month, day, hour, minute, second, millisecond) {
+    if (isUndefined(year)) {
+      return new DateTime({
+        ts: Settings.now(),
+        zone: FixedOffsetZone.utcInstance,
+      });
+    } else {
+      return quickDT(
+        {
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          second,
+          millisecond,
+        },
+        FixedOffsetZone.utcInstance
+      );
+    }
   }
 
   /**
@@ -657,37 +650,40 @@ export default class DateTime {
    * @param {number} obj.minute - minute of the hour, 0-59
    * @param {number} obj.second - second of the minute, 0-59
    * @param {number} obj.millisecond - millisecond of the second, 0-999
-   * @param {Object} opts - options for creating this DateTime
-   * @param {string|Zone} [opts.zone='local'] - interpret the numbers in the context of a particular zone. Can take any value taken as the first argument to setZone()
-   * @param {string} [opts.locale='system's locale'] - a locale to set on the resulting DateTime instance
-   * @param {string} opts.outputCalendar - the output calendar to set on the resulting DateTime instance
-   * @param {string} opts.numberingSystem - the numbering system to set on the resulting DateTime instance
+   * @param {string|Zone} [obj.zone='local'] - interpret the numbers in the context of a particular zone. Can take any value taken as the first argument to setZone()
+   * @param {string} [obj.locale='system's locale'] - a locale to set on the resulting DateTime instance
+   * @param {string} obj.outputCalendar - the output calendar to set on the resulting DateTime instance
+   * @param {string} obj.numberingSystem - the numbering system to set on the resulting DateTime instance
    * @example DateTime.fromObject({ year: 1982, month: 5, day: 25}).toISODate() //=> '1982-05-25'
    * @example DateTime.fromObject({ year: 1982 }).toISODate() //=> '1982-01-01'
    * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }) //~> today at 10:26:06
-   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }, { zone: 'utc' }),
-   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }, { zone: 'local' })
-   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }, { }zone: 'America/New_York' })
+   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6, zone: 'utc' }),
+   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6, zone: 'local' })
+   * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6, zone: 'America/New_York' })
    * @example DateTime.fromObject({ weekYear: 2016, weekNumber: 2, weekday: 3 }).toISODate() //=> '2016-01-13'
    * @return {DateTime}
    */
-  static fromObject(obj, opts = {}) {
-    obj = obj || {};
-    const zoneToUse = normalizeZone(opts.zone, Settings.defaultZone);
+  static fromObject(obj) {
+    const zoneToUse = normalizeZone(obj.zone, Settings.defaultZone);
     if (!zoneToUse.isValid) {
       return DateTime.invalid(unsupportedZone(zoneToUse));
     }
 
     const tsNow = Settings.now(),
       offsetProvis = zoneToUse.offset(tsNow),
-      normalized = normalizeObject(obj, normalizeUnit),
+      normalized = normalizeObject(obj, normalizeUnit, [
+        "zone",
+        "locale",
+        "outputCalendar",
+        "numberingSystem",
+      ]),
       containsOrdinal = !isUndefined(normalized.ordinal),
       containsGregorYear = !isUndefined(normalized.year),
       containsGregorMD =
         !isUndefined(normalized.month) || !isUndefined(normalized.day),
       containsGregor = containsGregorYear || containsGregorMD,
       definiteWeekDef = normalized.weekYear || normalized.weekNumber,
-      loc = Locale.fromObject(opts);
+      loc = Locale.fromObject(obj);
 
     // cases:
     // just a weekday -> this week's instance of that weekday, no worries
@@ -786,8 +782,8 @@ export default class DateTime {
    * @param {string|Zone} [opts.zone='local'] - use this zone if no offset is specified in the input string itself. Will also convert the time to this zone
    * @param {boolean} [opts.setZone=false] - override the zone with a fixed-offset zone specified in the string itself, if it specifies one
    * @param {string} [opts.locale='system's locale'] - a locale to set on the resulting DateTime instance
-   * @param {string} [opts.outputCalendar] - the output calendar to set on the resulting DateTime instance
-   * @param {string} [opts.numberingSystem] - the numbering system to set on the resulting DateTime instance
+   * @param {string} opts.outputCalendar - the output calendar to set on the resulting DateTime instance
+   * @param {string} opts.numberingSystem - the numbering system to set on the resulting DateTime instance
    * @example DateTime.fromISO('2016-05-25T09:08:34.123')
    * @example DateTime.fromISO('2016-05-25T09:08:34.123+06:00')
    * @example DateTime.fromISO('2016-05-25T09:08:34.123+06:00', {setZone: true})
@@ -841,7 +837,8 @@ export default class DateTime {
 
   /**
    * Create a DateTime from an input string and format string.
-   * Defaults to en-US if no locale has been specified, regardless of the system's locale. For a table of tokens and their interpretations, see [here](/#/parsing?id=table-of-tokens).
+   * Defaults to en-US if no locale has been specified, regardless of the system's locale.
+   * @see https://moment.github.io/luxon/docs/manual/parsing.html#table-of-tokens
    * @param {string} text - the string to parse
    * @param {string} fmt - the format the string is expected to be in (see the link below for the formats)
    * @param {Object} opts - options to affect the creation
@@ -1094,7 +1091,7 @@ export default class DateTime {
   /**
    * Get the week year
    * @see https://en.wikipedia.org/wiki/ISO_week_date
-   * @example DateTime.local(2014, 12, 31).weekYear //=> 2015
+   * @example DateTime.local(2014, 11, 31).weekYear //=> 2015
    * @type {number}
    */
   get weekYear() {
@@ -1139,7 +1136,7 @@ export default class DateTime {
    */
   get monthShort() {
     return this.isValid
-      ? Info.months("short", { locObj: this.loc })[this.month - 1]
+      ? Info.months("short", { locale: this.locale })[this.month - 1]
       : null;
   }
 
@@ -1151,7 +1148,7 @@ export default class DateTime {
    */
   get monthLong() {
     return this.isValid
-      ? Info.months("long", { locObj: this.loc })[this.month - 1]
+      ? Info.months("long", { locale: this.locale })[this.month - 1]
       : null;
   }
 
@@ -1163,7 +1160,7 @@ export default class DateTime {
    */
   get weekdayShort() {
     return this.isValid
-      ? Info.weekdays("short", { locObj: this.loc })[this.weekday - 1]
+      ? Info.weekdays("short", { locale: this.locale })[this.weekday - 1]
       : null;
   }
 
@@ -1175,7 +1172,7 @@ export default class DateTime {
    */
   get weekdayLong() {
     return this.isValid
-      ? Info.weekdays("long", { locObj: this.loc })[this.weekday - 1]
+      ? Info.weekdays("long", { locale: this.locale })[this.weekday - 1]
       : null;
   }
 
@@ -1226,7 +1223,7 @@ export default class DateTime {
    * @type {boolean}
    */
   get isOffsetFixed() {
-    return this.isValid ? this.zone.isUniversal : null;
+    return this.isValid ? this.zone.universal : null;
   }
 
   /**
@@ -1291,7 +1288,7 @@ export default class DateTime {
    * @param {Object} opts - the same options as toLocaleString
    * @return {Object}
    */
-  resolvedLocaleOptions(opts = {}) {
+  resolvedLocaleOpts(opts = {}) {
     const { locale, numberingSystem, calendar } = Formatter.create(
       this.loc.clone(opts),
       opts
@@ -1383,40 +1380,23 @@ export default class DateTime {
   set(values) {
     if (!this.isValid) return this;
 
-    const normalized = normalizeObject(values, normalizeUnit),
+    const normalized = normalizeObject(values, normalizeUnit, []),
       settingWeekStuff =
         !isUndefined(normalized.weekYear) ||
         !isUndefined(normalized.weekNumber) ||
-        !isUndefined(normalized.weekday),
-      containsOrdinal = !isUndefined(normalized.ordinal),
-      containsGregorYear = !isUndefined(normalized.year),
-      containsGregorMD =
-        !isUndefined(normalized.month) || !isUndefined(normalized.day),
-      containsGregor = containsGregorYear || containsGregorMD,
-      definiteWeekDef = normalized.weekYear || normalized.weekNumber;
-
-    if ((containsGregor || containsOrdinal) && definiteWeekDef) {
-      throw new ConflictingSpecificationError(
-        "Can't mix weekYear/weekNumber units with year/month/day or ordinals"
-      );
-    }
-
-    if (containsGregorMD && containsOrdinal) {
-      throw new ConflictingSpecificationError(
-        "Can't mix ordinal dates with month/day"
-      );
-    }
+        !isUndefined(normalized.weekday);
 
     let mixed;
     if (settingWeekStuff) {
-      mixed = weekToGregorian({ ...gregorianToWeek(this.c), ...normalized });
+      mixed = weekToGregorian(
+        Object.assign(gregorianToWeek(this.c), normalized)
+      );
     } else if (!isUndefined(normalized.ordinal)) {
-      mixed = ordinalToGregorian({
-        ...gregorianToOrdinal(this.c),
-        ...normalized,
-      });
+      mixed = ordinalToGregorian(
+        Object.assign(gregorianToOrdinal(this.c), normalized)
+      );
     } else {
-      mixed = { ...this.toObject(), ...normalized };
+      mixed = Object.assign(this.toObject(), normalized);
 
       // if we didn't set the day but we ended up on an overflow date,
       // use the last day of the right month
@@ -1534,10 +1514,11 @@ export default class DateTime {
 
   /**
    * Returns a string representation of this DateTime formatted according to the specified format string.
-   * **You may not want this.** See {@link toLocaleString} for a more flexible formatting tool. For a table of tokens and their interpretations, see [here](/#/formatting?id=table-of-tokens).
+   * **You may not want this.** See {@link toLocaleString} for a more flexible formatting tool. For a table of tokens and their interpretations, see [here](https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens).
    * Defaults to en-US if no locale has been specified, regardless of the system's locale.
+   * @see https://moment.github.io/luxon/docs/manual/formatting.html#table-of-tokens
    * @param {string} fmt - the format string
-   * @param {Object} opts - opts to override the configuration options on this DateTime
+   * @param {Object} opts - opts to override the configuration options
    * @example DateTime.now().toFormat('yyyy LLL dd') //=> '2017 Apr 22'
    * @example DateTime.now().setLocale('fr').toFormat('yyyy LLL dd') //=> '2017 avr. 22'
    * @example DateTime.now().toFormat('yyyy LLL dd', { locale: "fr" }) //=> '2017 avr. 22'
@@ -1559,8 +1540,7 @@ export default class DateTime {
    * of the DateTime in the assigned locale.
    * Defaults to the system's locale if no locale has been specified
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
-   * @param formatOpts {Object} - Intl.DateTimeFormat constructor options and configuration options
-   * @param {Object} opts - opts to override the configuration options on this DateTime
+   * @param opts {Object} - Intl.DateTimeFormat constructor options and configuration options
    * @example DateTime.now().toLocaleString(); //=> 4/20/2017
    * @example DateTime.now().setLocale('en-gb').toLocaleString(); //=> '20/04/2017'
    * @example DateTime.now().toLocaleString({ locale: 'en-gb' }); //=> '20/04/2017'
@@ -1569,12 +1549,12 @@ export default class DateTime {
    * @example DateTime.now().toLocaleString(DateTime.DATETIME_SHORT); //=> '4/20/2017, 11:32 AM'
    * @example DateTime.now().toLocaleString({ weekday: 'long', month: 'long', day: '2-digit' }); //=> 'Thursday, April 20'
    * @example DateTime.now().toLocaleString({ weekday: 'short', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }); //=> 'Thu, Apr 20, 11:27 AM'
-   * @example DateTime.now().toLocaleString({ hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); //=> '11:32'
+   * @example DateTime.now().toLocaleString({ hour: '2-digit', minute: '2-digit', hour12: false }); //=> '11:32'
    * @return {string}
    */
-  toLocaleString(formatOpts = Formats.DATE_SHORT, opts = {}) {
+  toLocaleString(opts = Formats.DATE_SHORT) {
     return this.isValid
-      ? Formatter.create(this.loc.clone(opts), formatOpts).formatDateTime(this)
+      ? Formatter.create(this.loc.clone(opts), opts).formatDateTime(this)
       : INVALID;
   }
 
@@ -1801,7 +1781,7 @@ export default class DateTime {
   toObject(opts = {}) {
     if (!this.isValid) return {};
 
-    const base = { ...this.c };
+    const base = Object.assign({}, this.c);
 
     if (opts.includeConfig) {
       base.outputCalendar = this.outputCalendar;
@@ -1838,14 +1818,16 @@ export default class DateTime {
    */
   diff(otherDateTime, unit = "milliseconds", opts = {}) {
     if (!this.isValid || !otherDateTime.isValid) {
-      return Duration.invalid("created by diffing an invalid DateTime");
+      return Duration.invalid(
+        this.invalid || otherDateTime.invalid,
+        "created by diffing an invalid DateTime"
+      );
     }
 
-    const durOpts = {
-      locale: this.locale,
-      numberingSystem: this.numberingSystem,
-      ...opts,
-    };
+    const durOpts = Object.assign(
+      { locale: this.locale, numberingSystem: this.numberingSystem },
+      opts
+    );
 
     const units = maybeArray(unit).map(Duration.normalizeUnit),
       otherIsLater = otherDateTime.valueOf() > this.valueOf(),
@@ -1922,7 +1904,7 @@ export default class DateTime {
    * @param {Object} options - options that affect the output
    * @param {DateTime} [options.base=DateTime.now()] - the DateTime to use as the basis to which this time is compared. Defaults to now.
    * @param {string} [options.style="long"] - the style of units, must be "long", "short", or "narrow"
-   * @param {string|string[]} options.unit - use a specific unit or array of units; if omitted, or an array, the method will pick the best unit. Use an array or one of "years", "quarters", "months", "weeks", "days", "hours", "minutes", or "seconds"
+   * @param {string} options.unit - use a specific unit; if omitted, the method will pick the unit. Use one of "years", "quarters", "months", "weeks", "days", "hours", "minutes", or "seconds"
    * @param {boolean} [options.round=true] - whether to round the numbers in the output.
    * @param {number} [options.padding=0] - padding in milliseconds. This allows you to round up the result if it fits inside the threshold. Don't use in combination with {round: false} because the decimal output will include the padding.
    * @param {string} options.locale - override the locale of this DateTime
@@ -1936,24 +1918,20 @@ export default class DateTime {
    */
   toRelative(options = {}) {
     if (!this.isValid) return null;
-    const base = options.base || DateTime.fromObject({}, { zone: this.zone }),
+    const base = options.base || DateTime.fromObject({ zone: this.zone }),
       padding = options.padding
         ? this < base
           ? -options.padding
           : options.padding
         : 0;
-    let units = ["years", "months", "days", "hours", "minutes", "seconds"];
-    let unit = options.unit;
-    if (Array.isArray(options.unit)) {
-      units = options.unit;
-      unit = undefined;
-    }
-    return diffRelative(base, this.plus(padding), {
-      ...options,
-      numeric: "always",
-      units,
-      unit,
-    });
+    return diffRelative(
+      base,
+      this.plus(padding),
+      Object.assign(options, {
+        numeric: "always",
+        units: ["years", "months", "days", "hours", "minutes", "seconds"],
+      })
+    );
   }
 
   /**
@@ -1973,14 +1951,13 @@ export default class DateTime {
     if (!this.isValid) return null;
 
     return diffRelative(
-      options.base || DateTime.fromObject({}, { zone: this.zone }),
+      options.base || DateTime.fromObject({ zone: this.zone }),
       this,
-      {
-        ...options,
+      Object.assign(options, {
         numeric: "auto",
         units: ["years", "months", "days"],
         calendary: true,
-      }
+      })
     );
   }
 
