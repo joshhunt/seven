@@ -1,4 +1,3 @@
-/* eslint no-unused-vars: "off" */
 import { ZoneIsAbstractError } from "./errors.js";
 
 /**
@@ -28,7 +27,7 @@ export default class Zone {
    * @abstract
    * @type {boolean}
    */
-  get universal() {
+  get isUniversal() {
     throw new ZoneIsAbstractError();
   }
 
