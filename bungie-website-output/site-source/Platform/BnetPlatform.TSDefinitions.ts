@@ -80,6 +80,8 @@ export declare namespace DestinyDefinitions {
     Sundial = 83,
     TrialsOfOsiris = 84,
     Dares = 85,
+    Offensive = 86,
+    LostSector = 87,
   }
 
   enum DestinyTalentNodeStepWeaponPerformances {
@@ -230,6 +232,7 @@ export declare namespace DestinyDefinitions {
     ClassArmor = 30,
     Bow = 31,
     DummyRepeatableBounty = 32,
+    Glaive = 33,
   }
 
   enum DestinyUnlockState {
@@ -449,12 +452,23 @@ export declare namespace DestinyDefinitions {
     RedPips = 11,
     ExplicitPercentage = 12,
     RawFloat = 13,
+    LevelAndReward = 14,
   }
 
   enum DestinyObjectiveGrantStyle {
     WhenIncomplete = 0,
     WhenComplete = 1,
     Always = 2,
+  }
+
+  enum DestinyObjectiveUiStyle {
+    None = 0,
+    Highlighted = 1,
+    CraftingWeaponLevel = 2,
+    CraftingWeaponLevelProgress = 3,
+    CraftingWeaponTimestamp = 4,
+    CraftingMementos = 5,
+    CraftingMementoTitle = 6,
   }
 
   enum DestinyProgressionScope {
@@ -665,6 +679,7 @@ export declare namespace DestinyDefinitions {
     Collectibles = 2,
     Records = 3,
     Metric = 4,
+    Craftable = 5,
   }
 
   enum DestinyPresentationDisplayStyle {
@@ -692,6 +707,7 @@ export declare namespace DestinyDefinitions {
     MedalComplete = 5,
     SeasonChallengeComplete = 6,
     GildedTitleComplete = 7,
+    CraftingRecipeUnlocked = 8,
   }
 
   enum DestinyPresentationScreenStyle {
@@ -1417,6 +1433,8 @@ export declare namespace DestinyDefinitions {
 
     action: DestinyItemActionBlockDefinition;
 
+    crafting: DestinyItemCraftingBlockDefinition;
+
     inventory: DestinyItemInventoryBlockDefinition;
 
     setData: DestinyItemSetBlockDefinition;
@@ -1588,6 +1606,38 @@ export declare namespace DestinyDefinitions {
     applyThrottles: boolean;
   }
 
+  export interface DestinyItemCraftingBlockDefinition {
+    descriptions: string[];
+
+    outputItemHash: number;
+
+    craftingRewardSiteHash?: number;
+
+    recipeAlwaysVisibleUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    requiredSocketTypeHashes: number[];
+
+    generalRequiredUnlockExpressions: DestinyUnlockExpressionDefinition[];
+
+    failedRequirementStrings: string[];
+
+    reforgeRequiredUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    baseMaterialRequirements?: number;
+
+    freeCraftUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    bonusPlugs: DestinyItemCraftingBlockBonusPlugDefinition[];
+  }
+
+  export interface DestinyItemCraftingBlockBonusPlugDefinition {
+    requiredUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    socketTypeHash: number;
+
+    plugItemHash: number;
+  }
+
   export interface DestinyItemInventoryBlockDefinition {
     stackUniqueLabel: string;
 
@@ -1618,6 +1668,8 @@ export declare namespace DestinyDefinitions {
     expirationUnlockValueHash?: number;
 
     suppressExpirationWhenObjectivesComplete: boolean;
+
+    recipeItemHash?: number;
   }
 
   export interface DestinyItemSetBlockDefinition {
@@ -1983,6 +2035,8 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyItemSocketEntryPlugItemRandomizedDefinition {
+    craftingRequirements: DestinyPlugItemCraftingRequirements;
+
     weight: number;
 
     alternateWeight: number;
@@ -1992,6 +2046,20 @@ export declare namespace DestinyDefinitions {
     plugItemHash: number;
 
     unlockExpression: DestinyUnlockExpressionDefinition;
+  }
+
+  export interface DestinyPlugItemCraftingRequirements {
+    unlockRequirements: DestinyPlugItemCraftingUnlockRequirement[];
+
+    requiredLevel?: number;
+
+    materialRequirementHashes: number[];
+  }
+
+  export interface DestinyPlugItemCraftingUnlockRequirement {
+    unlockExpression: DestinyUnlockExpressionDefinition;
+
+    failureDescription: string;
   }
 
   export interface DestinyItemCategoryDefinition {
@@ -2185,7 +2253,13 @@ export declare namespace DestinyDefinitions {
 
     count: number;
 
+    countIsConstant: boolean;
+
+    countExpression: DestinyUnlockExpressionDefinition;
+
     omitFromRequirements: boolean;
+
+    virtualMaterialUnlockValueHash?: number;
   }
 
   export interface DestinyMedalTierDefinition {
@@ -2252,6 +2326,10 @@ export declare namespace DestinyDefinitions {
     completedValueStyle: DestinyUnlockValueUIStyle;
 
     inProgressValueStyle: DestinyUnlockValueUIStyle;
+
+    uiLabel: string;
+
+    uiStyle: DestinyObjectiveUiStyle;
 
     boundToRelease: string;
 
@@ -4972,24 +5050,40 @@ export declare namespace DestinyDefinitions {
     records: DestinyPresentationNodeRecordChildEntry[];
 
     metrics: DestinyPresentationNodeMetricChildEntry[];
+
+    craftables: DestinyPresentationNodeCraftableChildEntry[];
   }
 
   export interface DestinyPresentationNodeChildEntry {
     presentationNodeHash: number;
 
     selectionExpression: DestinyUnlockExpressionDefinition;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeCollectibleChildEntry {
     collectibleHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeRecordChildEntry {
     recordHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeMetricChildEntry {
     metricHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeCraftableChildEntry {
+    craftableItemHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyProgressionLevelRequirementDefinition {

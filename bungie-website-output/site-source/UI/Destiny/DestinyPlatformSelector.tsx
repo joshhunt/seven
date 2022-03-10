@@ -3,11 +3,12 @@
 
 import { EnumUtils } from "@Utilities/EnumUtils";
 import * as React from "react";
+import { UserUtils } from "../../Utilities/UserUtils";
 import styles from "./DestinyPlatformSelector.module.scss";
-import { User, CrossSave } from "@Platform";
+import { User, CrossSave, Platform } from "@Platform";
 import { IDropdownOption, Dropdown } from "@UI/UIKit/Forms/Dropdown";
 import { Localizer } from "@bungie/localization";
-import { BungieMembershipType } from "@Enum";
+import { BungieCredentialType, BungieMembershipType } from "@Enum";
 
 // Required props
 interface IDestinyPlatformSelectorProps {
@@ -24,6 +25,7 @@ type Props = IDestinyPlatformSelectorProps & DefaultProps;
 
 interface IDestinyPlatformSelectorState {
   selectedValue: string;
+  credentialNameMap: Record<string, string>;
 }
 
 /**
@@ -44,10 +46,23 @@ export class DestinyPlatformSelector extends React.Component<
         this.props.defaultValue,
         BungieMembershipType
       ),
+      credentialNameMap: null,
     };
   }
 
   public static defaultProps: DefaultProps = {};
+
+  public componentDidMount() {
+    Platform.UserService.GetSanitizedPlatformDisplayNames(
+      this.props.userMembershipData.bungieNetUser.membershipId
+    ).then((names) =>
+      this.setState({
+        credentialNameMap: UserUtils.getStringKeyedMapForSanitizedCredentialNames(
+          names
+        ),
+      })
+    );
+  }
 
   public render() {
     const primaryMembershipType =
@@ -83,10 +98,19 @@ export class DestinyPlatformSelector extends React.Component<
               value.membershipType,
               BungieMembershipType
             );
+            const bCredentialTypeString = EnumUtils.getStringValue(
+              UserUtils.getCredentialTypeFromMembershipType(
+                value.membershipType
+              ),
+              BungieCredentialType
+            );
+            const sanitizedPlatformName = this.state.credentialNameMap?.[
+              bCredentialTypeString
+            ];
 
             return {
               iconPath: value.iconPath,
-              label: `${value.displayName} : ${Localizer.Platforms[bMembershipTypeString]}`,
+              label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
               value: bMembershipTypeString,
             };
           });

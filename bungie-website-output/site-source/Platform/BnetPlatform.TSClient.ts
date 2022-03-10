@@ -2517,6 +2517,80 @@ export declare namespace Contracts {
   }
 }
 
+export declare namespace Common {
+  export interface CEDictionaryBungieCredentialTypeString {
+    Comparer: any;
+
+    Count: number;
+
+    Keys: any;
+
+    Values: any;
+
+    Item: string;
+  }
+
+  /**
+	Many Destiny*Definition contracts - the "first order" entities of Destiny
+	that have their own tables in the Manifest Database - also have displayable
+	information.  This is the base class for that display information.
+	*/
+  export interface DestinyDisplayPropertiesDefinition {
+    description: string;
+
+    name: string;
+
+    /**
+		Note that "icon" is sometimes misleading, and should be interpreted in the context of the entity.
+		For instance, in Destiny 1 the DestinyRecordBookDefinition's icon was a big picture of a book.
+		
+		But usually, it will be a small square image that you can use as... well, an icon.
+		
+		They are currently represented as 96px x 96px images.
+		*/
+    icon: string;
+
+    iconSequences: Common.DestinyIconSequenceDefinition[];
+
+    /**
+		If this item has a high-res icon (at least for now, many things won't), then the path to that icon will be here.
+		*/
+    highResIcon: string;
+
+    hasIcon: boolean;
+  }
+
+  export interface DestinyIconSequenceDefinition {
+    frames: string[];
+  }
+
+  export interface DestinyPositionDefinition {
+    x: number;
+
+    y: number;
+
+    z: number;
+  }
+
+  export interface DestinyIntrinsicUnlockDefinition {
+    unlockHash: number;
+
+    value: Globals.DestinyUnlockState;
+  }
+
+  export interface CEDictionaryStringString {
+    Comparer: any;
+
+    Count: number;
+
+    Keys: any;
+
+    Values: any;
+
+    Item: string;
+  }
+}
+
 export declare namespace Config {
   export interface UserTheme {
     userThemeId: number;
@@ -3697,6 +3771,11 @@ export declare namespace Responses {
 		COMPONENT TYPE: StringVariables
 		*/
     characterStringVariables: Components.DictionaryComponentResponseInt64DestinyStringVariablesComponent;
+
+    /**
+		COMPONENT TYPE: Craftables
+		*/
+    characterCraftables: Components.DictionaryComponentResponseInt64DestinyCraftablesComponent;
 
     /**
 		Information about instanced items across all returned characters, keyed by the item's instance ID.
@@ -5118,6 +5197,8 @@ export declare namespace Models {
 
     loreRootNodeHash: number;
 
+    craftingRootNodeHash: number;
+
     currentRankProgressionHashes: number[];
 
     insertPlugFreeProtectedPlugItemHashes: number[];
@@ -6083,68 +6164,6 @@ export declare namespace Triumphs {
   }
 }
 
-export declare namespace Common {
-  /**
-	Many Destiny*Definition contracts - the "first order" entities of Destiny
-	that have their own tables in the Manifest Database - also have displayable
-	information.  This is the base class for that display information.
-	*/
-  export interface DestinyDisplayPropertiesDefinition {
-    description: string;
-
-    name: string;
-
-    /**
-		Note that "icon" is sometimes misleading, and should be interpreted in the context of the entity.
-		For instance, in Destiny 1 the DestinyRecordBookDefinition's icon was a big picture of a book.
-		
-		But usually, it will be a small square image that you can use as... well, an icon.
-		
-		They are currently represented as 96px x 96px images.
-		*/
-    icon: string;
-
-    iconSequences: Common.DestinyIconSequenceDefinition[];
-
-    /**
-		If this item has a high-res icon (at least for now, many things won't), then the path to that icon will be here.
-		*/
-    highResIcon: string;
-
-    hasIcon: boolean;
-  }
-
-  export interface DestinyIconSequenceDefinition {
-    frames: string[];
-  }
-
-  export interface DestinyPositionDefinition {
-    x: number;
-
-    y: number;
-
-    z: number;
-  }
-
-  export interface DestinyIntrinsicUnlockDefinition {
-    unlockHash: number;
-
-    value: Globals.DestinyUnlockState;
-  }
-
-  export interface CEDictionaryStringString {
-    Comparer: any;
-
-    Count: number;
-
-    Keys: any;
-
-    Values: any;
-
-    Item: string;
-  }
-}
-
 export declare namespace Checklists {
   export interface DestinyChecklistStatus {
     /**
@@ -6293,6 +6312,12 @@ export declare namespace Definitions {
 		The amount of the material required.
 		*/
     count: number;
+
+    /**
+		If true, the material requirement count value is constant.
+		Since The Witch Queen expansion, some material requirement counts can be dynamic and will need to be returned with an API call.
+		*/
+    countIsConstant: boolean;
 
     /**
 		If True, this requirement is "silent": don't bother showing it in a material requirements display.
@@ -6559,6 +6584,17 @@ export declare namespace Definitions {
 		The style to use when the objective is still in progress.
 		*/
     inProgressValueStyle: Globals.DestinyUnlockValueUIStyle;
+
+    /**
+		Objectives can have arbitrary UI-defined identifiers that define the style applied to objectives.
+		For convenience, known UI labels will be defined in the uiStyle enum value.
+		*/
+    uiLabel: string;
+
+    /**
+		If the objective has a known UI label value, this property will represent it.
+		*/
+    uiStyle: Globals.DestinyObjectiveUiStyle;
 
     hash: number;
 
@@ -8721,6 +8757,11 @@ export declare namespace Definitions {
     action: Definitions.DestinyItemActionBlockDefinition;
 
     /**
+		Recipe items will have relevant crafting information available here.
+		*/
+    crafting: Definitions.DestinyItemCraftingBlockDefinition;
+
+    /**
 		If this item can exist in an inventory, this block will be non-null.  In practice,
 		every item that currently exists has one of these blocks.  But note that it is not necessarily guaranteed.
 		*/
@@ -9174,6 +9215,40 @@ export declare namespace Definitions {
   }
 
   /**
+	If an item can have an action performed on it (like "Dismantle"), it will be defined here
+	if you care.
+	*/
+  export interface DestinyItemCraftingBlockDefinition {
+    /**
+		A reference to the item definition that is created when crafting with this 'recipe' item.
+		*/
+    outputItemHash: number;
+
+    /**
+		A list of socket type hashes that describes which sockets are required for crafting with this recipe.
+		*/
+    requiredSocketTypeHashes: number[];
+
+    failedRequirementStrings: string[];
+
+    /**
+		A reference to the base material requirements for crafting with this recipe.
+		*/
+    baseMaterialRequirements?: number;
+
+    /**
+		A list of 'bonus' socket plugs that may be available if certain requirements are met.
+		*/
+    bonusPlugs: Definitions.DestinyItemCraftingBlockBonusPlugDefinition[];
+  }
+
+  export interface DestinyItemCraftingBlockBonusPlugDefinition {
+    socketTypeHash: number;
+
+    plugItemHash: number;
+  }
+
+  /**
 	If the item can exist in an inventory - the overwhelming majority of them can and do -
 	then this is the basic properties regarding the item's relationship with the inventory.
 	*/
@@ -9240,6 +9315,11 @@ export declare namespace Definitions {
     expiredInOrbitMessage: string;
 
     suppressExpirationWhenObjectivesComplete: boolean;
+
+    /**
+		A reference to the associated crafting 'recipe' item definition, if this item can be crafted.
+		*/
+    recipeItemHash?: number;
   }
 
   /**
@@ -10694,6 +10774,8 @@ export declare namespace Definitions {
   }
 
   export interface DestinyItemSocketEntryPlugItemRandomizedDefinition {
+    craftingRequirements: Definitions.DestinyPlugItemCraftingRequirements;
+
     /**
 		Indicates if the plug can be rolled on the current version of the item.
 		For example, older versions of weapons may have plug rolls that are no longer possible on the current versions.
@@ -10701,6 +10783,21 @@ export declare namespace Definitions {
     currentlyCanRoll: boolean;
 
     plugItemHash: number;
+  }
+
+  export interface DestinyPlugItemCraftingRequirements {
+    unlockRequirements: Definitions.DestinyPlugItemCraftingUnlockRequirement[];
+
+    /**
+		If the plug has a known level requirement, it'll be available here.
+		*/
+    requiredLevel?: number;
+
+    materialRequirementHashes: number[];
+  }
+
+  export interface DestinyPlugItemCraftingUnlockRequirement {
+    failureDescription: string;
   }
 
   /**
@@ -13621,6 +13718,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface DictionaryComponentResponseInt64DestinyCraftablesComponent {
+    data: { [key: string]: Craftables.DestinyCraftablesComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface DictionaryComponentResponseInt64DestinyItemInstanceComponent {
     data: { [key: string]: Items.DestinyItemInstanceComponent };
 
@@ -14653,22 +14758,38 @@ export declare namespace Presentation {
     records: Presentation.DestinyPresentationNodeRecordChildEntry[];
 
     metrics: Presentation.DestinyPresentationNodeMetricChildEntry[];
+
+    craftables: Presentation.DestinyPresentationNodeCraftableChildEntry[];
   }
 
   export interface DestinyPresentationNodeChildEntry {
     presentationNodeHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeCollectibleChildEntry {
     collectibleHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeRecordChildEntry {
     recordHash: number;
+
+    nodeDisplayPriority: number;
   }
 
   export interface DestinyPresentationNodeMetricChildEntry {
     metricHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeCraftableChildEntry {
+    craftableItemHash: number;
+
+    nodeDisplayPriority: number;
   }
 }
 
@@ -16367,6 +16488,52 @@ export declare namespace Sets {
   }
 }
 
+export declare namespace Craftables {
+  export interface DestinyCraftablesComponent {
+    /**
+		A map of craftable item hashes to craftable item state components.
+		*/
+    craftables: { [key: number]: Craftables.DestinyCraftableComponent };
+
+    /**
+		The hash for the root presentation node definition of craftable item categories.
+		*/
+    craftingRootNodeHash: number;
+  }
+
+  export interface DestinyCraftableComponent {
+    visible: boolean;
+
+    /**
+		If the requirements are not met for crafting this item, these will index into the list of failure strings.
+		*/
+    failedRequirementIndexes: number[];
+
+    /**
+		Plug item state for the crafting sockets.
+		*/
+    sockets: Craftables.DestinyCraftableSocketComponent[];
+  }
+
+  export interface DestinyCraftableSocketComponent {
+    plugSetHash: number;
+
+    /**
+		Unlock state for plugs in the socket plug set definition
+		*/
+    plugs: Craftables.DestinyCraftableSocketPlugComponent[];
+  }
+
+  export interface DestinyCraftableSocketPlugComponent {
+    plugItemHash: number;
+
+    /**
+		Index into the unlock requirements to display failure descriptions
+		*/
+    failedRequirementIndexes: number[];
+  }
+}
+
 export declare namespace ClanBanner {
   export interface ClanBannerSource {
     clanBannerDecals: { [key: number]: ClanBanner.ClanBannerDecal };
@@ -16549,9 +16716,15 @@ export declare namespace HistoricalStats {
     period: string;
 
     /**
-		If this activity has "phases", this is the phase at which the activity was started.
+		If this activity has "phases", this is the phase at which the activity was started.  This value is only
+		valid for activities before the Beyond Light expansion shipped. Subsequent activities will not have a valid value here.
 		*/
     startingPhaseIndex?: number;
+
+    /**
+		True if the activity was started from the beginning, if that information is available and the activity was played post Witch Queen release.
+		*/
+    activityWasStartedFromBeginning?: boolean;
 
     /**
 		Details about the activity.
@@ -19773,6 +19946,27 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "GetForumUser",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Gets a list of all display names linked to this membership id but sanitized (profanity filtered). Obeys all visibility rules of calling user and is heavily cached.
+   * @param membershipId The requested membership id to load.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetSanitizedPlatformDisplayNames = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<any> =>
+    ApiIntermediary.doGetRequest(
+      `/User/GetSanitizedPlatformDisplayNames/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetSanitizedPlatformDisplayNames",
       undefined,
       clientState
     );

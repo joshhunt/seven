@@ -22,7 +22,7 @@ import {
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
-import { Contract, Platform, Responses } from "@Platform";
+import { Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IProfileParams } from "@Routes/RouteParams";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
@@ -35,11 +35,7 @@ import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import {
-  Spinner,
-  SpinnerContainer,
-  SpinnerDisplayMode,
-} from "@UIKit/Controls/Spinner";
+import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -89,23 +85,6 @@ const Profile: React.FC<ProfileProps> = (props) => {
     ? globalState.crossSavePairingStatus?.primaryMembershipType !== undefined
     : destinyMembership.isCrossSaved;
 
-  const [twitchCred, setTwitchCred] = useState<
-    Contract.GetCredentialTypesForAccountResponse
-  >(undefined);
-
-  const getCredentialTypesForUser = () => {
-    //only used looking at someone elses profile and only for twitch
-    Platform.UserService.GetCredentialTypesForTargetAccount(membershipId).then(
-      (data) => {
-        setTwitchCred(
-          data?.find((cred) => {
-            return cred.credentialType === BungieCredentialType.TwitchId;
-          })
-        );
-      }
-    );
-  };
-
   const bungieNetUser = destinyMembership?.membershipData?.bungieNetUser;
   const bungieGlobalNameObject = bungieNetUser
     ? UserUtils.getBungieNameFromBnetGeneralUser(bungieNetUser)
@@ -117,10 +96,11 @@ const Profile: React.FC<ProfileProps> = (props) => {
   const [destinyProfileResponse, setDestinyProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >(null);
-
+  const [sanitizedProfileNames, setSanitizedProfileNames] = useState<
+    Record<string, string>
+  >(null);
   const [showMessageModal, toggleShowMessageModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true);
-
   const [isValidUser, setIsValidUser] = useState(true);
 
   enum pageView {
@@ -190,8 +170,15 @@ const Profile: React.FC<ProfileProps> = (props) => {
   }, [destinyMembership]);
 
   useEffect(() => {
-    getCredentialTypesForUser();
-  }, [membershipId]);
+    membershipId &&
+      Platform.UserService.GetSanitizedPlatformDisplayNames(
+        membershipId
+      ).then((names) =>
+        setSanitizedProfileNames(
+          UserUtils.getStringKeyedMapForSanitizedCredentialNames(names)
+        )
+      );
+  }, []);
 
   if (!isValidUser && ConfigUtils.SystemStatus(SystemNames.AccountServices)) {
     return <Error404 />;
@@ -263,38 +250,12 @@ const Profile: React.FC<ProfileProps> = (props) => {
           DestinyComponentType.Metrics,
         ]
       ).then((destinyResponse: Responses.DestinyProfileResponse) => {
-        const hasCharacterData =
-          typeof destinyResponse.characters !== "undefined" &&
-          typeof destinyResponse.characters.data !== "undefined";
-
-        let targetCharacterId = "";
-
-        if (hasCharacterData) {
-          targetCharacterId = Object.keys(destinyResponse.characters.data)[0];
-        }
-
         setDestinyProfileResponse(destinyResponse);
       });
     }
   };
 
   const status = bungieNetUser?.statusText ?? "";
-
-  const useBungieNetUserForName = bungieNetUser !== null;
-  const useDestinyMembershipForName =
-    typeof destinyMembership?.memberships[0] !== "undefined";
-
-  const bungieName = useBungieNetUserForName
-    ? UserUtils.getBungieNameFromBnetGeneralUser(bungieNetUser)
-    : useDestinyMembershipForName
-    ? UserUtils.getBungieNameFromGroupUserInfoCard(
-        destinyMembership.memberships[0]
-      )
-    : null;
-
-  //appends the unique part to the displayName for css purposes
-  const bungieDisplayName = bungieName?.bungieGlobalName;
-  const completeBungieIdSuffix = bungieName?.bungieGlobalCodeWithHashtag;
   const joinDate = bungieNetUser?.firstAccess ?? "";
 
   const profileLoc = Localizer.Profile;
@@ -382,18 +343,25 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 </>
               )}
               {bungieNetUser && (
-                <div className={styles.aboutMe}>
+                <div>
                   <h3>{profileLoc.AboutMe}</h3>
                   <p>{bungieNetUser.about}</p>
                 </div>
               )}
 
               {destinyMembership?.membershipData?.destinyMemberships && (
-                <div className={styles.linked}>
+                <div>
                   <h3>{profileLoc.LinkedAccounts}</h3>
                   <ul>
                     {destinyMembership.membershipData.destinyMemberships.map(
                       (value, index) => {
+                        const credentialName = UserUtils.getCredentialTypeFromMembershipType(
+                          value.membershipType
+                        );
+                        const credentialString = EnumUtils.getStringValue(
+                          credentialName,
+                          BungieCredentialType
+                        );
                         if (
                           value.membershipType !==
                           BungieMembershipType.BungieNext
@@ -405,23 +373,47 @@ const Profile: React.FC<ProfileProps> = (props) => {
                             >
                               <img
                                 src={value.iconPath}
-                                alt={value.displayName}
+                                alt={
+                                  sanitizedProfileNames &&
+                                  sanitizedProfileNames[credentialString]
+                                }
                               />{" "}
-                              {value.displayName}
+                              {sanitizedProfileNames &&
+                                sanitizedProfileNames[credentialString]}
                             </li>
                           );
                         }
                       }
                     )}
-                    {twitchCred && (
-                      <li className={styles.linkedAccount}>
-                        <img
-                          src={"/7/ca//bungie/icons/logos/twitch/icon.png"}
-                          alt={twitchCred.credentialDisplayName}
-                        />{" "}
-                        {twitchCred.credentialDisplayName}
-                      </li>
-                    )}
+                    {sanitizedProfileNames &&
+                      sanitizedProfileNames[
+                        EnumUtils.getStringValue(
+                          BungieCredentialType.TwitchId,
+                          BungieCredentialType
+                        )
+                      ] && (
+                        <li className={styles.linkedAccount}>
+                          <img
+                            src={"/7/ca//bungie/icons/logos/twitch/icon.png"}
+                            alt={
+                              sanitizedProfileNames[
+                                EnumUtils.getStringValue(
+                                  BungieCredentialType.TwitchId,
+                                  BungieCredentialType
+                                )
+                              ]
+                            }
+                          />{" "}
+                          {
+                            sanitizedProfileNames[
+                              EnumUtils.getStringValue(
+                                BungieCredentialType.TwitchId,
+                                BungieCredentialType
+                              )
+                            ]
+                          }
+                        </li>
+                      )}
                   </ul>
                 </div>
               )}

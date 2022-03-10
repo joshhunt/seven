@@ -7,12 +7,22 @@ import {
   GlobalState,
   GlobalStateComponentProps,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Fireteam, Friends, GroupsV2, Ignores, User } from "@Platform";
+import {
+  Fireteam,
+  Friends,
+  GroupsV2,
+  Ignores,
+  Platform,
+  User,
+} from "@Platform";
 import * as H from "history";
 import Cookies from "js-cookie";
 import moment from "moment";
+import { ConvertToPlatformError } from "../Platform/ApiIntermediary";
+import { Modal } from "../UI/UIKit/Controls/Modal/Modal";
 import { AnalyticsUtils } from "./AnalyticsUtils";
 import { ConfigUtils } from "./ConfigUtils";
+import { EnumUtils } from "./EnumUtils";
 
 export interface IBungieName {
   /** This will fallback to the name to use if we do not have a bungie Global Name for them */
@@ -166,6 +176,7 @@ export class UserUtils {
       return UserUtils.emptyBungieNameObject;
     }
   }
+
   public static getBungieNameFromGroupUserInfoCard = (
     user: GroupsV2.GroupUserInfoCard
   ): IBungieName => {
@@ -570,6 +581,23 @@ export class UserUtils {
       `/${Localizer.CurrentCultureName}/User/SignIn${
         registrationLocKey?.length > 0 ? `?title=${registrationLocKey}` : ""
       }${previousPath}`
+    );
+  }
+
+  public static getStringKeyedMapForSanitizedCredentialNames(
+    getSanitizedNamesResponse: Record<any, string>
+  ) {
+    // It makes a huge difference later if we can know that the credential type keys are always the string value of that type
+    return Object.keys(getSanitizedNamesResponse).reduce(
+      (prev, curr: keyof Globals.BungieCredentialType) => {
+        // I think it's safe to say that stadia or not, we don't want to recommend a Bungie Name with a # in it
+        prev[
+          EnumUtils.getStringValue(curr, Globals.BungieCredentialType)
+        ] = getSanitizedNamesResponse[curr].split("#")[0];
+
+        return prev;
+      },
+      {} as Record<string, string>
     );
   }
 }

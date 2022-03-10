@@ -1263,6 +1263,12 @@ export enum PlatformErrorCodes {
   ClanFireteamTooManyOpenScheduledFireteams = 3030,
   ClanFireteamCannotReopenScheduledFireteams = 3031,
   ClanFireteamJoinNoAccountSpecified = 3032,
+  ClanFireteamMinDestiny2ProgressForCreation = 3033,
+  ClanFireteamMinDestiny2ProgressForJoin = 3034,
+  ClanFireteamSMSOrPurchaseRequiredCreate = 3035,
+  ClanFireteamPurchaseRequiredCreate = 3036,
+  ClanFireteamSMSOrPurchaseRequiredJoin = 3037,
+  ClanFireteamPurchaseRequiredJoin = 3038,
   CrossSaveOverriddenAccountNotFound = 3200,
   CrossSaveTooManyOverriddenPlatforms = 3201,
   CrossSaveNoOverriddenPlatforms = 3202,
@@ -1670,6 +1676,16 @@ export enum ItemState {
 		with having a special "glowing" effect applied to the item's icon.
 		*/
   Masterwork = 4,
+  /**
+		If this bit is set, the item has been 'crafted' by the player.
+		You may want to represent this visually with a "crafted" icon overlay.
+		*/
+  Crafted = 8,
+  /**
+		If this bit is set, the item has a 'highlighted' objective.
+		You may want to represent this with an orange-red icon border color.
+		*/
+  HighlightedObjective = 16,
 }
 
 /**
@@ -1928,6 +1944,10 @@ export enum DestinyComponentType {
 		Returns a mapping of localized string variable hashes to values, on a per-account or per-character basis.
 		*/
   StringVariables = 1200,
+  /**
+		Returns summary status information about all "Craftables" aka crafting recipe items.
+		*/
+  Craftables = 1300,
 }
 
 /**
@@ -2434,6 +2454,10 @@ export enum DestinyUnlockValueUIStyle {
 		NOTE: Passed along from Investment as whole number with last two digits as decimal values (452 -> 4.52)
 		*/
   RawFloat = 13,
+  /**
+		Show the value as a level and a reward.
+		*/
+  LevelAndReward = 14,
 }
 
 /**
@@ -2444,6 +2468,19 @@ export enum DestinyObjectiveGrantStyle {
   WhenIncomplete = 0,
   WhenComplete = 1,
   Always = 2,
+}
+
+/**
+	If the objective has a known UI label, this enumeration will represent it.
+	*/
+export enum DestinyObjectiveUiStyle {
+  None = 0,
+  Highlighted = 1,
+  CraftingWeaponLevel = 2,
+  CraftingWeaponLevelProgress = 3,
+  CraftingWeaponTimestamp = 4,
+  CraftingMementos = 5,
+  CraftingMementoTitle = 6,
 }
 
 export enum DestinyActivityNavPointType {
@@ -2666,6 +2703,7 @@ export enum DestinyItemSubType {
   ClassArmor = 30,
   Bow = 31,
   DummyRepeatableBounty = 32,
+  Glaive = 33,
 }
 
 /**
@@ -2884,6 +2922,7 @@ export enum DestinyPresentationNodeType {
   Collectibles = 2,
   Records = 3,
   Metric = 4,
+  Craftable = 5,
 }
 
 /**
@@ -3007,6 +3046,7 @@ export enum DestinyRecordToastStyle {
   MedalComplete = 5,
   SeasonChallengeComplete = 6,
   GildedTitleComplete = 7,
+  CraftingRecipeUnlocked = 8,
 }
 
 export enum DestinyUnlockState {
@@ -3510,6 +3550,8 @@ export enum DestinyActivityModeType {
   Sundial = 83,
   TrialsOfOsiris = 84,
   Dares = 85,
+  Offensive = 86,
+  LostSector = 87,
 }
 
 /**

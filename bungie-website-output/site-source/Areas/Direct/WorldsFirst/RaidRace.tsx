@@ -7,6 +7,7 @@ import { SystemNames } from "@Global/SystemNames";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { MarketingOptInButton } from "@UI/User/MarketingOptInButton";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
@@ -15,6 +16,7 @@ import {
   bgImageFromStackFile,
   responsiveBgImageFromStackFile,
 } from "@Utilities/GraphQLUtils";
+import classNames from "classnames";
 import { DateTime } from "luxon";
 import React, { useEffect, useRef, useState } from "react";
 import { Redirect } from "react-router";
@@ -78,6 +80,7 @@ const WorldsFirst: React.FC = () => {
     twitch_logo,
     wq_logo,
     twitch_btn_url,
+    pre_reveal,
   } = data ?? {};
 
   if (!data) {
@@ -126,10 +129,30 @@ const WorldsFirst: React.FC = () => {
           </span>
         </a>
 
+        {!isLive && (
+          <ClickableMediaThumbnail
+            thumbnail={pre_reveal?.trailer_btn.thumbnail?.url}
+            videoId={pre_reveal?.trailer_btn.trailer_id}
+            classes={{
+              btnWrapper: styles.trailerBtn,
+              btnBg: styles.btnBg,
+            }}
+            showShadowBehindPlayIcon
+          >
+            <div className={styles.btnContent}>
+              {pre_reveal?.trailer_btn.btn_text}
+            </div>
+          </ClickableMediaThumbnail>
+        )}
+
         <div className={styles.lowerContentWrapper}>
-          <div className={styles.raidIconFlexWrapper}>
+          <div
+            className={classNames(styles.raidIconFlexWrapper, {
+              [styles.hideTiny]: !isLive,
+            })}
+          >
             <div
-              className={styles.raidIcon}
+              className={classNames(styles.raidIcon)}
               style={{ backgroundImage: bgImageFromStackFile(raid_logo) }}
             />
           </div>

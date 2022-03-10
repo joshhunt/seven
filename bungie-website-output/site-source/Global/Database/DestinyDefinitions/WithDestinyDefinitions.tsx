@@ -116,7 +116,6 @@ export const withDestinyDefinitions = <
           return;
         }
 
-        //TODO jlauer - revert updateImmediately back to true when the datastore has been fixed
         this.destroyer = DestinyDefinitions.observe(
           (data) => {
             this.setState({
