@@ -9,7 +9,7 @@ import { useHistory, useLocation } from "react-router";
 import { Logger } from "../../Global/Logger";
 import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import TwitterFeed from "../../UI/Content/TwitterFeed";
+import { TwitterFeed } from "../../UI/Content/TwitterFeed";
 import { EnumUtils } from "../../Utilities/EnumUtils";
 import { UrlUtils } from "../../Utilities/UrlUtils";
 import { NewsCategory } from "./News";
@@ -18,7 +18,7 @@ import { NewsPreview } from "./NewsPreview";
 
 interface NewsByCategoryProps {}
 
-export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
+const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const location = useLocation();
   const history = useHistory();
@@ -145,8 +145,10 @@ export const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
             </div>
           </div>
         )}
+        <TwitterFeed />
       </div>
-      <TwitterFeed account={"/Bungie"} />
     </div>
   );
 };
+
+export default NewsByCategory;

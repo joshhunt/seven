@@ -26,27 +26,6 @@ interface SeasonsTableProps
   flowState: ICrossSaveFlowState;
 }
 
-const getAllSeasons = (seasonEntitlements: {
-  [p: string]: Seasons.DestinySeasonEntitlements;
-}): number[] => {
-  if (seasonEntitlements) {
-    const allSeasonsUniqueSet = Object.values(seasonEntitlements).reduce(
-      (result, { seasons }) => {
-        const resultSet = [...seasons.map((s) => s.seasonHash)];
-
-        resultSet.forEach((r) => result.add(r));
-
-        return result;
-      },
-      new Set<number>()
-    );
-
-    return Array.from(allSeasonsUniqueSet);
-  }
-
-  return [];
-};
-
 const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
   if (!ConfigUtils.SystemStatus("CrossSaveEntitlementTables")) {
     return null;
@@ -63,6 +42,34 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
   const primaryMembershipType = props.flowState.primaryMembershipType;
 
   const [allSeasons, setAllSeasons] = useState<number[]>([]);
+
+  const getAllSeasons = (seasonEntitlements: {
+    [p: string]: Seasons.DestinySeasonEntitlements;
+  }): number[] => {
+    if (seasonEntitlements) {
+      const allSeasonsUniqueSet = Object.values(seasonEntitlements).reduce(
+        (result, { seasons }) => {
+          const resultSet = [...seasons.map((s) => s.seasonHash)];
+
+          resultSet.forEach((r) => result.add(r));
+
+          return result;
+        },
+        new Set<number>()
+      );
+
+      return Array.from(allSeasonsUniqueSet).sort((a, b) => {
+        const seasonANumber = props.definitions.DestinySeasonDefinition.get(a)
+          .seasonNumber;
+        const seasonBNumber = props.definitions.DestinySeasonDefinition.get(a)
+          .seasonNumber;
+
+        return seasonANumber - seasonBNumber;
+      });
+    }
+
+    return [];
+  };
 
   const stateOfSeason = (
     membershipType: BungieMembershipType,

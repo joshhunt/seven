@@ -4,13 +4,13 @@ import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { NotFoundError } from "@CustomErrors";
+import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
 import EventsRouter from "./Events/EventsRouter";
 import SeasonsProgress from "./SeasonsProgress";
 import PreviousSeason from "./PreviousSeason";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SeasonsDefinitions } from "./SeasonsDefinitions";
-import { AsyncRoute } from "@Routes/AsyncRoute";
 
 class SeasonsArea extends React.Component<RouteComponentProps> {
   public render() {
@@ -26,77 +26,86 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
 
     return (
       <SwitchWithErrors>
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheUndying").path}
-          component={() =>
-            import(
-              "./ProductPages/Season8/SeasonOfTheUndying" /* webpackChunkName: "SeasonOfTheUndying" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season8/SeasonOfTheUndying" /* webpackChunkName: "SeasonOfTheUndying" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfDawn").path}
-          component={() =>
-            import(
-              "./ProductPages/Season9/SeasonOfDawn" /* webpackChunkName: "SeasonOfDawn" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season9/SeasonOfDawn" /* webpackChunkName: "SeasonOfDawn" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheWorthy").path}
-          component={() =>
-            import(
-              "./ProductPages/Season10/SeasonOfTheWorthy" /* webpackChunkName: "SeasonOfTheWorthy" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season10/SeasonOfTheWorthy" /* webpackChunkName: "SeasonOfTheWorthy" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfArrivals").path}
-          component={() =>
-            import(
-              "./ProductPages/Season11/Season11" /* webpackChunkName: "Season11" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season11/Season11" /* webpackChunkName: "Season11" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheHunt").path}
-          component={() =>
-            import(
-              "./ProductPages/Season12/SeasonOfTheHunt" /* webpackChunkName: "Season12" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season12/SeasonOfTheHunt" /* webpackChunkName: "Season12" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheChosen").path}
-          component={() =>
-            import(
-              "./ProductPages/Season13/SeasonOfTheChosen" /* webpackChunkName: "Season13" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season13/SeasonOfTheChosen" /* webpackChunkName: "Season13" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheSplicer").path}
-          component={() =>
-            import(
-              "./ProductPages/Season14/SeasonOfTheSplicer" /* webpackChunkName: "Season14" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season14/SeasonOfTheSplicer" /* webpackChunkName: "Season14" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheLost").path}
-          component={() =>
-            import(
-              "./ProductPages/Season15/SeasonOfTheLost" /* webpackChunkName: "Season15" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season15/SeasonOfTheLost" /* webpackChunkName: "Season15" */
+              )
+          )}
         />
-        <AsyncRoute
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheRisen").path}
-          component={() =>
-            import(
-              "./ProductPages/Season16/SeasonOfTheRisen" /* webpackChunkName: "Season16" */
-            )
-          }
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season16/SeasonOfTheRisen" /* webpackChunkName: "Season16" */
+              )
+          )}
         />
 
         <Route

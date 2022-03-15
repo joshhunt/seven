@@ -1,28 +1,11 @@
 // Created by jlauer, 2020
 // Copyright Bungie, Inc.
 
-import * as React from "react";
-import { Route, RouteProps } from "react-router-dom";
+import React from "react";
 import { FullPageLoadingBar } from "@UI/UIKit/Controls/FullPageLoadingBar";
 import { AppLoadingDataStore } from "@Global/DataStore/AppLoadingDataStore";
 
-interface IAsyncRouteProps extends Omit<RouteProps, "component"> {
-  component: () => Promise<{ default: React.ComponentType<any> }>;
-}
-
-/**
- * AsyncRoute - Replace this description
- *  *
- * @param {IAsyncRouteProps} props
- * @returns
- */
-export const AsyncRoute: React.FC<IAsyncRouteProps> = (props) => {
-  const { component, ...rest } = props;
-
-  return <Route {...rest} component={createAsyncComponent(component)} />;
-};
-
-const retry = (
+export const retry = (
   fn: Function,
   retriesLeft = 5,
   interval = 500

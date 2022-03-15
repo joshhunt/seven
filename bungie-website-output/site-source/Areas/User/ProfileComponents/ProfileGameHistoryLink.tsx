@@ -6,10 +6,10 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
+import classNames from "classnames";
 import React from "react";
 import { BiChevronRight } from "react-icons/bi";
-import { GiBackwardTime } from "react-icons/gi";
-import styles from "./GameHistory.module.scss";
+import styles from "./miniblock.module.scss";
 
 interface ProfileGameHistoryLinkProps {}
 
@@ -17,6 +17,7 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
   props
 ) => {
   const destinyMembershipData = useDataStore(ProfileDestinyMembershipDataStore);
+  const profileLoc = Localizer.Profile;
 
   if (!destinyMembershipData?.selectedMembership) {
     return null;
@@ -24,15 +25,19 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
 
   return (
     <Anchor
-      className={styles.link}
+      className={classNames(styles.mainContainer, styles.gameHistoryContainer)}
       url={RouteHelper.GameHistory(
         destinyMembershipData?.selectedMembership?.membershipId,
         destinyMembershipData?.selectedMembership?.membershipType
       )}
     >
-      <GiBackwardTime />
-      {Localizer.Profile.ViewMyRecentGames}
-      <BiChevronRight />
+      <h4>{profileLoc.GameHistory}</h4>
+      <div className={styles.total}>
+        <span>{profileLoc.ViewMyRecentGames}</span>
+        <span>
+          <BiChevronRight />
+        </span>
+      </div>
     </Anchor>
   );
 };

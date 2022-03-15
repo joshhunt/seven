@@ -587,6 +587,10 @@ export class UserUtils {
   public static getStringKeyedMapForSanitizedCredentialNames(
     getSanitizedNamesResponse: Record<any, string>
   ) {
+    if (!getSanitizedNamesResponse) {
+      return getSanitizedNamesResponse;
+    }
+
     // It makes a huge difference later if we can know that the credential type keys are always the string value of that type
     return Object.keys(getSanitizedNamesResponse).reduce(
       (prev, curr: keyof Globals.BungieCredentialType) => {

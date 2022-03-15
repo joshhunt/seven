@@ -1,7 +1,8 @@
-import { AsyncRoute } from "@Routes/AsyncRoute";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
 import React from "react";
+import { Route } from "react-router-dom";
+import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
 
 interface IDirectRouterProps {}
 
@@ -10,34 +11,57 @@ class DirectArea extends React.Component<IDirectRouterProps> {
     return (
       <React.Fragment>
         <AnimatedRouter>
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("Video").path}
-            component={() => import("./DirectVideo")}
+            component={createAsyncComponent(
+              () =>
+                import("./DirectVideo" /* webpackChunkName: "Direct-Video" */)
+            )}
           />
 
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("Circles").path}
-            component={() => import("./WQArg/WQArg")}
+            component={createAsyncComponent(() => import("./WQArg/WQArg"))}
           />
 
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("RaidRace").path}
-            component={() => import("./WorldsFirst/RaidRace")}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "./WorldsFirst/RaidRace" /* webpackChunkName: "Direct-RaidRace" */
+                )
+            )}
           />
 
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("Rewards").path}
-            component={() => import("./BungieRewards/BungieRewards")}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "./BungieRewards/BungieRewards" /* webpackChunkName: "Direct-BungieRewards" */
+                )
+            )}
           />
 
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("DestinyShowcase").path}
-            component={() => import("./DestinyShowcase/DestinyShowcase")}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "./DestinyShowcase/DestinyShowcase" /* webpackChunkName: "Direct-DestinyShowcase" */
+                )
+            )}
           />
 
-          <AsyncRoute
+          <Route
             path={RouteDefs.Areas.Direct.getAction("Anniversary").path}
-            component={() => import("./BungieAnniversary/BungieAnniversary")}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "./BungieAnniversary/BungieAnniversary" /* webpackChunkName: "Direct-BungieAnniversary" */
+                )
+            )}
           />
         </AnimatedRouter>
       </React.Fragment>

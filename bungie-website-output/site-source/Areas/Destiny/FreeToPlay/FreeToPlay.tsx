@@ -453,6 +453,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
             classes={{
               section: styles.supersSection,
               sectionBg: styles.sectionBg,
+              idAnchor: styles.sectionIdAnchor,
             }}
             title={supers_section?.section_title}
             blurb={supers_section?.blurb}

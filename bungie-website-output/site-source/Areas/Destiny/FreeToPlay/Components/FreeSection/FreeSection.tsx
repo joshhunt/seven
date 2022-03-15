@@ -22,6 +22,7 @@ interface FreeSectionProps {
   classes?: {
     section?: string;
     sectionBg?: string;
+    idAnchor?: string;
   };
   children?: React.ReactNode;
 }
@@ -41,11 +42,12 @@ export const FreeSection: React.FC<FreeSectionProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
   return (
-    <div
-      className={classNames(styles.freeSection, classes?.section)}
-      ref={inputRef}
-      id={sectionId}
-    >
+    <div className={classNames(styles.freeSection, classes?.section)}>
+      <div
+        className={classNames(styles.sectionIdAnchor, classes?.idAnchor)}
+        ref={inputRef}
+        id={sectionId}
+      />
       <div
         className={classNames(styles.sectionBg, classes?.sectionBg)}
         style={{

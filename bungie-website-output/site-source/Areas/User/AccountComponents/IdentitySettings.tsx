@@ -157,11 +157,19 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
       userMembershipData.bungieNetUser.membershipId
     )
       .then((credentialNameMap) => {
-        setDisplayNameSuggestions(
-          UserUtils.getStringKeyedMapForSanitizedCredentialNames(
-            credentialNameMap
-          )
+        const stringMap = UserUtils.getStringKeyedMapForSanitizedCredentialNames(
+          credentialNameMap
         );
+        const filteredCredTypes =
+          stringMap &&
+          Object.keys(stringMap).filter(
+            (credentialType) => !stringMap[credentialType].includes("★")
+          );
+        const filteredSuggestedNames: Record<string, string> = {};
+        filteredCredTypes.forEach(
+          (ct) => (filteredSuggestedNames[ct] = stringMap[ct])
+        );
+        setDisplayNameSuggestions(filteredSuggestedNames);
       })
       .finally(() => setValidatingNames(false));
 
@@ -297,7 +305,8 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                   {validatingNames
                     ? Localizer.Userpages.LookingForSuggestedNames
                     : nameChangeStatus === "canEdit" &&
-                      displayNameSuggestions && (
+                      displayNameSuggestions &&
+                      Object.keys(displayNameSuggestions).length > 0 && (
                         <>
                           <p>{Localizer.userpages.suggestedNames}</p>
                           <div>

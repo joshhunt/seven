@@ -1,7 +1,6 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
@@ -9,9 +8,7 @@ import {
 import { DestinyDefinitions } from "@Definitions";
 import { BungieMembershipType } from "@Enum";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Icon } from "@UIKit/Controls/Icon";
-import { GridCol } from "@UIKit/Layout/Grid/Grid";
-import styles from "./Triumphs.module.scss";
+import styles from "./miniblock.module.scss";
 import { Models, Responses } from "@Platform";
 import React from "react";
 import classNames from "classnames";

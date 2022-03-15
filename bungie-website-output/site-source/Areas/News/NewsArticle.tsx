@@ -1,13 +1,18 @@
 // Created by jlauer, 2021
 // Copyright Bungie, Inc.
 
+import { BasicNodeType } from "@bungie/contentstack/JsonRteMap/DefaultMapping";
+import { RteMap } from "@bungie/contentstack/JsonRteMap/RteRenderer";
+import {
+  ContentTypeDataPair,
+  ReferencedDataWithContentType,
+} from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
-import { Localizer } from "@bungie/localization";
-import { EntryEmbedable } from "@contentstack/utils";
+import { Localizer } from "@bungie/localization/Localizer";
+import { useRteMap } from "@bungie/contentstack";
 import { NotFoundError } from "@CustomErrors";
 import { NewsParams } from "@Routes/RouteParams";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Utils } from "contentstack";
 import { DateTime, Duration } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -21,7 +26,6 @@ import { ParallaxContainer } from "../../UI/UIKit/Layout/ParallaxContainer";
 import { WithUids } from "../../Utilities/GraphQLUtils";
 import { useAsyncError } from "../../Utilities/ReactUtils";
 import styles from "./NewsArticle.module.scss";
-import { defaultNodeOption } from "./RenderOption";
 
 interface NewsArticleProps {}
 
@@ -31,12 +35,21 @@ interface NewsArticleProps {}
 const NewsArticle: React.FC<NewsArticleProps> = (props) => {
   const params = useParams<NewsParams>();
   const url = `/${params.articleUrl}`;
-  const [result, setResult] = useState<[WithUids<BnetStackNewsArticle[]>]>(
-    null
-  );
+  const [renderable, setRenderable] = useState(null);
+  const [articleData, setArticleData] = useState(null);
   const throwError = useAsyncError();
-
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
+
+  const PmpCallToAction: React.FC<ReferencedDataWithContentType<
+    "pmp_call_to_action"
+  >> = ({ data, children }) => {
+    return (
+      <div {...data?.attrs}>
+        {data?.title}
+        <>{children}</>
+      </div>
+    );
+  };
 
   useEffect(() => {
     ContentStackClient()
@@ -47,34 +60,45 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
       .includeEmbeddedItems()
       .toJSON()
       .find()
-      .then((res: [WithUids<BnetStackNewsArticle[]>]) => {
-        res[0].forEach((entry: EntryEmbedable) =>
-          Utils.jsonToHTML({
-            entry,
-            paths: ["content", "group.content"],
-            renderOption: defaultNodeOption,
-          })
-        );
+      .then((res: [WithUids<BnetStackNewsArticle[]>]): void => {
+        // Assume there's only one match because otherwise we have a URL collision
+        /*				const matchingArticle = res?.[0]?.[0];
+				setArticleData(matchingArticle);
+
+				if (!matchingArticle)
+				{
+					throw new NotFoundError();
+				}
+
+				const referenceMetas = matchingArticle.content.embedded_entries?.content?.map((ref: ContentTypeDataPair<any>) =>
+				{
+					return {
+						contentTypeUid: ref.contentTypeUid,
+						data: ref
+					}
+				})
+				
+				const {RenderedComponent} = useRteMap({
+					meta:
+						{
+							contentTypeUid: matchingArticle.content.type as BasicNodeType,
+							data: matchingArticle.content
+						},
+					map: {} as RteMap<BasicNodeType>,
+					referenceMap: {pmp_call_to_action: PmpCallToAction},
+					referenceMetas: referenceMetas
+				});
+
+				setRenderable(RenderedComponent);*/
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         Logger.logToServer(error, RendererLogLevel.Error);
         throwError(error);
       });
   }, [url, locale]);
 
-  // Assume there's only one match because otherwise we have a URL collision
-  const matchingArticle = result?.[0];
-
-  if (result && !matchingArticle) {
-    throw new NotFoundError();
-  }
-
-  if (!matchingArticle) {
-    return null;
-  }
-
   const { title, subtitle, date, image, content, author, uid } =
-    matchingArticle?.[0] || {};
+    articleData || {};
 
   const now = DateTime.now();
   const creationDate = DateTime.fromISO(date);
@@ -110,10 +134,7 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
           <h3 className={styles.subtitle}>
             <span>{`${timeString} - ${author}`}</span>
           </h3>
-          <div
-            className={styles.articleContainer}
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
+          <div className={styles.articleContainer}>{renderable}</div>
         </GridCol>
       </Grid>
     </>

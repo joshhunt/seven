@@ -1,12 +1,11 @@
-import { AsyncRoute } from "@Routes/AsyncRoute";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import React from "react";
 import { Route } from "react-router";
-import { RouteComponentProps, Switch } from "react-router-dom";
+import { RouteComponentProps } from "react-router-dom";
+import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
 import { Error404 } from "../../UI/Errors/Error404";
-import News from "./News";
 
 class NewsArea extends React.Component<RouteComponentProps> {
   public render() {
@@ -19,23 +18,54 @@ class NewsArea extends React.Component<RouteComponentProps> {
       <React.Fragment>
         <SwitchWithErrors>
           <Route component={Error404} />
-          <AsyncRoute
+          <Route
             path={indexPath}
             exact={true}
-            component={() =>
-              import("@Areas/News/News" /* webpackChunkName: "News-News" */)
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/News" /* webpackChunkName: "News-Category-All" */
+                )
+            )}
           />
-          <Route path={destinyPath} exact={true} component={News} />
-          <Route path={communityPath} exact={true} component={News} />
-          <Route path={updatesPath} exact={true} component={News} />
-          <AsyncRoute
+          <Route
+            path={destinyPath}
+            exact={true}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/News" /* webpackChunkName: "News-Category-Destiny" */
+                )
+            )}
+          />
+          <Route
+            path={communityPath}
+            exact={true}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/News" /* webpackChunkName: "News-Category-Community" */
+                )
+            )}
+          />
+          <Route
+            path={updatesPath}
+            exact={true}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/News" /* webpackChunkName: "News-Category-Updates" */
+                )
+            )}
+          />
+          <Route
             path={`${indexPath}/:articleUrl`}
-            component={() =>
-              import(
-                "@Areas/News/NewsArticle" /* webpackChunkName: "News-NewsArticle" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/NewsArticle" /* webpackChunkName: "News-NewsArticle" */
+                )
+            )}
           />
         </SwitchWithErrors>
       </React.Fragment>

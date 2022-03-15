@@ -95,10 +95,10 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
             />
           </ProfileErrorBoundary>
         )}
+        <ProfileErrorBoundary message={profileLoc.GameHistoryLoadingError}>
+          <ProfileGameHistoryLink />
+        </ProfileErrorBoundary>
       </div>
-      <ProfileErrorBoundary message={profileLoc.GameHistoryLoadingError}>
-        <ProfileGameHistoryLink />
-      </ProfileErrorBoundary>
     </>
   );
 };

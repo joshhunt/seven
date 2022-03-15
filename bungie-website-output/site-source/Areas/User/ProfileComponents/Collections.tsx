@@ -1,7 +1,7 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import styles from "@Areas/User/ProfileComponents/Triumphs.module.scss";
+import styles from "./miniblock.module.scss";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,

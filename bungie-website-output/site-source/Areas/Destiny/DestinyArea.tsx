@@ -5,9 +5,9 @@ import { Redirect, Route, RouteComponentProps } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
+import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
 import StadiaRegister from "./StadiaRegister";
 import EventsRouter from "@Areas/Seasons/Events/EventsRouter";
-import { AsyncRoute } from "@Routes/AsyncRoute";
 import Reveal from "./Reveal";
 import { Companion } from "./Companion/Companion";
 
@@ -37,70 +37,78 @@ class DestinyArea extends React.Component<RouteComponentProps> {
     return (
       <React.Fragment>
         <SwitchWithErrors>
-          <AsyncRoute
+          <Route
             path={newLightPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/DestinyNewLight" /* webpackChunkName: "Destiny-NewLight" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/DestinyNewLight" /* webpackChunkName: "Destiny-NewLight" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={freeToPlayPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/FreeToPlay/FreeToPlay" /* webpackChunkName: "Destiny-FreeToPlay" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/FreeToPlay/FreeToPlay" /* webpackChunkName: "Destiny-FreeToPlay" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={forsakenPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/Forsaken" /* webpackChunkName: "Destiny-Forsaken" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/Forsaken" /* webpackChunkName: "Destiny-Forsaken" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={shadowkeepPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/Destiny_Shadowkeep" /* webpackChunkName: "Destiny-Shadowkeep" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/Destiny_Shadowkeep" /* webpackChunkName: "Destiny-Shadowkeep" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             exact={true}
             path={buyFlowPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/Buy/DestinyBuyIndex" /* webpackChunkName: "Destiny-Buy" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/Buy/DestinyBuyIndex" /* webpackChunkName: "Destiny-Buy" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={buyDetailPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/Buy/DestinyBuyProductDetail" /* webpackChunkName: "Destiny-BuyDetail" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/Buy/DestinyBuyProductDetail" /* webpackChunkName: "Destiny-BuyDetail" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={witchQueenSkuTestPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/WitchQueen/WitchQueenSkuComparisonTest" /* webpackChunkName: "Destiny-WitchQueen-SkuTest" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/WitchQueen/WitchQueenSkuComparisonTest" /* webpackChunkName: "Destiny-WitchQueen-SkuTest" */
+                )
+            )}
           />
-          <AsyncRoute
+          <Route
             path={witchQueenPath}
-            component={() =>
-              import(
-                "@Areas/Destiny/WitchQueen/WitchQueen" /* webpackChunkName: "Destiny-WitchQueen" */
-              )
-            }
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/WitchQueen/WitchQueen" /* webpackChunkName: "Destiny-WitchQueen" */
+                )
+            )}
           />
           <Route path={beyondLightPath} component={BeyondLight} />
           <Route path={companionPath} component={Companion} />

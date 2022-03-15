@@ -69,8 +69,10 @@ export const SeasonalRanks: React.FC<SeasonalRanksProps> = (props) => {
           }}
         />
         <div className={styles.text}>
-          <h4>{stepDisplay.stepName}</h4>
-          <p>{progressionDef.displayProperties.name}</p>
+          <h4>
+            {stepDisplay.stepName}{" "}
+            <span>{progressionDef.displayProperties.name}</span>
+          </h4>
         </div>
         <div className={styles.progressNumber}>
           {characterProgression.currentProgress}
@@ -92,6 +94,10 @@ export const SeasonalRanks: React.FC<SeasonalRanksProps> = (props) => {
       {rankItem(1647151960, styles.glory)}
       {rankItem(2083746873, styles.valor)}
       {rankItem(3008065600, styles.infamy)}
+      {rankItem(527867935, styles.strangeFavor)}
+      {rankItem(1471185389, styles.gunsmith)}
+      {rankItem(457612306, styles.vanguard)}
+      {rankItem(2755675426, styles.trials)}
     </>
   );
 };

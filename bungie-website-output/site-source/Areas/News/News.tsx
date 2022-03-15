@@ -1,8 +1,9 @@
-import { Localizer } from "@bungie/localization";
+import { Localizer } from "@bungie/localization/Localizer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import React from "react";
 import { useHistory, useLocation } from "react-router";
 import { Route } from "react-router-dom";
+import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
 import { RouteDefs } from "../../Global/Routes/RouteDefs";
 import { BodyClasses, SpecialBodyClasses } from "../../UI/HelmetUtils";
 import { AnimatedRouter } from "../../UI/Routing/AnimatedRouter";
@@ -10,7 +11,7 @@ import { ISubNavLink, SubNav } from "../../UI/UIKit/Controls/SubNav";
 import { Grid, GridCol } from "../../UI/UIKit/Layout/Grid/Grid";
 import { UrlUtils } from "../../Utilities/UrlUtils";
 import styles from "./News.module.scss";
-import { NewsByCategory } from "./NewsByCategory";
+import NewsByCategory from "./NewsByCategory";
 
 export enum NewsCategory {
   none = 0,
@@ -88,4 +89,4 @@ const News: React.FC = () => {
   );
 };
 
-export default News;
+export default React.memo(News);

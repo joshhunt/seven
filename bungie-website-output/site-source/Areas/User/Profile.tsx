@@ -178,7 +178,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
           UserUtils.getStringKeyedMapForSanitizedCredentialNames(names)
         )
       );
-  }, []);
+  }, [membershipId]);
 
   if (!isValidUser && ConfigUtils.SystemStatus(SystemNames.AccountServices)) {
     return <Error404 />;
