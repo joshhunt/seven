@@ -52,7 +52,7 @@ export class DestinyPlatformSelector extends React.Component<
 
   public static defaultProps: DefaultProps = {};
 
-  public componentDidMount() {
+  private readonly getSanitizedNames = () => {
     Platform.UserService.GetSanitizedPlatformDisplayNames(
       this.props.userMembershipData.bungieNetUser.membershipId
     ).then((names) =>
@@ -62,6 +62,24 @@ export class DestinyPlatformSelector extends React.Component<
         ),
       })
     );
+  };
+
+  public componentDidMount() {
+    this.getSanitizedNames();
+  }
+
+  public shouldComponentUpdate(
+    nextProps: Readonly<Props>,
+    nextState: Readonly<IDestinyPlatformSelectorState>
+  ) {
+    if (
+      nextProps.userMembershipData.bungieNetUser !==
+      this.props.userMembershipData.bungieNetUser
+    ) {
+      this.getSanitizedNames();
+    }
+
+    return true;
   }
 
   public render() {

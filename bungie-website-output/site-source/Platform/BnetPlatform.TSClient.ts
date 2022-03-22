@@ -19712,6 +19712,25 @@ class UserServiceInternal {
     );
 
   /**
+   * Returns the number of name changes available to the signed in user.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static NameChangesAvailable = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doGetRequest(
+      `/User/NameChangesAvailable/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "NameChangesAvailable",
+      undefined,
+      clientState
+    );
+
+  /**
    * Given a bungie name, does every validation step for changing the name, including having available name changes, but doesn't actually commit the change.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.

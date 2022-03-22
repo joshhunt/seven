@@ -18,20 +18,23 @@ import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
 import React, { useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
-import { RouteHelper } from "../../../Global/Routes/RouteHelper";
 import { Img } from "../../../Utilities/helpers";
 import accountStyles from "../Account.module.scss";
 import styles from "./IdentitySettings.module.scss";
 import { Avatars } from "./Internal/Avatars";
 import { Themes } from "./Internal/Themes";
 
-type NameChangeStatus = "canEdit" | "locked" | "confirm" | "updated";
+type NameChangeStatus =
+  | "initial"
+  | "canEdit"
+  | "locked"
+  | "confirm"
+  | "updated";
 
 const suggestedIconMap: Record<string, string> = {
   Psnid: Img(`bungie/icons/logos/playstation/icon.png`),
@@ -55,7 +58,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
 
   const aboutMaxLength = 256;
   const [nameChangeStatus, setNameChangeStatus] = useState<NameChangeStatus>(
-    "locked"
+    "initial"
   );
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
@@ -66,6 +69,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   const [displayNameSuggestions, setDisplayNameSuggestions] = useState<
     Record<string, string>
   >(null);
+  const [sameNameErrorState, setSameNameErrorState] = useState(false);
 
   /* Functions */
   const showSettingsChangedToast = () => {
@@ -75,26 +79,16 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   const checkGlobalNameEditable = () => {
-    if (ConfigUtils.SystemStatus("AllowGlobalBungieDisplayNameEditing")) {
-      if (bungieName?.bungieGlobalName) {
-        const userNameEditRequest: User.UserNameEditRequest = {
-          displayName: bungieName.bungieGlobalName,
-        };
-
-        Platform.UserService.ValidateBungieName(userNameEditRequest)
-          .then((result) => {
-            setNameChangeStatus(result ? "canEdit" : "locked");
-          })
-          .catch(ConvertToPlatformError)
-          .catch((e: PlatformError) => {
-            if (
-              e.errorCode === PlatformErrorCodes.ErrorNoAvailableNameChanges
-            ) {
-              setNameChangeStatus("locked");
-            }
-          });
-      }
-    }
+    Platform.UserService.NameChangesAvailable()
+      .then((changesAvailable: number) => {
+        setNameChangeStatus(changesAvailable > 0 ? "canEdit" : "locked");
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e: PlatformError) => {
+        if (e.errorCode === PlatformErrorCodes.ErrorNoAvailableNameChanges) {
+          setNameChangeStatus("locked");
+        }
+      });
   };
 
   const trySaveSettings = (
@@ -125,28 +119,55 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         .finally(() => setSubmitting(false));
   };
 
+  const showSameNameError = () => {
+    setSameNameErrorState(true);
+    setTimeout(() => {
+      setSameNameErrorState(false);
+    }, 350);
+  };
+
   const subtitleToBungieName = () => {
+    const hasChangeAvailableStatus =
+      nameChangeStatus === "locked" ? (
+        <div className={styles.noBungieName}>
+          {Localizer.Userpages.NoNameChanges}
+        </div>
+      ) : null;
+    const bungieNameAndHelpLink = (
+      <div className={styles.helpSentence}>
+        {Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
+          bungieName: (
+            <>
+              <span className={styles.displayName}>
+                {bungieName?.bungieGlobalName}
+              </span>
+              <span className={styles.displayNameCode}>
+                {bungieName?.bungieGlobalCodeWithHashtag}
+              </span>
+            </>
+          ),
+          helpLink: (
+            <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
+              {Localizer.Userpages.CrossPlayGuideLink}
+            </Anchor>
+          ),
+        })}
+      </div>
+    );
+    const noBungieName = (
+      <div className={styles.noBungieName}>
+        {Localizer.UserPages.YouDoNotHaveABungieName}
+      </div>
+    );
+
     return !!onPageUser?.cachedBungieGlobalDisplayName &&
       !!onPageUser.cachedBungieGlobalDisplayNameCode ? (
-      Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
-        bungieName: (
-          <>
-            <span className={styles.displayName}>
-              {bungieName?.bungieGlobalName}
-            </span>
-            <span className={styles.displayNameCode}>
-              {bungieName?.bungieGlobalCodeWithHashtag}
-            </span>
-          </>
-        ),
-        helpLink: (
-          <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
-            {Localizer.Userpages.CrossPlayGuideLink}
-          </Anchor>
-        ),
-      })
+      <>
+        {hasChangeAvailableStatus}
+        {bungieNameAndHelpLink}
+      </>
     ) : (
-      <>{Localizer.UserPages.YouDoNotHaveABungieName}</>
+      noBungieName
     );
   };
 
@@ -172,8 +193,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         setDisplayNameSuggestions(filteredSuggestedNames);
       })
       .finally(() => setValidatingNames(false));
-
-    setValidatingNames(false);
   };
 
   /* Hooks */
@@ -192,6 +211,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         BungieMembershipType.BungieNext
       )
         .then((data) => {
+          checkGlobalNameEditable();
           getSuggestedNames(data);
         })
         .catch(ConvertToPlatformError)
@@ -206,19 +226,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
           setBungieName(
             UserUtils.getBungieNameFromBnetGeneralUser(data.bungieNetUser)
           );
-
           getSuggestedNames(data);
+          checkGlobalNameEditable();
         })
         .catch(ConvertToPlatformError)
         .catch((e) => Modal.error(e));
     }
   }, [globalStateData.loggedInUser, membershipIdFromQuery]);
-
-  useEffect(() => {
-    if (bungieName?.bungieGlobalName) {
-      checkGlobalNameEditable();
-    }
-  }, [bungieName]);
 
   return (
     <div>
@@ -275,7 +289,11 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       name={"displayName"}
                       type={"text"}
                       disabled={nameChangeStatus === "locked"}
-                      classes={{ input: styles.textInput }}
+                      classes={{
+                        input: classNames(styles.textInput, {
+                          [styles.nameCollision]: sameNameErrorState,
+                        }),
+                      }}
                       placeholder={formikProps.values.displayName}
                       onChange={(e) => {
                         e.target.value !== bungieName?.bungieGlobalName
@@ -333,7 +351,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                                           credentialType
                                         ] !== bungieName?.bungieGlobalName
                                           ? setNameChangeStatus("confirm")
-                                          : setNameChangeStatus("canEdit");
+                                          : showSameNameError();
                                       }}
                                     >
                                       <img
