@@ -219,20 +219,27 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   const updateUrlWithAllParams = (userName: string) => {
     //after the bungienet user info has loaded we can update the url with the username
+    const encodedUserName = encodeURIComponent(userName);
     document.title = Localizer.Format(
       Localizer.Userpages.BungieProfilePageTitle,
-      { displayname: userName }
+      { displayname: encodedUserName }
     );
 
-    history.replace(
-      RouteHelper.NewProfile({
-        mid: membershipId,
-        mtype: EnumUtils.getNumberValue(
-          membershipType,
-          BungieMembershipType
-        ).toString(),
-      }).url + `/${userName}`
-    );
+    const newPathname = RouteHelper.NewProfile({
+      mid: membershipId,
+      mtype: EnumUtils.getNumberValue(
+        membershipType,
+        BungieMembershipType
+      ).toString(),
+    }).url;
+
+    const newSearchParams = new URLSearchParams(location.search);
+    newSearchParams.set("bgn", encodedUserName);
+
+    history.replace({
+      pathname: newPathname,
+      search: newSearchParams.toString(),
+    });
   };
 
   const loadDestinyProfileData = () => {

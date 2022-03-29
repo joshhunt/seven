@@ -60,7 +60,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = (props) => {
               {props.bungieGlobalCodeWithHash}
             </span>
           </h2>
-          {status && <p className={styles.status}>{props.status}</p>}
+          {props.status && <p className={styles.status}>{props.status}</p>}
           {joinDateString && <p>{joinDateString}</p>}
         </GridCol>
       </Grid>

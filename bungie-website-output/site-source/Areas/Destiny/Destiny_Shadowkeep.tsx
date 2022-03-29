@@ -359,6 +359,15 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
     detail: imageFromConnection(w?.wallpaperConnection)?.url,
   }));
 
+  // map over subnav labels coming from CS to ensure labels are in correct order
+  const subNavIds = subnav?.labels
+    ?.map((l) => {
+      const navId = l.label_id?.replace("_nav_label", "");
+
+      return idToElementsMapping[navId] && navId;
+    })
+    .filter((label) => !!label);
+
   return (
     <div className={styles.shadowkeepPage}>
       <BungieHelmet
@@ -379,7 +388,7 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
         <Hero inputRef={(ref) => setHeroRef(ref)} data={hero} />
 
         <MarketingSubNav
-          ids={Object.keys(idToElementsMapping)}
+          ids={subNavIds}
           renderLabel={(id, index) => {
             const label = subnav?.labels.find(
               (l) => l.label_id === `${id}_nav_label`

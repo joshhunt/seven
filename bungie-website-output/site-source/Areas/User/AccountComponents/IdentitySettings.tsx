@@ -295,11 +295,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                         }),
                       }}
                       placeholder={formikProps.values.displayName}
-                      onChange={(e) => {
-                        e.target.value !== bungieName?.bungieGlobalName
-                          ? setNameChangeStatus("confirm")
-                          : setNameChangeStatus("canEdit");
-                      }}
                     />
                     {bungieName?.bungieGlobalCodeWithHashtag && (
                       <div className={styles.code}>
@@ -369,7 +364,8 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                           </div>
                         </>
                       )}
-                  {nameChangeStatus === "confirm" && (
+                  {formikProps.values.displayName !==
+                    bungieName?.bungieGlobalName && (
                     <div className={styles.confirmButtons}>
                       <button type="submit" className={styles.textOnly}>
                         <Button
