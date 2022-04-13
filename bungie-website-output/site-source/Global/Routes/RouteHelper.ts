@@ -470,28 +470,28 @@ export class RouteHelper {
    *
    * */
   public static LegalPage = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("Index")
+    RouteDefs.Areas.Legal.getAction("index")
   );
   public static LegalTermsOfUse = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("Terms")
+    RouteDefs.Areas.Legal.getAction("terms")
   );
   public static LegalPrivacyPolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("PrivacyPolicy")
+    RouteDefs.Areas.Legal.getAction("privacypolicy")
   );
   public static LegalSLA = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("SLA")
+    RouteDefs.Areas.Legal.getAction("sla")
   );
   public static LegalLicenses = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("Licenses")
+    RouteDefs.Areas.Legal.getAction("licenses")
   );
   public static LegalCodeOfConduct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("CodeOfConduct")
+    RouteDefs.Areas.Legal.getAction("codeofconduct")
   );
   public static LegalCookiePolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("CookiePolicy")
+    RouteDefs.Areas.Legal.getAction("cookiepolicy")
   );
   public static LegalPaymentServicesAct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("PaymentServicesAct")
+    RouteDefs.Areas.Legal.getAction("paymentservicesact")
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
   public static Applications = LegacyPathWithQuery("/Application");

@@ -1,6 +1,7 @@
 import { Content } from "@Platform";
 import moment from "moment";
 import { IDestinySkuSale } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
+import { ContentStackClient } from "../Platform/ContentStack/ContentStackClient";
 
 export interface IMarketingMediaAsset {
   contentItemTitle: string;
@@ -45,3 +46,26 @@ export class ContentUtils {
     };
   }
 }
+
+/**
+ * The first, reusable, part of requesting news articles from contentstack, can be used on its own or with additional parameters and filters
+ * @param locale
+ * @param articleLimit: how many articles to fetch at a time
+ * @param currentPage: optional, used for pagination, serves to tell the query how far down the list of articles it should start its fetch
+ */
+
+export const BasicNewsQuery = (
+  locale: string,
+  articleLimit: number,
+  currentPage = 1
+) => {
+  return ContentStackClient()
+    .ContentType("news_article")
+    .Query()
+    .language(locale)
+    .descending("date")
+    .includeCount()
+    .skip((currentPage - 1) * articleLimit)
+    .limit(articleLimit)
+    .toJSON();
+};

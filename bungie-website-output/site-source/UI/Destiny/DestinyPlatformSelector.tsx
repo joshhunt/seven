@@ -64,7 +64,25 @@ export class DestinyPlatformSelector extends React.Component<
     );
   };
 
+  private readonly getLoggedInCredential = () => {
+    //update the default selected credential to the logged in credential
+    Platform.UserService.GetCurrentUserAuthContextState().then((result) => {
+      const platform = UserUtils.getMembershipTypeFromCredentialType(
+        result.AuthProvider
+      );
+
+      if (this.props.defaultValue !== platform) {
+        const platformString = EnumUtils.getStringValue(
+          platform,
+          BungieMembershipType
+        );
+        this.onDropdownChange(platformString);
+      }
+    });
+  };
+
   public componentDidMount() {
+    this.getLoggedInCredential();
     this.getSanitizedNames();
   }
 

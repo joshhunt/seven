@@ -329,68 +329,76 @@
     "path": "/7/en/GameHistory"
   },
   {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "CodeOfConduct",
+    "areaName": "Home",
+    "areaObjectName": "Home",
+    "componentImportPath": "@Areas/Home/HomeArea",
+    "action": "index",
     "params": {},
-    "path": "/7/en/Legal/CodeOfConduct"
+    "path": "/7/en/Home"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "CookiePolicy",
+    "action": "codeofconduct",
     "params": {},
-    "path": "/7/en/Legal/CookiePolicy"
+    "path": "/7/en/Legal/codeofconduct"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "IntellectualPropertyTrademarks",
+    "action": "cookiepolicy",
     "params": {},
-    "path": "/7/en/Legal/IntellectualPropertyTrademarks"
+    "path": "/7/en/Legal/cookiepolicy"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "Licenses",
+    "action": "intellectualpropertytrademarks",
     "params": {},
-    "path": "/7/en/Legal/Licenses"
+    "path": "/7/en/Legal/intellectualpropertytrademarks"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "PaymentServicesAct",
+    "action": "licenses",
     "params": {},
-    "path": "/7/en/Legal/PaymentServicesAct"
+    "path": "/7/en/Legal/licenses"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "PrivacyPolicy",
+    "action": "paymentservicesact",
     "params": {},
-    "path": "/7/en/Legal/PrivacyPolicy"
+    "path": "/7/en/Legal/paymentservicesact"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "SLA",
+    "action": "privacypolicy",
     "params": {},
-    "path": "/7/en/Legal/SLA"
+    "path": "/7/en/Legal/privacypolicy"
   },
   {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "Terms",
+    "action": "sla",
     "params": {},
-    "path": "/7/en/Legal/Terms"
+    "path": "/7/en/Legal/sla"
+  },
+  {
+    "areaName": "Legal",
+    "areaObjectName": "Legal",
+    "componentImportPath": "@Areas/Legal/LegalArea",
+    "action": "terms",
+    "params": {},
+    "path": "/7/en/Legal/terms"
   },
   {
     "areaName": "News",
@@ -466,6 +474,16 @@
     "action": "RegistrationPage",
     "params": {},
     "path": "/7/en/Registration/RegistrationPage"
+  },
+  {
+    "areaName": "Search",
+    "areaObjectName": "Search",
+    "componentImportPath": "@Areas/Search/SearchArea",
+    "action": "index",
+    "params": {
+      "path": ":query?"
+    },
+    "path": "/7/en/Search/:query?"
   },
   {
     "areaName": "Seasons",

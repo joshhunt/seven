@@ -67,7 +67,6 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       );
 
       const isSameUser =
-        user &&
         user?.membershipId &&
         isSameMembershipType && //Check for same platform/membershipType
         (isSameBungieMembershipId || // Check for same Bungie.net ID
@@ -79,10 +78,10 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         }
       }
 
-      const loadSpecificUser = user !== undefined;
+      const loggedInUserIsDefined = user?.membershipId !== undefined;
 
       if (
-        !loadSpecificUser &&
+        !loggedInUserIsDefined &&
         !UserUtils.isAuthenticated(GlobalStateDataStore.state)
       ) {
         console.warn(
@@ -95,18 +94,21 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       this.isInitialized = true;
 
       // if we were given a new user, or logged out or in then we don't have up-to-date membershipdata, otherwise we don't need to fetch it again
-      let membershipData = !isSameUser ? null : this.state.membershipData;
+      let membershipData =
+        !isSameUser || !loggedInUserIsDefined
+          ? null
+          : this.state.membershipData;
 
       if (!membershipData) {
         try {
-          membershipData = loadSpecificUser
+          membershipData = loggedInUserIsDefined
             ? await Platform.UserService.GetMembershipDataById(
                 user.membershipId,
                 user.membershipType
               )
             : await Platform.UserService.GetMembershipDataForCurrentUser();
         } catch {
-          const loadedForWho = loadSpecificUser
+          const loadedForWho = loggedInUserIsDefined
             ? `${user.membershipType}/${user.membershipId}`
             : "Current User";
 
@@ -162,7 +164,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
           (membershipToUse = this.state.selectedMembership);
       }
       // if we were given a user and the membership is not the type of the one provided
-      else if (loadSpecificUser) {
+      else if (loggedInUserIsDefined) {
         if (
           !EnumUtils.looseEquals(
             user?.membershipType,

@@ -21,6 +21,7 @@ import { HelpArticle } from "@Helpers";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -45,6 +46,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
       .ContentType("season_of_the_risen")
       .Entry("blt6d7ef885a2744902")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .includeReference("season_media")
       .toJSON()
       .fetch()
       .then((res) => {
@@ -71,6 +73,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     silver_bundle_section,
     section_heading_season_text,
     links_section,
+    season_media,
   } = data ?? {};
 
   const [heroRef, setHeroRef] = useState(null);
@@ -219,18 +222,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
               id={"media"}
               ref={(ref) => (idToElementsMapping["media"] = ref)}
             />
-            <DestinyNewsAndMediaUpdated
-              smallSeasonText={section_heading_season_text}
-              defaultTab={"screenshots"}
-              screenshots={mediaScreenshtos}
-              videos={mediaVideos}
-              wallpapers={mediaWallpapers}
-              classes={{
-                tabBtn: styles.mediaTab,
-                selectedTab: styles.selected,
-                sectionTitle: styles.mediaTitle,
-              }}
-            />
+            <PmpMedia data={season_media?.[0]} />
 
             <LearnMore16
               faqBgImage={links_section?.link_btn[1]?.thumbnail?.url}

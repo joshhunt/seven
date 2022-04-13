@@ -23,9 +23,11 @@ export class RouteDefs {
     Destiny: "Destiny",
     Direct: "Direct",
     GameHistory: "GameHistory",
+    Home: "Home",
     Legal: "Legal",
     News: "News",
     Registration: "Registration",
+    Search: "Search",
     Seasons: "Seasons",
     Static: "Static",
     Sms: "Sms",
@@ -150,6 +152,12 @@ export class RouteDefs {
       ),
       routes: [(area) => new ActionRoute(area, "index")],
     }),
+    Home: new Area({
+      name: RouteDefs.AreaNames.Home,
+      lazyComponent: createAsyncComponent(() => import("@Areas/Home/HomeArea")),
+      routes: [(area) => new ActionRoute(area, "index")],
+      webmasterSystem: SystemNames.CoreHomeandNews,
+    }),
     Legal: new Area({
       name: RouteDefs.AreaNames.Legal,
       indexParams: { path: ":url" },
@@ -157,14 +165,14 @@ export class RouteDefs {
         () => import("@Areas/Legal/LegalArea" /* webpackChunkName: "Legal" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Terms"),
-        (area) => new ActionRoute(area, "PrivacyPolicy"),
-        (area) => new ActionRoute(area, "Licenses"),
-        (area) => new ActionRoute(area, "SLA"),
-        (area) => new ActionRoute(area, "CodeOfConduct"),
-        (area) => new ActionRoute(area, "CookiePolicy"),
-        (area) => new ActionRoute(area, "IntellectualPropertyTrademarks"),
-        (area) => new ActionRoute(area, "PaymentServicesAct"),
+        (area) => new ActionRoute(area, "terms"),
+        (area) => new ActionRoute(area, "privacypolicy"),
+        (area) => new ActionRoute(area, "licenses"),
+        (area) => new ActionRoute(area, "sla"),
+        (area) => new ActionRoute(area, "codeofconduct"),
+        (area) => new ActionRoute(area, "cookiepolicy"),
+        (area) => new ActionRoute(area, "intellectualpropertytrademarks"),
+        (area) => new ActionRoute(area, "paymentservicesact"),
       ],
     }),
     News: new Area({
@@ -184,6 +192,7 @@ export class RouteDefs {
             isOverride: true,
           }),
       ],
+      webmasterSystem: SystemNames.CoreHomeandNews,
     }),
     Registration: new Area({
       name: RouteDefs.AreaNames.Registration,
@@ -198,6 +207,15 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Benefits"),
         (area) => new ActionRoute(area, "Apps"),
       ],
+    }),
+    Search: new Area({
+      name: RouteDefs.AreaNames.Search,
+      indexParams: { path: ":query?" },
+      lazyComponent: createAsyncComponent(
+        () =>
+          import("@Areas/Search/SearchArea" /* webpackChunkName: "Search" */)
+      ),
+      routes: [(area) => new ActionRoute(area, "index", { path: ":query?" })],
     }),
     Seasons: new Area({
       name: RouteDefs.AreaNames.Seasons,

@@ -15,6 +15,10 @@ interface FormikTextInputProps {
   placeholder?: string;
   /** Optional function called on input value change */
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  /** Optional function called on input focus */
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  /** Optional function called on input blur */
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   /** Passed by key to matching tag type */
   classes?: {
     container?: string;
@@ -49,6 +53,8 @@ export const FormikTextInput: React.FC<FormikTextInputProps> = ({
           props.onChange && props.onChange(e);
           field.onChange(e);
         }}
+        onFocus={(e) => props.onFocus(e)}
+        onBlur={(e) => props.onBlur(e)}
       />
       {meta.touched && meta.error && typeof meta.error === "string" ? (
         <div className={classes?.error}>{meta.error}</div>

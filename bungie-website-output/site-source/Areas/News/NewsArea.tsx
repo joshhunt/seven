@@ -5,7 +5,6 @@ import React from "react";
 import { Route } from "react-router";
 import { RouteComponentProps } from "react-router-dom";
 import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import { Error404 } from "../../UI/Errors/Error404";
 
 class NewsArea extends React.Component<RouteComponentProps> {
   public render() {
@@ -17,7 +16,6 @@ class NewsArea extends React.Component<RouteComponentProps> {
     return (
       <React.Fragment>
         <SwitchWithErrors>
-          <Route component={Error404} />
           <Route
             path={indexPath}
             exact={true}

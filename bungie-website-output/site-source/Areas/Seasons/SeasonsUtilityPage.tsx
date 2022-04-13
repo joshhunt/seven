@@ -157,6 +157,7 @@ class SeasonsUtilityPage extends React.Component<
 
     if (
       ConfigUtils.SystemStatus("AccountServices") &&
+      !isAnonymous &&
       !this.state.destinyMembershipData?.loaded
     ) {
       return (

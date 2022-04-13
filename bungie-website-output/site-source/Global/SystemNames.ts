@@ -100,4 +100,5 @@ export const SystemNames = {
   CrossSaveEntitlementTables: "CrossSaveEntitlementTables",
   UseGlobalBungieDisplayNames: "UseGlobalBungieDisplayNames",
   WorldsFirstStream: "WorldsFirstStream",
+  CoreHomeandNews: "CoreHomeandNews",
 } as const;

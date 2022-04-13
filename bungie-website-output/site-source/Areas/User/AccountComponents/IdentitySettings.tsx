@@ -198,39 +198,41 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   /* Hooks */
 
   useEffect(() => {
-    if (isSelf) {
-      setOnPageUser(globalStateData.loggedInUser.user);
-      setBungieName(
-        UserUtils.getBungieNameFromBnetGeneralUser(
-          globalStateData.loggedInUser.user
-        )
-      );
+    if (UserUtils.isAuthenticated(globalStateData)) {
+      if (isSelf) {
+        setOnPageUser(globalStateData.loggedInUser.user);
+        setBungieName(
+          UserUtils.getBungieNameFromBnetGeneralUser(
+            globalStateData.loggedInUser.user
+          )
+        );
 
-      Platform.UserService.GetMembershipDataById(
-        globalStateData.loggedInUser.user.membershipId,
-        BungieMembershipType.BungieNext
-      )
-        .then((data) => {
-          checkGlobalNameEditable();
-          getSuggestedNames(data);
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => Modal.error(e));
-    } else if (isAdmin) {
-      Platform.UserService.GetMembershipDataById(
-        membershipIdFromQuery,
-        BungieMembershipType.BungieNext
-      )
-        .then((data) => {
-          setOnPageUser(data.bungieNetUser);
-          setBungieName(
-            UserUtils.getBungieNameFromBnetGeneralUser(data.bungieNetUser)
-          );
-          getSuggestedNames(data);
-          checkGlobalNameEditable();
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => Modal.error(e));
+        Platform.UserService.GetMembershipDataById(
+          globalStateData.loggedInUser.user.membershipId,
+          BungieMembershipType.BungieNext
+        )
+          .then((data) => {
+            checkGlobalNameEditable();
+            getSuggestedNames(data);
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e) => Modal.error(e));
+      } else if (isAdmin) {
+        Platform.UserService.GetMembershipDataById(
+          membershipIdFromQuery,
+          BungieMembershipType.BungieNext
+        )
+          .then((data) => {
+            setOnPageUser(data.bungieNetUser);
+            setBungieName(
+              UserUtils.getBungieNameFromBnetGeneralUser(data.bungieNetUser)
+            );
+            getSuggestedNames(data);
+            checkGlobalNameEditable();
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e) => Modal.error(e));
+      }
     }
   }, [globalStateData.loggedInUser, membershipIdFromQuery]);
 
