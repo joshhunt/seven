@@ -408,6 +408,7 @@ export declare namespace DestinyDefinitions {
     Wrapper = 27,
     SeasonalArtifact = 28,
     Finisher = 29,
+    Pattern = 30,
   }
 
   enum DestinyBreakerType {
@@ -5856,6 +5857,10 @@ export declare namespace DestinyDefinitions {
 
   export interface DestinyActivityModifierDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
+
+    displayInNavMode: boolean;
+
+    displayInActivitySelection: boolean;
 
     boundToRelease: string;
 

@@ -10,12 +10,15 @@ import { createCustomModal, CustomModalProps } from "./CreateCustomModal";
 import { ReactUtils } from "@Utilities/ReactUtils";
 import { Responsive } from "@Boot/Responsive";
 
-interface IYoutubeModalProps extends CustomModalProps {
+export interface IYoutubeModalBaseProps {
   /** The ID of a video on YouTube */
   videoId?: string;
+  youtubeUrl?: string;
   /** The ID of a playlist on YouTube */
   playlistId?: string;
 }
+
+export type IYoutubeModalProps = CustomModalProps & IYoutubeModalBaseProps;
 
 interface IYoutubeModalState {}
 
@@ -46,18 +49,26 @@ class YoutubeModal extends React.Component<
   private rejectInvalidProps() {
     if (
       (this.props.playlistId && this.props.videoId) ||
-      (!this.props.playlistId && !this.props.videoId)
+      (!this.props.playlistId && !this.props.videoId && !this.props.youtubeUrl)
     ) {
       throw new InvalidPropsError(
-        "Please provide either a playlistId or videoId, but not both"
+        "Please provide either a playlistId, youtubeUrl or videoId, but not all"
       );
     }
   }
 
-  public render() {
-    const { videoId, playlistId } = this.props;
+  private static getYoutubeId(url?: string) {
+    const youtubeIdRegex = /[a-zA-Z0-9\-\_]{11}/gi;
 
-    if (videoId) {
+    return url?.match(youtubeIdRegex)?.[0];
+  }
+
+  public render() {
+    const { videoId, playlistId, youtubeUrl } = this.props;
+
+    const youtubeId = videoId ?? YoutubeModal.getYoutubeId(youtubeUrl);
+
+    if (youtubeId) {
       const opts: Options = {
         height: "100%",
         width: "100%",
@@ -69,7 +80,7 @@ class YoutubeModal extends React.Component<
       return (
         <YouTube
           containerClassName={styles.youtubeWrapper}
-          videoId={videoId}
+          videoId={youtubeId}
           opts={opts}
         />
       );
@@ -94,7 +105,8 @@ export default createCustomModal<IYoutubeModalProps>(
   },
   (props) => {
     if (Responsive.state.mobile) {
-      window.location.href = `https://www.youtube.com/watch?v=${props.videoId}`;
+      window.location.href =
+        props.youtubeUrl ?? `https://www.youtube.com/watch?v=${props.videoId}`;
 
       return false;
     }

@@ -21,7 +21,7 @@ export interface ICarouselSlide {
   blurb?: string;
 }
 
-interface ClickableImgCarouselProps {
+export interface ClickableImgCarouselProps {
   slides: ICarouselSlide[];
   classes?: {
     arrow?: string;

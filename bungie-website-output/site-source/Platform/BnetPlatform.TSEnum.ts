@@ -2905,6 +2905,7 @@ export enum DestinyItemType {
   Wrapper = 27,
   SeasonalArtifact = 28,
   Finisher = 29,
+  Pattern = 30,
 }
 
 /**

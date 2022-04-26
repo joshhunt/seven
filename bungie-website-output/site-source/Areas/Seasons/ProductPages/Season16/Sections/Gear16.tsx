@@ -5,6 +5,7 @@ import { SectionHeader } from "@Areas/Seasons/ProductPages/Season16/Components/S
 import ClickableImgCarousel, {
   ICarouselSlide,
 } from "@UI/Marketing/ClickableImgCarousel";
+import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
 import React, { LegacyRef } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";
 import styles from "./Gear16.module.scss";
@@ -12,22 +13,16 @@ import styles from "./Gear16.module.scss";
 interface Gear16Props {
   inputRef: LegacyRef<HTMLDivElement>;
   data: BnetStackSeasonOfTheRisen["event_section"];
+  carouselData: BnetStackSeasonOfTheRisen["exotics_carousel"];
   headerSeasonText: string;
 }
 
 const Gear16: React.FC<Gear16Props> = ({
   inputRef,
   data,
+  carouselData,
   headerSeasonText,
 }) => {
-  const slides: ICarouselSlide[] =
-    data?.carousel_slides.map((s) => ({
-      title: s.heading,
-      thumbnail: s.image?.url,
-      screenshot: s.image?.url,
-      blurb: s.blurb,
-    })) ?? [];
-
   return (
     <div className={styles.gearSection}>
       <div className={styles.contentWrapperNormal}>
@@ -39,15 +34,15 @@ const Gear16: React.FC<Gear16Props> = ({
           className={styles.sectionHeader}
         />
         <div className={styles.gearCarousel}>
-          <ClickableImgCarousel
-            slides={slides}
+          <PmpMediaCarousel
+            data={carouselData?.[0]}
             classes={{
-              arrow: styles.carouselArrow,
+              slideTitle: styles.slideTitle,
+              slideDivider: styles.slideDivider,
+              slideBlurb: styles.slideBlurb,
               paginationIndicator: styles.paginationBar,
               selectedPaginationIndicator: styles.selected,
-              slideBlurb: styles.slideBlurb,
-              slideDivider: styles.slideDivider,
-              slideTitle: styles.slideTitle,
+              arrow: styles.carouselArrow,
             }}
           />
         </div>

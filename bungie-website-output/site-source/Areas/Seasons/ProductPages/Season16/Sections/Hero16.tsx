@@ -1,25 +1,17 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { UrlUtils } from "@Utilities/UrlUtils";
+import { ImageAnchor, ImageVideoThumb } from "@UI/Marketing/ImageThumb";
+import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { Localizer } from "@bungie/localization";
-import { SystemNames } from "@Global/SystemNames";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
-import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
-import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
-import { Icon } from "@UIKit/Controls/Icon";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import {
-  bgImageFromConnection,
   bgImageFromStackFile,
-  imageFromConnection,
   responsiveBgImageFromStackFile,
 } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
-import React, { LegacyRef, useState } from "react";
+import React, { LegacyRef } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";
 import styles from "./Hero16.module.scss";
 
@@ -36,6 +28,10 @@ export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
     data?.bg?.mobile,
     mobile
   );
+
+  const handleTrailerBtnClick = () => {
+    YoutubeModal.show({ videoId: data?.trailer_btn?.trailer_id });
+  };
 
   return (
     <div
@@ -61,33 +57,21 @@ export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
         />
         <div className={styles.date}>{data?.date}</div>
         <div className={styles.heroBtnsWrapper}>
-          <ClickableMediaThumbnail
-            videoId={data?.trailer_btn.trailer_id}
-            showShadowBehindPlayIcon={true}
+          <ImageVideoThumb
+            image={data?.trailer_btn?.thumbnail?.url}
+            videoId={data?.trailer_btn?.trailer_id}
             classes={{
-              btnWrapper: classNames(styles.heroBtn),
-              btnBg: styles.heroBtnBg,
-              playIcon: styles.defaultPlayIcon,
+              imageContainer: styles.heroBtn,
+              image: styles.btnBg,
             }}
-            thumbnail={data?.trailer_btn.thumbnail?.url}
-            analyticsId={data?.trailer_btn?.analytics_id}
-          >
-            <div className={styles.heroBtnContent}>
-              <Icon
-                className={styles.playIcon}
-                iconType={"material"}
-                iconName={"play_arrow"}
-              />
-            </div>
-          </ClickableMediaThumbnail>
-          <ClickableMediaThumbnail
+          />
+          <ImageAnchor
+            image={data?.play_btn?.thumbnail?.url}
+            url={RouteHelper.DestinyBuy()}
             classes={{
-              btnWrapper: classNames(styles.heroBtn, styles.playNowBtn),
-              btnBg: styles.heroBtnBg,
+              imageContainer: classNames(styles.heroBtn, styles.playNowBtn),
+              image: styles.btnBg,
             }}
-            thumbnail={data?.play_btn.thumbnail?.url}
-            href={RouteHelper.DestinyBuy()}
-            analyticsId={data?.play_btn?.analytics_id}
           >
             <div className={styles.heroBtnContent}>
               <p>
@@ -96,7 +80,7 @@ export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
                 <Arrows className={styles.right} />
               </p>
             </div>
-          </ClickableMediaThumbnail>
+          </ImageAnchor>
         </div>
       </div>
     </div>

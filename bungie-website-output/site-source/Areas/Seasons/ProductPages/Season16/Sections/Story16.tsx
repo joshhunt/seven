@@ -8,6 +8,7 @@ import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
 import React, { LegacyRef } from "react";
@@ -19,7 +20,7 @@ interface Season16StoryProps {
   storyOneData: BnetStackSeasonOfTheRisen["story_section_one"];
   storyTwoData: BnetStackSeasonOfTheRisen["story_section_two"];
   headerSeasonText: string;
-  helmData: BnetStackSeasonOfTheRisen["helm_block"];
+  helmData: BnetStackSeasonOfTheRisen["helm_callout"];
 }
 
 const Season16Story: React.FC<Season16StoryProps> = ({
@@ -91,7 +92,7 @@ const Season16Story: React.FC<Season16StoryProps> = ({
 
       <div className={styles.helmWrapper}>
         <div className={styles.contentWrapperLarge}>
-          <HelmBlock data={helmData} />
+          <PmpCallout data={helmData?.[0]} />
         </div>
       </div>
     </div>

@@ -133,27 +133,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
           {Localizer.Userpages.NoNameChanges}
         </div>
       ) : null;
-    const bungieNameAndHelpLink = (
-      <div className={styles.helpSentence}>
-        {Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
-          bungieName: (
-            <>
-              <span className={styles.displayName}>
-                {bungieName?.bungieGlobalName}
-              </span>
-              <span className={styles.displayNameCode}>
-                {bungieName?.bungieGlobalCodeWithHashtag}
-              </span>
-            </>
-          ),
-          helpLink: (
-            <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
-              {Localizer.Userpages.CrossPlayGuideLink}
-            </Anchor>
-          ),
-        })}
-      </div>
-    );
     const noBungieName = (
       <div className={styles.noBungieName}>
         {Localizer.UserPages.YouDoNotHaveABungieName}
@@ -162,10 +141,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
 
     return !!onPageUser?.cachedBungieGlobalDisplayName &&
       !!onPageUser.cachedBungieGlobalDisplayNameCode ? (
-      <>
-        {hasChangeAvailableStatus}
-        {bungieNameAndHelpLink}
-      </>
+      <>{hasChangeAvailableStatus}</>
     ) : (
       noBungieName
     );
@@ -193,6 +169,30 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         setDisplayNameSuggestions(filteredSuggestedNames);
       })
       .finally(() => setValidatingNames(false));
+  };
+
+  const BungieNameAndHelpLink: React.FC = () => {
+    return (
+      <div className={styles.helpSentence}>
+        {Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
+          bungieName: (
+            <>
+              <span className={styles.displayName}>
+                {bungieName?.bungieGlobalName}
+              </span>
+              <span className={styles.displayNameCode}>
+                {bungieName?.bungieGlobalCodeWithHashtag}
+              </span>
+            </>
+          ),
+          helpLink: (
+            <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
+              {Localizer.Userpages.CrossPlayGuideLink}
+            </Anchor>
+          ),
+        })}
+      </div>
+    );
   };
 
   /* Hooks */
@@ -317,12 +317,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       <p>{subtitleToBungieName()}</p>
                     </div>
                   )}
+                  {<BungieNameAndHelpLink />}
                   {validatingNames
                     ? Localizer.Userpages.LookingForSuggestedNames
                     : nameChangeStatus === "canEdit" &&
                       displayNameSuggestions &&
                       Object.keys(displayNameSuggestions).length > 0 && (
-                        <>
+                        <div className={styles.suggestedNamesContainer}>
                           <p>{Localizer.userpages.suggestedNames}</p>
                           <div>
                             {Object.keys(displayNameSuggestions).map(
@@ -364,7 +365,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                               }
                             )}
                           </div>
-                        </>
+                        </div>
                       )}
                   {formikProps.values.displayName !==
                     bungieName?.bungieGlobalName && (

@@ -18639,6 +18639,10 @@ export declare namespace ActivityModifiers {
   export interface DestinyActivityModifierDefinition {
     displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
+    displayInNavMode: boolean;
+
+    displayInActivitySelection: boolean;
+
     hash: number;
 
     index: number;

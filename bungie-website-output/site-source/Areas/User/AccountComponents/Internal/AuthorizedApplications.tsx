@@ -10,6 +10,7 @@ import { AclEnum, AuthorizationStatus } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { Applications, Platform } from "@Platform";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Icon } from "@UIKit/Controls/Icon";
@@ -154,12 +155,14 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                     <span className={styles.appApproved}>
                       {getLocalizedDateString(app.authorizationDate, "approve")}
                     </span>
-                    <a
+                    <Anchor
                       className={styles.appHistory}
-                      href={RouteHelper.ApplicationHistory().url}
+                      url={RouteHelper.ApplicationHistory({
+                        app: app.applicationId,
+                      })}
                     >
                       {Localizer.Accountlinking.GetHistory}
-                    </a>
+                    </Anchor>
                   </span>
                 }
                 icon={

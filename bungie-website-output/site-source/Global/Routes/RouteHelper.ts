@@ -15,6 +15,7 @@ import {
   IProfileParams,
   IReportParams,
   NewsParams,
+  ISearchParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -444,7 +445,9 @@ export class RouteHelper {
     LegacyPath(`/Forums/Post/${postId}?sort=0&page=0`);
   public static BungieStore = (subPath = "") =>
     `https://bungiestore.com/${subPath}`;
-  public static Search = LegacyPathWithQuery("/Search");
+  public static Search = BasicReactPath<ISearchParams>(
+    RouteDefs.Areas.Search.getAction()
+  );
   public static Foundation = (subPath = "") =>
     `https://bungiefoundation.org/${subPath}`;
   public static PlayTests = BasicReactPath(
@@ -470,28 +473,28 @@ export class RouteHelper {
    *
    * */
   public static LegalPage = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("index")
+    RouteDefs.Areas.Legal.getAction("Index")
   );
   public static LegalTermsOfUse = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("terms")
+    RouteDefs.Areas.Legal.getAction("Terms")
   );
   public static LegalPrivacyPolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("privacypolicy")
+    RouteDefs.Areas.Legal.getAction("PrivacyPolicy")
   );
   public static LegalSLA = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("sla")
+    RouteDefs.Areas.Legal.getAction("SLA")
   );
   public static LegalLicenses = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("licenses")
+    RouteDefs.Areas.Legal.getAction("Licenses")
   );
   public static LegalCodeOfConduct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("codeofconduct")
+    RouteDefs.Areas.Legal.getAction("CodeOfConduct")
   );
   public static LegalCookiePolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("cookiepolicy")
+    RouteDefs.Areas.Legal.getAction("CookiePolicy")
   );
   public static LegalPaymentServicesAct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("paymentservicesact")
+    RouteDefs.Areas.Legal.getAction("PaymentServicesAct")
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
   public static Applications = LegacyPathWithQuery("/Application");

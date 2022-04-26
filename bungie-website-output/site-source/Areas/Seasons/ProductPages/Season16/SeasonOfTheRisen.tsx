@@ -46,7 +46,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
       .ContentType("season_of_the_risen")
       .Entry("blt6d7ef885a2744902")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference("season_media")
+      .includeReference(["season_media", "helm_callout", "exotics_carousel"])
       .toJSON()
       .fetch()
       .then((res) => {
@@ -74,6 +74,8 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     section_heading_season_text,
     links_section,
     season_media,
+    helm_callout,
+    exotics_carousel,
   } = data ?? {};
 
   const [heroRef, setHeroRef] = useState(null);
@@ -152,7 +154,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
 
         <Season16Story
           inputRef={(ref) => (idToElementsMapping["story"] = ref)}
-          helmData={helm_block}
+          helmData={helm_callout}
           storyOneData={story_section_one}
           storyTwoData={story_section_two}
           headerSeasonText={section_heading_season_text}
@@ -174,6 +176,7 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
         />
 
         <Gear16
+          carouselData={exotics_carousel}
           inputRef={(ref) => (idToElementsMapping["gear"] = ref)}
           data={event_section}
           headerSeasonText={section_heading_season_text}

@@ -8,7 +8,40 @@ import {
 } from "@UIKit/Controls/Modal/CreateCustomModal";
 import classNames from "classnames";
 import styles from "./ImagePaginationModal.module.scss";
-import React, { KeyboardEventHandler } from "react";
+import React from "react";
+
+/**
+ * returns array of screenshot strings from an array of multiple media types
+ * @param allMedia - array of all media items being rendered to the page
+ * @param img - img to return index of from media items array
+ * @param getImg - callback to get the image url from a media item in the array if it exists
+ */
+export const getScreenshotPaginationData = (
+  allMedia: object[],
+  img: string,
+  getImg: (mediaItem: typeof allMedia[number]) => string | undefined
+) => {
+  const images = allMedia
+    ?.map((mediaItem) => getImg(mediaItem))
+    .filter((m) => !!m);
+  const imgIndex = getPaginationScreenshotIndex(images, img);
+
+  return { images, imgIndex };
+};
+
+/* returns index of an img string within an array of images */
+export const getPaginationScreenshotIndex = (
+  allImages: string[],
+  img: string
+) => {
+  let imgIndex = allImages?.indexOf(img);
+
+  if (imgIndex === -1) {
+    imgIndex = undefined;
+  }
+
+  return imgIndex;
+};
 
 interface ImagePaginationModalProps extends CustomModalProps {
   /* all images user can paginate through */

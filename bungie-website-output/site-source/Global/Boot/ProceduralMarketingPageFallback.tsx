@@ -7,6 +7,7 @@ import { Error404 } from "@UI/Errors/Error404";
 import { PmpAnchor } from "@UI/Marketing/FragmentComponents/PmpAnchor";
 import { PmpCallToAction } from "@UI/Marketing/FragmentComponents/PmpCallToAction";
 import { PmpNavigationBar } from "@UI/Marketing/FragmentComponents/PmpNavigationBar";
+import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -76,6 +77,7 @@ export const ProceduralMarketingPageFallback: React.FC<Props> = (props) => {
       pmp_call_to_action: PmpCallToAction,
       pmp_media_carousel: PmpMediaCarousel,
       pmp_media: PmpMedia,
+      pmp_callout: PmpCallout,
     },
     (content as WithContentTypeUids<typeof pageDef.content>) ?? []
   );
