@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { IDestinyNewsMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
-import { DestinyNewsAndMediaUpdated } from "@Areas/Destiny/Shared/DestinyNewsAndMediaUpdated";
+import { S16ProceduralEventSection } from "@Areas/Seasons/ProductPages/Season16/Components/S16ProceduralEventSection";
 import SeasonModal from "@Areas/Seasons/ProductPages/Season16/Components/SeasonModal";
 import Activities16 from "@Areas/Seasons/ProductPages/Season16/Sections/Activities16";
 import Gear16 from "@Areas/Seasons/ProductPages/Season16/Sections/Gear16";
@@ -13,7 +13,9 @@ import SeasonPass16 from "@Areas/Seasons/ProductPages/Season16/Sections/SeasonPa
 import { SilverBundle16 } from "@Areas/Seasons/ProductPages/Season16/Sections/SilverBundle16";
 import Season16Story from "@Areas/Seasons/ProductPages/Season16/Sections/Story16";
 import Void16 from "@Areas/Seasons/ProductPages/Season16/Sections/Void16";
+import { extendDefaultComponents } from "@Boot/ProceduralMarketingPageFallback";
 import { Responsive } from "@Boot/Responsive";
+import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -21,14 +23,19 @@ import { HelpArticle } from "@Helpers";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
+import { PmpSectionHeader } from "@UI/Marketing/Fragments/PmpSectionHeader";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import {
+  bgImageFromStackFile,
+  WithContentTypeUids,
+} from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../Generated/contentstack-types";
 import { ContentStackClient } from "../../../../Platform/ContentStack/ContentStackClient";
 import styles from "./SeasonOfTheRisen.module.scss";
@@ -38,15 +45,23 @@ interface SeasonOfTheRisenProps {}
 const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
 const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
-  const { mobile } = useDataStore(Responsive);
   const [data, setData] = useState<BnetStackSeasonOfTheRisen>();
+  const eventSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const contentReferences: (keyof BnetStackSeasonOfTheRisen | string)[] = [
+    "season_media",
+    "helm_callout",
+    "exotics_carousel",
+    "void_thumbnail_group",
+    "guardian_games_content_chunks.Content_With_Background.content",
+  ];
 
   useEffect(() => {
     ContentStackClient()
       .ContentType("season_of_the_risen")
       .Entry("blt6d7ef885a2744902")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference(["season_media", "helm_callout", "exotics_carousel"])
+      .includeReference(contentReferences)
       .toJSON()
       .fetch()
       .then((res) => {
@@ -61,7 +76,6 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     activities_section_two,
     callout_block,
     event_section,
-    helm_block,
     meta_img,
     season_pass_section,
     story_section_one,
@@ -76,6 +90,8 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     season_media,
     helm_callout,
     exotics_carousel,
+    void_thumbnail_group,
+    guardian_games_content_chunks,
   } = data ?? {};
 
   const [heroRef, setHeroRef] = useState(null);
@@ -93,32 +109,12 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     DestinySkuSelectorModal.show({ skuTag: DestinySkuTags.SilverBundle });
   };
 
+  const scrollToEventSection = () => {
+    eventSectionRef?.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const supportUrl = HelpArticle(links_section?.link_btn[0]?.help_article_id);
   const faqUrl = HelpArticle(links_section?.link_btn[1]?.help_article_id);
-
-  const mediaScreenshtos: IDestinyNewsMedia[] = media
-    ?.filter((m) => m.screenshot)
-    .map((m) => ({
-      thumbnail: `${m.screenshot?.image?.url}?width=500`,
-      isVideo: false,
-      detail: m.screenshot?.image?.url,
-    }));
-
-  const mediaVideos: IDestinyNewsMedia[] = media
-    ?.filter((m) => m.video)
-    .map((m) => ({
-      thumbnail: m.video?.thumbnail?.url,
-      isVideo: true,
-      detail: m.video?.video_id,
-    }));
-
-  const mediaWallpapers: IDestinyNewsMedia[] = media
-    ?.filter((m) => m.wallpaper)
-    .map((m) => ({
-      thumbnail: m.wallpaper?.thumbnail?.url,
-      isVideo: false,
-      detail: m.wallpaper?.wallpaper?.url,
-    }));
 
   return (
     <div className={styles.all}>
@@ -133,7 +129,11 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
           />
         </BungieHelmet>
 
-        <Hero16 inputRef={(ref) => setHeroRef(ref)} data={hero} />
+        <Hero16
+          inputRef={(ref) => setHeroRef(ref)}
+          data={hero}
+          scrollToEvent={scrollToEventSection}
+        />
 
         <MarketingSubNav
           ids={Object.keys(idToElementsMapping)}
@@ -166,6 +166,47 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
           toggleSynapticModal={toggleSynapticModal}
           data={activities_section_one}
           headerSeasonText={section_heading_season_text}
+        />
+
+        <div
+          className={styles.eventStripesWrapper}
+          id={"GuardianGames"}
+          ref={eventSectionRef}
+        >
+          <div className={styles.eventStripe} />
+          <div className={styles.eventStripe} />
+          <div className={styles.eventStripe} />
+        </div>
+
+        <div
+          className={classNames(
+            styles.sectionIdAnchor,
+            styles.eventTrailerAnchor
+          )}
+          id={"GuardianGamesTrailer"}
+        />
+
+        <S16ProceduralEventSection
+          contentChunks={guardian_games_content_chunks}
+          pmpComponentOverrides={{
+            pmp_callout: (ref) => (
+              <PmpCallout
+                data={ref.data}
+                classes={{
+                  root: styles.ggCalloutRoot,
+                  heading: styles.ggCalloutHeading,
+                  blurb: styles.ggCalloutBlurb,
+                  textWrapper: styles.ggCalloutTextWrapper,
+                }}
+              />
+            ),
+            pmp_section_header: (ref) => (
+              <PmpSectionHeader
+                data={ref.data}
+                classes={{ heading: styles.ggHeaderHeading }}
+              />
+            ),
+          }}
         />
 
         <Void16

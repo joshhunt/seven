@@ -13,18 +13,29 @@ import {
 import ImagePaginationModal, {
   getScreenshotPaginationData,
 } from "@UIKit/Controls/Modal/ImagePaginationModal";
+import classNames from "classnames";
 import React from "react";
 import { BnetStackPmpCallout } from "../../../Generated/contentstack-types";
 import styles from "./PmpCallout.module.scss";
 
 type PmpCalloutThumbItem = BnetStackPmpCallout["thumbnails"][number];
 
-type PmpCalloutProps = DataReference<"pmp_callout", BnetStackPmpCallout> & {};
+type PmpCalloutProps = DataReference<"pmp_callout", BnetStackPmpCallout> & {
+  classes?: {
+    root?: string;
+    textWrapper?: string;
+    heading?: string;
+    blurb?: string;
+    thumbsWrapper?: string;
+    thumbnail?: string;
+    thumbnailWrapper?: string;
+  };
+};
 
 export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data } = props;
+  const { data, classes } = props;
 
   const getThumbnail = (thumbItem: PmpCalloutThumbItem | undefined) => {
     const { Image_Thumb, Video_Thumb } = thumbItem ?? {};
@@ -62,25 +73,42 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
 
   const bgImg = getBgImage(mobile ? mobile_bg : desktop_bg);
 
+  const asideImg = mobile ? data?.aside_img_mobile : data?.aside_img_desktop;
+
   return (
     <div
-      className={styles.callout}
+      className={classNames(
+        styles.callout,
+        { [styles.withAsideImg]: !!asideImg?.url },
+        classes?.root
+      )}
       style={{ backgroundImage: bgImg, backgroundColor: bg_color }}
     >
-      <div className={styles.textWrapper}>
-        <h3 className={styles.heading}>{heading}</h3>
-        <p
-          className={styles.blurb}
-          dangerouslySetInnerHTML={sanitizeHTML(blurb)}
-        />
+      <div className={styles.upperContent}>
+        <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
+          <h3
+            className={classNames(styles.heading, classes?.heading)}
+            dangerouslySetInnerHTML={sanitizeHTML(heading)}
+          />
+          <p
+            className={classNames(styles.blurb, classes?.blurb)}
+            dangerouslySetInnerHTML={sanitizeHTML(blurb)}
+          />
+        </div>
+        {asideImg?.url && (
+          <img src={asideImg?.url} className={styles.asideImg} />
+        )}
       </div>
-      <div className={styles.thumbsWrapper}>
+      <div className={classNames(styles.thumbsWrapper, classes?.thumbsWrapper)}>
         {thumbnails?.map((thumb, i) => {
           const thumbProps: ImageThumbProps = {
             image: getThumbnail(thumb),
             classes: {
-              imageContainer: styles.thumb,
-              image: styles.thumbBg,
+              imageContainer: classNames(
+                styles.thumb,
+                classes?.thumbnailWrapper
+              ),
+              image: classNames(styles.thumbBg, classes?.thumbnail),
             },
             style: { borderColor: thumb_border_color },
           };

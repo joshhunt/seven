@@ -18,9 +18,14 @@ import styles from "./Hero16.module.scss";
 interface Hero16Props {
   inputRef: LegacyRef<HTMLDivElement>;
   data: BnetStackSeasonOfTheRisen["hero"];
+  scrollToEvent: () => void;
 }
 
-export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
+export const Hero16: React.FC<Hero16Props> = ({
+  inputRef,
+  data,
+  scrollToEvent,
+}) => {
   const { mobile } = useDataStore(Responsive);
 
   const heroBg = responsiveBgImageFromStackFile(
@@ -83,6 +88,7 @@ export const Hero16: React.FC<Hero16Props> = ({ inputRef, data }) => {
           </ImageAnchor>
         </div>
       </div>
+      <HeroBug data={data.event_bug} onClick={scrollToEvent} />
     </div>
   );
 };
@@ -101,5 +107,34 @@ const Arrows = (props: { className: string }) => {
       <span className={styles.baseArrows} />
       <span className={styles.animatedArrow} />
     </span>
+  );
+};
+
+interface HeroBugProps {
+  data: BnetStackSeasonOfTheRisen["hero"]["event_bug"];
+  onClick: () => void;
+}
+
+const HeroBug: React.FC<HeroBugProps> = (props) => {
+  const { guardians_img, logo, sub_logo_text } = props.data ?? {};
+
+  return (
+    <div className={styles.heroBugWrapper}>
+      <div className={styles.eventStripesWrapper}>
+        <div className={styles.eventStripe} />
+        <div className={styles.eventStripe} />
+        <div className={styles.eventStripe} />
+      </div>
+      <div className={styles.floatingContent}>
+        <img src={guardians_img?.url} className={styles.img} />
+        <div className={styles.text} onClick={props.onClick}>
+          <img className={styles.logo} src={logo?.url} />
+          <h3 className={styles.subText}>{sub_logo_text}</h3>
+          <p className={styles.bugArrowsWrapper}>
+            <Arrows className={styles.bugArrows} />
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };

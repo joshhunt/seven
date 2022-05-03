@@ -1,4 +1,7 @@
-import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
+import {
+  ReferenceRendererMap,
+  useReferenceMap,
+} from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization";
 import { RendererLogLevel } from "@Enum";
@@ -8,8 +11,11 @@ import { PmpAnchor } from "@UI/Marketing/FragmentComponents/PmpAnchor";
 import { PmpCallToAction } from "@UI/Marketing/FragmentComponents/PmpCallToAction";
 import { PmpNavigationBar } from "@UI/Marketing/FragmentComponents/PmpNavigationBar";
 import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
+import { PmpCaptionThumbnails } from "@UI/Marketing/Fragments/PmpCaptionThumbnails";
 import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
+import { PmpSectionHeader } from "@UI/Marketing/Fragments/PmpSectionHeader";
+import { PmpStackedInfoThumbBlocks } from "@UI/Marketing/Fragments/PmpStackedInfoThumbBlocks";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { useAsyncError } from "@Utilities/ReactUtils";
 import { BnetStackProceduralMarketingPage } from "Generated/contentstack-types";
@@ -22,6 +28,29 @@ type HasContentTypeUid = { _content_type_uid: string };
 type WithContentTypeUids<T extends any[]> = T[number] extends HasContentTypeUid
   ? T
   : (T[number] & HasContentTypeUid)[];
+
+export const DefaultPmpComponents = {
+  pmp_navigation_bar: PmpNavigationBar,
+  pmp_anchor: PmpAnchor,
+  pmp_call_to_action: PmpCallToAction,
+  pmp_media_carousel: PmpMediaCarousel,
+  pmp_media: PmpMedia,
+  pmp_callout: PmpCallout,
+  pmp_section_header: PmpSectionHeader,
+  pmp_caption_thumbnails: PmpCaptionThumbnails,
+  pmp_stacked_info_thumb_blocks: PmpStackedInfoThumbBlocks,
+} as const;
+
+export type PartialPmpReferenceMap = Partial<
+  ReferenceRendererMap<keyof typeof DefaultPmpComponents>
+>;
+
+export const extendDefaultComponents = (
+  components: PartialPmpReferenceMap
+) => ({
+  ...DefaultPmpComponents,
+  ...components,
+});
 
 interface Props {
   /**
@@ -71,14 +100,7 @@ export const ProceduralMarketingPageFallback: React.FC<Props> = (props) => {
    * Fragments are added to the object map here. The keys are fragment types and the values are React components.
    */
   const { ReferenceMappedList } = useReferenceMap(
-    {
-      pmp_navigation_bar: PmpNavigationBar,
-      pmp_anchor: PmpAnchor,
-      pmp_call_to_action: PmpCallToAction,
-      pmp_media_carousel: PmpMediaCarousel,
-      pmp_media: PmpMedia,
-      pmp_callout: PmpCallout,
-    },
+    extendDefaultComponents({}),
     (content as WithContentTypeUids<typeof pageDef.content>) ?? []
   );
 
