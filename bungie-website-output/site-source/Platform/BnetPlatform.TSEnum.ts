@@ -1603,6 +1603,364 @@ export enum DestinyProgressionRewardItemState {
 }
 
 /**
+	There's a lot of places where we need to know scope on more than just a profile or character level.
+	For everything else, there's this more generic sense of scope.
+	*/
+export enum DestinyScope {
+  Profile = 0,
+  Character = 1,
+}
+
+export enum DestinyPresentationNodeType {
+  Default = 0,
+  Category = 1,
+  Collectibles = 2,
+  Records = 3,
+  Metric = 4,
+  Craftable = 5,
+}
+
+/**
+	A hint for how the presentation node should be displayed when shown in a list.
+	How you use this is your UI is up to you.
+	*/
+export enum DestinyPresentationDisplayStyle {
+  /**
+		Display the item as a category, through which sub-items are filtered.
+		*/
+  Category = 0,
+  Badge = 1,
+  Medals = 2,
+  Collectible = 3,
+  Record = 4,
+}
+
+export enum DestinyRecordValueStyle {
+  Integer = 0,
+  Percentage = 1,
+  Milliseconds = 2,
+  Boolean = 3,
+  Decimal = 4,
+}
+
+export enum DestinyGender {
+  Male = 0,
+  Female = 1,
+  Unknown = 2,
+}
+
+export enum DestinyRecordToastStyle {
+  None = 0,
+  Record = 1,
+  Lore = 2,
+  Badge = 3,
+  MetaRecord = 4,
+  MedalComplete = 5,
+  SeasonChallengeComplete = 6,
+  GildedTitleComplete = 7,
+  CraftingRecipeUnlocked = 8,
+}
+
+export enum TierType {
+  Unknown = 0,
+  Currency = 1,
+  Basic = 2,
+  Common = 3,
+  Rare = 4,
+  Superior = 5,
+  Exotic = 6,
+}
+
+export enum EquippingItemBlockAttributes {
+  None = 0,
+  EquipOnAcquire = 1,
+}
+
+export enum DestinyAmmunitionType {
+  None = 0,
+  Primary = 1,
+  Special = 2,
+  Heavy = 3,
+  Unknown = 4,
+}
+
+/**
+	If the plug has a specific custom style, this enumeration will represent that style/those styles.
+	*/
+export enum PlugUiStyles {
+  None = 0,
+  Masterwork = 1,
+}
+
+/**
+	This enum determines whether the plug is available to be inserted.
+	
+	- Normal means that all existing rules for plug insertion apply.
+	
+	- UnavailableIfSocketContainsMatchingPlugCategory means that the plug is only available if the socket does NOT match the plug category.
+	
+	- AvailableIfSocketContainsMatchingPlugCategory means that the plug is only available if the socket DOES match the plug category.
+	
+	For category matching, use the plug's "plugCategoryIdentifier" property, comparing it to
+	*/
+export enum PlugAvailabilityMode {
+  Normal = 0,
+  UnavailableIfSocketContainsMatchingPlugCategory = 1,
+  AvailableIfSocketContainsMatchingPlugCategory = 2,
+}
+
+/**
+	Represents the socket energy types for Armor 2.0, Ghosts 2.0, and Stasis subclasses.
+	*/
+export enum DestinyEnergyType {
+  Any = 0,
+  Arc = 1,
+  Thermal = 2,
+  Void = 3,
+  Ghost = 4,
+  Subclass = 5,
+  Stasis = 6,
+}
+
+/**
+	Indicates how a socket is populated, and where you should look for valid plug data.
+	
+	 This is a flags enumeration/bitmask field, as you may have to look in multiple sources across multiple components for valid plugs.
+	
+	 For instance, a socket could have plugs that are sourced from its own definition, as well as plugs that are sourced
+	 from Character-scoped AND profile-scoped Plug Sets.  Only by combining plug data for every indicated source
+	 will you be able to know all of the plugs available for a socket.
+	*/
+export enum SocketPlugSources {
+  /**
+		If there's no way we can detect to insert new plugs.
+		*/
+  None = 0,
+  /**
+		Use plugs found in the player's inventory, based on the socket type rules (see DestinySocketTypeDefinition for more info)
+		
+		Note that a socket - like Shaders - can have *both* reusable plugs and inventory items inserted theoretically.
+		*/
+  InventorySourced = 1,
+  /**
+		Use the DestinyItemSocketsComponent.sockets.reusablePlugs property to determine which plugs are valid for this socket.
+		 This may have to be combined with other sources, such as plug sets, if those flags are set.
+		
+		 Note that "Reusable" plugs may not necessarily come from a plug set, nor from the "reusablePlugItems" in the socket's
+		 Definition data.  They can sometimes be "randomized" in which case the only source of truth at the moment is still the
+		 runtime DestinyItemSocketsComponent.sockets.reusablePlugs property.
+		*/
+  ReusablePlugItems = 2,
+  /**
+		Use the ProfilePlugSets  (DestinyProfileResponse.profilePlugSets) component data to determine which plugs are valid for this socket.
+		*/
+  ProfilePlugSet = 4,
+  /**
+		Use the CharacterPlugSets (DestinyProfileResponse.characterPlugSets) component data to determine which plugs are valid for this socket.
+		*/
+  CharacterPlugSet = 8,
+}
+
+export enum DamageType {
+  None = 0,
+  Kinetic = 1,
+  Arc = 2,
+  Thermal = 3,
+  Void = 4,
+  Raid = 5,
+  Stasis = 6,
+}
+
+/**
+	Indicates how a perk should be shown, or if it should be, in the game UI.  Maybe useful for those of you
+	trying to filter out internal-use-only perks (or for those of you trying to figure out what they do!)
+	*/
+export enum ItemPerkVisibility {
+  Visible = 0,
+  Disabled = 1,
+  Hidden = 2,
+}
+
+/**
+	As you run into items that need to be classified for Milestone purposes in ways
+	that we cannot infer via direct data, add a new classification
+	here and use a string constant to represent it in the local item config file.
+	
+	NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
+	may not still exist.
+	*/
+export enum SpecialItemType {
+  None = 0,
+  SpecialCurrency = 1,
+  Armor = 8,
+  Weapon = 9,
+  Engram = 23,
+  Consumable = 24,
+  ExchangeMaterial = 25,
+  MissionReward = 27,
+  Currency = 29,
+}
+
+/**
+	An enumeration that indicates the high-level "type" of the item, attempting to iron out
+	 the context specific differences for specific instances of an entity.  For instance,
+	 though a weapon may be of various weapon "Types", in DestinyItemType they are all classified as "Weapon".
+	 This allows for better filtering on a higher level of abstraction for the concept of types.
+	
+	 This enum is provided for historical compatibility with Destiny 1, but an ideal alternative is
+	 to use DestinyItemCategoryDefinitions and the DestinyItemDefinition.itemCategories property instead.
+	 Item Categories allow for arbitrary hierarchies of specificity, and for items to belong to multiple categories
+	 across multiple hierarchies simultaneously.  For this enum, we pick a single type as a "best guess" fit.
+	 
+	 NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
+	 may not still exist.
+	 
+	 I keep updating these because they're so damn convenient.  I guess I shouldn't fight it.
+	*/
+export enum DestinyItemType {
+  None = 0,
+  Currency = 1,
+  Armor = 2,
+  Weapon = 3,
+  Message = 7,
+  Engram = 8,
+  Consumable = 9,
+  ExchangeMaterial = 10,
+  MissionReward = 11,
+  QuestStep = 12,
+  QuestStepComplete = 13,
+  Emblem = 14,
+  Quest = 15,
+  Subclass = 16,
+  ClanBanner = 17,
+  Aura = 18,
+  Mod = 19,
+  Dummy = 20,
+  Ship = 21,
+  Vehicle = 22,
+  Emote = 23,
+  Ghost = 24,
+  Package = 25,
+  Bounty = 26,
+  Wrapper = 27,
+  SeasonalArtifact = 28,
+  Finisher = 29,
+  Pattern = 30,
+}
+
+/**
+	This Enumeration further classifies items by more specific categorizations than
+	DestinyItemType.  The "Sub-Type" is where we classify and categorize items one step further
+	in specificity: "Auto Rifle" instead of just "Weapon" for example, or "Vanguard Bounty" instead of
+	merely "Bounty".
+	
+	These sub-types are provided for historical compatibility with Destiny 1, but an ideal alternative is
+	to use DestinyItemCategoryDefinitions and the DestinyItemDefinition.itemCategories property instead.
+	Item Categories allow for arbitrary hierarchies of specificity, and for items to belong to multiple categories
+	across multiple hierarchies simultaneously.  For this enum, we pick a single type as a "best guess" fit.
+	
+	NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
+	may not still exist.
+	*/
+export enum DestinyItemSubType {
+  None = 0,
+  /**
+		DEPRECATED.  Items can be both "Crucible" and something else interesting.
+		*/
+  Crucible = 1,
+  /**
+		DEPRECATED.  An item can both be "Vanguard" and something else.
+		*/
+  Vanguard = 2,
+  /**
+		DEPRECATED.  An item can both be Exotic and something else.
+		*/
+  Exotic = 5,
+  AutoRifle = 6,
+  Shotgun = 7,
+  Machinegun = 8,
+  HandCannon = 9,
+  RocketLauncher = 10,
+  FusionRifle = 11,
+  SniperRifle = 12,
+  PulseRifle = 13,
+  ScoutRifle = 14,
+  /**
+		DEPRECATED.  An item can both be CRM and something else.
+		*/
+  Crm = 16,
+  Sidearm = 17,
+  Sword = 18,
+  Mask = 19,
+  Shader = 20,
+  Ornament = 21,
+  FusionRifleLine = 22,
+  GrenadeLauncher = 23,
+  SubmachineGun = 24,
+  TraceRifle = 25,
+  HelmetArmor = 26,
+  GauntletsArmor = 27,
+  ChestArmor = 28,
+  LegArmor = 29,
+  ClassArmor = 30,
+  Bow = 31,
+  DummyRepeatableBounty = 32,
+  Glaive = 33,
+}
+
+export enum DestinyClass {
+  Titan = 0,
+  Hunter = 1,
+  Warlock = 2,
+  Unknown = 3,
+}
+
+/**
+	A plug can optionally have a "Breaker Type": a special ability that can affect units in unique ways.
+	Activating this plug can grant one of these types.
+	*/
+export enum DestinyBreakerType {
+  None = 0,
+  ShieldPiercing = 1,
+  Disruption = 2,
+  Stagger = 3,
+}
+
+/**
+	This enumeration represents the most restrictive type of gating that is being performed
+	by an entity.  This is useful as a shortcut to avoid a lot of lookups when determining
+	whether the gating on an Entity applies to everyone equally, or to their specific Profile
+	or Character states.
+	
+	None = There is no gating on this item.
+	
+	Global = The gating on this item is based entirely on global game state.  It will be gated the same for everyone.
+	
+	Clan = The gating on this item is at the Clan level.  For instance, if you're gated by Clan level this will be the case.
+	
+	Profile = The gating includes Profile-specific checks, but not on the Profile's characters.  An example of this might be when you acquire an Emblem: the Emblem will be available in your Kiosk for all characters in your Profile from that point onward.
+	
+	Character = The gating includes Character-specific checks, including character level restrictions.  An example of this might be an item that you can't purchase from a Vendor until you reach a specific Character Level.
+	
+	Item = The gating includes item-specific checks.  For BNet, this generally implies that we'll show this data only on a character level or deeper.
+	
+	AssumedWorstCase = The unlocks and checks being used for this calculation are of an unknown type and are used for unknown purposes.
+	For instance, if some great person decided that an unlock value should be globally scoped, but then the game changes it using
+	character-specific data in a way that BNet doesn't know about.  Because of the open-ended potential for this to occur, many unlock checks
+	for "globally" scoped unlock data may be assumed as the worst case unless it has been specifically whitelisted as otherwise.  That sucks, but
+	them's the breaks.
+	*/
+export enum DestinyGatingScope {
+  None = 0,
+  Global = 1,
+  Clan = 2,
+  Profile = 3,
+  Character = 4,
+  Item = 5,
+  AssumedWorstCase = 6,
+}
+
+/**
 	An enumeration representing the potential difficulty levels of an activity.
 	Their names are... more qualitative than quantitative.
 	*/
@@ -1709,19 +2067,6 @@ export enum DestinyRace {
   Awoken = 1,
   Exo = 2,
   Unknown = 3,
-}
-
-export enum DestinyClass {
-  Titan = 0,
-  Hunter = 1,
-  Warlock = 2,
-  Unknown = 3,
-}
-
-export enum DestinyGender {
-  Male = 0,
-  Female = 1,
-  Unknown = 2,
 }
 
 /**
@@ -2141,16 +2486,6 @@ export enum DestinyJoinClosedReasons {
   Offline = 32768,
 }
 
-export enum DamageType {
-  None = 0,
-  Kinetic = 1,
-  Arc = 2,
-  Thermal = 3,
-  Void = 4,
-  Raid = 5,
-  Stasis = 6,
-}
-
 /**
 	The reasons why an item cannot be equipped, if any.  Many flags can be set, or "None" if
 	*/
@@ -2186,30 +2521,6 @@ export enum EquipFailureReason {
   ItemNotOnCharacter = 16,
 }
 
-/**
-	A plug can optionally have a "Breaker Type": a special ability that can affect units in unique ways.
-	Activating this plug can grant one of these types.
-	*/
-export enum DestinyBreakerType {
-  None = 0,
-  ShieldPiercing = 1,
-  Disruption = 2,
-  Stagger = 3,
-}
-
-/**
-	Represents the socket energy types for Armor 2.0, Ghosts 2.0, and Stasis subclasses.
-	*/
-export enum DestinyEnergyType {
-  Any = 0,
-  Arc = 1,
-  Thermal = 2,
-  Void = 3,
-  Ghost = 4,
-  Subclass = 5,
-  Stasis = 6,
-}
-
 export enum DestinyTalentNodeState {
   Invalid = 0,
   CanUpgrade = 1,
@@ -2225,40 +2536,6 @@ export enum DestinyTalentNodeState {
   Unknown = 11,
   CreationOnly = 12,
   Hidden = 13,
-}
-
-/**
-	This enumeration represents the most restrictive type of gating that is being performed
-	by an entity.  This is useful as a shortcut to avoid a lot of lookups when determining
-	whether the gating on an Entity applies to everyone equally, or to their specific Profile
-	or Character states.
-	
-	None = There is no gating on this item.
-	
-	Global = The gating on this item is based entirely on global game state.  It will be gated the same for everyone.
-	
-	Clan = The gating on this item is at the Clan level.  For instance, if you're gated by Clan level this will be the case.
-	
-	Profile = The gating includes Profile-specific checks, but not on the Profile's characters.  An example of this might be when you acquire an Emblem: the Emblem will be available in your Kiosk for all characters in your Profile from that point onward.
-	
-	Character = The gating includes Character-specific checks, including character level restrictions.  An example of this might be an item that you can't purchase from a Vendor until you reach a specific Character Level.
-	
-	Item = The gating includes item-specific checks.  For BNet, this generally implies that we'll show this data only on a character level or deeper.
-	
-	AssumedWorstCase = The unlocks and checks being used for this calculation are of an unknown type and are used for unknown purposes.
-	For instance, if some great person decided that an unlock value should be globally scoped, but then the game changes it using
-	character-specific data in a way that BNet doesn't know about.  Because of the open-ended potential for this to occur, many unlock checks
-	for "globally" scoped unlock data may be assumed as the worst case unless it has been specifically whitelisted as otherwise.  That sucks, but
-	them's the breaks.
-	*/
-export enum DestinyGatingScope {
-  None = 0,
-  Global = 1,
-  Clan = 2,
-  Profile = 3,
-  Character = 4,
-  Item = 5,
-  AssumedWorstCase = 6,
 }
 
 /**
@@ -2372,16 +2649,6 @@ export enum DestinyVendorItemState {
 		This indicates that the sale item is free.
 		*/
   Free = 131072,
-}
-
-export enum TierType {
-  Unknown = 0,
-  Currency = 1,
-  Basic = 2,
-  Common = 3,
-  Rare = 4,
-  Superior = 5,
-  Exotic = 6,
 }
 
 /**
@@ -2647,66 +2914,6 @@ export enum DestinyItemSortType {
 }
 
 /**
-	This Enumeration further classifies items by more specific categorizations than
-	DestinyItemType.  The "Sub-Type" is where we classify and categorize items one step further
-	in specificity: "Auto Rifle" instead of just "Weapon" for example, or "Vanguard Bounty" instead of
-	merely "Bounty".
-	
-	These sub-types are provided for historical compatibility with Destiny 1, but an ideal alternative is
-	to use DestinyItemCategoryDefinitions and the DestinyItemDefinition.itemCategories property instead.
-	Item Categories allow for arbitrary hierarchies of specificity, and for items to belong to multiple categories
-	across multiple hierarchies simultaneously.  For this enum, we pick a single type as a "best guess" fit.
-	
-	NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
-	may not still exist.
-	*/
-export enum DestinyItemSubType {
-  None = 0,
-  /**
-		DEPRECATED.  Items can be both "Crucible" and something else interesting.
-		*/
-  Crucible = 1,
-  /**
-		DEPRECATED.  An item can both be "Vanguard" and something else.
-		*/
-  Vanguard = 2,
-  /**
-		DEPRECATED.  An item can both be Exotic and something else.
-		*/
-  Exotic = 5,
-  AutoRifle = 6,
-  Shotgun = 7,
-  Machinegun = 8,
-  HandCannon = 9,
-  RocketLauncher = 10,
-  FusionRifle = 11,
-  SniperRifle = 12,
-  PulseRifle = 13,
-  ScoutRifle = 14,
-  /**
-		DEPRECATED.  An item can both be CRM and something else.
-		*/
-  Crm = 16,
-  Sidearm = 17,
-  Sword = 18,
-  Mask = 19,
-  Shader = 20,
-  Ornament = 21,
-  FusionRifleLine = 22,
-  GrenadeLauncher = 23,
-  SubmachineGun = 24,
-  TraceRifle = 25,
-  HelmetArmor = 26,
-  GauntletsArmor = 27,
-  ChestArmor = 28,
-  LegArmor = 29,
-  ClassArmor = 30,
-  Bow = 31,
-  DummyRepeatableBounty = 32,
-  Glaive = 33,
-}
-
-/**
 	The various known UI styles in which an item can be highlighted.
 	It'll be up to you to determine what you want to show based on this highlighting,
 	BNet doesn't have any assets that correspond to these states.
@@ -2752,193 +2959,6 @@ export enum DestinyActivityModeCategory {
 		PVE competitive activities, where you shoot whoever you want whenever you want.  Or run around collecting small glowing triangles.
 		*/
   PvECompetitive = 3,
-}
-
-export enum EquippingItemBlockAttributes {
-  None = 0,
-  EquipOnAcquire = 1,
-}
-
-export enum DestinyAmmunitionType {
-  None = 0,
-  Primary = 1,
-  Special = 2,
-  Heavy = 3,
-  Unknown = 4,
-}
-
-/**
-	If the plug has a specific custom style, this enumeration will represent that style/those styles.
-	*/
-export enum PlugUiStyles {
-  None = 0,
-  Masterwork = 1,
-}
-
-/**
-	This enum determines whether the plug is available to be inserted.
-	
-	- Normal means that all existing rules for plug insertion apply.
-	
-	- UnavailableIfSocketContainsMatchingPlugCategory means that the plug is only available if the socket does NOT match the plug category.
-	
-	- AvailableIfSocketContainsMatchingPlugCategory means that the plug is only available if the socket DOES match the plug category.
-	
-	For category matching, use the plug's "plugCategoryIdentifier" property, comparing it to
-	*/
-export enum PlugAvailabilityMode {
-  Normal = 0,
-  UnavailableIfSocketContainsMatchingPlugCategory = 1,
-  AvailableIfSocketContainsMatchingPlugCategory = 2,
-}
-
-/**
-	Indicates how a socket is populated, and where you should look for valid plug data.
-	
-	 This is a flags enumeration/bitmask field, as you may have to look in multiple sources across multiple components for valid plugs.
-	
-	 For instance, a socket could have plugs that are sourced from its own definition, as well as plugs that are sourced
-	 from Character-scoped AND profile-scoped Plug Sets.  Only by combining plug data for every indicated source
-	 will you be able to know all of the plugs available for a socket.
-	*/
-export enum SocketPlugSources {
-  /**
-		If there's no way we can detect to insert new plugs.
-		*/
-  None = 0,
-  /**
-		Use plugs found in the player's inventory, based on the socket type rules (see DestinySocketTypeDefinition for more info)
-		
-		Note that a socket - like Shaders - can have *both* reusable plugs and inventory items inserted theoretically.
-		*/
-  InventorySourced = 1,
-  /**
-		Use the DestinyItemSocketsComponent.sockets.reusablePlugs property to determine which plugs are valid for this socket.
-		 This may have to be combined with other sources, such as plug sets, if those flags are set.
-		
-		 Note that "Reusable" plugs may not necessarily come from a plug set, nor from the "reusablePlugItems" in the socket's
-		 Definition data.  They can sometimes be "randomized" in which case the only source of truth at the moment is still the
-		 runtime DestinyItemSocketsComponent.sockets.reusablePlugs property.
-		*/
-  ReusablePlugItems = 2,
-  /**
-		Use the ProfilePlugSets  (DestinyProfileResponse.profilePlugSets) component data to determine which plugs are valid for this socket.
-		*/
-  ProfilePlugSet = 4,
-  /**
-		Use the CharacterPlugSets (DestinyProfileResponse.characterPlugSets) component data to determine which plugs are valid for this socket.
-		*/
-  CharacterPlugSet = 8,
-}
-
-/**
-	Indicates how a perk should be shown, or if it should be, in the game UI.  Maybe useful for those of you
-	trying to filter out internal-use-only perks (or for those of you trying to figure out what they do!)
-	*/
-export enum ItemPerkVisibility {
-  Visible = 0,
-  Disabled = 1,
-  Hidden = 2,
-}
-
-/**
-	As you run into items that need to be classified for Milestone purposes in ways
-	that we cannot infer via direct data, add a new classification
-	here and use a string constant to represent it in the local item config file.
-	
-	NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
-	may not still exist.
-	*/
-export enum SpecialItemType {
-  None = 0,
-  SpecialCurrency = 1,
-  Armor = 8,
-  Weapon = 9,
-  Engram = 23,
-  Consumable = 24,
-  ExchangeMaterial = 25,
-  MissionReward = 27,
-  Currency = 29,
-}
-
-/**
-	An enumeration that indicates the high-level "type" of the item, attempting to iron out
-	 the context specific differences for specific instances of an entity.  For instance,
-	 though a weapon may be of various weapon "Types", in DestinyItemType they are all classified as "Weapon".
-	 This allows for better filtering on a higher level of abstraction for the concept of types.
-	
-	 This enum is provided for historical compatibility with Destiny 1, but an ideal alternative is
-	 to use DestinyItemCategoryDefinitions and the DestinyItemDefinition.itemCategories property instead.
-	 Item Categories allow for arbitrary hierarchies of specificity, and for items to belong to multiple categories
-	 across multiple hierarchies simultaneously.  For this enum, we pick a single type as a "best guess" fit.
-	 
-	 NOTE: This is not all of the item types available, and some of these are holdovers from Destiny 1 that may or
-	 may not still exist.
-	 
-	 I keep updating these because they're so damn convenient.  I guess I shouldn't fight it.
-	*/
-export enum DestinyItemType {
-  None = 0,
-  Currency = 1,
-  Armor = 2,
-  Weapon = 3,
-  Message = 7,
-  Engram = 8,
-  Consumable = 9,
-  ExchangeMaterial = 10,
-  MissionReward = 11,
-  QuestStep = 12,
-  QuestStepComplete = 13,
-  Emblem = 14,
-  Quest = 15,
-  Subclass = 16,
-  ClanBanner = 17,
-  Aura = 18,
-  Mod = 19,
-  Dummy = 20,
-  Ship = 21,
-  Vehicle = 22,
-  Emote = 23,
-  Ghost = 24,
-  Package = 25,
-  Bounty = 26,
-  Wrapper = 27,
-  SeasonalArtifact = 28,
-  Finisher = 29,
-  Pattern = 30,
-}
-
-/**
-	There's a lot of places where we need to know scope on more than just a profile or character level.
-	For everything else, there's this more generic sense of scope.
-	*/
-export enum DestinyScope {
-  Profile = 0,
-  Character = 1,
-}
-
-export enum DestinyPresentationNodeType {
-  Default = 0,
-  Category = 1,
-  Collectibles = 2,
-  Records = 3,
-  Metric = 4,
-  Craftable = 5,
-}
-
-/**
-	A hint for how the presentation node should be displayed when shown in a list.
-	How you use this is your UI is up to you.
-	*/
-export enum DestinyPresentationDisplayStyle {
-  /**
-		Display the item as a category, through which sub-items are filtered.
-		*/
-  Category = 0,
-  Badge = 1,
-  Medals = 2,
-  Collectible = 3,
-  Record = 4,
 }
 
 /**
@@ -3028,26 +3048,6 @@ export enum DestinyPresentationScreenStyle {
 		Show sub-items as Badges.  (I know, I know.  We don't need no stinkin' badges har har har)
 		*/
   Badge = 2,
-}
-
-export enum DestinyRecordValueStyle {
-  Integer = 0,
-  Percentage = 1,
-  Milliseconds = 2,
-  Boolean = 3,
-  Decimal = 4,
-}
-
-export enum DestinyRecordToastStyle {
-  None = 0,
-  Record = 1,
-  Lore = 2,
-  Badge = 3,
-  MetaRecord = 4,
-  MedalComplete = 5,
-  SeasonChallengeComplete = 6,
-  GildedTitleComplete = 7,
-  CraftingRecipeUnlocked = 8,
 }
 
 export enum DestinyUnlockState {

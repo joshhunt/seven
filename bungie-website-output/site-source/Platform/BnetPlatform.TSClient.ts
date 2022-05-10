@@ -5975,6 +5975,92 @@ export declare namespace Tokens {
 
     ApplyDate?: string;
   }
+
+  export interface BungieRewardDisplay {
+    UserRewardAvailabilityModel: Tokens.UserRewardAvailabilityModel;
+
+    ObjectiveDisplayProperties: Tokens.RewardDisplayProperties;
+
+    RewardDisplayProperties: Tokens.RewardDisplayProperties;
+  }
+
+  export interface UserRewardAvailabilityModel {
+    AvailabilityModel: Tokens.RewardAvailabilityModel;
+
+    IsAvailableForUser: boolean;
+
+    IsUnlockedForUser: boolean;
+  }
+
+  export interface RewardAvailabilityModel {
+    HasExistingCode: boolean;
+
+    RecordDefinitions: Records.DestinyRecordDefinition[];
+
+    CollectibleDefinitions: Tokens.CollectibleDefinitions[];
+
+    IsOffer: boolean;
+
+    HasOffer: boolean;
+
+    OfferApplied: boolean;
+
+    DecryptedToken: string;
+
+    IsLoyaltyReward: boolean;
+
+    ShopifyEndDate?: string;
+
+    GameEarnByDate: string;
+
+    RedemptionEndDate: string;
+  }
+
+  export interface CollectibleDefinitions {
+    CollectibleDefinition: Collectibles.DestinyCollectibleDefinition;
+
+    DestinyInventoryItemDefinition: Definitions.DestinyInventoryItemDefinition;
+  }
+
+  export interface RewardDisplayProperties {
+    Name: string;
+
+    Description: string;
+
+    ImagePath: string;
+  }
+
+  export interface BungieRewardClaimResponse {
+    TargetRewardId: string;
+
+    TargetDestinyMembershipType: Globals.BungieMembershipType;
+
+    TargetDestinyMembershipId: string;
+
+    IsOffer: boolean;
+
+    IsLoyaltyReward: boolean;
+
+    OwnsOffer: boolean;
+
+    DecryptedToken: string;
+
+    OfferApplied: boolean;
+
+    OfferAsCode: boolean;
+
+    CodeCharges: number;
+
+    RedemptionEndDate: string;
+
+    RedemptionPeriodExpired: boolean;
+
+    ClaimPeriodExpired: boolean;
+
+    Email: string;
+
+    RewardDisplayProperties: Tokens.RewardDisplayProperties;
+  }
 }
 
 export declare namespace Admin {
@@ -6055,157 +6141,331 @@ export declare namespace Admin {
   }
 }
 
-export declare namespace Triumphs {
+export declare namespace Records {
+  export interface DestinyRecordDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		Indicates whether this Record's state is determined on a per-character or on an account-wide basis.
+		*/
+    scope: Globals.DestinyScope;
+
+    presentationInfo: Presentation.DestinyPresentationChildBlock;
+
+    loreHash?: number;
+
+    objectiveHashes: number[];
+
+    recordValueStyle: Globals.DestinyRecordValueStyle;
+
+    forTitleGilding: boolean;
+
+    titleInfo: Records.DestinyRecordTitleBlock;
+
+    completionInfo: Records.DestinyRecordCompletionBlock;
+
+    stateInfo: Records.SchemaRecordStateBlock;
+
+    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
+
+    expirationInfo: Records.DestinyRecordExpirationBlock;
+
+    /**
+		Some records have multiple 'interval' objectives, and the record may be claimed at each completed interval
+		*/
+    intervalInfo: Records.DestinyRecordIntervalBlock;
+
+    /**
+		If there is any publicly available information about rewards earned for achieving this record,
+		 this is the list of those items.
+		
+		 However, note that some records intentionally have "hidden" rewards.  These will not be returned
+		 in this list.
+		*/
+    rewardItems: World.DestinyItemQuantity[];
+
+    presentationNodeType: Globals.DestinyPresentationNodeType;
+
+    traitIds: string[];
+
+    traitHashes: number[];
+
+    parentNodeHashes: number[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyRecordTitleBlock {
+    hasTitle: boolean;
+
+    titlesByGender: {
+      [K in EnumStrings<typeof Globals.DestinyGender>]?: string;
+    };
+
+    /**
+		For those who prefer to use the definitions.
+		*/
+    titlesByGenderHash: { [key: number]: string };
+
+    gildingTrackingRecordHash?: number;
+  }
+
+  export interface DestinyRecordCompletionBlock {
+    /**
+		The number of objectives that must be completed before the objective is considered "complete"
+		*/
+    partialCompletionObjectiveCountThreshold: number;
+
+    ScoreValue: number;
+
+    shouldFireToast: boolean;
+
+    toastStyle: Globals.DestinyRecordToastStyle;
+  }
+
+  export interface SchemaRecordStateBlock {
+    featuredPriority: number;
+
+    obscuredString: string;
+  }
+
   /**
-	This class should be considered ephimeral: it is almost certain that this will go away after the summer.
-	
-	Don't write any permanent systems against it, k thanks
+	If this record has an expiration after which it cannot be earned, this is some information about
+	that expiration.
 	*/
-  export interface DestinyTriumphsResponse {
-    categories: Triumphs.DestinyTriumphsCategory[];
+  export interface DestinyRecordExpirationBlock {
+    hasExpiration: boolean;
 
-    rewards: Triumphs.DestinyTriumphsReward[];
+    description: string;
 
-    discountReward: Triumphs.DestinyTriumphsDiscountReward;
-
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    backgroundImage: string;
-
-    startDate: string;
-
-    endDate: string;
-
-    discountCodeExpiresDate: string;
-
-    generateCodeEndDate: string;
-
-    eventStartDate: string;
-
-    eventEndDate: string;
-
-    currentPoints: number;
-
-    unclaimedPoints: number;
-
-    maximumPoints: number;
-
-    faqContentId: string;
-
-    helpContentId: string;
-
-    faqLink: string;
-
-    helpLink: string;
-
-    nameplateImage: string;
-
-    upgradedNameplateImage: string;
+    icon: string;
   }
 
-  export interface DestinyTriumphsCategory {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+  export interface DestinyRecordIntervalBlock {
+    intervalObjectives: Records.DestinyRecordIntervalObjective[];
 
-    records: Triumphs.DestinyTriumphsRecord[];
+    intervalRewards: Records.DestinyRecordIntervalRewards[];
+
+    originalObjectiveArrayInsertionIndex: number;
   }
 
-  export interface DestinyTriumphsRecord {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+  export interface DestinyRecordIntervalObjective {
+    intervalObjectiveHash: number;
 
-    progressCaption: string;
+    intervalScoreValue: number;
+  }
 
-    difficulty: Globals.DestinyActivityDifficultyTier;
+  export interface DestinyRecordIntervalRewards {
+    intervalRewardItems: World.DestinyItemQuantity[];
+  }
 
-    pointValue: number;
-
-    state: Globals.DestinyTriumphRecordState;
-
-    hasProgressBar: boolean;
-
-    currentProgress?: number;
-
-    completedAtProgress?: number;
-
-    furthestProgressCharacterId?: string;
+  export interface DestinyProfileRecordsComponent {
+    /**
+		Your 'active' Triumphs score, maintained for backwards compatibility.
+		*/
+    score: number;
 
     /**
-		IF this is populated, it is the live data for a checklist associated with this record.
-		Use its contents to look up the corresponding DestinyChecklistDefinition and show some cool data.
+		Your 'active' Triumphs score.
 		*/
-    checklist: Checklists.DestinyChecklistStatus;
+    activeScore: number;
 
     /**
-		If there are checklist details to view for this triumph, this will be populatd with the string to use
-		for showing the button to link to the checklist details.
+		Your 'legacy' Triumphs score.
 		*/
-    viewActionString: string;
+    legacyScore: number;
+
+    /**
+		Your 'lifetime' Triumphs score.
+		*/
+    lifetimeScore: number;
+
+    /**
+		If this profile is tracking a record, this is the hash identifier of the record it is tracking.
+		*/
+    trackedRecordHash?: number;
+
+    records: { [key: number]: Records.DestinyRecordComponent };
+
+    recordCategoriesRootNodeHash: number;
+
+    recordSealsRootNodeHash: number;
   }
 
-  export interface DestinyTriumphsReward {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+  export interface DestinyRecordComponent {
+    state: Globals.DestinyRecordState;
 
-    pointValueThreshold: number;
+    objectives: Quests.DestinyObjectiveProgress[];
 
-    earned: boolean;
+    intervalObjectives: Quests.DestinyObjectiveProgress[];
+
+    intervalsRedeemedCount: number;
+
+    /**
+		If available, this is the number of times this record has been completed.
+		For example, the number of times a seal title has been gilded.
+		*/
+    completedCount?: number;
+
+    /**
+		If available, a list that describes which reward rewards should be shown (true) or hidden (false).
+		This property is for regular record rewards, and not for interval objective rewards.
+		*/
+    rewardVisibilty: boolean[];
   }
 
-  export interface DestinyTriumphsDiscountReward {
-    itemUrl: string;
+  export interface DestinyCharacterRecordsComponent {
+    featuredRecordHashes: number[];
 
-    imagePath: string;
+    records: { [key: number]: Records.DestinyRecordComponent };
 
-    pointValueThreshold: number;
+    recordCategoriesRootNodeHash: number;
 
-    playerDiscountCode: string;
-
-    claimedDate?: string;
-
-    state: Globals.DestinyTriumphsDiscountState;
+    recordSealsRootNodeHash: number;
   }
 }
 
-export declare namespace Checklists {
-  export interface DestinyChecklistStatus {
-    /**
-		The unique identifier of the checklist being referred to.
-		*/
-    checklistHash: number;
+export declare namespace Presentation {
+  export interface DestinyPresentationChildBlock {
+    presentationNodeType: Globals.DestinyPresentationNodeType;
 
-    entries: { [key: number]: boolean };
+    parentPresentationNodeHashes: number[];
+
+    displayStyle: Globals.DestinyPresentationDisplayStyle;
   }
 
   /**
-	By public demand, Checklists are loose sets of "things to do/things you have done" in Destiny that we were actually able to track.
-	They include easter eggs you find in the world, unique chests you unlock, and other such data where the first time you do it is
-	significant enough to be tracked, and you have the potential to "get them all".
-	
-	These may be account-wide, or may be per character.  The status of these will be returned in related "Checklist" data coming
-	down from API requests such as GetProfile or GetCharacter.
-	
-	Generally speaking, the items in a checklist can be completed in any order: we return an ordered list which
-	only implies the way we are showing them in our own UI, and you can feel free to alter it as you wish.
-	
-	Note that, in the future, there will be something resembling the old D1 Record Books in at least some vague form.  When that
-	is created, it may be that it will supercede much or all of this Checklist data.  It remains to be seen if that will be
-	the case, so for now assume that the Checklists will still exist even after the release of D2: Forsaken.
+	Presentation nodes can be restricted by various requirements.  This defines the rules
+	of those requirements, and the message(s) to be shown if these requirements aren't met.
 	*/
-  export interface DestinyChecklistDefinition {
+  export interface DestinyPresentationNodeRequirementsBlock {
+    /**
+		If this node is not accessible due to Entitlements (for instance, you don't own
+		the required game expansion), this is the message to show.
+		*/
+    entitlementUnavailableMessage: string;
+  }
+
+  export interface DestinyPresentationNodesComponent {
+    nodes: { [key: number]: Presentation.DestinyPresentationNodeComponent };
+  }
+
+  export interface DestinyPresentationNodeComponent {
+    state: Globals.DestinyPresentationNodeState;
+
+    /**
+		An optional property: presentation nodes MAY have objectives, which can be used to infer
+		more human readable data about the progress.  However, progressValue and completionValue
+		ought to be considered the canonical values for progress on Progression Nodes.
+		*/
+    objective: Quests.DestinyObjectiveProgress;
+
+    /**
+		How much of the presentation node is considered to be completed so far by the given character/profile.
+		*/
+    progressValue: number;
+
+    /**
+		The value at which the presentation node is considered to be completed.
+		*/
+    completionValue: number;
+
+    /**
+		If available, this is the current score for the record category that this node represents.
+		*/
+    recordCategoryScore?: number;
+  }
+
+  /**
+	A PresentationNode is an entity that represents a logical grouping of other entities visually/organizationally.
+	
+	For now, Presentation Nodes may contain the following... but it may be used for more in the future:
+	
+	- Collectibles
+	- Records (Or, as the public will call them, "Triumphs."  Don't ask me why we're overloading the term "Triumph", 
+	it still hurts me to think about it)
+	- Metrics (aka Stat Trackers)
+	- Other Presentation Nodes, allowing a tree of Presentation Nodes to be created
+	
+	Part of me wants to break these into conceptual definitions per entity being collected, but the possibility of 
+	these different types being mixed in the same UI and the possibility that it could actually be more useful to return
+	the "bare metal" presentation node concept has resulted in me deciding against that for the time being.
+	
+	We'll see if I come to regret this as well.
+	*/
+  export interface DestinyPresentationNodeDefinition {
     displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
     /**
-		A localized string prompting you to view the checklist.
+		The original icon for this presentation node, before we futzed with it.
 		*/
-    viewActionString: string;
+    originalIcon: string;
 
     /**
-		Indicates whether you will find this checklist on the Profile or Character components.
+		Some presentation nodes are meant to be explicitly shown on the "root" or "entry" screens for the feature to 
+		which they are related.  You should use this icon when showing them on such a view, if you have a similar "entry point"
+		view in your UI.  If you don't have a UI, then I guess it doesn't matter either way does it?
+		*/
+    rootViewIcon: string;
+
+    nodeType: Globals.DestinyPresentationNodeType;
+
+    /**
+		Indicates whether this presentation node's state is determined on a per-character or on an account-wide basis.
 		*/
     scope: Globals.DestinyScope;
 
     /**
-		The individual checklist items.  Gotta catch 'em all.
+		If this presentation node shows a related objective (for instance, if it tracks the progress of its
+		children), the objective being tracked is indicated here.
 		*/
-    entries: Checklists.DestinyChecklistEntryDefinition[];
+    objectiveHash?: number;
+
+    /**
+		If this presentation node has an associated "Record" that you can accomplish for completing its
+		children, this is the identifier of that Record.
+		*/
+    completionRecordHash?: number;
+
+    /**
+		The child entities contained by this presentation node.
+		*/
+    children: Presentation.DestinyPresentationNodeChildrenBlock;
+
+    /**
+		A hint for how to display this presentation node when it's shown in a list.
+		*/
+    displayStyle: Globals.DestinyPresentationDisplayStyle;
+
+    /**
+		A hint for how to display this presentation node when it's shown in its own detail screen.
+		*/
+    screenStyle: Globals.DestinyPresentationScreenStyle;
+
+    /**
+		The requirements for being able to interact with this presentation node and its children.
+		*/
+    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
+
+    /**
+		If this presentation node has children, but the game doesn't let you inspect the details
+		of those children, that is indicated here.
+		*/
+    disableChildSubscreenNavigation: boolean;
+
+    maxCategoryRecordScore: number;
+
+    presentationNodeType: Globals.DestinyPresentationNodeType;
+
+    traitIds: string[];
+
+    traitHashes: number[];
+
+    parentNodeHashes: number[];
 
     hash: number;
 
@@ -6215,55 +6475,1782 @@ export declare namespace Checklists {
   }
 
   /**
-	The properties of an individual checklist item.  Note that almost everything is optional: it is *highly* variable what kind
-	of data we'll actually be able to return: at times we may have no other relationships to entities at all.
-	
-	Whatever UI you build, do it with the knowledge that any given entry might not actually be able to be associated with
-	some other Destiny entity.
+	As/if presentation nodes begin to host more entities as children, these lists will be added to.
+	One list property exists per type of entity that can be treated as a child of this presentation
+	node, and each holds the identifier of the entity and any associated information needed to
+	display the UI for that entity (if anything)
 	*/
-  export interface DestinyChecklistEntryDefinition {
-    /**
-		The identifier for this Checklist entry.  Guaranteed unique only within this Checklist Definition,
-		and not globally/for all checklists.
-		*/
-    hash: number;
+  export interface DestinyPresentationNodeChildrenBlock {
+    presentationNodes: Presentation.DestinyPresentationNodeChildEntry[];
 
-    /**
-		Even if no other associations exist, we will give you *something* for display properties.
-		In cases where we have no associated entities, it may be as simple as a numerical identifier.
-		*/
+    collectibles: Presentation.DestinyPresentationNodeCollectibleChildEntry[];
+
+    records: Presentation.DestinyPresentationNodeRecordChildEntry[];
+
+    metrics: Presentation.DestinyPresentationNodeMetricChildEntry[];
+
+    craftables: Presentation.DestinyPresentationNodeCraftableChildEntry[];
+  }
+
+  export interface DestinyPresentationNodeChildEntry {
+    presentationNodeHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeCollectibleChildEntry {
+    collectibleHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeRecordChildEntry {
+    recordHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeMetricChildEntry {
+    metricHash: number;
+
+    nodeDisplayPriority: number;
+  }
+
+  export interface DestinyPresentationNodeCraftableChildEntry {
+    craftableItemHash: number;
+
+    nodeDisplayPriority: number;
+  }
+}
+
+export declare namespace Collectibles {
+  /**
+	Defines a
+	*/
+  export interface DestinyCollectibleDefinition {
     displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
-    destinationHash?: number;
-
-    locationHash?: number;
-
     /**
-		Note that a Bubble's hash doesn't uniquely identify a "top level" entity in Destiny.
-		Only the combination of location and bubble can uniquely identify a place in the world of Destiny:
-		so if bubbleHash is populated, locationHash must too be populated for it to have any meaning.
-		
-		You can use this property if it is populated to look up the DestinyLocationDefinition's associated 
-		.locationReleases[].activityBubbleName property.
-		*/
-    bubbleHash?: number;
-
-    activityHash?: number;
-
-    itemHash?: number;
-
-    vendorHash?: number;
-
-    vendorInteractionIndex?: number;
-
-    /**
-		The scope at which this specific entry can be computed.
+		Indicates whether the state of this Collectible is determined on a per-character or on an account-wide basis.
 		*/
     scope: Globals.DestinyScope;
+
+    /**
+		A human readable string for a hint about how to acquire the item.
+		*/
+    sourceString: string;
+
+    /**
+		This is a hash identifier we are building on the BNet side in an attempt to let people group collectibles
+		by similar sources.
+		
+		I can't promise that it's going to be 100% accurate, but if the designers were consistent in assigning
+		the same source strings to items with the same sources, it *ought to* be.  No promises though.
+		
+		This hash also doesn't relate to an actual definition, just to note: we've got nothing useful other than
+		the source string for this data.
+		*/
+    sourceHash?: number;
+
+    itemHash: number;
+
+    acquisitionInfo: Collectibles.DestinyCollectibleAcquisitionBlock;
+
+    stateInfo: Collectibles.DestinyCollectibleStateBlock;
+
+    presentationInfo: Presentation.DestinyPresentationChildBlock;
+
+    presentationNodeType: Globals.DestinyPresentationNodeType;
+
+    traitIds: string[];
+
+    traitHashes: number[];
+
+    parentNodeHashes: number[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyCollectibleAcquisitionBlock {
+    acquireMaterialRequirementHash?: number;
+
+    acquireTimestampUnlockValueHash?: number;
+  }
+
+  export interface DestinyCollectibleStateBlock {
+    obscuredOverrideItemHash?: number;
+
+    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
+  }
+
+  export interface DestinyCollectiblePurchaseBlock {
+    purchaseDisabledReason: string;
+
+    disablePurchasing: boolean;
+  }
+
+  export interface DestinyProfileCollectiblesComponent {
+    /**
+		The list of collectibles determined by the game as having been "recently" acquired.
+		*/
+    recentCollectibleHashes: number[];
+
+    /**
+		The list of collectibles determined by the game as having been "recently" acquired.
+		
+		The game client itself actually controls this data, so I personally question whether anyone
+		will get much use out of this: because we can't edit this value through the API.  But in case
+		anyone finds it useful, here it is.
+		*/
+    newnessFlaggedCollectibleHashes: number[];
+
+    collectibles: { [key: number]: Collectibles.DestinyCollectibleComponent };
+
+    collectionCategoriesRootNodeHash: number;
+
+    collectionBadgesRootNodeHash: number;
+  }
+
+  export interface DestinyCollectibleComponent {
+    state: Globals.DestinyCollectibleState;
+  }
+
+  export interface DestinyCollectiblesComponent {
+    collectibles: { [key: number]: Collectibles.DestinyCollectibleComponent };
+
+    /**
+		The hash for the root presentation node definition of Collection categories.
+		*/
+    collectionCategoriesRootNodeHash: number;
+
+    /**
+		The hash for the root presentation node definition of Collection Badges.
+		*/
+    collectionBadgesRootNodeHash: number;
   }
 }
 
 export declare namespace Definitions {
+  /**
+	So much of what you see in Destiny is actually an Item used in a new and creative way.
+	This is the definition for Items in Destiny, which started off as just entities that could exist
+	in your Inventory but ended up being the backing data for so much more: quests, reward previews,
+	slots, and subclasses.
+	
+	In practice, you will want to associate this data with "live" item data
+	from a Bungie.Net Platform call: these definitions describe the item in generic, non-instanced
+	terms: but an actual instance of an item can vary widely from these generic definitions.
+	*/
+  export interface DestinyInventoryItemDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		Tooltips that only come up conditionally for the item.  Check the live data 
+		DestinyItemComponent.tooltipNotificationIndexes property for which of these should be shown at runtime.
+		*/
+    tooltipNotifications: Definitions.DestinyItemTooltipNotification[];
+
+    /**
+		If this item has a collectible related to it, this is the hash identifier of that collectible entry.
+		*/
+    collectibleHash?: number;
+
+    /**
+		If available, this is the original 'active' release watermark overlay for the icon.
+		If the item has different versions, this can be overridden by the 'display version watermark icon' from the 'quality' block.
+		Alternatively, if there is no watermark for the version, and the item version has a power cap below the current season power cap,
+		this can be overridden by the iconWatermarkShelved property.
+		*/
+    iconWatermark: string;
+
+    /**
+		If available, this is the 'shelved' release watermark overlay for the icon.
+		If the item version has a power cap below the current season power cap, it can be treated as 'shelved',
+		and should be shown with this 'shelved' watermark overlay.
+		*/
+    iconWatermarkShelved: string;
+
+    /**
+		A secondary icon associated with the item.  Currently this is used in very context specific
+		applications, such as Emblem Nameplates.
+		*/
+    secondaryIcon: string;
+
+    /**
+		Pulled from the secondary icon, this is the "secondary background" of the secondary
+		icon.  Confusing?  Sure, that's why I call it "overlay" here: because as far as it's
+		been used thus far, it has been for an optional overlay image.  We'll see if that holds up,
+		but at least for now it explains what this image is a bit better.
+		*/
+    secondaryOverlay: string;
+
+    /**
+		Pulled from the Secondary Icon, this is the "special" background for the item.
+		For Emblems, this is the background image used on the Details view: but it need
+		not be limited to that for other types of items.
+		*/
+    secondarySpecial: string;
+
+    /**
+		Sometimes, an item will have a background color.  Most notably this occurs with Emblems, who use the Background Color
+		for small character nameplates such as the "friends" view you see in-game.  There are almost certainly other items
+		that have background color as well, though I have not bothered to investigate what items have it nor what purposes they serve:
+		use it as you will.
+		*/
+    backgroundColor: Misc.DestinyColor;
+
+    /**
+		If we were able to acquire an in-game screenshot for the item, the path to that screenshot
+		will be returned here.  Note that not all items have screenshots: particularly not any non-equippable
+		items.
+		*/
+    screenshot: string;
+
+    /**
+		The localized title/name of the item's type.  This can be whatever the designers want, and has no guarantee
+		of consistency between items.
+		*/
+    itemTypeDisplayName: string;
+
+    flavorText: string;
+
+    /**
+		A string identifier that the game's UI uses to determine how the item should be rendered in inventory screens and the like.
+		This could really be anything - at the moment, we don't have the time to really breakdown and maintain all the possible 
+		strings this could be, partly because new ones could be added ad hoc.  But if you want to use it to dictate your own UI, or
+		look for items with a certain display style, go for it!
+		*/
+    uiItemDisplayStyle: string;
+
+    /**
+		It became a common enough pattern in our UI to show Item Type and Tier combined into a single localized
+		string that I'm just going to go ahead and start pre-creating these for items.
+		*/
+    itemTypeAndTierDisplayName: string;
+
+    /**
+		In theory, it is a localized string telling you about how you can find the item.
+		I really wish this was more consistent.  Many times, it has nothing.  Sometimes, it's instead a more narrative-forward
+		description of the item.  Which is cool, and I wish all properties had that data, but it should really be
+		its own property.
+		*/
+    displaySource: string;
+
+    /**
+		An identifier that the game UI uses to determine what type of tooltip to show for the item.  These have no
+		corresponding definitions that BNet can link to: so it'll be up to you to interpret and display your UI differently
+		according to these styles (or ignore it).
+		*/
+    tooltipStyle: string;
+
+    /**
+		If the item can be "used", this block will be non-null, and will have data related to the action performed
+		when using the item.  (Guess what?  99% of the time, this action is "dismantle".  Shocker)
+		*/
+    action: Definitions.DestinyItemActionBlockDefinition;
+
+    /**
+		Recipe items will have relevant crafting information available here.
+		*/
+    crafting: Definitions.DestinyItemCraftingBlockDefinition;
+
+    /**
+		If this item can exist in an inventory, this block will be non-null.  In practice,
+		every item that currently exists has one of these blocks.  But note that it is not necessarily guaranteed.
+		*/
+    inventory: Definitions.DestinyItemInventoryBlockDefinition;
+
+    /**
+		If this item is a quest, this block will be non-null.  In practice, I wish I had called this the Quest
+		block, but at the time it wasn't clear to me whether it would end up being used for purposes other than quests.
+		It will contain data about the steps in the quest, and mechanics we can use for displaying and tracking the quest.
+		*/
+    setData: Definitions.DestinyItemSetBlockDefinition;
+
+    /**
+		If this item can have stats (such as a weapon, armor, or vehicle), this block will be non-null and
+		populated with the stats found on the item.
+		*/
+    stats: Definitions.DestinyItemStatBlockDefinition;
+
+    /**
+		If the item is an emblem that has a special Objective attached to it - for instance, if the emblem
+		tracks PVP Kills, or what-have-you.  This is a bit different from, for example, the Vanguard Kill Tracker
+		mod, which pipes data into the "art channel".  When I get some time, I would like to standardize these so
+		you can get at the values they expose without having to care about what they're being used for and how they
+		are wired up, but for now here's the raw data.
+		*/
+    emblemObjectiveHash?: number;
+
+    /**
+		If this item can be equipped, this block will be non-null and will be populated with the conditions
+		under which it can be equipped.
+		*/
+    equippingBlock: Definitions.DestinyEquippingBlockDefinition;
+
+    /**
+		If this item can be rendered, this block will be non-null and will be populated with rendering
+		information.
+		*/
+    translationBlock: Definitions.DestinyItemTranslationBlockDefinition;
+
+    /**
+		If this item can be Used or Acquired to gain other items (for instance, how Eververse Boxes
+		can be consumed to get items from the box), this block will be non-null and will give summary information
+		for the items that can be acquired.
+		*/
+    preview: Definitions.DestinyItemPreviewBlockDefinition;
+
+    /**
+		If this item can have a level or stats, this block will be non-null and will be populated
+		with default quality (item level, "quality", and infusion) data.  See the block for more details, there's
+		often less upfront information in D2 so you'll want to be aware of how you use quality and item level on
+		the definition level now.
+		*/
+    quality: Definitions.DestinyItemQualityBlockDefinition;
+
+    /**
+		The conceptual "Value" of an item, if any was defined.  See the DestinyItemValueBlockDefinition for more details.
+		*/
+    value: Definitions.DestinyItemValueBlockDefinition;
+
+    /**
+		If this item has a known source, this block will be non-null and populated
+		with source information.  Unfortunately, at this time we are not generating sources: that is some
+		aggressively manual work which we didn't have time for, and I'm hoping to get back to at some point in the future.
+		*/
+    sourceData: Definitions.DestinyItemSourceBlockDefinition;
+
+    /**
+		If this item has Objectives (extra tasks that can be accomplished related to the item... most frequently
+		when the item is a Quest Step and the Objectives need to be completed to move on to the next Quest Step),
+		this block will be non-null and the objectives defined herein.
+		*/
+    objectives: Definitions.DestinyItemObjectiveBlockDefinition;
+
+    /**
+		If this item has available metrics to be shown, this block will be non-null have the appropriate hashes defined.
+		*/
+    metrics: Definitions.DestinyItemMetricBlockDefinition;
+
+    /**
+		If this item *is* a Plug, this will be non-null and the info defined herein.
+		See DestinyItemPlugDefinition for more information.
+		*/
+    plug: Items.DestinyItemPlugDefinition;
+
+    /**
+		If this item has related items in a "Gear Set", this will be non-null and the relationships defined herein.
+		*/
+    gearset: Definitions.DestinyItemGearsetBlockDefinition;
+
+    /**
+		If this item is a "reward sack" that can be opened to provide other items, this will be non-null and
+		the properties of the sack contained herein.
+		*/
+    sack: Definitions.DestinyItemSackBlockDefinition;
+
+    /**
+		If this item has any Sockets, this will be non-null and the individual sockets on the item
+		will be defined herein.
+		*/
+    sockets: Definitions.DestinyItemSocketBlockDefinition;
+
+    /**
+		Summary data about the item.
+		*/
+    summary: Definitions.DestinyItemSummaryBlockDefinition;
+
+    /**
+		If the item has a Talent Grid, this will be non-null and the properties of the grid defined herein.
+		Note that, while many items still have talent grids, the only ones with meaningful Nodes still on them
+		will be Subclass/"Build" items.
+		*/
+    talentGrid: Definitions.DestinyItemTalentGridBlockDefinition;
+
+    /**
+		If the item has stats, this block will be defined.  It has the "raw" investment stats for the item.
+		These investment stats don't take into account the ways that the items can spawn, nor do they take
+		into account any Stat Group transformations.  I have retained them for debugging purposes, but I
+		do not know how useful people will find them.
+		*/
+    investmentStats: Definitions.DestinyItemInvestmentStatDefinition[];
+
+    /**
+		If the item has any *intrinsic* Perks (Perks that it will provide regardless of Sockets, Talent Grid,
+		and other transitory state), they will be defined here.
+		*/
+    perks: Definitions.DestinyItemPerkEntryDefinition[];
+
+    /**
+		If the item has any related Lore (DestinyLoreDefinition), this will be the hash identifier you can use
+		to look up the lore definition.
+		*/
+    loreHash?: number;
+
+    /**
+		There are times when the game will show you a "summary/vague" version of an item - such as a description of its type
+		represented as a DestinyInventoryItemDefinition - rather than display the item itself.
+		
+		This happens sometimes when summarizing possible rewards in a tooltip.  This is the item displayed instead, if
+		it exists.
+		*/
+    summaryItemHash?: number;
+
+    /**
+		If any animations were extracted from game content for this item, these will be the definitions
+		of those animations.
+		*/
+    animations: Animations.DestinyAnimationReference[];
+
+    /**
+		BNet may forbid the execution of actions on this item via the API.  If that is occurring, allowActions will be set to false.
+		*/
+    allowActions: boolean;
+
+    /**
+		If we added any help or informational URLs about this item, these will be those links.
+		*/
+    links: Links.HyperlinkReference[];
+
+    /**
+		The boolean will indicate to us (and you!) whether something *could* happen when you transfer this item from the Postmaster
+		that might be considered a "destructive" action.
+		
+		It is not feasible currently to tell you (or ourelves!) in a consistent way whether this *will* actually cause a destructive action,
+		so we are playing it safe: if it has the potential to do so, we will not allow it to be transferred from the Postmaster
+		by default.  You will need to check for this flag before transferring an item from the Postmaster, or else you'll end
+		up receiving an error.
+		*/
+    doesPostmasterPullHaveSideEffects: boolean;
+
+    /**
+		The intrinsic transferability of an item.
+		
+		I hate that this boolean is negative - but there's a reason.
+		
+		Just because an item is intrinsically transferrable doesn't mean that it can be transferred,
+		and we don't want to imply that this is the only source of that transferability.
+		*/
+    nonTransferrable: boolean;
+
+    /**
+		BNet attempts to make a more formal definition of item "Categories", as defined by 
+		DestinyItemCategoryDefinition.  This is a list of all Categories that we were able to
+		algorithmically determine that this item is a member of.  (for instance, that it's a "Weapon",
+		that it's an "Auto Rifle", etc...)
+		
+		The algorithm for these is, unfortunately, volatile.  If you believe you see a miscategorized
+		item, please let us know on the Bungie API forums.
+		*/
+    itemCategoryHashes: number[];
+
+    /**
+		In Destiny 1, we identified some items as having particular categories that we'd like to know about
+		for various internal logic purposes.  These are defined in SpecialItemType, and while these days
+		the itemCategoryHashes are the preferred way of identifying types, we have retained this enum
+		for its convenience.
+		*/
+    specialItemType: Globals.SpecialItemType;
+
+    /**
+		A value indicating the "base" the of the item.  This enum is a useful but dramatic oversimplification
+		of what it means for an item to have a "Type".  Still, it's handy in many situations.
+		
+		itemCategoryHashes are the preferred way of identifying types, we have retained this enum
+		for its convenience.
+		*/
+    itemType: Globals.DestinyItemType;
+
+    /**
+		A value indicating the "sub-type" of the item.  For instance, where an item might have an
+		itemType value "Weapon", this will be something more specific like "Auto Rifle".
+		
+		itemCategoryHashes are the preferred way of identifying types, we have retained this enum
+		for its convenience.
+		*/
+    itemSubType: Globals.DestinyItemSubType;
+
+    /**
+		We run a similarly weak-sauce algorithm to try and determine whether an item is restricted to a specific
+		class.  If we find it to be restricted in such a way, we set this classType property to match
+		the class' enumeration value so that users can easily identify class restricted items.
+		
+		If you see a mis-classed item, please inform the developers in the Bungie API forum.
+		*/
+    classType: Globals.DestinyClass;
+
+    /**
+		Some weapons and plugs can have a "Breaker Type": a special ability that works sort of like damage type
+		vulnerabilities.  This is (almost?) always set on items by plugs.
+		*/
+    breakerType: Globals.DestinyBreakerType;
+
+    /**
+		Since we also have a breaker type definition, this is the hash for that breaker type for your convenience.
+		Whether you use the enum or hash and look up the definition depends on what's cleanest for your code.
+		*/
+    breakerTypeHash?: number;
+
+    /**
+		If true, then you will be allowed to equip the item if you pass its other requirements.
+		
+		This being false means that you cannot equip the item under any circumstances.
+		*/
+    equippable: boolean;
+
+    /**
+		Theoretically, an item can have many possible damage types.  In *practice*, this is not true,
+		but just in case weapons start being made that have multiple (for instance, an item where a socket
+		has reusable plugs for every possible damage type that you can choose from freely), this field
+		will return all of the possible damage types that are available to the weapon by default.
+		*/
+    damageTypeHashes: number[];
+
+    /**
+		This is the list of all damage types that we know ahead of time the item can take on.
+		Unfortunately, this does not preclude the possibility of something funky happening
+		to give the item a damage type that cannot be predicted beforehand: for example,
+		if some designer decides to create arbitrary non-reusable plugs that cause damage type
+		to change.
+		
+		This damage type prediction will only use the following to determine potential damage types:
+		
+		- Intrinsic perks
+		
+		- Talent Node perks
+		
+		- Known, reusable plugs for sockets
+		*/
+    damageTypes: Globals.DamageType[];
+
+    /**
+		If the item has a damage type that could be considered to be default, it will be populated here.
+		
+		For various upsetting reasons, it's surprisingly cumbersome to figure this out.  I hope you're happy.
+		*/
+    defaultDamageType: Globals.DamageType;
+
+    /**
+		Similar to defaultDamageType, but represented as the hash identifier for a DestinyDamageTypeDefinition.
+		
+		I will likely regret leaving in the enumeration versions of these properties, but for now they're
+		very convenient.
+		*/
+    defaultDamageTypeHash?: number;
+
+    /**
+		If this item is related directly to a Season of Destiny, this is the hash identifier for that season.
+		*/
+    seasonHash?: number;
+
+    /**
+		If true, this is a dummy vendor-wrapped item template.  Items purchased from Eververse will be "wrapped"
+		by one of these items so that we can safely provide refund capabilities before the item is "unwrapped".
+		*/
+    isWrapper: boolean;
+
+    /**
+		Traits are metadata tags applied to this item. For example: armor slot, weapon type, foundry, faction, etc.
+		These IDs come from the game and don't map to any content, but should still be useful.
+		*/
+    traitIds: string[];
+
+    /**
+		These are the corresponding trait definition hashes for the entries in traitIds.
+		*/
+    traitHashes: number[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyItemTooltipNotification {
+    displayString: string;
+
+    displayStyle: string;
+  }
+
+  /**
+	If an item can have an action performed on it (like "Dismantle"), it will be defined here
+	if you care.
+	*/
+  export interface DestinyItemActionBlockDefinition {
+    /**
+		Localized text for the verb of the action being performed.
+		*/
+    verbName: string;
+
+    /**
+		Localized text describing the action being performed.
+		*/
+    verbDescription: string;
+
+    /**
+		The content has this property, however it's not entirely clear how it is used.
+		*/
+    isPositive: boolean;
+
+    /**
+		If the action has an overlay screen associated with it, this is the name of that screen.
+		Unfortunately, we cannot return the screen's data itself.
+		*/
+    overlayScreenName: string;
+
+    /**
+		The icon associated with the overlay screen for the action, if any.
+		*/
+    overlayIcon: string;
+
+    /**
+		The number of seconds to delay before allowing this action to be performed again.
+		*/
+    requiredCooldownSeconds: number;
+
+    /**
+		If the action requires other items to exist or be destroyed, this is
+		the list of those items and requirements.
+		*/
+    requiredItems: Definitions.DestinyItemActionRequiredItemDefinition[];
+
+    /**
+		If performing this action earns you Progression, this is the list of progressions and values granted
+		for those progressions by performing this action.
+		*/
+    progressionRewards: Definitions.DestinyProgressionRewardDefinition[];
+
+    /**
+		The internal identifier for the action.
+		*/
+    actionTypeLabel: string;
+
+    /**
+		Theoretically, an item could have a localized string for a hint about the location in which
+		the action should be performed.  In practice, no items yet have this property.
+		*/
+    requiredLocation: string;
+
+    /**
+		The identifier hash for the Cooldown associated with this action.  We have not pulled this data yet
+		for you to have more data to use for cooldowns.
+		*/
+    requiredCooldownHash: number;
+
+    /**
+		If true, the item is deleted when the action completes.
+		*/
+    deleteOnAction: boolean;
+
+    /**
+		If true, the entire stack is deleted when the action completes.
+		*/
+    consumeEntireStack: boolean;
+
+    /**
+		If true, this action will be performed as soon as you earn this item.
+		Some rewards work this way, providing you a single item to pick up from
+		a reward-granting vendor in-game and then immediately consuming itself
+		to provide you multiple items.
+		*/
+    useOnAcquire: boolean;
+  }
+
+  /**
+	The definition of an item and quantity required in a character's inventory in order to
+	perform an action.
+	*/
+  export interface DestinyItemActionRequiredItemDefinition {
+    /**
+		The minimum quantity of the item you have to have.
+		*/
+    count: number;
+
+    /**
+		The hash identifier of the item you need to have.  Use it to look up the DestinyInventoryItemDefinition for more info.
+		*/
+    itemHash: number;
+
+    /**
+		If true, the item/quantity will be deleted from your inventory when the action is performed.  Otherwise,
+		you'll retain these required items after the action is complete.
+		*/
+    deleteOnAction: boolean;
+  }
+
+  /**
+	Inventory Items can reward progression when actions are performed on them.  A common example
+	of this in Destiny 1 was Bounties, which would reward Experience on your Character and the like 
+	when you completed the bounty.
+	
+	Note that this maps to a DestinyProgressionMappingDefinition, and *not* a DestinyProgressionDefinition
+	directly.  This is apparently so that multiple progressions can be granted progression points/experience
+	at the same time.
+	*/
+  export interface DestinyProgressionRewardDefinition {
+    /**
+		The hash identifier of the DestinyProgressionMappingDefinition that contains the progressions
+		for which experience should be applied.
+		*/
+    progressionMappingHash: number;
+
+    /**
+		The amount of experience to give to each of the mapped progressions.
+		*/
+    amount: number;
+
+    /**
+		If true, the game's internal mechanisms to throttle progression should be applied.
+		*/
+    applyThrottles: boolean;
+  }
+
+  /**
+	If an item can have an action performed on it (like "Dismantle"), it will be defined here
+	if you care.
+	*/
+  export interface DestinyItemCraftingBlockDefinition {
+    /**
+		A reference to the item definition that is created when crafting with this 'recipe' item.
+		*/
+    outputItemHash: number;
+
+    /**
+		A list of socket type hashes that describes which sockets are required for crafting with this recipe.
+		*/
+    requiredSocketTypeHashes: number[];
+
+    failedRequirementStrings: string[];
+
+    /**
+		A reference to the base material requirements for crafting with this recipe.
+		*/
+    baseMaterialRequirements?: number;
+
+    /**
+		A list of 'bonus' socket plugs that may be available if certain requirements are met.
+		*/
+    bonusPlugs: Definitions.DestinyItemCraftingBlockBonusPlugDefinition[];
+  }
+
+  export interface DestinyItemCraftingBlockBonusPlugDefinition {
+    socketTypeHash: number;
+
+    plugItemHash: number;
+  }
+
+  /**
+	If the item can exist in an inventory - the overwhelming majority of them can and do -
+	then this is the basic properties regarding the item's relationship with the inventory.
+	*/
+  export interface DestinyItemInventoryBlockDefinition {
+    /**
+		If this string is populated, you can't have more than one stack with this label in a given inventory.
+		Note that this is different from the equipping block's unique label, which is used for equipping uniqueness.
+		*/
+    stackUniqueLabel: string;
+
+    /**
+		The maximum quantity of this item that can exist in a stack.
+		*/
+    maxStackSize: number;
+
+    /**
+		The hash identifier for the DestinyInventoryBucketDefinition to which this item belongs.
+		I should have named this "bucketHash", but too many things refer to it now.  Sigh.
+		*/
+    bucketTypeHash: number;
+
+    /**
+		If the item is picked up by the lost loot queue, this is the hash identifier
+		for the DestinyInventoryBucketDefinition into which it will be placed.
+		Again, I should have named this recoveryBucketHash instead.
+		*/
+    recoveryBucketTypeHash: number;
+
+    /**
+		The hash identifier for the Tier Type of the item, use to look up its DestinyItemTierTypeDefinition
+		if you need to show localized data for the item's tier.
+		*/
+    tierTypeHash: number;
+
+    /**
+		If TRUE, this item is instanced.  Otherwise, it is a generic item that merely has a quantity in a stack (like Glimmer).
+		*/
+    isInstanceItem: boolean;
+
+    /**
+		The localized name of the tier type, which is a useful shortcut so you don't have to look up the definition every 
+		time.  However, it's mostly a holdover from days before we had a DestinyItemTierTypeDefinition to refer to.
+		*/
+    tierTypeName: string;
+
+    /**
+		The enumeration matching the tier type of the item to known values, again for convenience sake.
+		*/
+    tierType: Globals.TierType;
+
+    /**
+		The tooltip message to show, if any, when the item expires.
+		*/
+    expirationTooltip: string;
+
+    /**
+		If the item expires while playing in an activity, we show a different message.
+		*/
+    expiredInActivityMessage: string;
+
+    /**
+		If the item expires in orbit, we show a... more different message.  ("Consummate V's, consummate!")
+		*/
+    expiredInOrbitMessage: string;
+
+    suppressExpirationWhenObjectivesComplete: boolean;
+
+    /**
+		A reference to the associated crafting 'recipe' item definition, if this item can be crafted.
+		*/
+    recipeItemHash?: number;
+  }
+
+  /**
+	Primarily for Quests, this is the definition of properties related to the item if it is a quest
+	and its various quest steps.
+	*/
+  export interface DestinyItemSetBlockDefinition {
+    /**
+		A collection of hashes of set items, for items such as Quest Metadata items that possess this data.
+		*/
+    itemList: Definitions.DestinyItemSetBlockEntryDefinition[];
+
+    /**
+		If true, items in the set can only be added in increasing order, and adding an item will remove any previous item.
+		For Quests, this is by necessity true.  Only one quest step is present at a time, and previous steps are removed
+		as you advance in the quest.
+		*/
+    requireOrderedSetItemAdd: boolean;
+
+    /**
+		If true, the UI should treat this quest as "featured"
+		*/
+    setIsFeatured: boolean;
+
+    /**
+		A string identifier we can use to attempt to identify the category of the Quest.
+		*/
+    setType: string;
+
+    /**
+		The name of the quest line that this quest step is a part of.
+		*/
+    questLineName: string;
+
+    /**
+		The description of the quest line that this quest step is a part of.
+		*/
+    questLineDescription: string;
+
+    /**
+		An additional summary of this step in the quest line.
+		*/
+    questStepSummary: string;
+  }
+
+  /**
+	Defines a particular entry in an ItemSet (AKA a particular Quest Step in a Quest)
+	*/
+  export interface DestinyItemSetBlockEntryDefinition {
+    /**
+		Used for tracking which step a user reached.  These values will be populated in the user's
+		internal state, which we expose externally as a more usable DestinyQuestStatus object.
+		If this item has been obtained, this value will be set in trackingUnlockValueHash.
+		*/
+    trackingValue: number;
+
+    /**
+		This is the hash identifier for a DestinyInventoryItemDefinition representing this quest step.
+		*/
+    itemHash: number;
+  }
+
+  /**
+	Information about the item's calculated stats, with as much data as we can find for the stats
+	without having an actual instance of the item.
+	
+	Note that this means the entire concept of providing these stats is fundamentally insufficient:
+	we cannot predict with 100% accuracy the conditions under which an item can spawn, so we use various
+	heuristics to attempt to simulate the conditions as accurately as possible.  Actual stats for 
+	items in-game can and will vary, but these should at least be useful base points for comparison
+	and display.
+	
+	It is also worth noting that some stats, like Magazine size, have further calculations performed on them
+	by scripts in-game and on the game servers that BNet does not have access to.  We cannot know how those stats
+	are further transformed, and thus some stats will be inaccurate even on instances of items in BNet vs. how
+	they appear in-game.  This is a known limitation of our item statistics, without any planned fix.
+	*/
+  export interface DestinyItemStatBlockDefinition {
+    /**
+		If true, the game won't show the "primary" stat on this item when you inspect it.
+		
+		NOTE: This is being manually mapped, because I happen to want it in a block that isn't going to directly create this
+		derivative block.
+		*/
+    disablePrimaryStatDisplay: boolean;
+
+    /**
+		If the item's stats are meant to be modified by a DestinyStatGroupDefinition, this will
+		be the identifier for that definition.
+		
+		If you are using live data or precomputed stats data on the DestinyInventoryItemDefinition.stats.stats
+		property, you don't have to worry about statGroupHash and how it alters stats: the already altered
+		stats are provided to you.  But if you want to see how the sausage gets made, or perform computations
+		yourself, this is valuable information.
+		*/
+    statGroupHash?: number;
+
+    /**
+		If you are looking for precomputed values for the stats on a weapon, this is where they are stored.
+		Technically these are the "Display" stat values.  Please see DestinyStatsDefinition for what
+		Display Stat Values means, it's a very long story... but essentially these are the closest values
+		BNet can get to the item stats that you see in-game.
+		 
+		These stats are keyed by the DestinyStatDefinition's hash identifier for the stat
+		that's found on the item.
+		*/
+    stats: { [key: number]: Definitions.DestinyInventoryItemStatDefinition };
+
+    /**
+		A quick and lazy way to determine whether any stat other than the "primary" stat is actually
+		visible on the item.  Items often have stats that we return in case people find them useful, but
+		they're not part of the "Stat Group" and thus we wouldn't display them in our UI.  If this is False,
+		then we're not going to display any of these stats other than the primary one.
+		*/
+    hasDisplayableStats: boolean;
+
+    /**
+		This stat is determined to be the "primary" stat, and can be looked up in the stats or any
+		other stat collection related to the item.
+		
+		Use this hash to look up the stat's value using DestinyInventoryItemDefinition.stats.stats,
+		and the renderable data for the primary stat in the related DestinyStatDefinition.
+		*/
+    primaryBaseStatHash: number;
+  }
+
+  /**
+	Defines a specific stat value on an item, and the minimum/maximum range that we could
+	compute for the item based on our heuristics for how the item might be generated.
+	
+	Not guaranteed to match real-world instances of the item, but should hopefully at least
+	be close.  If it's not close, let us know on the Bungie API forums.
+	*/
+  export interface DestinyInventoryItemStatDefinition {
+    /**
+		The hash for the DestinyStatDefinition representing this stat.
+		*/
+    statHash: number;
+
+    /**
+		This value represents the stat value assuming the minimum possible roll
+		but accounting for any mandatory bonuses that should be applied to the stat on item creation.
+		
+		In Destiny 1, this was different from the "minimum" value because there were certain conditions
+		where an item could be theoretically lower level/value than the initial roll.  
+		
+		In Destiny 2, this is not possible unless Talent Grids begin to be used again for these purposes or some other
+		system change occurs... thus in practice, value and minimum should be the same in Destiny 2.  Good riddance.
+		*/
+    value: number;
+
+    /**
+		The minimum possible value for this stat that we think the item can roll.
+		*/
+    minimum: number;
+
+    /**
+		The maximum possible value for this stat that we think the item can roll.
+		
+		WARNING: In Destiny 1, this field was calculated using the potential stat rolls on the item's talent grid.
+		In Destiny 2, items no longer have meaningful talent grids and instead have sockets: but the calculation of this field
+		was never altered to adapt to this change.  As such, this field should be considered deprecated until we can address this oversight.
+		*/
+    maximum: number;
+
+    /**
+		The maximum possible value for the stat as shown in the UI, if it is being shown somewhere that reveals maximum
+		in the UI (such as a bar chart-style view).
+		
+		This is pulled directly from the item's DestinyStatGroupDefinition, and placed here for convenience.
+		
+		If not returned, there is no maximum to use (and thus the stat should not be shown in a way that assumes there is a limit to the stat)
+		*/
+    displayMaximum?: number;
+  }
+
+  /**
+	Items that can be equipped define this block.  It contains information we need to
+	understand how and when the item can be equipped.
+	*/
+  export interface DestinyEquippingBlockDefinition {
+    /**
+		If the item is part of a gearset, this is a reference to that gearset item.
+		*/
+    gearsetItemHash?: number;
+
+    /**
+		If defined, this is the label used to check if the item has other items of
+		matching types already equipped.  
+		
+		For instance, when you aren't allowed to
+		equip more than one Exotic Weapon, that's because all exotic weapons have
+		identical uniqueLabels and the game checks the to-be-equipped item's uniqueLabel
+		vs. all other already equipped items (other than the item in the slot that's
+		about to be occupied).
+		*/
+    uniqueLabel: string;
+
+    /**
+		The hash of that unique label.  Does not point to a specific definition.
+		*/
+    uniqueLabelHash: number;
+
+    /**
+		An equipped item *must* be equipped in an Equipment Slot.  This is the hash identifier
+		of the DestinyEquipmentSlotDefinition into which it must be equipped.
+		*/
+    equipmentSlotTypeHash: number;
+
+    /**
+		These are custom attributes on the equippability of the item.
+		
+		For now, this can only be "equip on acquire", which would mean that the item
+		will be automatically equipped as soon as you pick it up.
+		*/
+    attributes: Globals.EquippingItemBlockAttributes;
+
+    /**
+		Ammo type used by a weapon is no longer determined by the bucket in which it is contained.
+		If the item has an ammo type - i.e. if it is a weapon - this will be the type of ammunition expected.
+		*/
+    ammoType: Globals.DestinyAmmunitionType;
+
+    /**
+		These are strings that represent the possible Game/Account/Character state failure conditions
+		that can occur when trying to equip the item.  They match up one-to-one with requiredUnlockExpressions.
+		*/
+    displayStrings: string[];
+  }
+
+  /**
+	This Block defines the rendering data associated with the item, if any.
+	*/
+  export interface DestinyItemTranslationBlockDefinition {
+    weaponPatternIdentifier: string;
+
+    weaponPatternHash: number;
+
+    defaultDyes: World.DyeReference[];
+
+    lockedDyes: World.DyeReference[];
+
+    customDyes: World.DyeReference[];
+
+    arrangements: Definitions.DestinyGearArtArrangementReference[];
+
+    hasGeometry: boolean;
+  }
+
+  export interface DestinyGearArtArrangementReference {
+    classHash: number;
+
+    artArrangementHash: number;
+  }
+
+  /**
+	Items like Sacks or Boxes can have items that it shows in-game when you view details
+	that represent the items you can obtain if you use or acquire the item.
+	
+	This defines those categories, and gives some insights into that data's source.
+	*/
+  export interface DestinyItemPreviewBlockDefinition {
+    /**
+		A string that the game UI uses as a hint for which detail screen to show for the item.
+		You, too, can leverage this for your own custom screen detail views.
+		Note, however, that these are arbitrarily defined by designers: there's no guarantees
+		of a fixed, known number of these - so fall back to something reasonable if you don't recognize it.
+		*/
+    screenStyle: string;
+
+    /**
+		If the preview data is derived from a fake "Preview" Vendor, this will
+		be the hash identifier for the DestinyVendorDefinition of that fake vendor.
+		*/
+    previewVendorHash: number;
+
+    /**
+		If this item should show you Artifact information when you preview it,
+		this is the hash identifier of the DestinyArtifactDefinition for the artifact
+		whose data should be shown.
+		*/
+    artifactHash?: number;
+
+    /**
+		If the preview has an associated action (like "Open"), this will be the localized
+		string for that action.
+		*/
+    previewActionString: string;
+
+    /**
+		This is a list of the items being previewed, categorized in the same way as they are
+		in the preview UI.
+		*/
+    derivedItemCategories: Items.DestinyDerivedItemCategoryDefinition[];
+  }
+
+  /**
+	An item's "Quality" determines its calculated stats.  The Level at which the item spawns
+	is combined with its "qualityLevel" along with some additional calculations to determine
+	the value of those stats.
+	
+	In Destiny 2, most items don't have default item levels and quality, making this property
+	less useful: these apparently are almost always determined by the complex mechanisms of
+	the Reward system rather than statically.  They are still provided here in case they
+	are still useful for people.  This also contains some information about Infusion.
+	*/
+  export interface DestinyItemQualityBlockDefinition {
+    /**
+		The "base" defined level of an item.  This is a list because, in theory,
+		each Expansion could define its own base level for an item.
+		
+		In practice, not only was that never done in Destiny 1, but now this
+		isn't even populated at all.  When it's not populated, the level at which
+		it spawns has to be inferred by Reward information, of which BNet receives an imperfect
+		view and will only be reliable on instanced data as a result.
+		*/
+    itemLevels: number[];
+
+    /**
+		qualityLevel is used in combination with the item's level to calculate stats like
+		Attack and Defense.  It plays a role in that calculation, but not nearly as large as
+		itemLevel does.
+		*/
+    qualityLevel: number;
+
+    /**
+		The string identifier for this item's "infusability", if any.  
+		
+		Items that match the same infusionCategoryName are allowed to infuse with each other.
+		
+		DEPRECATED: Items can now have multiple infusion categories.  Please use infusionCategoryHashes instead.
+		*/
+    infusionCategoryName: string;
+
+    /**
+		The hash identifier for the infusion.  It does not map to a Definition entity.
+		
+		DEPRECATED: Items can now have multiple infusion categories.  Please use infusionCategoryHashes instead.
+		*/
+    infusionCategoryHash: number;
+
+    /**
+		If any one of these hashes matches any value in another item's infusionCategoryHashes, the two 
+		can infuse with each other.
+		*/
+    infusionCategoryHashes: number[];
+
+    /**
+		An item can refer to pre-set level requirements.  They are defined in DestinyProgressionLevelRequirementDefinition,
+		and you can use this hash to find the appropriate definition.
+		*/
+    progressionLevelRequirementHash: number;
+
+    /**
+		The latest version available for this item.
+		*/
+    currentVersion: number;
+
+    /**
+		The list of versions available for this item.
+		*/
+    versions: Definitions.DestinyItemVersionDefinition[];
+
+    /**
+		Icon overlays to denote the item version and power cap status.
+		*/
+    displayVersionWatermarkIcons: string[];
+  }
+
+  /**
+	The version definition currently just holds a reference to the power cap.
+	*/
+  export interface DestinyItemVersionDefinition {
+    /**
+		A reference to the power cap for this item version.
+		*/
+    powerCapHash: number;
+  }
+
+  /**
+	This defines an item's "Value".
+	Unfortunately, this appears to be used in different ways depending on the way that the item itself
+	is used.
+	
+	For items being sold at a Vendor, this is the default "sale price" of the item.  These days, the vendor itself
+	almost always sets the price, but it still possible for the price to fall back to this value.
+	For quests, it is a preview of rewards you can gain by completing the quest.
+	For dummy items, if the itemValue refers to an Emblem, it is the emblem that should be shown
+	as the reward. (jeez louise)
+	
+	It will likely be used in a number of other ways in the future, it appears to be a bucket where
+	they put arbitrary items and quantities into the item.
+	*/
+  export interface DestinyItemValueBlockDefinition {
+    /**
+		References to the items that make up this item's "value", and the quantity.
+		*/
+    itemValue: World.DestinyItemQuantity[];
+
+    /**
+		If there's a localized text description of the value provided, this will be said description.
+		*/
+    valueDescription: string;
+  }
+
+  /**
+	Data about an item's "sources": ways that the item can be obtained.
+	*/
+  export interface DestinyItemSourceBlockDefinition {
+    /**
+		The list of hash identifiers for Reward Sources that hint where the item can be found (DestinyRewardSourceDefinition).
+		*/
+    sourceHashes: number[];
+
+    /**
+		A collection of details about the stats that were computed for the ways we found that the item
+		could be spawned.
+		*/
+    sources: Sources.DestinyItemSourceDefinition[];
+
+    /**
+		If we found that this item is exclusive to a specific platform, this will be set to the
+		BungieMembershipType enumeration that matches that platform.
+		*/
+    exclusive: Globals.BungieMembershipType;
+
+    /**
+		A denormalized reference back to vendors that potentially sell this item.
+		*/
+    vendorSources: Definitions.DestinyItemVendorSourceReference[];
+  }
+
+  /**
+	Represents that a vendor could sell this item, and provides a quick link to that vendor and sale item.
+	
+	 Note that we do not and cannot make a guarantee that the vendor will ever *actually* sell this item,
+	 only that the Vendor has a definition that indicates it *could* be sold.
+	
+	 Note also that a vendor may sell the same item in multiple "ways", which means there may be multiple
+	 vendorItemIndexes for a single Vendor hash.
+	*/
+  export interface DestinyItemVendorSourceReference {
+    /**
+		The identifier for the vendor that may sell this item.
+		*/
+    vendorHash: number;
+
+    /**
+		The Vendor sale item indexes that represent the sale information for this item.  The same vendor
+		may sell an item in multiple "ways", hence why this is a list.  (for instance, a weapon may be "sold"
+		as a reward in a quest, for Glimmer, and for Masterwork Cores: each of those ways would be represented by
+		a different vendor sale item with a different index)
+		*/
+    vendorItemIndexes: number[];
+  }
+
+  /**
+	An item can have objectives on it.  In practice, these are the exclusive purview of
+	"Quest Step" items: DestinyInventoryItemDefinitions that represent a specific step in a Quest.
+	
+	Quest steps have 1:M objectives that we end up processing and returning in live data as DestinyQuestStatus
+	data, and other useful information.
+	*/
+  export interface DestinyItemObjectiveBlockDefinition {
+    /**
+		The hashes to Objectives (DestinyObjectiveDefinition) that are part of this Quest Step, in the
+		order that they should be rendered.
+		*/
+    objectiveHashes: number[];
+
+    /**
+		For every entry in objectiveHashes, there is a corresponding entry in this array
+		at the same index.  If the objective is meant to be associated with a specific DestinyActivityDefinition,
+		there will be a valid hash at that index.  Otherwise, it will be invalid (0).
+		
+		Rendered somewhat obsolete by perObjectiveDisplayProperties, which currently has much the same information
+		but may end up with more info in the future.
+		*/
+    displayActivityHashes: number[];
+
+    /**
+		If True, all objectives must be completed for the step to be completed.
+		If False, any one objective can be completed for the step to be completed.
+		*/
+    requireFullObjectiveCompletion: boolean;
+
+    /**
+		The hash for the DestinyInventoryItemDefinition representing the Quest to which this Quest Step belongs.
+		*/
+    questlineItemHash: number;
+
+    /**
+		The localized string for narrative text related to this quest step, if any.
+		*/
+    narrative: string;
+
+    /**
+		The localized string describing an action to be performed associated with the objectives, if any.
+		*/
+    objectiveVerbName: string;
+
+    /**
+		The identifier for the type of quest being performed, if any.  Not associated with any fixed definition, yet.
+		*/
+    questTypeIdentifier: string;
+
+    /**
+		A hashed value for the questTypeIdentifier, because apparently I like to be redundant.
+		*/
+    questTypeHash: number;
+
+    /**
+		One entry per Objective on the item, it will have related display information.
+		*/
+    perObjectiveDisplayProperties: Definitions.DestinyObjectiveDisplayProperties[];
+
+    displayAsStatTracker: boolean;
+  }
+
+  export interface DestinyObjectiveDisplayProperties {
+    /**
+		The activity associated with this objective in the context of this item, if any.
+		*/
+    activityHash?: number;
+
+    /**
+		If true, the game shows this objective on item preview screens.
+		*/
+    displayOnItemPreviewScreen: boolean;
+  }
+
+  /**
+	The metrics available for display and selection on an item.
+	*/
+  export interface DestinyItemMetricBlockDefinition {
+    /**
+		Hash identifiers for any DestinyPresentationNodeDefinition entry that can be used to list available metrics.
+		Any metric listed directly below these nodes, or in any of these nodes' children will be made available for selection.
+		*/
+    availableMetricCategoryNodeHashes: number[];
+  }
+
+  /**
+	If an item has a related gearset, this is the list of items in that set, and an unlock expression
+	that evaluates to a number representing the progress toward gearset completion (a very rare use for
+	unlock expressions!)
+	*/
+  export interface DestinyItemGearsetBlockDefinition {
+    /**
+		The maximum possible number of items that can be collected.
+		*/
+    trackingValueMax: number;
+
+    /**
+		The list of hashes for items in the gearset.  Use them to look up DestinyInventoryItemDefinition entries for
+		the items in the set.
+		*/
+    itemList: number[];
+  }
+
+  /**
+	Some items are "sacks" - they can be "opened" to produce other items.
+	This is information related to its sack status, mostly UI strings.
+	Engrams are an example of items that are considered to be "Sacks".
+	*/
+  export interface DestinyItemSackBlockDefinition {
+    /**
+		A description of what will happen when you open the sack.
+		As far as I can tell, this is blank currently.  Unknown whether it will
+		eventually be populated with useful info.
+		*/
+    detailAction: string;
+
+    /**
+		The localized name of the action being performed when you open the sack.
+		*/
+    openAction: string;
+
+    selectItemCount: number;
+
+    vendorSackType: string;
+
+    openOnAcquire: boolean;
+  }
+
+  /**
+	If defined, the item has at least one socket.
+	*/
+  export interface DestinyItemSocketBlockDefinition {
+    /**
+		This was supposed to be a string that would give per-item details about sockets.
+		In practice, it turns out that all this ever has is the localized word "details".
+		... that's lame, but perhaps it will become something cool in the future.
+		*/
+    detail: string;
+
+    /**
+		Each non-intrinsic (or mutable) socket on an item is defined here.  Check inside for more info.
+		*/
+    socketEntries: Definitions.DestinyItemSocketEntryDefinition[];
+
+    /**
+		Each intrinsic (or immutable/permanent) socket on an item is defined here, along with the plug that is
+		permanently affixed to the socket.
+		*/
+    intrinsicSockets: Definitions.DestinyItemIntrinsicSocketEntryDefinition[];
+
+    /**
+		A convenience property, that refers to the sockets in the "sockets" property, pre-grouped
+		by category and ordered in the manner that they should be grouped in the UI.
+		You could form this yourself with the existing data, but why would you want to?  Enjoy life man.
+		*/
+    socketCategories: Definitions.DestinyItemSocketCategoryDefinition[];
+  }
+
+  /**
+	The definition information for a specific socket on an item.
+	This will determine how the socket behaves in-game.
+	*/
+  export interface DestinyItemSocketEntryDefinition {
+    /**
+		All sockets have a type, and this is the hash identifier for this particular type.
+		Use it to look up the DestinySocketTypeDefinition: read there for more information on
+		how socket types affect the behavior of the socket.
+		*/
+    socketTypeHash: number;
+
+    /**
+		If a valid hash, this is the hash identifier for the DestinyInventoryItemDefinition
+		representing the Plug that will be initially inserted into the item on item creation.
+		Otherwise, this Socket will either start without a plug inserted, or will have one randomly
+		inserted.
+		*/
+    singleInitialItemHash: number;
+
+    /**
+		This is a list of pre-determined plugs that can *always* be plugged into this socket, without
+		the character having the plug in their inventory.
+		
+		If this list is populated, you will not be allowed to plug an arbitrary item in the socket: you
+		will only be able to choose from one of these reusable plugs.
+		*/
+    reusablePlugItems: Definitions.DestinyItemSocketEntryPlugItemDefinition[];
+
+    /**
+		If this is true, then the socket will not be initialized with a plug if the item is purchased from a Vendor.
+		
+		Remember that Vendors are much more than conceptual vendors: they include "Collection Kiosks" and other entities.
+		See DestinyVendorDefinition for more information.
+		*/
+    preventInitializationOnVendorPurchase: boolean;
+
+    /**
+		If this is true, the perks provided by this socket shouldn't be shown in the item's tooltip.  This might
+		be useful if it's providing a hidden bonus, or if the bonus is less important than other benefits on the item.
+		*/
+    hidePerksInItemTooltip: boolean;
+
+    /**
+		Indicates where you should go to get plugs for this socket.  This will affect how you populate your UI,
+		as well as what plugs are valid for this socket.  It's an alternative to having to check for the existence
+		of certain properties (reusablePlugItems for example) to infer where plugs should come from.
+		*/
+    plugSources: Globals.SocketPlugSources;
+
+    /**
+		If this socket's plugs come from a reusable DestinyPlugSetDefinition, this is the identifier for that set.
+		 We added this concept to reduce some major duplication that's going to come from sockets as replacements for
+		 what was once implemented as large sets of items and kiosks (like Emotes).
+		
+		 As of Shadowkeep, these will come up much more frequently and be driven by game content rather than
+		 custom curation.
+		*/
+    reusablePlugSetHash?: number;
+
+    /**
+		This field replaces "randomizedPlugItems" as of Shadowkeep launch.  If a socket has randomized plugs,
+		 this is a pointer to the set of plugs that could be used, as defined in DestinyPlugSetDefinition.
+		
+		 If null, the item has no randomized plugs.
+		*/
+    randomizedPlugSetHash?: number;
+
+    /**
+		If true, then this socket is visible in the item's "default" state.
+		If you have an instance, you should always check the runtime state, as that
+		can override this visibility setting: but if you're looking at the item
+		on a conceptual level, this property can be useful for hiding data such
+		as legacy sockets - which remain defined on items for infrastructure purposes,
+		but can be confusing for users to see.
+		*/
+    defaultVisible: boolean;
+  }
+
+  /**
+	The definition of a known, reusable plug that can be applied to a socket.
+	*/
+  export interface DestinyItemSocketEntryPlugItemDefinition {
+    /**
+		The hash identifier of a DestinyInventoryItemDefinition representing the plug
+		that can be inserted.
+		*/
+    plugItemHash: number;
+  }
+
+  /**
+	Represents a socket that has a plug associated with it intrinsically.  This is useful for situations
+	where the weapon needs to have a visual plug/Mod on it, but that plug/Mod should never change.
+	*/
+  export interface DestinyItemIntrinsicSocketEntryDefinition {
+    /**
+		Indicates the plug that is intrinsically inserted into this socket.
+		*/
+    plugItemHash: number;
+
+    /**
+		Indicates the type of this intrinsic socket.
+		*/
+    socketTypeHash: number;
+
+    /**
+		If true, then this socket is visible in the item's "default" state.
+		If you have an instance, you should always check the runtime state, as that
+		can override this visibility setting: but if you're looking at the item
+		on a conceptual level, this property can be useful for hiding data such
+		as legacy sockets - which remain defined on items for infrastructure purposes,
+		but can be confusing for users to see.
+		*/
+    defaultVisible: boolean;
+  }
+
+  /**
+	Sockets are grouped into categories in the UI.  These define which category
+	and which sockets are under that category.
+	*/
+  export interface DestinyItemSocketCategoryDefinition {
+    /**
+		The hash for the Socket Category: a quick way to go get the header display information for the category.
+		Use it to look up DestinySocketCategoryDefinition info.
+		*/
+    socketCategoryHash: number;
+
+    /**
+		Use these indexes to look up the sockets in the "sockets.socketEntries" property on the item definition.
+		These are the indexes under the category, in game-rendered order.
+		*/
+    socketIndexes: number[];
+  }
+
+  /**
+	This appears to be information used when rendering rewards.  We don't currently use it on BNet.
+	*/
+  export interface DestinyItemSummaryBlockDefinition {
+    /**
+		Apparently when rendering an item in a reward, this should be used as a sort priority.
+		We're not doing it presently.
+		*/
+    sortPriority: number;
+  }
+
+  /**
+	This defines information that can only come from a talent grid on an item.
+	Items mostly have negligible talent grid data these days, but instanced items still retain
+	grids as a source for some of this common information.
+	
+	Builds/Subclasses are the only items left that still have talent grids with meaningful
+	Nodes.
+	*/
+  export interface DestinyItemTalentGridBlockDefinition {
+    /**
+		The hash identifier of the DestinyTalentGridDefinition attached to this item.
+		*/
+    talentGridHash: number;
+
+    /**
+		This is meant to be a subtitle for looking at the talent grid.
+		In practice, somewhat frustratingly, this always merely says the localized word
+		for "Details".  Great.  Maybe it'll have more if talent grids ever get used
+		for more than builds and subclasses again.
+		*/
+    itemDetailString: string;
+
+    /**
+		A shortcut string identifier for the "build" in question, if this talent grid
+		has an associated build.  Doesn't map to anything we can expose at the moment.
+		*/
+    buildName: string;
+
+    /**
+		If the talent grid implies a damage type, this is the enum value for that damage type.
+		*/
+    hudDamageType: Globals.DamageType;
+
+    /**
+		If the talent grid has a special icon that's shown in the game UI (like builds, funny that),
+		this is the identifier for that icon.
+		Sadly, we don't actually get that icon right now.  I'll be looking to replace this
+		with a path to the actual icon itself.
+		*/
+    hudIcon: string;
+  }
+
+  /**
+	Represents a "raw" investment stat, before calculated stats are calculated
+	and before any DestinyStatGroupDefinition is applied to transform the stat
+	into something closer to what you see in-game.
+	
+	Because these won't match what you see in-game, consider carefully whether
+	you really want to use these stats.  I have left them in case someone
+	can do something useful or interesting with the pre-processed statistics.
+	*/
+  export interface DestinyItemInvestmentStatDefinition {
+    /**
+		The hash identifier for the DestinyStatDefinition defining this stat.
+		*/
+    statTypeHash: number;
+
+    /**
+		The raw "Investment" value for the stat, before transformations are performed
+		to turn this raw stat into stats that are displayed in the game UI.
+		*/
+    value: number;
+
+    /**
+		If this is true, the stat will only be applied on the item in certain game state conditions,
+		and we can't know statically whether or not this stat will be applied.  Check the "live" API data
+		instead for whether this value is being applied on a specific instance of the item in question, and
+		you can use this to decide whether you want to show the stat on the generic view of the item, or
+		whether you want to show some kind of caveat or warning about the stat value being conditional on game state.
+		*/
+    isConditionallyActive: boolean;
+  }
+
+  /**
+	An intrinsic perk on an item, and the requirements for it to be activated.
+	*/
+  export interface DestinyItemPerkEntryDefinition {
+    /**
+		If this perk is not active, this is the string to show for why
+		it's not providing its benefits.
+		*/
+    requirementDisplayString: string;
+
+    /**
+		A hash identifier for the DestinySandboxPerkDefinition being provided on the item.
+		*/
+    perkHash: number;
+
+    /**
+		Indicates whether this perk should be shown, or if it should be shown disabled.
+		*/
+    perkVisibility: Globals.ItemPerkVisibility;
+  }
+
+  /**
+	Where the sausage gets made.  Unlock Expressions are the foundation of the game's gating
+	mechanics and investment-related restrictions.  They can test Unlock Flags and Unlock Values
+	for certain states, using a sufficient amount of logical operators such that
+	unlock expressions are effectively Turing complete.
+	
+	Use UnlockExpressionParser to evaluate expressions using an IUnlockContext parsed from Babel.
+	*/
+  export interface DestinyUnlockExpressionDefinition {
+    /**
+		A shortcut for determining the most restrictive gating that this expression performs.
+		See the DestinyGatingScope enum's documentation for more details.
+		*/
+    scope: Globals.DestinyGatingScope;
+  }
+
+  /**
+	An individual step represents either a single operation in the stack of operations,
+	or an unlock flag/value/mapping/constant value to be evaluated.
+	*/
+  export interface DestinyUnlockExpressionStepDefinition {}
+
+  /**
+	When a sack rolls rewards, it will pick items from categories.
+	*/
+  export interface DestinyItemSackRewardCategory {
+    categoryId: number;
+
+    rewardItemCount: number;
+  }
+
+  /**
+	Defines the intrinsic unlock flags and values on the item: state changes that will happen
+	as long as the item is equipped.
+	*/
+  export interface DestinyItemUnlockBlockDefinition {
+    /**
+		Any unlocks (DestinyUnlockDefinition) referred to here will be set as long as the item is equipped.
+		*/
+    intrinsicUnlockHashes: number[];
+
+    /**
+		The list of unlock values and the default values that will be applied to them when the item is equipped.
+		*/
+    storedUnlockValues: Definitions.DestinyItemUnlockStoredValueDefinition[];
+
+    /**
+		Unlike stored unlock values, these are values that are also initiated to a specific value: but I believe
+		the distinction is that these values cannot be changed at runtime.
+		*/
+    intrinsicUnlockValues: Definitions.DestinyIntrinsicUnlockValueDefinition[];
+  }
+
+  /**
+	Defines an unlock value being set for an item intrinsically.
+	*/
+  export interface DestinyItemUnlockStoredValueDefinition {
+    /**
+		The hash identifier of the DestinyUnlockValueDefinition being set when the item is equipped.
+		*/
+    unlockValueHash: number;
+
+    /**
+		The value for the DestinyUnlockValueDefinition.
+		*/
+    defaultValue: number;
+  }
+
+  /**
+	Uncomfortable confession time: I don't understand why we have intrinsic vs. stored unlock values.
+	For now, I'm going to hold onto them in case we find a good use for them.  I'm pretty sure that intrinsics
+	retain the value permanently and stored ones can be altered after creation, but did there really
+	need to be two separate collections of them?
+	*/
+  export interface DestinyIntrinsicUnlockValueDefinition {
+    unlockValueHash: number;
+
+    value: number;
+  }
+
   /**
 	Provides common properties for destiny definitions.
 	*/
@@ -6325,28 +8312,6 @@ export declare namespace Definitions {
 		*/
     omitFromRequirements: boolean;
   }
-
-  /**
-	Where the sausage gets made.  Unlock Expressions are the foundation of the game's gating
-	mechanics and investment-related restrictions.  They can test Unlock Flags and Unlock Values
-	for certain states, using a sufficient amount of logical operators such that
-	unlock expressions are effectively Turing complete.
-	
-	Use UnlockExpressionParser to evaluate expressions using an IUnlockContext parsed from Babel.
-	*/
-  export interface DestinyUnlockExpressionDefinition {
-    /**
-		A shortcut for determining the most restrictive gating that this expression performs.
-		See the DestinyGatingScope enum's documentation for more details.
-		*/
-    scope: Globals.DestinyGatingScope;
-  }
-
-  /**
-	An individual step represents either a single operation in the stack of operations,
-	or an unlock flag/value/mapping/constant value to be evaluated.
-	*/
-  export interface DestinyUnlockExpressionStepDefinition {}
 
   export interface DestinyHistoricalStatsDefinition {
     /**
@@ -6636,37 +8601,6 @@ export declare namespace Definitions {
 		Whether it will be applied as long as the objective is active, when it's completed, or until it's completed.
 		*/
     style: Globals.DestinyObjectiveGrantStyle;
-  }
-
-  /**
-	Represents a "raw" investment stat, before calculated stats are calculated
-	and before any DestinyStatGroupDefinition is applied to transform the stat
-	into something closer to what you see in-game.
-	
-	Because these won't match what you see in-game, consider carefully whether
-	you really want to use these stats.  I have left them in case someone
-	can do something useful or interesting with the pre-processed statistics.
-	*/
-  export interface DestinyItemInvestmentStatDefinition {
-    /**
-		The hash identifier for the DestinyStatDefinition defining this stat.
-		*/
-    statTypeHash: number;
-
-    /**
-		The raw "Investment" value for the stat, before transformations are performed
-		to turn this raw stat into stats that are displayed in the game UI.
-		*/
-    value: number;
-
-    /**
-		If this is true, the stat will only be applied on the item in certain game state conditions,
-		and we can't know statically whether or not this stat will be applied.  Check the "live" API data
-		instead for whether this value is being applied on a specific instance of the item in question, and
-		you can use this to decide whether you want to show the stat on the generic view of the item, or
-		whether you want to show some kind of caveat or warning about the stat value being conditional on game state.
-		*/
-    isConditionallyActive: boolean;
   }
 
   /**
@@ -8639,1511 +10573,6 @@ export declare namespace Definitions {
   }
 
   /**
-	So much of what you see in Destiny is actually an Item used in a new and creative way.
-	This is the definition for Items in Destiny, which started off as just entities that could exist
-	in your Inventory but ended up being the backing data for so much more: quests, reward previews,
-	slots, and subclasses.
-	
-	In practice, you will want to associate this data with "live" item data
-	from a Bungie.Net Platform call: these definitions describe the item in generic, non-instanced
-	terms: but an actual instance of an item can vary widely from these generic definitions.
-	*/
-  export interface DestinyInventoryItemDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		Tooltips that only come up conditionally for the item.  Check the live data 
-		DestinyItemComponent.tooltipNotificationIndexes property for which of these should be shown at runtime.
-		*/
-    tooltipNotifications: Definitions.DestinyItemTooltipNotification[];
-
-    /**
-		If this item has a collectible related to it, this is the hash identifier of that collectible entry.
-		*/
-    collectibleHash?: number;
-
-    /**
-		If available, this is the original 'active' release watermark overlay for the icon.
-		If the item has different versions, this can be overridden by the 'display version watermark icon' from the 'quality' block.
-		Alternatively, if there is no watermark for the version, and the item version has a power cap below the current season power cap,
-		this can be overridden by the iconWatermarkShelved property.
-		*/
-    iconWatermark: string;
-
-    /**
-		If available, this is the 'shelved' release watermark overlay for the icon.
-		If the item version has a power cap below the current season power cap, it can be treated as 'shelved',
-		and should be shown with this 'shelved' watermark overlay.
-		*/
-    iconWatermarkShelved: string;
-
-    /**
-		A secondary icon associated with the item.  Currently this is used in very context specific
-		applications, such as Emblem Nameplates.
-		*/
-    secondaryIcon: string;
-
-    /**
-		Pulled from the secondary icon, this is the "secondary background" of the secondary
-		icon.  Confusing?  Sure, that's why I call it "overlay" here: because as far as it's
-		been used thus far, it has been for an optional overlay image.  We'll see if that holds up,
-		but at least for now it explains what this image is a bit better.
-		*/
-    secondaryOverlay: string;
-
-    /**
-		Pulled from the Secondary Icon, this is the "special" background for the item.
-		For Emblems, this is the background image used on the Details view: but it need
-		not be limited to that for other types of items.
-		*/
-    secondarySpecial: string;
-
-    /**
-		Sometimes, an item will have a background color.  Most notably this occurs with Emblems, who use the Background Color
-		for small character nameplates such as the "friends" view you see in-game.  There are almost certainly other items
-		that have background color as well, though I have not bothered to investigate what items have it nor what purposes they serve:
-		use it as you will.
-		*/
-    backgroundColor: Misc.DestinyColor;
-
-    /**
-		If we were able to acquire an in-game screenshot for the item, the path to that screenshot
-		will be returned here.  Note that not all items have screenshots: particularly not any non-equippable
-		items.
-		*/
-    screenshot: string;
-
-    /**
-		The localized title/name of the item's type.  This can be whatever the designers want, and has no guarantee
-		of consistency between items.
-		*/
-    itemTypeDisplayName: string;
-
-    flavorText: string;
-
-    /**
-		A string identifier that the game's UI uses to determine how the item should be rendered in inventory screens and the like.
-		This could really be anything - at the moment, we don't have the time to really breakdown and maintain all the possible 
-		strings this could be, partly because new ones could be added ad hoc.  But if you want to use it to dictate your own UI, or
-		look for items with a certain display style, go for it!
-		*/
-    uiItemDisplayStyle: string;
-
-    /**
-		It became a common enough pattern in our UI to show Item Type and Tier combined into a single localized
-		string that I'm just going to go ahead and start pre-creating these for items.
-		*/
-    itemTypeAndTierDisplayName: string;
-
-    /**
-		In theory, it is a localized string telling you about how you can find the item.
-		I really wish this was more consistent.  Many times, it has nothing.  Sometimes, it's instead a more narrative-forward
-		description of the item.  Which is cool, and I wish all properties had that data, but it should really be
-		its own property.
-		*/
-    displaySource: string;
-
-    /**
-		An identifier that the game UI uses to determine what type of tooltip to show for the item.  These have no
-		corresponding definitions that BNet can link to: so it'll be up to you to interpret and display your UI differently
-		according to these styles (or ignore it).
-		*/
-    tooltipStyle: string;
-
-    /**
-		If the item can be "used", this block will be non-null, and will have data related to the action performed
-		when using the item.  (Guess what?  99% of the time, this action is "dismantle".  Shocker)
-		*/
-    action: Definitions.DestinyItemActionBlockDefinition;
-
-    /**
-		Recipe items will have relevant crafting information available here.
-		*/
-    crafting: Definitions.DestinyItemCraftingBlockDefinition;
-
-    /**
-		If this item can exist in an inventory, this block will be non-null.  In practice,
-		every item that currently exists has one of these blocks.  But note that it is not necessarily guaranteed.
-		*/
-    inventory: Definitions.DestinyItemInventoryBlockDefinition;
-
-    /**
-		If this item is a quest, this block will be non-null.  In practice, I wish I had called this the Quest
-		block, but at the time it wasn't clear to me whether it would end up being used for purposes other than quests.
-		It will contain data about the steps in the quest, and mechanics we can use for displaying and tracking the quest.
-		*/
-    setData: Definitions.DestinyItemSetBlockDefinition;
-
-    /**
-		If this item can have stats (such as a weapon, armor, or vehicle), this block will be non-null and
-		populated with the stats found on the item.
-		*/
-    stats: Definitions.DestinyItemStatBlockDefinition;
-
-    /**
-		If the item is an emblem that has a special Objective attached to it - for instance, if the emblem
-		tracks PVP Kills, or what-have-you.  This is a bit different from, for example, the Vanguard Kill Tracker
-		mod, which pipes data into the "art channel".  When I get some time, I would like to standardize these so
-		you can get at the values they expose without having to care about what they're being used for and how they
-		are wired up, but for now here's the raw data.
-		*/
-    emblemObjectiveHash?: number;
-
-    /**
-		If this item can be equipped, this block will be non-null and will be populated with the conditions
-		under which it can be equipped.
-		*/
-    equippingBlock: Definitions.DestinyEquippingBlockDefinition;
-
-    /**
-		If this item can be rendered, this block will be non-null and will be populated with rendering
-		information.
-		*/
-    translationBlock: Definitions.DestinyItemTranslationBlockDefinition;
-
-    /**
-		If this item can be Used or Acquired to gain other items (for instance, how Eververse Boxes
-		can be consumed to get items from the box), this block will be non-null and will give summary information
-		for the items that can be acquired.
-		*/
-    preview: Definitions.DestinyItemPreviewBlockDefinition;
-
-    /**
-		If this item can have a level or stats, this block will be non-null and will be populated
-		with default quality (item level, "quality", and infusion) data.  See the block for more details, there's
-		often less upfront information in D2 so you'll want to be aware of how you use quality and item level on
-		the definition level now.
-		*/
-    quality: Definitions.DestinyItemQualityBlockDefinition;
-
-    /**
-		The conceptual "Value" of an item, if any was defined.  See the DestinyItemValueBlockDefinition for more details.
-		*/
-    value: Definitions.DestinyItemValueBlockDefinition;
-
-    /**
-		If this item has a known source, this block will be non-null and populated
-		with source information.  Unfortunately, at this time we are not generating sources: that is some
-		aggressively manual work which we didn't have time for, and I'm hoping to get back to at some point in the future.
-		*/
-    sourceData: Definitions.DestinyItemSourceBlockDefinition;
-
-    /**
-		If this item has Objectives (extra tasks that can be accomplished related to the item... most frequently
-		when the item is a Quest Step and the Objectives need to be completed to move on to the next Quest Step),
-		this block will be non-null and the objectives defined herein.
-		*/
-    objectives: Definitions.DestinyItemObjectiveBlockDefinition;
-
-    /**
-		If this item has available metrics to be shown, this block will be non-null have the appropriate hashes defined.
-		*/
-    metrics: Definitions.DestinyItemMetricBlockDefinition;
-
-    /**
-		If this item *is* a Plug, this will be non-null and the info defined herein.
-		See DestinyItemPlugDefinition for more information.
-		*/
-    plug: Items.DestinyItemPlugDefinition;
-
-    /**
-		If this item has related items in a "Gear Set", this will be non-null and the relationships defined herein.
-		*/
-    gearset: Definitions.DestinyItemGearsetBlockDefinition;
-
-    /**
-		If this item is a "reward sack" that can be opened to provide other items, this will be non-null and
-		the properties of the sack contained herein.
-		*/
-    sack: Definitions.DestinyItemSackBlockDefinition;
-
-    /**
-		If this item has any Sockets, this will be non-null and the individual sockets on the item
-		will be defined herein.
-		*/
-    sockets: Definitions.DestinyItemSocketBlockDefinition;
-
-    /**
-		Summary data about the item.
-		*/
-    summary: Definitions.DestinyItemSummaryBlockDefinition;
-
-    /**
-		If the item has a Talent Grid, this will be non-null and the properties of the grid defined herein.
-		Note that, while many items still have talent grids, the only ones with meaningful Nodes still on them
-		will be Subclass/"Build" items.
-		*/
-    talentGrid: Definitions.DestinyItemTalentGridBlockDefinition;
-
-    /**
-		If the item has stats, this block will be defined.  It has the "raw" investment stats for the item.
-		These investment stats don't take into account the ways that the items can spawn, nor do they take
-		into account any Stat Group transformations.  I have retained them for debugging purposes, but I
-		do not know how useful people will find them.
-		*/
-    investmentStats: Definitions.DestinyItemInvestmentStatDefinition[];
-
-    /**
-		If the item has any *intrinsic* Perks (Perks that it will provide regardless of Sockets, Talent Grid,
-		and other transitory state), they will be defined here.
-		*/
-    perks: Definitions.DestinyItemPerkEntryDefinition[];
-
-    /**
-		If the item has any related Lore (DestinyLoreDefinition), this will be the hash identifier you can use
-		to look up the lore definition.
-		*/
-    loreHash?: number;
-
-    /**
-		There are times when the game will show you a "summary/vague" version of an item - such as a description of its type
-		represented as a DestinyInventoryItemDefinition - rather than display the item itself.
-		
-		This happens sometimes when summarizing possible rewards in a tooltip.  This is the item displayed instead, if
-		it exists.
-		*/
-    summaryItemHash?: number;
-
-    /**
-		If any animations were extracted from game content for this item, these will be the definitions
-		of those animations.
-		*/
-    animations: Animations.DestinyAnimationReference[];
-
-    /**
-		BNet may forbid the execution of actions on this item via the API.  If that is occurring, allowActions will be set to false.
-		*/
-    allowActions: boolean;
-
-    /**
-		If we added any help or informational URLs about this item, these will be those links.
-		*/
-    links: Links.HyperlinkReference[];
-
-    /**
-		The boolean will indicate to us (and you!) whether something *could* happen when you transfer this item from the Postmaster
-		that might be considered a "destructive" action.
-		
-		It is not feasible currently to tell you (or ourelves!) in a consistent way whether this *will* actually cause a destructive action,
-		so we are playing it safe: if it has the potential to do so, we will not allow it to be transferred from the Postmaster
-		by default.  You will need to check for this flag before transferring an item from the Postmaster, or else you'll end
-		up receiving an error.
-		*/
-    doesPostmasterPullHaveSideEffects: boolean;
-
-    /**
-		The intrinsic transferability of an item.
-		
-		I hate that this boolean is negative - but there's a reason.
-		
-		Just because an item is intrinsically transferrable doesn't mean that it can be transferred,
-		and we don't want to imply that this is the only source of that transferability.
-		*/
-    nonTransferrable: boolean;
-
-    /**
-		BNet attempts to make a more formal definition of item "Categories", as defined by 
-		DestinyItemCategoryDefinition.  This is a list of all Categories that we were able to
-		algorithmically determine that this item is a member of.  (for instance, that it's a "Weapon",
-		that it's an "Auto Rifle", etc...)
-		
-		The algorithm for these is, unfortunately, volatile.  If you believe you see a miscategorized
-		item, please let us know on the Bungie API forums.
-		*/
-    itemCategoryHashes: number[];
-
-    /**
-		In Destiny 1, we identified some items as having particular categories that we'd like to know about
-		for various internal logic purposes.  These are defined in SpecialItemType, and while these days
-		the itemCategoryHashes are the preferred way of identifying types, we have retained this enum
-		for its convenience.
-		*/
-    specialItemType: Globals.SpecialItemType;
-
-    /**
-		A value indicating the "base" the of the item.  This enum is a useful but dramatic oversimplification
-		of what it means for an item to have a "Type".  Still, it's handy in many situations.
-		
-		itemCategoryHashes are the preferred way of identifying types, we have retained this enum
-		for its convenience.
-		*/
-    itemType: Globals.DestinyItemType;
-
-    /**
-		A value indicating the "sub-type" of the item.  For instance, where an item might have an
-		itemType value "Weapon", this will be something more specific like "Auto Rifle".
-		
-		itemCategoryHashes are the preferred way of identifying types, we have retained this enum
-		for its convenience.
-		*/
-    itemSubType: Globals.DestinyItemSubType;
-
-    /**
-		We run a similarly weak-sauce algorithm to try and determine whether an item is restricted to a specific
-		class.  If we find it to be restricted in such a way, we set this classType property to match
-		the class' enumeration value so that users can easily identify class restricted items.
-		
-		If you see a mis-classed item, please inform the developers in the Bungie API forum.
-		*/
-    classType: Globals.DestinyClass;
-
-    /**
-		Some weapons and plugs can have a "Breaker Type": a special ability that works sort of like damage type
-		vulnerabilities.  This is (almost?) always set on items by plugs.
-		*/
-    breakerType: Globals.DestinyBreakerType;
-
-    /**
-		Since we also have a breaker type definition, this is the hash for that breaker type for your convenience.
-		Whether you use the enum or hash and look up the definition depends on what's cleanest for your code.
-		*/
-    breakerTypeHash?: number;
-
-    /**
-		If true, then you will be allowed to equip the item if you pass its other requirements.
-		
-		This being false means that you cannot equip the item under any circumstances.
-		*/
-    equippable: boolean;
-
-    /**
-		Theoretically, an item can have many possible damage types.  In *practice*, this is not true,
-		but just in case weapons start being made that have multiple (for instance, an item where a socket
-		has reusable plugs for every possible damage type that you can choose from freely), this field
-		will return all of the possible damage types that are available to the weapon by default.
-		*/
-    damageTypeHashes: number[];
-
-    /**
-		This is the list of all damage types that we know ahead of time the item can take on.
-		Unfortunately, this does not preclude the possibility of something funky happening
-		to give the item a damage type that cannot be predicted beforehand: for example,
-		if some designer decides to create arbitrary non-reusable plugs that cause damage type
-		to change.
-		
-		This damage type prediction will only use the following to determine potential damage types:
-		
-		- Intrinsic perks
-		
-		- Talent Node perks
-		
-		- Known, reusable plugs for sockets
-		*/
-    damageTypes: Globals.DamageType[];
-
-    /**
-		If the item has a damage type that could be considered to be default, it will be populated here.
-		
-		For various upsetting reasons, it's surprisingly cumbersome to figure this out.  I hope you're happy.
-		*/
-    defaultDamageType: Globals.DamageType;
-
-    /**
-		Similar to defaultDamageType, but represented as the hash identifier for a DestinyDamageTypeDefinition.
-		
-		I will likely regret leaving in the enumeration versions of these properties, but for now they're
-		very convenient.
-		*/
-    defaultDamageTypeHash?: number;
-
-    /**
-		If this item is related directly to a Season of Destiny, this is the hash identifier for that season.
-		*/
-    seasonHash?: number;
-
-    /**
-		If true, this is a dummy vendor-wrapped item template.  Items purchased from Eververse will be "wrapped"
-		by one of these items so that we can safely provide refund capabilities before the item is "unwrapped".
-		*/
-    isWrapper: boolean;
-
-    /**
-		Traits are metadata tags applied to this item. For example: armor slot, weapon type, foundry, faction, etc.
-		These IDs come from the game and don't map to any content, but should still be useful.
-		*/
-    traitIds: string[];
-
-    /**
-		These are the corresponding trait definition hashes for the entries in traitIds.
-		*/
-    traitHashes: number[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyItemTooltipNotification {
-    displayString: string;
-
-    displayStyle: string;
-  }
-
-  /**
-	If an item can have an action performed on it (like "Dismantle"), it will be defined here
-	if you care.
-	*/
-  export interface DestinyItemActionBlockDefinition {
-    /**
-		Localized text for the verb of the action being performed.
-		*/
-    verbName: string;
-
-    /**
-		Localized text describing the action being performed.
-		*/
-    verbDescription: string;
-
-    /**
-		The content has this property, however it's not entirely clear how it is used.
-		*/
-    isPositive: boolean;
-
-    /**
-		If the action has an overlay screen associated with it, this is the name of that screen.
-		Unfortunately, we cannot return the screen's data itself.
-		*/
-    overlayScreenName: string;
-
-    /**
-		The icon associated with the overlay screen for the action, if any.
-		*/
-    overlayIcon: string;
-
-    /**
-		The number of seconds to delay before allowing this action to be performed again.
-		*/
-    requiredCooldownSeconds: number;
-
-    /**
-		If the action requires other items to exist or be destroyed, this is
-		the list of those items and requirements.
-		*/
-    requiredItems: Definitions.DestinyItemActionRequiredItemDefinition[];
-
-    /**
-		If performing this action earns you Progression, this is the list of progressions and values granted
-		for those progressions by performing this action.
-		*/
-    progressionRewards: Definitions.DestinyProgressionRewardDefinition[];
-
-    /**
-		The internal identifier for the action.
-		*/
-    actionTypeLabel: string;
-
-    /**
-		Theoretically, an item could have a localized string for a hint about the location in which
-		the action should be performed.  In practice, no items yet have this property.
-		*/
-    requiredLocation: string;
-
-    /**
-		The identifier hash for the Cooldown associated with this action.  We have not pulled this data yet
-		for you to have more data to use for cooldowns.
-		*/
-    requiredCooldownHash: number;
-
-    /**
-		If true, the item is deleted when the action completes.
-		*/
-    deleteOnAction: boolean;
-
-    /**
-		If true, the entire stack is deleted when the action completes.
-		*/
-    consumeEntireStack: boolean;
-
-    /**
-		If true, this action will be performed as soon as you earn this item.
-		Some rewards work this way, providing you a single item to pick up from
-		a reward-granting vendor in-game and then immediately consuming itself
-		to provide you multiple items.
-		*/
-    useOnAcquire: boolean;
-  }
-
-  /**
-	The definition of an item and quantity required in a character's inventory in order to
-	perform an action.
-	*/
-  export interface DestinyItemActionRequiredItemDefinition {
-    /**
-		The minimum quantity of the item you have to have.
-		*/
-    count: number;
-
-    /**
-		The hash identifier of the item you need to have.  Use it to look up the DestinyInventoryItemDefinition for more info.
-		*/
-    itemHash: number;
-
-    /**
-		If true, the item/quantity will be deleted from your inventory when the action is performed.  Otherwise,
-		you'll retain these required items after the action is complete.
-		*/
-    deleteOnAction: boolean;
-  }
-
-  /**
-	Inventory Items can reward progression when actions are performed on them.  A common example
-	of this in Destiny 1 was Bounties, which would reward Experience on your Character and the like 
-	when you completed the bounty.
-	
-	Note that this maps to a DestinyProgressionMappingDefinition, and *not* a DestinyProgressionDefinition
-	directly.  This is apparently so that multiple progressions can be granted progression points/experience
-	at the same time.
-	*/
-  export interface DestinyProgressionRewardDefinition {
-    /**
-		The hash identifier of the DestinyProgressionMappingDefinition that contains the progressions
-		for which experience should be applied.
-		*/
-    progressionMappingHash: number;
-
-    /**
-		The amount of experience to give to each of the mapped progressions.
-		*/
-    amount: number;
-
-    /**
-		If true, the game's internal mechanisms to throttle progression should be applied.
-		*/
-    applyThrottles: boolean;
-  }
-
-  /**
-	If an item can have an action performed on it (like "Dismantle"), it will be defined here
-	if you care.
-	*/
-  export interface DestinyItemCraftingBlockDefinition {
-    /**
-		A reference to the item definition that is created when crafting with this 'recipe' item.
-		*/
-    outputItemHash: number;
-
-    /**
-		A list of socket type hashes that describes which sockets are required for crafting with this recipe.
-		*/
-    requiredSocketTypeHashes: number[];
-
-    failedRequirementStrings: string[];
-
-    /**
-		A reference to the base material requirements for crafting with this recipe.
-		*/
-    baseMaterialRequirements?: number;
-
-    /**
-		A list of 'bonus' socket plugs that may be available if certain requirements are met.
-		*/
-    bonusPlugs: Definitions.DestinyItemCraftingBlockBonusPlugDefinition[];
-  }
-
-  export interface DestinyItemCraftingBlockBonusPlugDefinition {
-    socketTypeHash: number;
-
-    plugItemHash: number;
-  }
-
-  /**
-	If the item can exist in an inventory - the overwhelming majority of them can and do -
-	then this is the basic properties regarding the item's relationship with the inventory.
-	*/
-  export interface DestinyItemInventoryBlockDefinition {
-    /**
-		If this string is populated, you can't have more than one stack with this label in a given inventory.
-		Note that this is different from the equipping block's unique label, which is used for equipping uniqueness.
-		*/
-    stackUniqueLabel: string;
-
-    /**
-		The maximum quantity of this item that can exist in a stack.
-		*/
-    maxStackSize: number;
-
-    /**
-		The hash identifier for the DestinyInventoryBucketDefinition to which this item belongs.
-		I should have named this "bucketHash", but too many things refer to it now.  Sigh.
-		*/
-    bucketTypeHash: number;
-
-    /**
-		If the item is picked up by the lost loot queue, this is the hash identifier
-		for the DestinyInventoryBucketDefinition into which it will be placed.
-		Again, I should have named this recoveryBucketHash instead.
-		*/
-    recoveryBucketTypeHash: number;
-
-    /**
-		The hash identifier for the Tier Type of the item, use to look up its DestinyItemTierTypeDefinition
-		if you need to show localized data for the item's tier.
-		*/
-    tierTypeHash: number;
-
-    /**
-		If TRUE, this item is instanced.  Otherwise, it is a generic item that merely has a quantity in a stack (like Glimmer).
-		*/
-    isInstanceItem: boolean;
-
-    /**
-		The localized name of the tier type, which is a useful shortcut so you don't have to look up the definition every 
-		time.  However, it's mostly a holdover from days before we had a DestinyItemTierTypeDefinition to refer to.
-		*/
-    tierTypeName: string;
-
-    /**
-		The enumeration matching the tier type of the item to known values, again for convenience sake.
-		*/
-    tierType: Globals.TierType;
-
-    /**
-		The tooltip message to show, if any, when the item expires.
-		*/
-    expirationTooltip: string;
-
-    /**
-		If the item expires while playing in an activity, we show a different message.
-		*/
-    expiredInActivityMessage: string;
-
-    /**
-		If the item expires in orbit, we show a... more different message.  ("Consummate V's, consummate!")
-		*/
-    expiredInOrbitMessage: string;
-
-    suppressExpirationWhenObjectivesComplete: boolean;
-
-    /**
-		A reference to the associated crafting 'recipe' item definition, if this item can be crafted.
-		*/
-    recipeItemHash?: number;
-  }
-
-  /**
-	Primarily for Quests, this is the definition of properties related to the item if it is a quest
-	and its various quest steps.
-	*/
-  export interface DestinyItemSetBlockDefinition {
-    /**
-		A collection of hashes of set items, for items such as Quest Metadata items that possess this data.
-		*/
-    itemList: Definitions.DestinyItemSetBlockEntryDefinition[];
-
-    /**
-		If true, items in the set can only be added in increasing order, and adding an item will remove any previous item.
-		For Quests, this is by necessity true.  Only one quest step is present at a time, and previous steps are removed
-		as you advance in the quest.
-		*/
-    requireOrderedSetItemAdd: boolean;
-
-    /**
-		If true, the UI should treat this quest as "featured"
-		*/
-    setIsFeatured: boolean;
-
-    /**
-		A string identifier we can use to attempt to identify the category of the Quest.
-		*/
-    setType: string;
-
-    /**
-		The name of the quest line that this quest step is a part of.
-		*/
-    questLineName: string;
-
-    /**
-		The description of the quest line that this quest step is a part of.
-		*/
-    questLineDescription: string;
-
-    /**
-		An additional summary of this step in the quest line.
-		*/
-    questStepSummary: string;
-  }
-
-  /**
-	Defines a particular entry in an ItemSet (AKA a particular Quest Step in a Quest)
-	*/
-  export interface DestinyItemSetBlockEntryDefinition {
-    /**
-		Used for tracking which step a user reached.  These values will be populated in the user's
-		internal state, which we expose externally as a more usable DestinyQuestStatus object.
-		If this item has been obtained, this value will be set in trackingUnlockValueHash.
-		*/
-    trackingValue: number;
-
-    /**
-		This is the hash identifier for a DestinyInventoryItemDefinition representing this quest step.
-		*/
-    itemHash: number;
-  }
-
-  /**
-	Information about the item's calculated stats, with as much data as we can find for the stats
-	without having an actual instance of the item.
-	
-	Note that this means the entire concept of providing these stats is fundamentally insufficient:
-	we cannot predict with 100% accuracy the conditions under which an item can spawn, so we use various
-	heuristics to attempt to simulate the conditions as accurately as possible.  Actual stats for 
-	items in-game can and will vary, but these should at least be useful base points for comparison
-	and display.
-	
-	It is also worth noting that some stats, like Magazine size, have further calculations performed on them
-	by scripts in-game and on the game servers that BNet does not have access to.  We cannot know how those stats
-	are further transformed, and thus some stats will be inaccurate even on instances of items in BNet vs. how
-	they appear in-game.  This is a known limitation of our item statistics, without any planned fix.
-	*/
-  export interface DestinyItemStatBlockDefinition {
-    /**
-		If true, the game won't show the "primary" stat on this item when you inspect it.
-		
-		NOTE: This is being manually mapped, because I happen to want it in a block that isn't going to directly create this
-		derivative block.
-		*/
-    disablePrimaryStatDisplay: boolean;
-
-    /**
-		If the item's stats are meant to be modified by a DestinyStatGroupDefinition, this will
-		be the identifier for that definition.
-		
-		If you are using live data or precomputed stats data on the DestinyInventoryItemDefinition.stats.stats
-		property, you don't have to worry about statGroupHash and how it alters stats: the already altered
-		stats are provided to you.  But if you want to see how the sausage gets made, or perform computations
-		yourself, this is valuable information.
-		*/
-    statGroupHash?: number;
-
-    /**
-		If you are looking for precomputed values for the stats on a weapon, this is where they are stored.
-		Technically these are the "Display" stat values.  Please see DestinyStatsDefinition for what
-		Display Stat Values means, it's a very long story... but essentially these are the closest values
-		BNet can get to the item stats that you see in-game.
-		 
-		These stats are keyed by the DestinyStatDefinition's hash identifier for the stat
-		that's found on the item.
-		*/
-    stats: { [key: number]: Definitions.DestinyInventoryItemStatDefinition };
-
-    /**
-		A quick and lazy way to determine whether any stat other than the "primary" stat is actually
-		visible on the item.  Items often have stats that we return in case people find them useful, but
-		they're not part of the "Stat Group" and thus we wouldn't display them in our UI.  If this is False,
-		then we're not going to display any of these stats other than the primary one.
-		*/
-    hasDisplayableStats: boolean;
-
-    /**
-		This stat is determined to be the "primary" stat, and can be looked up in the stats or any
-		other stat collection related to the item.
-		
-		Use this hash to look up the stat's value using DestinyInventoryItemDefinition.stats.stats,
-		and the renderable data for the primary stat in the related DestinyStatDefinition.
-		*/
-    primaryBaseStatHash: number;
-  }
-
-  /**
-	Defines a specific stat value on an item, and the minimum/maximum range that we could
-	compute for the item based on our heuristics for how the item might be generated.
-	
-	Not guaranteed to match real-world instances of the item, but should hopefully at least
-	be close.  If it's not close, let us know on the Bungie API forums.
-	*/
-  export interface DestinyInventoryItemStatDefinition {
-    /**
-		The hash for the DestinyStatDefinition representing this stat.
-		*/
-    statHash: number;
-
-    /**
-		This value represents the stat value assuming the minimum possible roll
-		but accounting for any mandatory bonuses that should be applied to the stat on item creation.
-		
-		In Destiny 1, this was different from the "minimum" value because there were certain conditions
-		where an item could be theoretically lower level/value than the initial roll.  
-		
-		In Destiny 2, this is not possible unless Talent Grids begin to be used again for these purposes or some other
-		system change occurs... thus in practice, value and minimum should be the same in Destiny 2.  Good riddance.
-		*/
-    value: number;
-
-    /**
-		The minimum possible value for this stat that we think the item can roll.
-		*/
-    minimum: number;
-
-    /**
-		The maximum possible value for this stat that we think the item can roll.
-		
-		WARNING: In Destiny 1, this field was calculated using the potential stat rolls on the item's talent grid.
-		In Destiny 2, items no longer have meaningful talent grids and instead have sockets: but the calculation of this field
-		was never altered to adapt to this change.  As such, this field should be considered deprecated until we can address this oversight.
-		*/
-    maximum: number;
-
-    /**
-		The maximum possible value for the stat as shown in the UI, if it is being shown somewhere that reveals maximum
-		in the UI (such as a bar chart-style view).
-		
-		This is pulled directly from the item's DestinyStatGroupDefinition, and placed here for convenience.
-		
-		If not returned, there is no maximum to use (and thus the stat should not be shown in a way that assumes there is a limit to the stat)
-		*/
-    displayMaximum?: number;
-  }
-
-  /**
-	Items that can be equipped define this block.  It contains information we need to
-	understand how and when the item can be equipped.
-	*/
-  export interface DestinyEquippingBlockDefinition {
-    /**
-		If the item is part of a gearset, this is a reference to that gearset item.
-		*/
-    gearsetItemHash?: number;
-
-    /**
-		If defined, this is the label used to check if the item has other items of
-		matching types already equipped.  
-		
-		For instance, when you aren't allowed to
-		equip more than one Exotic Weapon, that's because all exotic weapons have
-		identical uniqueLabels and the game checks the to-be-equipped item's uniqueLabel
-		vs. all other already equipped items (other than the item in the slot that's
-		about to be occupied).
-		*/
-    uniqueLabel: string;
-
-    /**
-		The hash of that unique label.  Does not point to a specific definition.
-		*/
-    uniqueLabelHash: number;
-
-    /**
-		An equipped item *must* be equipped in an Equipment Slot.  This is the hash identifier
-		of the DestinyEquipmentSlotDefinition into which it must be equipped.
-		*/
-    equipmentSlotTypeHash: number;
-
-    /**
-		These are custom attributes on the equippability of the item.
-		
-		For now, this can only be "equip on acquire", which would mean that the item
-		will be automatically equipped as soon as you pick it up.
-		*/
-    attributes: Globals.EquippingItemBlockAttributes;
-
-    /**
-		Ammo type used by a weapon is no longer determined by the bucket in which it is contained.
-		If the item has an ammo type - i.e. if it is a weapon - this will be the type of ammunition expected.
-		*/
-    ammoType: Globals.DestinyAmmunitionType;
-
-    /**
-		These are strings that represent the possible Game/Account/Character state failure conditions
-		that can occur when trying to equip the item.  They match up one-to-one with requiredUnlockExpressions.
-		*/
-    displayStrings: string[];
-  }
-
-  /**
-	This Block defines the rendering data associated with the item, if any.
-	*/
-  export interface DestinyItemTranslationBlockDefinition {
-    weaponPatternIdentifier: string;
-
-    weaponPatternHash: number;
-
-    defaultDyes: World.DyeReference[];
-
-    lockedDyes: World.DyeReference[];
-
-    customDyes: World.DyeReference[];
-
-    arrangements: Definitions.DestinyGearArtArrangementReference[];
-
-    hasGeometry: boolean;
-  }
-
-  export interface DestinyGearArtArrangementReference {
-    classHash: number;
-
-    artArrangementHash: number;
-  }
-
-  /**
-	Items like Sacks or Boxes can have items that it shows in-game when you view details
-	that represent the items you can obtain if you use or acquire the item.
-	
-	This defines those categories, and gives some insights into that data's source.
-	*/
-  export interface DestinyItemPreviewBlockDefinition {
-    /**
-		A string that the game UI uses as a hint for which detail screen to show for the item.
-		You, too, can leverage this for your own custom screen detail views.
-		Note, however, that these are arbitrarily defined by designers: there's no guarantees
-		of a fixed, known number of these - so fall back to something reasonable if you don't recognize it.
-		*/
-    screenStyle: string;
-
-    /**
-		If the preview data is derived from a fake "Preview" Vendor, this will
-		be the hash identifier for the DestinyVendorDefinition of that fake vendor.
-		*/
-    previewVendorHash: number;
-
-    /**
-		If this item should show you Artifact information when you preview it,
-		this is the hash identifier of the DestinyArtifactDefinition for the artifact
-		whose data should be shown.
-		*/
-    artifactHash?: number;
-
-    /**
-		If the preview has an associated action (like "Open"), this will be the localized
-		string for that action.
-		*/
-    previewActionString: string;
-
-    /**
-		This is a list of the items being previewed, categorized in the same way as they are
-		in the preview UI.
-		*/
-    derivedItemCategories: Items.DestinyDerivedItemCategoryDefinition[];
-  }
-
-  /**
-	An item's "Quality" determines its calculated stats.  The Level at which the item spawns
-	is combined with its "qualityLevel" along with some additional calculations to determine
-	the value of those stats.
-	
-	In Destiny 2, most items don't have default item levels and quality, making this property
-	less useful: these apparently are almost always determined by the complex mechanisms of
-	the Reward system rather than statically.  They are still provided here in case they
-	are still useful for people.  This also contains some information about Infusion.
-	*/
-  export interface DestinyItemQualityBlockDefinition {
-    /**
-		The "base" defined level of an item.  This is a list because, in theory,
-		each Expansion could define its own base level for an item.
-		
-		In practice, not only was that never done in Destiny 1, but now this
-		isn't even populated at all.  When it's not populated, the level at which
-		it spawns has to be inferred by Reward information, of which BNet receives an imperfect
-		view and will only be reliable on instanced data as a result.
-		*/
-    itemLevels: number[];
-
-    /**
-		qualityLevel is used in combination with the item's level to calculate stats like
-		Attack and Defense.  It plays a role in that calculation, but not nearly as large as
-		itemLevel does.
-		*/
-    qualityLevel: number;
-
-    /**
-		The string identifier for this item's "infusability", if any.  
-		
-		Items that match the same infusionCategoryName are allowed to infuse with each other.
-		
-		DEPRECATED: Items can now have multiple infusion categories.  Please use infusionCategoryHashes instead.
-		*/
-    infusionCategoryName: string;
-
-    /**
-		The hash identifier for the infusion.  It does not map to a Definition entity.
-		
-		DEPRECATED: Items can now have multiple infusion categories.  Please use infusionCategoryHashes instead.
-		*/
-    infusionCategoryHash: number;
-
-    /**
-		If any one of these hashes matches any value in another item's infusionCategoryHashes, the two 
-		can infuse with each other.
-		*/
-    infusionCategoryHashes: number[];
-
-    /**
-		An item can refer to pre-set level requirements.  They are defined in DestinyProgressionLevelRequirementDefinition,
-		and you can use this hash to find the appropriate definition.
-		*/
-    progressionLevelRequirementHash: number;
-
-    /**
-		The latest version available for this item.
-		*/
-    currentVersion: number;
-
-    /**
-		The list of versions available for this item.
-		*/
-    versions: Definitions.DestinyItemVersionDefinition[];
-
-    /**
-		Icon overlays to denote the item version and power cap status.
-		*/
-    displayVersionWatermarkIcons: string[];
-  }
-
-  /**
-	The version definition currently just holds a reference to the power cap.
-	*/
-  export interface DestinyItemVersionDefinition {
-    /**
-		A reference to the power cap for this item version.
-		*/
-    powerCapHash: number;
-  }
-
-  /**
-	This defines an item's "Value".
-	Unfortunately, this appears to be used in different ways depending on the way that the item itself
-	is used.
-	
-	For items being sold at a Vendor, this is the default "sale price" of the item.  These days, the vendor itself
-	almost always sets the price, but it still possible for the price to fall back to this value.
-	For quests, it is a preview of rewards you can gain by completing the quest.
-	For dummy items, if the itemValue refers to an Emblem, it is the emblem that should be shown
-	as the reward. (jeez louise)
-	
-	It will likely be used in a number of other ways in the future, it appears to be a bucket where
-	they put arbitrary items and quantities into the item.
-	*/
-  export interface DestinyItemValueBlockDefinition {
-    /**
-		References to the items that make up this item's "value", and the quantity.
-		*/
-    itemValue: World.DestinyItemQuantity[];
-
-    /**
-		If there's a localized text description of the value provided, this will be said description.
-		*/
-    valueDescription: string;
-  }
-
-  /**
-	Data about an item's "sources": ways that the item can be obtained.
-	*/
-  export interface DestinyItemSourceBlockDefinition {
-    /**
-		The list of hash identifiers for Reward Sources that hint where the item can be found (DestinyRewardSourceDefinition).
-		*/
-    sourceHashes: number[];
-
-    /**
-		A collection of details about the stats that were computed for the ways we found that the item
-		could be spawned.
-		*/
-    sources: Sources.DestinyItemSourceDefinition[];
-
-    /**
-		If we found that this item is exclusive to a specific platform, this will be set to the
-		BungieMembershipType enumeration that matches that platform.
-		*/
-    exclusive: Globals.BungieMembershipType;
-
-    /**
-		A denormalized reference back to vendors that potentially sell this item.
-		*/
-    vendorSources: Definitions.DestinyItemVendorSourceReference[];
-  }
-
-  /**
-	Represents that a vendor could sell this item, and provides a quick link to that vendor and sale item.
-	
-	 Note that we do not and cannot make a guarantee that the vendor will ever *actually* sell this item,
-	 only that the Vendor has a definition that indicates it *could* be sold.
-	
-	 Note also that a vendor may sell the same item in multiple "ways", which means there may be multiple
-	 vendorItemIndexes for a single Vendor hash.
-	*/
-  export interface DestinyItemVendorSourceReference {
-    /**
-		The identifier for the vendor that may sell this item.
-		*/
-    vendorHash: number;
-
-    /**
-		The Vendor sale item indexes that represent the sale information for this item.  The same vendor
-		may sell an item in multiple "ways", hence why this is a list.  (for instance, a weapon may be "sold"
-		as a reward in a quest, for Glimmer, and for Masterwork Cores: each of those ways would be represented by
-		a different vendor sale item with a different index)
-		*/
-    vendorItemIndexes: number[];
-  }
-
-  /**
-	An item can have objectives on it.  In practice, these are the exclusive purview of
-	"Quest Step" items: DestinyInventoryItemDefinitions that represent a specific step in a Quest.
-	
-	Quest steps have 1:M objectives that we end up processing and returning in live data as DestinyQuestStatus
-	data, and other useful information.
-	*/
-  export interface DestinyItemObjectiveBlockDefinition {
-    /**
-		The hashes to Objectives (DestinyObjectiveDefinition) that are part of this Quest Step, in the
-		order that they should be rendered.
-		*/
-    objectiveHashes: number[];
-
-    /**
-		For every entry in objectiveHashes, there is a corresponding entry in this array
-		at the same index.  If the objective is meant to be associated with a specific DestinyActivityDefinition,
-		there will be a valid hash at that index.  Otherwise, it will be invalid (0).
-		
-		Rendered somewhat obsolete by perObjectiveDisplayProperties, which currently has much the same information
-		but may end up with more info in the future.
-		*/
-    displayActivityHashes: number[];
-
-    /**
-		If True, all objectives must be completed for the step to be completed.
-		If False, any one objective can be completed for the step to be completed.
-		*/
-    requireFullObjectiveCompletion: boolean;
-
-    /**
-		The hash for the DestinyInventoryItemDefinition representing the Quest to which this Quest Step belongs.
-		*/
-    questlineItemHash: number;
-
-    /**
-		The localized string for narrative text related to this quest step, if any.
-		*/
-    narrative: string;
-
-    /**
-		The localized string describing an action to be performed associated with the objectives, if any.
-		*/
-    objectiveVerbName: string;
-
-    /**
-		The identifier for the type of quest being performed, if any.  Not associated with any fixed definition, yet.
-		*/
-    questTypeIdentifier: string;
-
-    /**
-		A hashed value for the questTypeIdentifier, because apparently I like to be redundant.
-		*/
-    questTypeHash: number;
-
-    /**
-		One entry per Objective on the item, it will have related display information.
-		*/
-    perObjectiveDisplayProperties: Definitions.DestinyObjectiveDisplayProperties[];
-
-    displayAsStatTracker: boolean;
-  }
-
-  export interface DestinyObjectiveDisplayProperties {
-    /**
-		The activity associated with this objective in the context of this item, if any.
-		*/
-    activityHash?: number;
-
-    /**
-		If true, the game shows this objective on item preview screens.
-		*/
-    displayOnItemPreviewScreen: boolean;
-  }
-
-  /**
-	The metrics available for display and selection on an item.
-	*/
-  export interface DestinyItemMetricBlockDefinition {
-    /**
-		Hash identifiers for any DestinyPresentationNodeDefinition entry that can be used to list available metrics.
-		Any metric listed directly below these nodes, or in any of these nodes' children will be made available for selection.
-		*/
-    availableMetricCategoryNodeHashes: number[];
-  }
-
-  /**
-	If an item has a related gearset, this is the list of items in that set, and an unlock expression
-	that evaluates to a number representing the progress toward gearset completion (a very rare use for
-	unlock expressions!)
-	*/
-  export interface DestinyItemGearsetBlockDefinition {
-    /**
-		The maximum possible number of items that can be collected.
-		*/
-    trackingValueMax: number;
-
-    /**
-		The list of hashes for items in the gearset.  Use them to look up DestinyInventoryItemDefinition entries for
-		the items in the set.
-		*/
-    itemList: number[];
-  }
-
-  /**
-	Some items are "sacks" - they can be "opened" to produce other items.
-	This is information related to its sack status, mostly UI strings.
-	Engrams are an example of items that are considered to be "Sacks".
-	*/
-  export interface DestinyItemSackBlockDefinition {
-    /**
-		A description of what will happen when you open the sack.
-		As far as I can tell, this is blank currently.  Unknown whether it will
-		eventually be populated with useful info.
-		*/
-    detailAction: string;
-
-    /**
-		The localized name of the action being performed when you open the sack.
-		*/
-    openAction: string;
-
-    selectItemCount: number;
-
-    vendorSackType: string;
-
-    openOnAcquire: boolean;
-  }
-
-  /**
-	If defined, the item has at least one socket.
-	*/
-  export interface DestinyItemSocketBlockDefinition {
-    /**
-		This was supposed to be a string that would give per-item details about sockets.
-		In practice, it turns out that all this ever has is the localized word "details".
-		... that's lame, but perhaps it will become something cool in the future.
-		*/
-    detail: string;
-
-    /**
-		Each non-intrinsic (or mutable) socket on an item is defined here.  Check inside for more info.
-		*/
-    socketEntries: Definitions.DestinyItemSocketEntryDefinition[];
-
-    /**
-		Each intrinsic (or immutable/permanent) socket on an item is defined here, along with the plug that is
-		permanently affixed to the socket.
-		*/
-    intrinsicSockets: Definitions.DestinyItemIntrinsicSocketEntryDefinition[];
-
-    /**
-		A convenience property, that refers to the sockets in the "sockets" property, pre-grouped
-		by category and ordered in the manner that they should be grouped in the UI.
-		You could form this yourself with the existing data, but why would you want to?  Enjoy life man.
-		*/
-    socketCategories: Definitions.DestinyItemSocketCategoryDefinition[];
-  }
-
-  /**
-	The definition information for a specific socket on an item.
-	This will determine how the socket behaves in-game.
-	*/
-  export interface DestinyItemSocketEntryDefinition {
-    /**
-		All sockets have a type, and this is the hash identifier for this particular type.
-		Use it to look up the DestinySocketTypeDefinition: read there for more information on
-		how socket types affect the behavior of the socket.
-		*/
-    socketTypeHash: number;
-
-    /**
-		If a valid hash, this is the hash identifier for the DestinyInventoryItemDefinition
-		representing the Plug that will be initially inserted into the item on item creation.
-		Otherwise, this Socket will either start without a plug inserted, or will have one randomly
-		inserted.
-		*/
-    singleInitialItemHash: number;
-
-    /**
-		This is a list of pre-determined plugs that can *always* be plugged into this socket, without
-		the character having the plug in their inventory.
-		
-		If this list is populated, you will not be allowed to plug an arbitrary item in the socket: you
-		will only be able to choose from one of these reusable plugs.
-		*/
-    reusablePlugItems: Definitions.DestinyItemSocketEntryPlugItemDefinition[];
-
-    /**
-		If this is true, then the socket will not be initialized with a plug if the item is purchased from a Vendor.
-		
-		Remember that Vendors are much more than conceptual vendors: they include "Collection Kiosks" and other entities.
-		See DestinyVendorDefinition for more information.
-		*/
-    preventInitializationOnVendorPurchase: boolean;
-
-    /**
-		If this is true, the perks provided by this socket shouldn't be shown in the item's tooltip.  This might
-		be useful if it's providing a hidden bonus, or if the bonus is less important than other benefits on the item.
-		*/
-    hidePerksInItemTooltip: boolean;
-
-    /**
-		Indicates where you should go to get plugs for this socket.  This will affect how you populate your UI,
-		as well as what plugs are valid for this socket.  It's an alternative to having to check for the existence
-		of certain properties (reusablePlugItems for example) to infer where plugs should come from.
-		*/
-    plugSources: Globals.SocketPlugSources;
-
-    /**
-		If this socket's plugs come from a reusable DestinyPlugSetDefinition, this is the identifier for that set.
-		 We added this concept to reduce some major duplication that's going to come from sockets as replacements for
-		 what was once implemented as large sets of items and kiosks (like Emotes).
-		
-		 As of Shadowkeep, these will come up much more frequently and be driven by game content rather than
-		 custom curation.
-		*/
-    reusablePlugSetHash?: number;
-
-    /**
-		This field replaces "randomizedPlugItems" as of Shadowkeep launch.  If a socket has randomized plugs,
-		 this is a pointer to the set of plugs that could be used, as defined in DestinyPlugSetDefinition.
-		
-		 If null, the item has no randomized plugs.
-		*/
-    randomizedPlugSetHash?: number;
-
-    /**
-		If true, then this socket is visible in the item's "default" state.
-		If you have an instance, you should always check the runtime state, as that
-		can override this visibility setting: but if you're looking at the item
-		on a conceptual level, this property can be useful for hiding data such
-		as legacy sockets - which remain defined on items for infrastructure purposes,
-		but can be confusing for users to see.
-		*/
-    defaultVisible: boolean;
-  }
-
-  /**
-	The definition of a known, reusable plug that can be applied to a socket.
-	*/
-  export interface DestinyItemSocketEntryPlugItemDefinition {
-    /**
-		The hash identifier of a DestinyInventoryItemDefinition representing the plug
-		that can be inserted.
-		*/
-    plugItemHash: number;
-  }
-
-  /**
-	Represents a socket that has a plug associated with it intrinsically.  This is useful for situations
-	where the weapon needs to have a visual plug/Mod on it, but that plug/Mod should never change.
-	*/
-  export interface DestinyItemIntrinsicSocketEntryDefinition {
-    /**
-		Indicates the plug that is intrinsically inserted into this socket.
-		*/
-    plugItemHash: number;
-
-    /**
-		Indicates the type of this intrinsic socket.
-		*/
-    socketTypeHash: number;
-
-    /**
-		If true, then this socket is visible in the item's "default" state.
-		If you have an instance, you should always check the runtime state, as that
-		can override this visibility setting: but if you're looking at the item
-		on a conceptual level, this property can be useful for hiding data such
-		as legacy sockets - which remain defined on items for infrastructure purposes,
-		but can be confusing for users to see.
-		*/
-    defaultVisible: boolean;
-  }
-
-  /**
-	Sockets are grouped into categories in the UI.  These define which category
-	and which sockets are under that category.
-	*/
-  export interface DestinyItemSocketCategoryDefinition {
-    /**
-		The hash for the Socket Category: a quick way to go get the header display information for the category.
-		Use it to look up DestinySocketCategoryDefinition info.
-		*/
-    socketCategoryHash: number;
-
-    /**
-		Use these indexes to look up the sockets in the "sockets.socketEntries" property on the item definition.
-		These are the indexes under the category, in game-rendered order.
-		*/
-    socketIndexes: number[];
-  }
-
-  /**
-	This appears to be information used when rendering rewards.  We don't currently use it on BNet.
-	*/
-  export interface DestinyItemSummaryBlockDefinition {
-    /**
-		Apparently when rendering an item in a reward, this should be used as a sort priority.
-		We're not doing it presently.
-		*/
-    sortPriority: number;
-  }
-
-  /**
-	This defines information that can only come from a talent grid on an item.
-	Items mostly have negligible talent grid data these days, but instanced items still retain
-	grids as a source for some of this common information.
-	
-	Builds/Subclasses are the only items left that still have talent grids with meaningful
-	Nodes.
-	*/
-  export interface DestinyItemTalentGridBlockDefinition {
-    /**
-		The hash identifier of the DestinyTalentGridDefinition attached to this item.
-		*/
-    talentGridHash: number;
-
-    /**
-		This is meant to be a subtitle for looking at the talent grid.
-		In practice, somewhat frustratingly, this always merely says the localized word
-		for "Details".  Great.  Maybe it'll have more if talent grids ever get used
-		for more than builds and subclasses again.
-		*/
-    itemDetailString: string;
-
-    /**
-		A shortcut string identifier for the "build" in question, if this talent grid
-		has an associated build.  Doesn't map to anything we can expose at the moment.
-		*/
-    buildName: string;
-
-    /**
-		If the talent grid implies a damage type, this is the enum value for that damage type.
-		*/
-    hudDamageType: Globals.DamageType;
-
-    /**
-		If the talent grid has a special icon that's shown in the game UI (like builds, funny that),
-		this is the identifier for that icon.
-		Sadly, we don't actually get that icon right now.  I'll be looking to replace this
-		with a path to the actual icon itself.
-		*/
-    hudIcon: string;
-  }
-
-  /**
-	An intrinsic perk on an item, and the requirements for it to be activated.
-	*/
-  export interface DestinyItemPerkEntryDefinition {
-    /**
-		If this perk is not active, this is the string to show for why
-		it's not providing its benefits.
-		*/
-    requirementDisplayString: string;
-
-    /**
-		A hash identifier for the DestinySandboxPerkDefinition being provided on the item.
-		*/
-    perkHash: number;
-
-    /**
-		Indicates whether this perk should be shown, or if it should be shown disabled.
-		*/
-    perkVisibility: Globals.ItemPerkVisibility;
-  }
-
-  /**
 	In an attempt to categorize items by type, usage, and other interesting properties, we created
 	DestinyItemCategoryDefinition: information about types that is assembled using a set of heuristics
 	that examine the properties of an item such as what inventory bucket it's in, its item type name,
@@ -11578,64 +12007,6 @@ export declare namespace Definitions {
   }
 
   /**
-	When a sack rolls rewards, it will pick items from categories.
-	*/
-  export interface DestinyItemSackRewardCategory {
-    categoryId: number;
-
-    rewardItemCount: number;
-  }
-
-  /**
-	Defines the intrinsic unlock flags and values on the item: state changes that will happen
-	as long as the item is equipped.
-	*/
-  export interface DestinyItemUnlockBlockDefinition {
-    /**
-		Any unlocks (DestinyUnlockDefinition) referred to here will be set as long as the item is equipped.
-		*/
-    intrinsicUnlockHashes: number[];
-
-    /**
-		The list of unlock values and the default values that will be applied to them when the item is equipped.
-		*/
-    storedUnlockValues: Definitions.DestinyItemUnlockStoredValueDefinition[];
-
-    /**
-		Unlike stored unlock values, these are values that are also initiated to a specific value: but I believe
-		the distinction is that these values cannot be changed at runtime.
-		*/
-    intrinsicUnlockValues: Definitions.DestinyIntrinsicUnlockValueDefinition[];
-  }
-
-  /**
-	Defines an unlock value being set for an item intrinsically.
-	*/
-  export interface DestinyItemUnlockStoredValueDefinition {
-    /**
-		The hash identifier of the DestinyUnlockValueDefinition being set when the item is equipped.
-		*/
-    unlockValueHash: number;
-
-    /**
-		The value for the DestinyUnlockValueDefinition.
-		*/
-    defaultValue: number;
-  }
-
-  /**
-	Uncomfortable confession time: I don't understand why we have intrinsic vs. stored unlock values.
-	For now, I'm going to hold onto them in case we find a good use for them.  I'm pretty sure that intrinsics
-	retain the value permanently and stored ones can be altered after creation, but did there really
-	need to be two separate collections of them?
-	*/
-  export interface DestinyIntrinsicUnlockValueDefinition {
-    unlockValueHash: number;
-
-    value: number;
-  }
-
-  /**
 	INTERNAL USE ONLY: Let's not care about how these are used until/unless it's absolutely necessary.
 	The rabbit hole of Progression Implementation goes deep.
 	*/
@@ -11700,58 +12071,296 @@ export declare namespace Definitions {
   }
 }
 
-export declare namespace Inventory {
-  export interface DestinyPlatformSilverComponent {
-    /**
-		If a Profile is played on multiple platforms, this is the silver they have
-		for each platform, keyed by Membership Type.
-		*/
-    platformSilver: {
-      [K in EnumStrings<
-        typeof Globals.BungieMembershipType
-      >]?: Items.DestinyItemComponent;
-    };
-  }
-
+export declare namespace Misc {
   /**
-	A list of minimal information for items in an inventory: be it a character's inventory, or a Profile's inventory.
-	(Note that the Vault is a collection of inventory buckets in the Profile's inventory)
-	
-	Inventory Items returned here are in a flat list, but importantly they have a bucketHash property that
-	indicates the specific inventory bucket that is holding them.  These buckets constitute things like the separate
-	sections of the Vault, the user's inventory slots, etc.  See DestinyInventoryBucketDefinition for more info.
+	Represents a color whose RGBA values are all represented as values between 0 and 255.
 	*/
-  export interface DestinyInventoryComponent {
-    /**
-		The items in this inventory.  If you care to bucket them, use the item's bucketHash property to group
-		them.
-		*/
-    items: Items.DestinyItemComponent[];
-  }
+  export interface DestinyColor {
+    red: number;
 
-  /**
-	This component provides a quick lookup of every item the requested character has and how much of that item they have.
-	
-	Requesting this component will allow you to circumvent manually putting together the list of which currencies you have
-	for the purpose of testing currency requirements on an item being purchased, or operations that have costs.
-	
-	You *could* figure this out yourself by doing a GetCharacter or GetProfile request and forming your own lookup table, but
-	that is inconvenient enough that this feels like a worthwhile (and optional) redundency.  Don't bother requesting it if you
-	have already created your own lookup from prior GetCharacter/GetProfile calls.
-	*/
-  export interface DestinyCurrenciesComponent {
-    /**
-		A dictionary - keyed by the item's hash identifier (DestinyInventoryItemDefinition), and whose value is the amount of
-		that item you have across all available inventory buckets for purchasing.
-		
-		This allows you to see whether the requesting character can afford any given purchase/action without having to re-create
-		this list itself.
-		*/
-    itemQuantities: { [key: number]: number };
+    green: number;
+
+    blue: number;
+
+    alpha: number;
   }
 }
 
 export declare namespace Items {
+  /**
+	A shortcut for the fact that some items have a "Preview Vendor"
+	- See DestinyInventoryItemDefinition.preview.previewVendorHash - that is intended
+	to be used to show what items you can get as a result of acquiring or using this item.
+	
+	A common example of this in Destiny 1 was Eververse "Boxes," which could have many possible items.
+	This "Preview Vendor" is not a vendor you can actually see in the game, but it defines categories and sale items for all of the possible
+	items you could get from the Box so that the game can show them to you.  We summarize that info here
+	so that you don't have to do that Vendor lookup and aggregation manually.
+	*/
+  export interface DestinyDerivedItemCategoryDefinition {
+    /**
+		The localized string for the category title.  This will be something describing
+		the items you can get as a group, or your likelihood/the quantity you'll get.
+		*/
+    categoryDescription: string;
+
+    /**
+		This is the list of all of the items for this category and the basic properties we'll
+		know about them.
+		*/
+    items: Items.DestinyDerivedItemDefinition[];
+  }
+
+  /**
+	This is a reference to, and summary data for, a specific item that
+	you can get as a result of Using or Acquiring some other Item (For example,
+	this could be summary information for an Emote that you can get by opening an an Eververse Box)
+	See DestinyDerivedItemCategoryDefinition for more information.
+	*/
+  export interface DestinyDerivedItemDefinition {
+    /**
+		The hash for the DestinyInventoryItemDefinition of this derived item, if there is one.
+		Sometimes we are given this information as a manual override, in which case there won't be
+		an actual DestinyInventoryItemDefinition for what we display, but you can still show the strings
+		from this object itself.
+		*/
+    itemHash?: number;
+
+    /**
+		The name of the derived item.
+		*/
+    itemName: string;
+
+    /**
+		Additional details about the derived item, in addition to the description.
+		*/
+    itemDetail: string;
+
+    /**
+		A brief description of the item.
+		*/
+    itemDescription: string;
+
+    /**
+		An icon for the item.
+		*/
+    iconPath: string;
+
+    /**
+		If the item was derived from a "Preview Vendor", this will be an index into
+		the DestinyVendorDefinition's itemList property.  Otherwise, -1.
+		*/
+    vendorItemIndex: number;
+  }
+
+  /**
+	If an item is a Plug, its DestinyInventoryItemDefinition.plug property will be populated
+	with an instance of one of these bad boys.
+	
+	This gives information about when it can be inserted, what the plug's category
+	is (and thus whether it is compatible with a socket... see DestinySocketTypeDefinition
+	for information about Plug Categories and socket compatibility), whether it is enabled
+	and other Plug info.
+	*/
+  export interface DestinyItemPlugDefinition {
+    /**
+		The rules around when this plug can be inserted into a socket, aside
+		from the socket's individual restrictions.
+		
+		The live data DestinyItemPlugComponent.insertFailIndexes will be an index into
+		this array, so you can pull out the failure strings appropriate for the user.
+		*/
+    insertionRules: Items.DestinyPlugRuleDefinition[];
+
+    /**
+		The string identifier for the plug's category.  Use the socket's DestinySocketTypeDefinition.plugWhitelist
+		to determine whether this plug can be inserted into the socket.
+		*/
+    plugCategoryIdentifier: string;
+
+    /**
+		The hash for the plugCategoryIdentifier.  You can use this instead if you wish: I put both in the definition
+		for debugging purposes.
+		*/
+    plugCategoryHash: number;
+
+    /**
+		If you successfully socket the item, this will determine whether or not you get "refunded" on the plug.
+		*/
+    onActionRecreateSelf: boolean;
+
+    /**
+		If inserting this plug requires materials, this is the hash identifier for looking up the
+		DestinyMaterialRequirementSetDefinition for those requirements.
+		*/
+    insertionMaterialRequirementHash: number;
+
+    /**
+		In the game, if you're inspecting a plug item directly, this will be the item shown
+		with the plug attached.  Look up the DestinyInventoryItemDefinition for this hash for the item.
+		*/
+    previewItemOverrideHash: number;
+
+    /**
+		It's not enough for the plug to be inserted.  It has to be enabled as well.
+		For it to be enabled, it may require materials.
+		This is the hash identifier for the DestinyMaterialRequirementSetDefinition for those requirements,
+		if there is one.
+		*/
+    enabledMaterialRequirementHash: number;
+
+    /**
+		The rules around whether the plug, once inserted, is enabled and providing its benefits.
+		
+		The live data DestinyItemPlugComponent.enableFailIndexes will be an index into
+		this array, so you can pull out the failure strings appropriate for the user.
+		*/
+    enabledRules: Items.DestinyPlugRuleDefinition[];
+
+    /**
+		Plugs can have arbitrary, UI-defined identifiers that the UI designers use to determine
+		the style applied to plugs.  Unfortunately, we have neither a definitive list of these labels
+		nor advance warning of when new labels might be applied or how that relates to how they get
+		rendered.  If you want to, you can refer to known labels to change your own styles: but know that
+		new ones can be created arbitrarily, and we have no way of associating the labels with any specific
+		UI style guidance... you'll have to piece that together on your end.  Or do what we do, and just
+		show plugs more generically, without specialized styles.
+		*/
+    uiPlugLabel: string;
+
+    plugStyle: Globals.PlugUiStyles;
+
+    /**
+		Indicates the rules about when this plug can be used.  See the PlugAvailabilityMode enumeration for more 
+		information!
+		*/
+    plugAvailability: Globals.PlugAvailabilityMode;
+
+    /**
+		If the plug meets certain state requirements, it may have an alternative label applied to it.
+		This is the alternative label that will be applied in such a situation.
+		*/
+    alternateUiPlugLabel: string;
+
+    /**
+		The alternate plug of the plug: only applies when the item is in states that only the server can know about and control, unfortunately.  See AlternateUiPlugLabel for the related label info.
+		*/
+    alternatePlugStyle: Globals.PlugUiStyles;
+
+    /**
+		If TRUE, this plug is used for UI display purposes only, and doesn't have any interesting effects of its own.
+		*/
+    isDummyPlug: boolean;
+
+    /**
+		Do you ever get the feeling that a system has become so overburdened by edge cases that it probably
+		should have become some other system entirely?  So do I!
+		
+		In totally unrelated news, Plugs can now override properties of their parent items.  This is some of
+		the relevant definition data for those overrides.
+		
+		If this is populated, it will have the override data to be applied when this plug is applied to an item.
+		*/
+    parentItemOverride: Items.DestinyParentItemOverride;
+
+    /**
+		IF not null, this plug provides Energy capacity to the item in which it is socketed.
+		In Armor 2.0 for example, is implemented in a similar way to Masterworks, where visually it's a single
+		area of the UI being clicked on to "Upgrade" to higher energy levels, but it's actually socketing new
+		plugs.
+		*/
+    energyCapacity: Items.DestinyEnergyCapacityEntry;
+
+    /**
+		IF not null, this plug has an energy cost.  This contains the details of that cost.
+		*/
+    energyCost: Items.DestinyEnergyCostEntry;
+  }
+
+  /**
+	Dictates a rule around whether the plug is enabled or insertable.
+	
+	In practice, the live Destiny data will refer to these entries by index.  You can then
+	look up that index in the appropriate property (enabledRules or insertionRules) to get
+	the localized string for the failure message if it failed.
+	*/
+  export interface DestinyPlugRuleDefinition {
+    /**
+		The localized string to show if this rule fails.
+		*/
+    failureMessage: string;
+  }
+
+  export interface DestinyParentItemOverride {
+    additionalEquipRequirementsDisplayStrings: string[];
+
+    pipIcon: string;
+  }
+
+  /**
+	Items can have Energy Capacity, and plugs can provide that capacity such as on a piece of Armor in Armor 2.0.
+	This is how much "Energy" can be spent on activating plugs for this item.
+	*/
+  export interface DestinyEnergyCapacityEntry {
+    /**
+		How much energy capacity this plug provides.
+		*/
+    capacityValue: number;
+
+    /**
+		Energy provided by a plug is always of a specific type - this is the hash identifier for the
+		energy type for which it provides Capacity.
+		*/
+    energyTypeHash: number;
+
+    /**
+		The Energy Type for this energy capacity, in enum form for easy use.
+		*/
+    energyType: Globals.DestinyEnergyType;
+  }
+
+  /**
+	Some plugs cost Energy, which is a stat on the item that can be increased by other plugs (that, at least
+	in Armor 2.0, have a "masterworks-like" mechanic for upgrading).  If a plug has costs, the details of that
+	cost are defined here.
+	*/
+  export interface DestinyEnergyCostEntry {
+    /**
+		The Energy cost for inserting this plug.
+		*/
+    energyCost: number;
+
+    /**
+		The type of energy that this plug costs, as a reference to the DestinyEnergyTypeDefinition of the energy type.
+		*/
+    energyTypeHash: number;
+
+    /**
+		The type of energy that this plug costs, in enum form.
+		*/
+    energyType: Globals.DestinyEnergyType;
+  }
+
+  /**
+	Internal only: Spawn attributes for the item.  A reference to
+	a stat set, and to the level requirement associated with the way this item spawned.
+	*/
+  export interface ItemSpawnAttribute {}
+
+  /**
+	Internal only: a single way that an item spawned, in terms of a distinct combination of item level and quality
+	through which all of the other stats of the item can be computed.
+	
+	Computed during the import process as we dig through item sources, it is only output in internal builds:
+	its data instead eventually aggregated into the single "stats" property you see on DestinyInventoryItemDefinition
+	by taking the min and max of all of the ItemSpawnStatSets generated.
+	
+	We don't bother returning this because of the sheer amount of data generated.  Some items can be spawned in
+	hundreds of level/quality combinations, and while it's useful to see it for debugging, it is a waste of space
+	to send it down with the item contract.
+	*/
+  export interface ItemSpawnStatSet {}
+
   /**
 	The base item component, filled with properties that are generally useful to know in any item request or that
 	don't feel worthwhile to put in their own component.
@@ -12228,260 +12837,6 @@ export declare namespace Items {
   }
 
   /**
-	A shortcut for the fact that some items have a "Preview Vendor"
-	- See DestinyInventoryItemDefinition.preview.previewVendorHash - that is intended
-	to be used to show what items you can get as a result of acquiring or using this item.
-	
-	A common example of this in Destiny 1 was Eververse "Boxes," which could have many possible items.
-	This "Preview Vendor" is not a vendor you can actually see in the game, but it defines categories and sale items for all of the possible
-	items you could get from the Box so that the game can show them to you.  We summarize that info here
-	so that you don't have to do that Vendor lookup and aggregation manually.
-	*/
-  export interface DestinyDerivedItemCategoryDefinition {
-    /**
-		The localized string for the category title.  This will be something describing
-		the items you can get as a group, or your likelihood/the quantity you'll get.
-		*/
-    categoryDescription: string;
-
-    /**
-		This is the list of all of the items for this category and the basic properties we'll
-		know about them.
-		*/
-    items: Items.DestinyDerivedItemDefinition[];
-  }
-
-  /**
-	This is a reference to, and summary data for, a specific item that
-	you can get as a result of Using or Acquiring some other Item (For example,
-	this could be summary information for an Emote that you can get by opening an an Eververse Box)
-	See DestinyDerivedItemCategoryDefinition for more information.
-	*/
-  export interface DestinyDerivedItemDefinition {
-    /**
-		The hash for the DestinyInventoryItemDefinition of this derived item, if there is one.
-		Sometimes we are given this information as a manual override, in which case there won't be
-		an actual DestinyInventoryItemDefinition for what we display, but you can still show the strings
-		from this object itself.
-		*/
-    itemHash?: number;
-
-    /**
-		The name of the derived item.
-		*/
-    itemName: string;
-
-    /**
-		Additional details about the derived item, in addition to the description.
-		*/
-    itemDetail: string;
-
-    /**
-		A brief description of the item.
-		*/
-    itemDescription: string;
-
-    /**
-		An icon for the item.
-		*/
-    iconPath: string;
-
-    /**
-		If the item was derived from a "Preview Vendor", this will be an index into
-		the DestinyVendorDefinition's itemList property.  Otherwise, -1.
-		*/
-    vendorItemIndex: number;
-  }
-
-  /**
-	If an item is a Plug, its DestinyInventoryItemDefinition.plug property will be populated
-	with an instance of one of these bad boys.
-	
-	This gives information about when it can be inserted, what the plug's category
-	is (and thus whether it is compatible with a socket... see DestinySocketTypeDefinition
-	for information about Plug Categories and socket compatibility), whether it is enabled
-	and other Plug info.
-	*/
-  export interface DestinyItemPlugDefinition {
-    /**
-		The rules around when this plug can be inserted into a socket, aside
-		from the socket's individual restrictions.
-		
-		The live data DestinyItemPlugComponent.insertFailIndexes will be an index into
-		this array, so you can pull out the failure strings appropriate for the user.
-		*/
-    insertionRules: Items.DestinyPlugRuleDefinition[];
-
-    /**
-		The string identifier for the plug's category.  Use the socket's DestinySocketTypeDefinition.plugWhitelist
-		to determine whether this plug can be inserted into the socket.
-		*/
-    plugCategoryIdentifier: string;
-
-    /**
-		The hash for the plugCategoryIdentifier.  You can use this instead if you wish: I put both in the definition
-		for debugging purposes.
-		*/
-    plugCategoryHash: number;
-
-    /**
-		If you successfully socket the item, this will determine whether or not you get "refunded" on the plug.
-		*/
-    onActionRecreateSelf: boolean;
-
-    /**
-		If inserting this plug requires materials, this is the hash identifier for looking up the
-		DestinyMaterialRequirementSetDefinition for those requirements.
-		*/
-    insertionMaterialRequirementHash: number;
-
-    /**
-		In the game, if you're inspecting a plug item directly, this will be the item shown
-		with the plug attached.  Look up the DestinyInventoryItemDefinition for this hash for the item.
-		*/
-    previewItemOverrideHash: number;
-
-    /**
-		It's not enough for the plug to be inserted.  It has to be enabled as well.
-		For it to be enabled, it may require materials.
-		This is the hash identifier for the DestinyMaterialRequirementSetDefinition for those requirements,
-		if there is one.
-		*/
-    enabledMaterialRequirementHash: number;
-
-    /**
-		The rules around whether the plug, once inserted, is enabled and providing its benefits.
-		
-		The live data DestinyItemPlugComponent.enableFailIndexes will be an index into
-		this array, so you can pull out the failure strings appropriate for the user.
-		*/
-    enabledRules: Items.DestinyPlugRuleDefinition[];
-
-    /**
-		Plugs can have arbitrary, UI-defined identifiers that the UI designers use to determine
-		the style applied to plugs.  Unfortunately, we have neither a definitive list of these labels
-		nor advance warning of when new labels might be applied or how that relates to how they get
-		rendered.  If you want to, you can refer to known labels to change your own styles: but know that
-		new ones can be created arbitrarily, and we have no way of associating the labels with any specific
-		UI style guidance... you'll have to piece that together on your end.  Or do what we do, and just
-		show plugs more generically, without specialized styles.
-		*/
-    uiPlugLabel: string;
-
-    plugStyle: Globals.PlugUiStyles;
-
-    /**
-		Indicates the rules about when this plug can be used.  See the PlugAvailabilityMode enumeration for more 
-		information!
-		*/
-    plugAvailability: Globals.PlugAvailabilityMode;
-
-    /**
-		If the plug meets certain state requirements, it may have an alternative label applied to it.
-		This is the alternative label that will be applied in such a situation.
-		*/
-    alternateUiPlugLabel: string;
-
-    /**
-		The alternate plug of the plug: only applies when the item is in states that only the server can know about and control, unfortunately.  See AlternateUiPlugLabel for the related label info.
-		*/
-    alternatePlugStyle: Globals.PlugUiStyles;
-
-    /**
-		If TRUE, this plug is used for UI display purposes only, and doesn't have any interesting effects of its own.
-		*/
-    isDummyPlug: boolean;
-
-    /**
-		Do you ever get the feeling that a system has become so overburdened by edge cases that it probably
-		should have become some other system entirely?  So do I!
-		
-		In totally unrelated news, Plugs can now override properties of their parent items.  This is some of
-		the relevant definition data for those overrides.
-		
-		If this is populated, it will have the override data to be applied when this plug is applied to an item.
-		*/
-    parentItemOverride: Items.DestinyParentItemOverride;
-
-    /**
-		IF not null, this plug provides Energy capacity to the item in which it is socketed.
-		In Armor 2.0 for example, is implemented in a similar way to Masterworks, where visually it's a single
-		area of the UI being clicked on to "Upgrade" to higher energy levels, but it's actually socketing new
-		plugs.
-		*/
-    energyCapacity: Items.DestinyEnergyCapacityEntry;
-
-    /**
-		IF not null, this plug has an energy cost.  This contains the details of that cost.
-		*/
-    energyCost: Items.DestinyEnergyCostEntry;
-  }
-
-  /**
-	Dictates a rule around whether the plug is enabled or insertable.
-	
-	In practice, the live Destiny data will refer to these entries by index.  You can then
-	look up that index in the appropriate property (enabledRules or insertionRules) to get
-	the localized string for the failure message if it failed.
-	*/
-  export interface DestinyPlugRuleDefinition {
-    /**
-		The localized string to show if this rule fails.
-		*/
-    failureMessage: string;
-  }
-
-  export interface DestinyParentItemOverride {
-    additionalEquipRequirementsDisplayStrings: string[];
-
-    pipIcon: string;
-  }
-
-  /**
-	Items can have Energy Capacity, and plugs can provide that capacity such as on a piece of Armor in Armor 2.0.
-	This is how much "Energy" can be spent on activating plugs for this item.
-	*/
-  export interface DestinyEnergyCapacityEntry {
-    /**
-		How much energy capacity this plug provides.
-		*/
-    capacityValue: number;
-
-    /**
-		Energy provided by a plug is always of a specific type - this is the hash identifier for the
-		energy type for which it provides Capacity.
-		*/
-    energyTypeHash: number;
-
-    /**
-		The Energy Type for this energy capacity, in enum form for easy use.
-		*/
-    energyType: Globals.DestinyEnergyType;
-  }
-
-  /**
-	Some plugs cost Energy, which is a stat on the item that can be increased by other plugs (that, at least
-	in Armor 2.0, have a "masterworks-like" mechanic for upgrading).  If a plug has costs, the details of that
-	cost are defined here.
-	*/
-  export interface DestinyEnergyCostEntry {
-    /**
-		The Energy cost for inserting this plug.
-		*/
-    energyCost: number;
-
-    /**
-		The type of energy that this plug costs, as a reference to the DestinyEnergyTypeDefinition of the energy type.
-		*/
-    energyTypeHash: number;
-
-    /**
-		The type of energy that this plug costs, in enum form.
-		*/
-    energyType: Globals.DestinyEnergyType;
-  }
-
-  /**
 	Defines the tier type of an item.  Mostly this provides human readable properties for types
 	like Common, Rare, etc...
 	
@@ -12518,26 +12873,453 @@ export declare namespace Items {
 		*/
     minimumQualityIncrement: number;
   }
+}
+
+export declare namespace Sources {
+  /**
+	Properties of a DestinyInventoryItemDefinition that store all of the information
+	we were able to discern about how the item spawns, and where you can find the item.
+	
+	Items will have many of these sources, one per level at which it spawns, to try
+	and give more granular data about where items spawn for specific level ranges.
+	*/
+  export interface DestinyItemSourceDefinition {
+    /**
+		The level at which the item spawns.  Essentially the Primary Key
+		for this source data: there will be multiple of these source entries per item that
+		has source data, grouped by the level at which the item spawns.
+		*/
+    level: number;
+
+    /**
+		The minimum Quality at which the item spawns for this level.  Examine DestinyInventoryItemDefinition
+		for more information about what Quality means.  Just don't ask Phaedrus about it,
+		he'll never stop talking and you'll have to write a book about it.
+		*/
+    minQuality: number;
+
+    /**
+		The maximum quality at which the item spawns for this level.
+		*/
+    maxQuality: number;
+
+    /**
+		The minimum Character Level required for equipping the item when the item spawns at the item level
+		defined on this DestinyItemSourceDefinition, as far as we saw in our processing.
+		*/
+    minLevelRequired: number;
+
+    /**
+		The maximum Character Level required for equipping the item when the item spawns at the item level
+		defined on this DestinyItemSourceDefinition, as far as we saw in our processing.
+		*/
+    maxLevelRequired: number;
+
+    /**
+		The stats computed for this level/quality range.
+		*/
+    computedStats: {
+      [key: number]: Definitions.DestinyInventoryItemStatDefinition;
+    };
+
+    /**
+		The DestinyRewardSourceDefinitions found that can spawn the item at this level.
+		*/
+    sourceHashes: number[];
+  }
+}
+
+export declare namespace Animations {
+  export interface DestinyAnimationReference {
+    animName: string;
+
+    animIdentifier: string;
+
+    path: string;
+  }
+}
+
+export declare namespace Links {
+  export interface HyperlinkReference {
+    title: string;
+
+    url: string;
+  }
+}
+
+export declare namespace References {
+  /**
+	Represents all of the ways that a given item can be spawned.
+	Every path for spawning an item is unique: most of the data we save here is only for internal debugging
+	purposes, but it does provide a wealth of information about exactly what causes an item to spawn,
+	when, and with what properties.
+	*/
+  export interface RewardItemReferenceSet {}
 
   /**
-	Internal only: Spawn attributes for the item.  A reference to
-	a stat set, and to the level requirement associated with the way this item spawned.
+	Data that indicates the how and by what means an item can be sourced.
+	It points to the indexes of spawn data, which is stored in the RewardItemReferenceSet:
+	that contains the actual specific data for the item spawning, and is stored separately
+	for the sake of brevity in data (data balloons quickly without this optimization).
+	
+	It also is where we store source and visibility information: that is to say, whether this way
+	of spawning the item is actually something we think the user can run into while playing.
+	This is determined in post-processing, after all spawn information is calculated across
+	all reward data.
 	*/
-  export interface ItemSpawnAttribute {}
+  export interface RewardSourceData {}
+
+  export interface RewardItemSheetReference {}
+
+  export interface RewardItemMappedReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  export interface RewardItemActivityReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  export interface RewardItemIncidentReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  export interface RewardItemActionReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  export interface RewardTalentNodeActivationReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  export interface RewardItemVendorReference {
+    sourceData: References.RewardSourceData;
+  }
 
   /**
-	Internal only: a single way that an item spawned, in terms of a distinct combination of item level and quality
-	through which all of the other stats of the item can be computed.
-	
-	Computed during the import process as we dig through item sources, it is only output in internal builds:
-	its data instead eventually aggregated into the single "stats" property you see on DestinyInventoryItemDefinition
-	by taking the min and max of all of the ItemSpawnStatSets generated.
-	
-	We don't bother returning this because of the sheer amount of data generated.  Some items can be spawned in
-	hundreds of level/quality combinations, and while it's useful to see it for debugging, it is a waste of space
-	to send it down with the item contract.
+	When a reward has been included in an "Aggregate Source", the information about that aggregate is
+	included here.
+	For now, this is just a reference to that source's hash, but if we find additional interesting data
+	we can add that to this contract.
 	*/
-  export interface ItemSpawnStatSet {}
+  export interface RewardItemAggregateReference {
+    sourceHash: number;
+  }
+
+  export interface RewardQuestVendorItemReference {
+    objectiveHash: number;
+
+    interactionIndex: number;
+
+    rewardVendorReferenceIndex: number;
+  }
+
+  export interface RewardItemSiteReference {
+    sourceData: References.RewardSourceData;
+  }
+
+  /**
+	Represents a single way that an item spawns: in this case, as the result of a 
+	Reset Entry being run.
+	*/
+  export interface RewardItemResetEntryReference {
+    /**
+		The identifier of the reset entry that spawns the item: useful for debugging.
+		*/
+    resetEntryHash: number;
+
+    /**
+		A reset entry that actually has a chance of being run in the real game has to be run from
+		a reward site.  This is the site that runs it: we can do more analysis with this info.
+		*/
+    siteHash: number;
+
+    /**
+		The various levels and qualities under which the item spawns through this reset
+		entry. (nothing stops a reset entry from spawning the same item in multiple ways)
+		*/
+    sourceData: References.RewardSourceData;
+  }
+
+  /**
+	Represents a single way that an item spawns as the result of being generated in a reward sack.
+	Sacks are most frequently provided by Vendors, and unlock Destiny 1 sacks, they have a plethora
+	of spawning information that is actually used to generate the item.
+	*/
+  export interface RewardItemSackEntryReference {
+    /**
+		The identifier of the sack that spawns the item: useful for debugging.
+		*/
+    sackHash: number;
+
+    /**
+		The adjustor that was ultimately used is useful for seeing how this data got generated.
+		*/
+    adjustorHash: number;
+
+    /**
+		The various levels and qualities under which the item spawns through this sack.
+		*/
+    sourceData: References.RewardSourceData;
+  }
+}
+
+export declare namespace Triumphs {
+  /**
+	This class should be considered ephimeral: it is almost certain that this will go away after the summer.
+	
+	Don't write any permanent systems against it, k thanks
+	*/
+  export interface DestinyTriumphsResponse {
+    categories: Triumphs.DestinyTriumphsCategory[];
+
+    rewards: Triumphs.DestinyTriumphsReward[];
+
+    discountReward: Triumphs.DestinyTriumphsDiscountReward;
+
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    backgroundImage: string;
+
+    startDate: string;
+
+    endDate: string;
+
+    discountCodeExpiresDate: string;
+
+    generateCodeEndDate: string;
+
+    eventStartDate: string;
+
+    eventEndDate: string;
+
+    currentPoints: number;
+
+    unclaimedPoints: number;
+
+    maximumPoints: number;
+
+    faqContentId: string;
+
+    helpContentId: string;
+
+    faqLink: string;
+
+    helpLink: string;
+
+    nameplateImage: string;
+
+    upgradedNameplateImage: string;
+  }
+
+  export interface DestinyTriumphsCategory {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    records: Triumphs.DestinyTriumphsRecord[];
+  }
+
+  export interface DestinyTriumphsRecord {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    progressCaption: string;
+
+    difficulty: Globals.DestinyActivityDifficultyTier;
+
+    pointValue: number;
+
+    state: Globals.DestinyTriumphRecordState;
+
+    hasProgressBar: boolean;
+
+    currentProgress?: number;
+
+    completedAtProgress?: number;
+
+    furthestProgressCharacterId?: string;
+
+    /**
+		IF this is populated, it is the live data for a checklist associated with this record.
+		Use its contents to look up the corresponding DestinyChecklistDefinition and show some cool data.
+		*/
+    checklist: Checklists.DestinyChecklistStatus;
+
+    /**
+		If there are checklist details to view for this triumph, this will be populatd with the string to use
+		for showing the button to link to the checklist details.
+		*/
+    viewActionString: string;
+  }
+
+  export interface DestinyTriumphsReward {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    pointValueThreshold: number;
+
+    earned: boolean;
+  }
+
+  export interface DestinyTriumphsDiscountReward {
+    itemUrl: string;
+
+    imagePath: string;
+
+    pointValueThreshold: number;
+
+    playerDiscountCode: string;
+
+    claimedDate?: string;
+
+    state: Globals.DestinyTriumphsDiscountState;
+  }
+}
+
+export declare namespace Checklists {
+  export interface DestinyChecklistStatus {
+    /**
+		The unique identifier of the checklist being referred to.
+		*/
+    checklistHash: number;
+
+    entries: { [key: number]: boolean };
+  }
+
+  /**
+	By public demand, Checklists are loose sets of "things to do/things you have done" in Destiny that we were actually able to track.
+	They include easter eggs you find in the world, unique chests you unlock, and other such data where the first time you do it is
+	significant enough to be tracked, and you have the potential to "get them all".
+	
+	These may be account-wide, or may be per character.  The status of these will be returned in related "Checklist" data coming
+	down from API requests such as GetProfile or GetCharacter.
+	
+	Generally speaking, the items in a checklist can be completed in any order: we return an ordered list which
+	only implies the way we are showing them in our own UI, and you can feel free to alter it as you wish.
+	
+	Note that, in the future, there will be something resembling the old D1 Record Books in at least some vague form.  When that
+	is created, it may be that it will supercede much or all of this Checklist data.  It remains to be seen if that will be
+	the case, so for now assume that the Checklists will still exist even after the release of D2: Forsaken.
+	*/
+  export interface DestinyChecklistDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		A localized string prompting you to view the checklist.
+		*/
+    viewActionString: string;
+
+    /**
+		Indicates whether you will find this checklist on the Profile or Character components.
+		*/
+    scope: Globals.DestinyScope;
+
+    /**
+		The individual checklist items.  Gotta catch 'em all.
+		*/
+    entries: Checklists.DestinyChecklistEntryDefinition[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  /**
+	The properties of an individual checklist item.  Note that almost everything is optional: it is *highly* variable what kind
+	of data we'll actually be able to return: at times we may have no other relationships to entities at all.
+	
+	Whatever UI you build, do it with the knowledge that any given entry might not actually be able to be associated with
+	some other Destiny entity.
+	*/
+  export interface DestinyChecklistEntryDefinition {
+    /**
+		The identifier for this Checklist entry.  Guaranteed unique only within this Checklist Definition,
+		and not globally/for all checklists.
+		*/
+    hash: number;
+
+    /**
+		Even if no other associations exist, we will give you *something* for display properties.
+		In cases where we have no associated entities, it may be as simple as a numerical identifier.
+		*/
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    destinationHash?: number;
+
+    locationHash?: number;
+
+    /**
+		Note that a Bubble's hash doesn't uniquely identify a "top level" entity in Destiny.
+		Only the combination of location and bubble can uniquely identify a place in the world of Destiny:
+		so if bubbleHash is populated, locationHash must too be populated for it to have any meaning.
+		
+		You can use this property if it is populated to look up the DestinyLocationDefinition's associated 
+		.locationReleases[].activityBubbleName property.
+		*/
+    bubbleHash?: number;
+
+    activityHash?: number;
+
+    itemHash?: number;
+
+    vendorHash?: number;
+
+    vendorInteractionIndex?: number;
+
+    /**
+		The scope at which this specific entry can be computed.
+		*/
+    scope: Globals.DestinyScope;
+  }
+}
+
+export declare namespace Inventory {
+  export interface DestinyPlatformSilverComponent {
+    /**
+		If a Profile is played on multiple platforms, this is the silver they have
+		for each platform, keyed by Membership Type.
+		*/
+    platformSilver: {
+      [K in EnumStrings<
+        typeof Globals.BungieMembershipType
+      >]?: Items.DestinyItemComponent;
+    };
+  }
+
+  /**
+	A list of minimal information for items in an inventory: be it a character's inventory, or a Profile's inventory.
+	(Note that the Vault is a collection of inventory buckets in the Profile's inventory)
+	
+	Inventory Items returned here are in a flat list, but importantly they have a bucketHash property that
+	indicates the specific inventory bucket that is holding them.  These buckets constitute things like the separate
+	sections of the Vault, the user's inventory slots, etc.  See DestinyInventoryBucketDefinition for more info.
+	*/
+  export interface DestinyInventoryComponent {
+    /**
+		The items in this inventory.  If you care to bucket them, use the item's bucketHash property to group
+		them.
+		*/
+    items: Items.DestinyItemComponent[];
+  }
+
+  /**
+	This component provides a quick lookup of every item the requested character has and how much of that item they have.
+	
+	Requesting this component will allow you to circumvent manually putting together the list of which currencies you have
+	for the purpose of testing currency requirements on an item being purchased, or operations that have costs.
+	
+	You *could* figure this out yourself by doing a GetCharacter or GetProfile request and forming your own lookup table, but
+	that is inconvenient enough that this feels like a worthwhile (and optional) redundency.  Don't bother requesting it if you
+	have already created your own lookup from prior GetCharacter/GetProfile calls.
+	*/
+  export interface DestinyCurrenciesComponent {
+    /**
+		A dictionary - keyed by the item's hash identifier (DestinyInventoryItemDefinition), and whose value is the amount of
+		that item you have across all available inventory buckets for purchasing.
+		
+		This allows you to see whether the requesting character can afford any given purchase/action without having to re-create
+		this list itself.
+		*/
+    itemQuantities: { [key: number]: number };
+  }
 }
 
 export declare namespace Quests {
@@ -13222,21 +14004,6 @@ export declare namespace Characters {
 		This will have the activity hash of the last completed story/campaign mission, in case you care about that.
 		*/
     lastCompletedStoryHash: number;
-  }
-}
-
-export declare namespace Misc {
-  /**
-	Represents a color whose RGBA values are all represented as values between 0 and 255.
-	*/
-  export interface DestinyColor {
-    red: number;
-
-    green: number;
-
-    blue: number;
-
-    alpha: number;
   }
 }
 
@@ -14596,499 +15363,6 @@ export declare namespace Artifacts {
 		The identifier of the Plug Item unlocked by activating this item in the Artifact.
 		*/
     itemHash: number;
-  }
-}
-
-export declare namespace Presentation {
-  export interface DestinyPresentationNodesComponent {
-    nodes: { [key: number]: Presentation.DestinyPresentationNodeComponent };
-  }
-
-  export interface DestinyPresentationNodeComponent {
-    state: Globals.DestinyPresentationNodeState;
-
-    /**
-		An optional property: presentation nodes MAY have objectives, which can be used to infer
-		more human readable data about the progress.  However, progressValue and completionValue
-		ought to be considered the canonical values for progress on Progression Nodes.
-		*/
-    objective: Quests.DestinyObjectiveProgress;
-
-    /**
-		How much of the presentation node is considered to be completed so far by the given character/profile.
-		*/
-    progressValue: number;
-
-    /**
-		The value at which the presentation node is considered to be completed.
-		*/
-    completionValue: number;
-
-    /**
-		If available, this is the current score for the record category that this node represents.
-		*/
-    recordCategoryScore?: number;
-  }
-
-  /**
-	Presentation nodes can be restricted by various requirements.  This defines the rules
-	of those requirements, and the message(s) to be shown if these requirements aren't met.
-	*/
-  export interface DestinyPresentationNodeRequirementsBlock {
-    /**
-		If this node is not accessible due to Entitlements (for instance, you don't own
-		the required game expansion), this is the message to show.
-		*/
-    entitlementUnavailableMessage: string;
-  }
-
-  export interface DestinyPresentationChildBlock {
-    presentationNodeType: Globals.DestinyPresentationNodeType;
-
-    parentPresentationNodeHashes: number[];
-
-    displayStyle: Globals.DestinyPresentationDisplayStyle;
-  }
-
-  /**
-	A PresentationNode is an entity that represents a logical grouping of other entities visually/organizationally.
-	
-	For now, Presentation Nodes may contain the following... but it may be used for more in the future:
-	
-	- Collectibles
-	- Records (Or, as the public will call them, "Triumphs."  Don't ask me why we're overloading the term "Triumph", 
-	it still hurts me to think about it)
-	- Metrics (aka Stat Trackers)
-	- Other Presentation Nodes, allowing a tree of Presentation Nodes to be created
-	
-	Part of me wants to break these into conceptual definitions per entity being collected, but the possibility of 
-	these different types being mixed in the same UI and the possibility that it could actually be more useful to return
-	the "bare metal" presentation node concept has resulted in me deciding against that for the time being.
-	
-	We'll see if I come to regret this as well.
-	*/
-  export interface DestinyPresentationNodeDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		The original icon for this presentation node, before we futzed with it.
-		*/
-    originalIcon: string;
-
-    /**
-		Some presentation nodes are meant to be explicitly shown on the "root" or "entry" screens for the feature to 
-		which they are related.  You should use this icon when showing them on such a view, if you have a similar "entry point"
-		view in your UI.  If you don't have a UI, then I guess it doesn't matter either way does it?
-		*/
-    rootViewIcon: string;
-
-    nodeType: Globals.DestinyPresentationNodeType;
-
-    /**
-		Indicates whether this presentation node's state is determined on a per-character or on an account-wide basis.
-		*/
-    scope: Globals.DestinyScope;
-
-    /**
-		If this presentation node shows a related objective (for instance, if it tracks the progress of its
-		children), the objective being tracked is indicated here.
-		*/
-    objectiveHash?: number;
-
-    /**
-		If this presentation node has an associated "Record" that you can accomplish for completing its
-		children, this is the identifier of that Record.
-		*/
-    completionRecordHash?: number;
-
-    /**
-		The child entities contained by this presentation node.
-		*/
-    children: Presentation.DestinyPresentationNodeChildrenBlock;
-
-    /**
-		A hint for how to display this presentation node when it's shown in a list.
-		*/
-    displayStyle: Globals.DestinyPresentationDisplayStyle;
-
-    /**
-		A hint for how to display this presentation node when it's shown in its own detail screen.
-		*/
-    screenStyle: Globals.DestinyPresentationScreenStyle;
-
-    /**
-		The requirements for being able to interact with this presentation node and its children.
-		*/
-    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
-
-    /**
-		If this presentation node has children, but the game doesn't let you inspect the details
-		of those children, that is indicated here.
-		*/
-    disableChildSubscreenNavigation: boolean;
-
-    maxCategoryRecordScore: number;
-
-    presentationNodeType: Globals.DestinyPresentationNodeType;
-
-    traitIds: string[];
-
-    traitHashes: number[];
-
-    parentNodeHashes: number[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  /**
-	As/if presentation nodes begin to host more entities as children, these lists will be added to.
-	One list property exists per type of entity that can be treated as a child of this presentation
-	node, and each holds the identifier of the entity and any associated information needed to
-	display the UI for that entity (if anything)
-	*/
-  export interface DestinyPresentationNodeChildrenBlock {
-    presentationNodes: Presentation.DestinyPresentationNodeChildEntry[];
-
-    collectibles: Presentation.DestinyPresentationNodeCollectibleChildEntry[];
-
-    records: Presentation.DestinyPresentationNodeRecordChildEntry[];
-
-    metrics: Presentation.DestinyPresentationNodeMetricChildEntry[];
-
-    craftables: Presentation.DestinyPresentationNodeCraftableChildEntry[];
-  }
-
-  export interface DestinyPresentationNodeChildEntry {
-    presentationNodeHash: number;
-
-    nodeDisplayPriority: number;
-  }
-
-  export interface DestinyPresentationNodeCollectibleChildEntry {
-    collectibleHash: number;
-
-    nodeDisplayPriority: number;
-  }
-
-  export interface DestinyPresentationNodeRecordChildEntry {
-    recordHash: number;
-
-    nodeDisplayPriority: number;
-  }
-
-  export interface DestinyPresentationNodeMetricChildEntry {
-    metricHash: number;
-
-    nodeDisplayPriority: number;
-  }
-
-  export interface DestinyPresentationNodeCraftableChildEntry {
-    craftableItemHash: number;
-
-    nodeDisplayPriority: number;
-  }
-}
-
-export declare namespace Records {
-  export interface DestinyProfileRecordsComponent {
-    /**
-		Your 'active' Triumphs score, maintained for backwards compatibility.
-		*/
-    score: number;
-
-    /**
-		Your 'active' Triumphs score.
-		*/
-    activeScore: number;
-
-    /**
-		Your 'legacy' Triumphs score.
-		*/
-    legacyScore: number;
-
-    /**
-		Your 'lifetime' Triumphs score.
-		*/
-    lifetimeScore: number;
-
-    /**
-		If this profile is tracking a record, this is the hash identifier of the record it is tracking.
-		*/
-    trackedRecordHash?: number;
-
-    records: { [key: number]: Records.DestinyRecordComponent };
-
-    recordCategoriesRootNodeHash: number;
-
-    recordSealsRootNodeHash: number;
-  }
-
-  export interface DestinyRecordComponent {
-    state: Globals.DestinyRecordState;
-
-    objectives: Quests.DestinyObjectiveProgress[];
-
-    intervalObjectives: Quests.DestinyObjectiveProgress[];
-
-    intervalsRedeemedCount: number;
-
-    /**
-		If available, this is the number of times this record has been completed.
-		For example, the number of times a seal title has been gilded.
-		*/
-    completedCount?: number;
-
-    /**
-		If available, a list that describes which reward rewards should be shown (true) or hidden (false).
-		This property is for regular record rewards, and not for interval objective rewards.
-		*/
-    rewardVisibilty: boolean[];
-  }
-
-  export interface DestinyCharacterRecordsComponent {
-    featuredRecordHashes: number[];
-
-    records: { [key: number]: Records.DestinyRecordComponent };
-
-    recordCategoriesRootNodeHash: number;
-
-    recordSealsRootNodeHash: number;
-  }
-
-  export interface DestinyRecordDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		Indicates whether this Record's state is determined on a per-character or on an account-wide basis.
-		*/
-    scope: Globals.DestinyScope;
-
-    presentationInfo: Presentation.DestinyPresentationChildBlock;
-
-    loreHash?: number;
-
-    objectiveHashes: number[];
-
-    recordValueStyle: Globals.DestinyRecordValueStyle;
-
-    forTitleGilding: boolean;
-
-    titleInfo: Records.DestinyRecordTitleBlock;
-
-    completionInfo: Records.DestinyRecordCompletionBlock;
-
-    stateInfo: Records.SchemaRecordStateBlock;
-
-    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
-
-    expirationInfo: Records.DestinyRecordExpirationBlock;
-
-    /**
-		Some records have multiple 'interval' objectives, and the record may be claimed at each completed interval
-		*/
-    intervalInfo: Records.DestinyRecordIntervalBlock;
-
-    /**
-		If there is any publicly available information about rewards earned for achieving this record,
-		 this is the list of those items.
-		
-		 However, note that some records intentionally have "hidden" rewards.  These will not be returned
-		 in this list.
-		*/
-    rewardItems: World.DestinyItemQuantity[];
-
-    presentationNodeType: Globals.DestinyPresentationNodeType;
-
-    traitIds: string[];
-
-    traitHashes: number[];
-
-    parentNodeHashes: number[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyRecordTitleBlock {
-    hasTitle: boolean;
-
-    titlesByGender: {
-      [K in EnumStrings<typeof Globals.DestinyGender>]?: string;
-    };
-
-    /**
-		For those who prefer to use the definitions.
-		*/
-    titlesByGenderHash: { [key: number]: string };
-
-    gildingTrackingRecordHash?: number;
-  }
-
-  export interface DestinyRecordCompletionBlock {
-    /**
-		The number of objectives that must be completed before the objective is considered "complete"
-		*/
-    partialCompletionObjectiveCountThreshold: number;
-
-    ScoreValue: number;
-
-    shouldFireToast: boolean;
-
-    toastStyle: Globals.DestinyRecordToastStyle;
-  }
-
-  export interface SchemaRecordStateBlock {
-    featuredPriority: number;
-
-    obscuredString: string;
-  }
-
-  /**
-	If this record has an expiration after which it cannot be earned, this is some information about
-	that expiration.
-	*/
-  export interface DestinyRecordExpirationBlock {
-    hasExpiration: boolean;
-
-    description: string;
-
-    icon: string;
-  }
-
-  export interface DestinyRecordIntervalBlock {
-    intervalObjectives: Records.DestinyRecordIntervalObjective[];
-
-    intervalRewards: Records.DestinyRecordIntervalRewards[];
-
-    originalObjectiveArrayInsertionIndex: number;
-  }
-
-  export interface DestinyRecordIntervalObjective {
-    intervalObjectiveHash: number;
-
-    intervalScoreValue: number;
-  }
-
-  export interface DestinyRecordIntervalRewards {
-    intervalRewardItems: World.DestinyItemQuantity[];
-  }
-}
-
-export declare namespace Collectibles {
-  export interface DestinyProfileCollectiblesComponent {
-    /**
-		The list of collectibles determined by the game as having been "recently" acquired.
-		*/
-    recentCollectibleHashes: number[];
-
-    /**
-		The list of collectibles determined by the game as having been "recently" acquired.
-		
-		The game client itself actually controls this data, so I personally question whether anyone
-		will get much use out of this: because we can't edit this value through the API.  But in case
-		anyone finds it useful, here it is.
-		*/
-    newnessFlaggedCollectibleHashes: number[];
-
-    collectibles: { [key: number]: Collectibles.DestinyCollectibleComponent };
-
-    collectionCategoriesRootNodeHash: number;
-
-    collectionBadgesRootNodeHash: number;
-  }
-
-  export interface DestinyCollectibleComponent {
-    state: Globals.DestinyCollectibleState;
-  }
-
-  export interface DestinyCollectiblesComponent {
-    collectibles: { [key: number]: Collectibles.DestinyCollectibleComponent };
-
-    /**
-		The hash for the root presentation node definition of Collection categories.
-		*/
-    collectionCategoriesRootNodeHash: number;
-
-    /**
-		The hash for the root presentation node definition of Collection Badges.
-		*/
-    collectionBadgesRootNodeHash: number;
-  }
-
-  /**
-	Defines a
-	*/
-  export interface DestinyCollectibleDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		Indicates whether the state of this Collectible is determined on a per-character or on an account-wide basis.
-		*/
-    scope: Globals.DestinyScope;
-
-    /**
-		A human readable string for a hint about how to acquire the item.
-		*/
-    sourceString: string;
-
-    /**
-		This is a hash identifier we are building on the BNet side in an attempt to let people group collectibles
-		by similar sources.
-		
-		I can't promise that it's going to be 100% accurate, but if the designers were consistent in assigning
-		the same source strings to items with the same sources, it *ought to* be.  No promises though.
-		
-		This hash also doesn't relate to an actual definition, just to note: we've got nothing useful other than
-		the source string for this data.
-		*/
-    sourceHash?: number;
-
-    itemHash: number;
-
-    acquisitionInfo: Collectibles.DestinyCollectibleAcquisitionBlock;
-
-    stateInfo: Collectibles.DestinyCollectibleStateBlock;
-
-    presentationInfo: Presentation.DestinyPresentationChildBlock;
-
-    presentationNodeType: Globals.DestinyPresentationNodeType;
-
-    traitIds: string[];
-
-    traitHashes: number[];
-
-    parentNodeHashes: number[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyCollectibleAcquisitionBlock {
-    acquireMaterialRequirementHash?: number;
-
-    acquireTimestampUnlockValueHash?: number;
-  }
-
-  export interface DestinyCollectibleStateBlock {
-    obscuredOverrideItemHash?: number;
-
-    requirements: Presentation.DestinyPresentationNodeRequirementsBlock;
-  }
-
-  export interface DestinyCollectiblePurchaseBlock {
-    purchaseDisabledReason: string;
-
-    disablePurchasing: boolean;
   }
 }
 
@@ -18413,78 +18687,6 @@ export declare namespace Director {
   export interface DestinyTimerElementDefinition {}
 }
 
-export declare namespace Sources {
-  /**
-	Properties of a DestinyInventoryItemDefinition that store all of the information
-	we were able to discern about how the item spawns, and where you can find the item.
-	
-	Items will have many of these sources, one per level at which it spawns, to try
-	and give more granular data about where items spawn for specific level ranges.
-	*/
-  export interface DestinyItemSourceDefinition {
-    /**
-		The level at which the item spawns.  Essentially the Primary Key
-		for this source data: there will be multiple of these source entries per item that
-		has source data, grouped by the level at which the item spawns.
-		*/
-    level: number;
-
-    /**
-		The minimum Quality at which the item spawns for this level.  Examine DestinyInventoryItemDefinition
-		for more information about what Quality means.  Just don't ask Phaedrus about it,
-		he'll never stop talking and you'll have to write a book about it.
-		*/
-    minQuality: number;
-
-    /**
-		The maximum quality at which the item spawns for this level.
-		*/
-    maxQuality: number;
-
-    /**
-		The minimum Character Level required for equipping the item when the item spawns at the item level
-		defined on this DestinyItemSourceDefinition, as far as we saw in our processing.
-		*/
-    minLevelRequired: number;
-
-    /**
-		The maximum Character Level required for equipping the item when the item spawns at the item level
-		defined on this DestinyItemSourceDefinition, as far as we saw in our processing.
-		*/
-    maxLevelRequired: number;
-
-    /**
-		The stats computed for this level/quality range.
-		*/
-    computedStats: {
-      [key: number]: Definitions.DestinyInventoryItemStatDefinition;
-    };
-
-    /**
-		The DestinyRewardSourceDefinitions found that can spawn the item at this level.
-		*/
-    sourceHashes: number[];
-  }
-}
-
-export declare namespace Animations {
-  export interface DestinyAnimationReference {
-    animName: string;
-
-    animIdentifier: string;
-
-    path: string;
-  }
-}
-
-export declare namespace Links {
-  export interface HyperlinkReference {
-    title: string;
-
-    url: string;
-  }
-}
-
 export declare namespace Lore {
   /**
 	These are definitions for in-game "Lore," meant to be narrative enhancements of the game experience.
@@ -18648,122 +18850,6 @@ export declare namespace ActivityModifiers {
     index: number;
 
     redacted: boolean;
-  }
-}
-
-export declare namespace References {
-  /**
-	Represents all of the ways that a given item can be spawned.
-	Every path for spawning an item is unique: most of the data we save here is only for internal debugging
-	purposes, but it does provide a wealth of information about exactly what causes an item to spawn,
-	when, and with what properties.
-	*/
-  export interface RewardItemReferenceSet {}
-
-  /**
-	Data that indicates the how and by what means an item can be sourced.
-	It points to the indexes of spawn data, which is stored in the RewardItemReferenceSet:
-	that contains the actual specific data for the item spawning, and is stored separately
-	for the sake of brevity in data (data balloons quickly without this optimization).
-	
-	It also is where we store source and visibility information: that is to say, whether this way
-	of spawning the item is actually something we think the user can run into while playing.
-	This is determined in post-processing, after all spawn information is calculated across
-	all reward data.
-	*/
-  export interface RewardSourceData {}
-
-  export interface RewardItemSheetReference {}
-
-  export interface RewardItemMappedReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  export interface RewardItemActivityReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  export interface RewardItemIncidentReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  export interface RewardItemActionReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  export interface RewardTalentNodeActivationReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  export interface RewardItemVendorReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  /**
-	When a reward has been included in an "Aggregate Source", the information about that aggregate is
-	included here.
-	For now, this is just a reference to that source's hash, but if we find additional interesting data
-	we can add that to this contract.
-	*/
-  export interface RewardItemAggregateReference {
-    sourceHash: number;
-  }
-
-  export interface RewardQuestVendorItemReference {
-    objectiveHash: number;
-
-    interactionIndex: number;
-
-    rewardVendorReferenceIndex: number;
-  }
-
-  export interface RewardItemSiteReference {
-    sourceData: References.RewardSourceData;
-  }
-
-  /**
-	Represents a single way that an item spawns: in this case, as the result of a 
-	Reset Entry being run.
-	*/
-  export interface RewardItemResetEntryReference {
-    /**
-		The identifier of the reset entry that spawns the item: useful for debugging.
-		*/
-    resetEntryHash: number;
-
-    /**
-		A reset entry that actually has a chance of being run in the real game has to be run from
-		a reward site.  This is the site that runs it: we can do more analysis with this info.
-		*/
-    siteHash: number;
-
-    /**
-		The various levels and qualities under which the item spawns through this reset
-		entry. (nothing stops a reset entry from spawning the same item in multiple ways)
-		*/
-    sourceData: References.RewardSourceData;
-  }
-
-  /**
-	Represents a single way that an item spawns as the result of being generated in a reward sack.
-	Sacks are most frequently provided by Vendors, and unlock Destiny 1 sacks, they have a plethora
-	of spawning information that is actually used to generate the item.
-	*/
-  export interface RewardItemSackEntryReference {
-    /**
-		The identifier of the sack that spawns the item: useful for debugging.
-		*/
-    sackHash: number;
-
-    /**
-		The adjustor that was ultimately used is useful for seeing how this data got generated.
-		*/
-    adjustorHash: number;
-
-    /**
-		The various levels and qualities under which the item spawns through this sack.
-		*/
-    sourceData: References.RewardSourceData;
   }
 }
 
@@ -25411,6 +25497,71 @@ class TokensServiceInternal {
       optionalQueryAppend,
       "Tokens",
       "GetPartnerOfferSkuHistory",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns the bungie rewards for the targeted user.
+   * @param membershipId bungie.net user membershipId for requested user rewards. If not self, elevated permissions are required.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieRewardsForUser = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<{ [key: string]: Tokens.BungieRewardDisplay }> =>
+    ApiIntermediary.doGetRequest(
+      `/Tokens/Rewards/GetRewardsForUser/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "GetBungieRewardsForUser",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns a list of the current bungie rewards
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieRewardsList = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<{ [key: string]: Tokens.BungieRewardDisplay }> =>
+    ApiIntermediary.doGetRequest(
+      `/Tokens/Rewards/BungieRewards`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "GetBungieRewardsList",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Claim a digital bungie reward.
+   * @param targetRewardId The id of the reward user is claiming.
+   * @param mType The target Destiny 2 membership type.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ClaimDigitalBungieReward = (
+    targetRewardId: string,
+    mType: Globals.BungieMembershipType,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Tokens.BungieRewardClaimResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/Tokens/Rewards/ClaimDigitalBungieReward/${e(targetRewardId)}/${e(
+        mType
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "ClaimDigitalBungieReward",
       undefined,
       clientState
     );

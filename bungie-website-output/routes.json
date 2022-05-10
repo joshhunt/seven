@@ -476,6 +476,14 @@
     "path": "/7/en/Registration/RegistrationPage"
   },
   {
+    "areaName": "Rewards",
+    "areaObjectName": "Rewards",
+    "componentImportPath": "@Areas/Rewards/RewardsArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Rewards"
+  },
+  {
     "areaName": "Search",
     "areaObjectName": "Search",
     "componentImportPath": "@Areas/Search/SearchArea",

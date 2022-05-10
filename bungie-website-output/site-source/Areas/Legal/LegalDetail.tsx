@@ -47,7 +47,7 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
       }
     `,
     {
-      url: `/${params.url}`,
+      url: `/${params.url.toLowerCase()}`,
       locale,
     }
   );

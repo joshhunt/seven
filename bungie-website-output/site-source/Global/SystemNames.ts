@@ -101,4 +101,8 @@ export const SystemNames = {
   UseGlobalBungieDisplayNames: "UseGlobalBungieDisplayNames",
   WorldsFirstStream: "WorldsFirstStream",
   CoreHomeandNews: "CoreHomeandNews",
+  D2Rewards: "D2Rewards",
+  D2RewardsStoreMigration: "D2RewardsStoreMigration",
+  StoreMigrationHelpArticleByLocale: "StoreMigrationHelpArticleByLocale",
+  D2RewardsHelpArticleFirehoseId: "D2RewardsHelpArticleFirehoseId",
 } as const;

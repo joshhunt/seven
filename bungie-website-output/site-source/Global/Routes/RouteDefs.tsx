@@ -27,6 +27,7 @@ export class RouteDefs {
     Legal: "Legal",
     News: "News",
     Registration: "Registration",
+    Rewards: "Rewards",
     Search: "Search",
     Seasons: "Seasons",
     Static: "Static",
@@ -207,6 +208,14 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Benefits"),
         (area) => new ActionRoute(area, "Apps"),
       ],
+    }),
+    Rewards: new Area({
+      name: RouteDefs.AreaNames.Rewards,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import("@Areas/Rewards/RewardsArea" /* webpackChunkName: "Rewards" */)
+      ),
+      routes: [(area) => new ActionRoute(area, "index")],
     }),
     Search: new Area({
       name: RouteDefs.AreaNames.Search,
