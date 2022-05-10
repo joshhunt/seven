@@ -124,6 +124,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.GuideDestiny(), navLoc.Guides)}
               {this.renderLink(RouteHelper.Help(), navLoc.faq)}
 
+              {this.renderLink(RouteHelper.LegalSLA(), navLoc.Legal)}
               {this.renderLink(RouteHelper.LegalTermsOfUse(), navLoc.Terms)}
               {this.renderLink(
                 RouteHelper.LegalPrivacyPolicy(),
