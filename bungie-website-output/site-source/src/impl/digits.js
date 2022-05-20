@@ -44,7 +44,6 @@ const numberingSystemsUTF16 = {
   tibt: [3872, 3881],
 };
 
-// eslint-disable-next-line
 const hanidecChars = numberingSystems.hanidec.replace(/[\[|\]]/g, "").split("");
 
 export function parseDigits(str) {
