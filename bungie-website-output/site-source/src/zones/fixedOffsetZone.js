@@ -77,7 +77,7 @@ export default class FixedOffsetZone extends Zone {
   }
 
   /** @override **/
-  get isUniversal() {
+  get universal() {
     return true;
   }
 

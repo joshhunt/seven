@@ -4,7 +4,7 @@ import Locale from "./impl/locale.js";
 import IANAZone from "./zones/IANAZone.js";
 import { normalizeZone } from "./impl/zoneUtil.js";
 
-import { hasRelative } from "./impl/util.js";
+import { hasFormatToParts, hasIntl, hasRelative } from "./impl/util.js";
 
 /**
  * The Info class contains static methods for retrieving general time and date related data. For example, it has methods for finding out if a time zone has a DST, for listing the months in any supported locale, and for discovering which of Luxon features are available in the current environment.
@@ -18,7 +18,7 @@ export default class Info {
   static hasDST(zone = Settings.defaultZone) {
     const proto = DateTime.now().setZone(zone).set({ month: 12 });
 
-    return !zone.isUniversal && proto.offset !== proto.set({ month: 6 }).offset;
+    return !zone.universal && proto.offset !== proto.set({ month: 6 }).offset;
   }
 
   /**
@@ -55,7 +55,6 @@ export default class Info {
    * @param {Object} opts - options
    * @param {string} [opts.locale] - the locale code
    * @param {string} [opts.numberingSystem=null] - the numbering system
-   * @param {string} [opts.locObj=null] - an existing locale object to use
    * @param {string} [opts.outputCalendar='gregory'] - the calendar
    * @example Info.months()[0] //=> 'January'
    * @example Info.months('short')[0] //=> 'Jan'
@@ -63,47 +62,37 @@ export default class Info {
    * @example Info.months('short', { locale: 'fr-CA' } )[0] //=> 'janv.'
    * @example Info.months('numeric', { locale: 'ar' })[0] //=> '١'
    * @example Info.months('long', { outputCalendar: 'islamic' })[0] //=> 'Rabiʻ I'
-   * @return {Array}
+   * @return {[string]}
    */
   static months(
     length = "long",
-    {
-      locale = null,
-      numberingSystem = null,
-      locObj = null,
-      outputCalendar = "gregory",
-    } = {}
+    { locale = null, numberingSystem = null, outputCalendar = "gregory" } = {}
   ) {
-    return (
-      locObj || Locale.create(locale, numberingSystem, outputCalendar)
-    ).months(length);
+    return Locale.create(locale, numberingSystem, outputCalendar).months(
+      length
+    );
   }
 
   /**
    * Return an array of format month names.
    * Format months differ from standalone months in that they're meant to appear next to the day of the month. In some languages, that
    * changes the string.
-   * See {@link Info#months}
+   * See {@link months}
    * @param {string} [length='long'] - the length of the month representation, such as "numeric", "2-digit", "narrow", "short", "long"
    * @param {Object} opts - options
    * @param {string} [opts.locale] - the locale code
    * @param {string} [opts.numberingSystem=null] - the numbering system
-   * @param {string} [opts.locObj=null] - an existing locale object to use
    * @param {string} [opts.outputCalendar='gregory'] - the calendar
-   * @return {Array}
+   * @return {[string]}
    */
   static monthsFormat(
     length = "long",
-    {
-      locale = null,
-      numberingSystem = null,
-      locObj = null,
-      outputCalendar = "gregory",
-    } = {}
+    { locale = null, numberingSystem = null, outputCalendar = "gregory" } = {}
   ) {
-    return (
-      locObj || Locale.create(locale, numberingSystem, outputCalendar)
-    ).months(length, true);
+    return Locale.create(locale, numberingSystem, outputCalendar).months(
+      length,
+      true
+    );
   }
 
   /**
@@ -113,42 +102,35 @@ export default class Info {
    * @param {Object} opts - options
    * @param {string} [opts.locale] - the locale code
    * @param {string} [opts.numberingSystem=null] - the numbering system
-   * @param {string} [opts.locObj=null] - an existing locale object to use
    * @example Info.weekdays()[0] //=> 'Monday'
    * @example Info.weekdays('short')[0] //=> 'Mon'
    * @example Info.weekdays('short', { locale: 'fr-CA' })[0] //=> 'lun.'
    * @example Info.weekdays('short', { locale: 'ar' })[0] //=> 'الاثنين'
-   * @return {Array}
+   * @return {[string]}
    */
   static weekdays(
     length = "long",
-    { locale = null, numberingSystem = null, locObj = null } = {}
+    { locale = null, numberingSystem = null } = {}
   ) {
-    return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(
-      length
-    );
+    return Locale.create(locale, numberingSystem, null).weekdays(length);
   }
 
   /**
    * Return an array of format week names.
    * Format weekdays differ from standalone weekdays in that they're meant to appear next to more date information. In some languages, that
    * changes the string.
-   * See {@link Info#weekdays}
-   * @param {string} [length='long'] - the length of the month representation, such as "narrow", "short", "long".
+   * See {@link weekdays}
+   * @param {string} [length='long'] - the length of the weekday representation, such as "narrow", "short", "long".
    * @param {Object} opts - options
    * @param {string} [opts.locale=null] - the locale code
    * @param {string} [opts.numberingSystem=null] - the numbering system
-   * @param {string} [opts.locObj=null] - an existing locale object to use
-   * @return {Array}
+   * @return {[string]}
    */
   static weekdaysFormat(
     length = "long",
-    { locale = null, numberingSystem = null, locObj = null } = {}
+    { locale = null, numberingSystem = null } = {}
   ) {
-    return (locObj || Locale.create(locale, numberingSystem, null)).weekdays(
-      length,
-      true
-    );
+    return Locale.create(locale, numberingSystem, null).weekdays(length, true);
   }
 
   /**
@@ -157,7 +139,7 @@ export default class Info {
    * @param {string} [opts.locale] - the locale code
    * @example Info.meridiems() //=> [ 'AM', 'PM' ]
    * @example Info.meridiems({ locale: 'my' }) //=> [ 'နံနက်', 'ညနေ' ]
-   * @return {Array}
+   * @return {[string]}
    */
   static meridiems({ locale = null } = {}) {
     return Locale.create(locale).meridiems();
@@ -171,7 +153,7 @@ export default class Info {
    * @example Info.eras() //=> [ 'BC', 'AD' ]
    * @example Info.eras('long') //=> [ 'Before Christ', 'Anno Domini' ]
    * @example Info.eras('long', { locale: 'fr' }) //=> [ 'avant Jésus-Christ', 'après Jésus-Christ' ]
-   * @return {Array}
+   * @return {[string]}
    */
   static eras(length = "short", { locale = null } = {}) {
     return Locale.create(locale, null, "gregory").eras(length);
@@ -189,6 +171,26 @@ export default class Info {
    * @return {Object}
    */
   static features() {
-    return { relative: hasRelative() };
+    let intl = false,
+      intlTokens = false,
+      zones = false,
+      relative = false;
+
+    if (hasIntl()) {
+      intl = true;
+      intlTokens = hasFormatToParts();
+      relative = hasRelative();
+
+      try {
+        zones =
+          new Intl.DateTimeFormat("en", {
+            timeZone: "America/New_York",
+          }).resolvedOptions().timeZone === "America/New_York";
+      } catch (e) {
+        zones = false;
+      }
+    }
+
+    return { intl, intlTokens, zones, relative };
   }
 }

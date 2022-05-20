@@ -1,8 +1,14 @@
-import { padStart, roundTo, hasRelative } from "./util.js";
+import {
+  hasFormatToParts,
+  hasIntl,
+  padStart,
+  roundTo,
+  hasRelative,
+} from "./util.js";
 import * as English from "./english.js";
 import Settings from "../settings.js";
 import DateTime from "../datetime.js";
-import IANAZone from "../zones/IANAZone.js";
+import Formatter from "./formatter.js";
 
 let intlDTCache = {};
 function getCachedDTF(locString, opts = {}) {
@@ -42,6 +48,12 @@ let sysLocaleCache = null;
 function systemLocale() {
   if (sysLocaleCache) {
     return sysLocaleCache;
+  } else if (hasIntl()) {
+    const computedSys = new Intl.DateTimeFormat().resolvedOptions().locale;
+    // node sometimes defaults to "und". Override that because that is dumb
+    sysLocaleCache =
+      !computedSys || computedSys === "und" ? "en-US" : computedSys;
+    return sysLocaleCache;
   } else {
     sysLocaleCache = "en-US";
     return sysLocaleCache;
@@ -76,19 +88,23 @@ function parseLocaleString(localeStr) {
 }
 
 function intlConfigString(localeStr, numberingSystem, outputCalendar) {
-  if (outputCalendar || numberingSystem) {
-    localeStr += "-u";
+  if (hasIntl()) {
+    if (outputCalendar || numberingSystem) {
+      localeStr += "-u";
 
-    if (outputCalendar) {
-      localeStr += `-ca-${outputCalendar}`;
-    }
+      if (outputCalendar) {
+        localeStr += `-ca-${outputCalendar}`;
+      }
 
-    if (numberingSystem) {
-      localeStr += `-nu-${numberingSystem}`;
+      if (numberingSystem) {
+        localeStr += `-nu-${numberingSystem}`;
+      }
+      return localeStr;
+    } else {
+      return localeStr;
     }
-    return localeStr;
   } else {
-    return localeStr;
+    return [];
   }
 }
 
@@ -130,8 +146,9 @@ function supportsFastNumbers(loc) {
       loc.numberingSystem === "latn" ||
       !loc.locale ||
       loc.locale.startsWith("en") ||
-      new Intl.DateTimeFormat(loc.intl).resolvedOptions().numberingSystem ===
-        "latn"
+      (hasIntl() &&
+        new Intl.DateTimeFormat(loc.intl).resolvedOptions().numberingSystem ===
+          "latn")
     );
   }
 }
@@ -145,7 +162,7 @@ class PolyNumberFormatter {
     this.padTo = opts.padTo || 0;
     this.floor = opts.floor || false;
 
-    if (!forceSimple) {
+    if (!forceSimple && hasIntl()) {
       const intlOpts = { useGrouping: false };
       if (opts.padTo > 0) intlOpts.minimumIntegerDigits = opts.padTo;
       this.inf = getCachedINF(intl, intlOpts);
@@ -171,21 +188,17 @@ class PolyNumberFormatter {
 class PolyDateFormatter {
   constructor(dt, intl, opts) {
     this.opts = opts;
+    this.hasIntl = hasIntl();
 
     let z;
-    if (dt.zone.isUniversal) {
+    if (dt.zone.universal && this.hasIntl) {
       // UTC-8 or Etc/UTC-8 are not part of tzdata, only Etc/GMT+8 and the like.
       // That is why fixed-offset TZ is set to that unless it is:
-      // 1. Representing offset 0 when UTC is used to maintain previous behavior and does not become GMT.
-      // 2. Unsupported by the browser:
-      //    - some do not support Etc/
-      //    - < Etc/GMT-14, > Etc/GMT+12, and 30-minute or 45-minute offsets are not part of tzdata
+      // 1. Outside of the supported range Etc/GMT-14 to Etc/GMT+12.
+      // 2. Not a whole hour, e.g. UTC+4:30.
       const gmtOffset = -1 * (dt.offset / 60);
-      const offsetZ =
-        gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
-      const isOffsetZoneSupported = IANAZone.isValidZone(offsetZ);
-      if (dt.offset !== 0 && isOffsetZoneSupported) {
-        z = offsetZ;
+      if (gmtOffset >= -14 && gmtOffset <= 12 && gmtOffset % 1 === 0) {
+        z = gmtOffset >= 0 ? `Etc/GMT+${gmtOffset}` : `Etc/GMT${gmtOffset}`;
         this.dt = dt;
       } else {
         // Not all fixed-offset zones like Etc/+4:30 are present in tzdata.
@@ -205,30 +218,55 @@ class PolyDateFormatter {
               : DateTime.fromMillis(dt.ts + dt.offset * 60 * 1000);
         }
       }
-    } else if (dt.zone.type === "system") {
+    } else if (dt.zone.type === "local") {
       this.dt = dt;
     } else {
       this.dt = dt;
       z = dt.zone.name;
     }
 
-    const intlOpts = { ...this.opts };
-    if (z) {
-      intlOpts.timeZone = z;
+    if (this.hasIntl) {
+      const intlOpts = Object.assign({}, this.opts);
+      if (z) {
+        intlOpts.timeZone = z;
+      }
+      this.dtf = getCachedDTF(intl, intlOpts);
     }
-    this.dtf = getCachedDTF(intl, intlOpts);
   }
 
   format() {
-    return this.dtf.format(this.dt.toJSDate());
+    if (this.hasIntl) {
+      return this.dtf.format(this.dt.toJSDate());
+    } else {
+      const tokenFormat = English.formatString(this.opts),
+        loc = Locale.create("en-US");
+      return Formatter.create(loc).formatDateTimeFromString(
+        this.dt,
+        tokenFormat
+      );
+    }
   }
 
   formatToParts() {
-    return this.dtf.formatToParts(this.dt.toJSDate());
+    if (this.hasIntl && hasFormatToParts()) {
+      return this.dtf.formatToParts(this.dt.toJSDate());
+    } else {
+      // This is kind of a cop out. We actually could do this for English. However, we couldn't do it for intl strings
+      // and IMO it's too weird to have an uncanny valley like that
+      return [];
+    }
   }
 
   resolvedOptions() {
-    return this.dtf.resolvedOptions();
+    if (this.hasIntl) {
+      return this.dtf.resolvedOptions();
+    } else {
+      return {
+        locale: "en-US",
+        numberingSystem: "latn",
+        outputCalendar: "gregory",
+      };
+    }
   }
 }
 
@@ -237,7 +275,7 @@ class PolyDateFormatter {
  */
 class PolyRelFormatter {
   constructor(intl, isEnglish, opts) {
-    this.opts = { style: "long", ...opts };
+    this.opts = Object.assign({ style: "long" }, opts);
     if (!isEnglish && hasRelative()) {
       this.rtf = getCachedRTF(intl, opts);
     }
@@ -338,11 +376,20 @@ export default class Locale {
   }
 
   listingMode(defaultOK = true) {
-    const isActuallyEn = this.isEnglish();
-    const hasNoWeirdness =
-      (this.numberingSystem === null || this.numberingSystem === "latn") &&
-      (this.outputCalendar === null || this.outputCalendar === "gregory");
-    return isActuallyEn && hasNoWeirdness ? "en" : "intl";
+    const intl = hasIntl(),
+      hasFTP = intl && hasFormatToParts(),
+      isActuallyEn = this.isEnglish(),
+      hasNoWeirdness =
+        (this.numberingSystem === null || this.numberingSystem === "latn") &&
+        (this.outputCalendar === null || this.outputCalendar === "gregory");
+
+    if (!hasFTP && !(isActuallyEn && hasNoWeirdness) && !defaultOK) {
+      return "error";
+    } else if (!hasFTP || (isActuallyEn && hasNoWeirdness)) {
+      return "en";
+    } else {
+      return "intl";
+    }
   }
 
   clone(alts) {
@@ -359,11 +406,11 @@ export default class Locale {
   }
 
   redefaultToEN(alts = {}) {
-    return this.clone({ ...alts, defaultToEN: true });
+    return this.clone(Object.assign({}, alts, { defaultToEN: true }));
   }
 
   redefaultToSystem(alts = {}) {
-    return this.clone({ ...alts, defaultToEN: false });
+    return this.clone(Object.assign({}, alts, { defaultToEN: false }));
   }
 
   months(length, format = false, defaultOK = true) {
@@ -406,7 +453,7 @@ export default class Locale {
         // In theory there could be aribitrary day periods. We're gonna assume there are exactly two
         // for AM and PM. This is probably wrong, but it's makes parsing way easier.
         if (!this.meridiemCache) {
-          const intl = { hour: "numeric", hourCycle: "h12" };
+          const intl = { hour: "numeric", hour12: true };
           this.meridiemCache = [
             DateTime.utc(2016, 11, 13, 9),
             DateTime.utc(2016, 11, 13, 19),
@@ -464,9 +511,10 @@ export default class Locale {
     return (
       this.locale === "en" ||
       this.locale.toLowerCase() === "en-us" ||
-      new Intl.DateTimeFormat(this.intl)
-        .resolvedOptions()
-        .locale.startsWith("en-us")
+      (hasIntl() &&
+        new Intl.DateTimeFormat(this.intl)
+          .resolvedOptions()
+          .locale.startsWith("en-us"))
     );
   }
 
