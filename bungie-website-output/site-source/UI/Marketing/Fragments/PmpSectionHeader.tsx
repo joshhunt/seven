@@ -21,6 +21,7 @@ type PmpSectionHeaderProps = DataReference<
     secondaryHeading?: string;
     smallTitle?: string;
     blurb?: string;
+    textWrapper?: string;
   };
 };
 
@@ -65,14 +66,16 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
               dangerouslySetInnerHTML={sanitizeHTML(heading)}
             />
           </div>
-          <div className={styles.smallTitles}>
-            <p className={classNames(classes?.smallTitle)}>
-              {left_small_title}
-            </p>
-            <p className={classNames(classes?.smallTitle)}>
-              {right_small_title}
-            </p>
-          </div>
+          {(left_small_title ?? right_small_title) && (
+            <div className={styles.smallTitles}>
+              <p className={classNames(classes?.smallTitle)}>
+                {left_small_title}
+              </p>
+              <p className={classNames(classes?.smallTitle)}>
+                {right_small_title}
+              </p>
+            </div>
+          )}
         </div>
         <p
           className={classNames(styles.blurb, classes?.blurb)}

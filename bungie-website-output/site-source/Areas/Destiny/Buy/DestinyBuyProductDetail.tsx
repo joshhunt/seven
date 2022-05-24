@@ -386,6 +386,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         destinyProductFamily.expansionSelectorDisclaimer
                       }
                       collectorsEdition={collectorsEdition}
+                      productFamily={destinyProductFamily.productFamilyTag}
                     />
                   </div>
                 </ParallaxContainer>

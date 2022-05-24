@@ -12,8 +12,12 @@ import { PmpCallToAction } from "@UI/Marketing/FragmentComponents/PmpCallToActio
 import { PmpNavigationBar } from "@UI/Marketing/FragmentComponents/PmpNavigationBar";
 import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { PmpCaptionThumbnails } from "@UI/Marketing/Fragments/PmpCaptionThumbnails";
+import { PmpIconActionCards } from "@UI/Marketing/Fragments/PmpIconActionCards/PmpIconActionCards";
+import { PmpInfoThumbnailGroup } from "@UI/Marketing/Fragments/PmpInfoThumbnailGroup";
 import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
+import { PmpRewardsCarousel } from "@UI/Marketing/Fragments/PmpRewardsCarousel";
+import { PmpRewardsList } from "@UI/Marketing/Fragments/PmpRewardsList/PmpRewardsList";
 import { PmpSectionHeader } from "@UI/Marketing/Fragments/PmpSectionHeader";
 import { PmpStackedInfoThumbBlocks } from "@UI/Marketing/Fragments/PmpStackedInfoThumbBlocks";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -39,6 +43,10 @@ export const DefaultPmpComponents = {
   pmp_section_header: PmpSectionHeader,
   pmp_caption_thumbnails: PmpCaptionThumbnails,
   pmp_stacked_info_thumb_blocks: PmpStackedInfoThumbBlocks,
+  pmp_info_thumbnail_group: PmpInfoThumbnailGroup,
+  pmp_rewards_carousel: PmpRewardsCarousel,
+  pmp_rewards_list: PmpRewardsList,
+  pmp_icon_action_cards: PmpIconActionCards,
 } as const;
 
 export type PartialPmpReferenceMap = Partial<
@@ -46,10 +54,10 @@ export type PartialPmpReferenceMap = Partial<
 >;
 
 export const extendDefaultComponents = (
-  components: PartialPmpReferenceMap
+  components?: PartialPmpReferenceMap
 ) => ({
   ...DefaultPmpComponents,
-  ...components,
+  ...(components ?? {}),
 });
 
 interface Props {

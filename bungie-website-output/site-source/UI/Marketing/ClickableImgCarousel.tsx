@@ -30,6 +30,12 @@ export interface ClickableImgCarouselProps {
     slideDivider?: string;
     paginationIndicator?: string;
     selectedPaginationIndicator?: string;
+    root?: string;
+  };
+  styles?: {
+    titleDivider?: React.CSSProperties;
+    arrow?: React.CSSProperties;
+    paginationBar?: React.CSSProperties;
   };
 }
 
@@ -77,7 +83,7 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
   };
 
   return (
-    <>
+    <div className={classNames(styles.carouselWrapper, props.classes?.root)}>
       <div className={styles.carousel}>
         <div className={classNames(styles.textBox)}>
           <div
@@ -101,6 +107,7 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
                       styles.divider,
                       props.classes?.slideDivider
                     )}
+                    style={props.styles?.titleDivider}
                   />
                   {slide.title && (
                     <h3 className={props.classes?.slideTitle}>{slide.title}</h3>
@@ -166,6 +173,7 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
             iconName={"arrow_right"}
             iconType={"material"}
             onClick={() => changeSlide(position + 1)}
+            style={props.styles?.arrow}
           />
           <Icon
             className={classNames(styles.leftArrowIcon, props.classes?.arrow, {
@@ -174,6 +182,7 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
             iconName={"arrow_left"}
             iconType={"material"}
             onClick={() => changeSlide(position - 1)}
+            style={props.styles?.arrow}
           />
         </div>
       </div>
@@ -188,11 +197,12 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
                 { [props.classes?.selectedPaginationIndicator]: position === i }
               )}
               onClick={() => changeSlide(i)}
+              style={props.styles?.paginationBar}
             />
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 

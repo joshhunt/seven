@@ -114,6 +114,7 @@ export const PmpMedia: React.FC<PmpNewsAndMediaProps> = (props) => {
           if (Image) {
             return (
               <PMPMediaImageThumbnail
+                key={i}
                 thumbnail={thumbnail}
                 image={Image?.image?.url}
                 allItemsInTabGroup={selectedThumbnails}

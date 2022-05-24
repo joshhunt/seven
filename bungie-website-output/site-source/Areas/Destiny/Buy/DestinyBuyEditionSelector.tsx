@@ -24,6 +24,7 @@ interface IDestinyBuyEditionSelectorProps {
   subtitle: string;
   skus: IDestinyProductDefinition[];
   buttonLabel: string;
+  productFamily: string;
   disclaimer?: string;
   collectorsEdition?: IDestinyProductDefinition;
 }
@@ -42,7 +43,6 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
     props.skus[DestinyBuyDataStore.state.selectedSkuIndex || 0].skuTag
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
-  const productFamilyTag = props.title.replace(/\s/g, "");
   const wqCollectorsEditionSelected =
     props.collectorsEdition?.skuTag === selectedSkuTag;
   const wqCollectorsUrl =
@@ -133,7 +133,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
                         styles.singleProduct
                       )}
                     >
-                      {Localizer.Sales[productFamilyTag]}
+                      {Localizer.Sales[props.productFamily]}
                     </div>
                   )}
               </>

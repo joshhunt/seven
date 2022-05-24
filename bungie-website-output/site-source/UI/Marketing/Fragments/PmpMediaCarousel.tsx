@@ -52,6 +52,18 @@ export const PmpMediaCarousel: React.FC<Props> = (props) => {
   }, [data]);
 
   return (
-    <>{slides && <ClickableImgCarousel slides={slides} classes={classes} />}</>
+    <>
+      {slides && (
+        <ClickableImgCarousel
+          slides={slides}
+          classes={classes}
+          styles={{
+            arrow: { color: data?.arrow_color },
+            paginationBar: { backgroundColor: data?.pagination_bar_color },
+            titleDivider: { backgroundColor: data?.title_divider_color },
+          }}
+        />
+      )}
+    </>
   );
 };

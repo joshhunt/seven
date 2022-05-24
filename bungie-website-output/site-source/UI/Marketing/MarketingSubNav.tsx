@@ -19,7 +19,8 @@ export type NavPrimaryColors =
   | "darkgray"
   | "splicerBlue"
   | "queenPurple"
-  | "darkBlue";
+  | "darkBlue"
+  | "plum";
 export type NavAccentColors =
   | "gold"
   | "teal"
@@ -27,7 +28,7 @@ export type NavAccentColors =
   | "hotPink"
   | "purple";
 
-interface IMarketingSubNavProps {
+export interface IMarketingSubNavProps {
   /** The anchors from which we're creating the menu */
   ids: string[];
   /** A function that describes how to get the Nav Labels from a given id */
