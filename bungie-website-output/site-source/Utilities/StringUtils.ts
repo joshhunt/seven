@@ -11,6 +11,17 @@ export enum StringCompareOptions {
 
 export class StringUtils {
   /**
+   * Returns string with decoded Html entities
+   * @param inputString
+   */
+  public static decodeHtmlEntities(inputString: string) {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = inputString;
+
+    return textarea.value;
+  }
+
+  /**
    * Returns true if the haystack string begins with the needle string
    * @param haystack
    * @param needle

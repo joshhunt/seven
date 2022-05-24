@@ -244,21 +244,25 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   const loadDestinyProfileData = () => {
     if (destinyMembership.selectedMembership) {
-      Platform.Destiny2Service.GetProfile(
-        destinyMembership.selectedMembership.membershipType,
-        destinyMembership.selectedMembership.membershipId,
-        [
-          DestinyComponentType.Profiles,
-          DestinyComponentType.CharacterProgressions,
-          DestinyComponentType.Characters,
-          DestinyComponentType.PresentationNodes,
-          DestinyComponentType.Records,
-          DestinyComponentType.Collectibles,
-          DestinyComponentType.Metrics,
-        ]
-      ).then((destinyResponse: Responses.DestinyProfileResponse) => {
-        setDestinyProfileResponse(destinyResponse);
-      });
+      try {
+        Platform.Destiny2Service.GetProfile(
+          destinyMembership.selectedMembership.membershipType,
+          destinyMembership.selectedMembership.membershipId,
+          [
+            DestinyComponentType.Profiles,
+            DestinyComponentType.CharacterProgressions,
+            DestinyComponentType.Characters,
+            DestinyComponentType.PresentationNodes,
+            DestinyComponentType.Records,
+            DestinyComponentType.Collectibles,
+            DestinyComponentType.Metrics,
+          ]
+        ).then((destinyResponse: Responses.DestinyProfileResponse) => {
+          setDestinyProfileResponse(destinyResponse);
+        });
+      } catch {
+        //couldn't load destiny profile
+      }
     }
   };
 

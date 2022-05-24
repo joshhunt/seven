@@ -24,6 +24,7 @@ export default class PaginationBoxView extends Component {
     forcePage: PropTypes.number,
     disableInitialCallback: PropTypes.bool,
     containerClassName: PropTypes.string,
+    className: PropTypes.string,
     pageClassName: PropTypes.string,
     pageLinkClassName: PropTypes.string,
     pageLabelBuilder: PropTypes.func,
@@ -39,6 +40,7 @@ export default class PaginationBoxView extends Component {
     extraAriaContext: PropTypes.string,
     ariaLabelBuilder: PropTypes.func,
     eventListener: PropTypes.string,
+    renderOnZeroPageCount: PropTypes.func,
   };
 
   static defaultProps = {
@@ -59,10 +61,18 @@ export default class PaginationBoxView extends Component {
     disableInitialCallback: false,
     pageLabelBuilder: (page) => page,
     eventListener: "onClick",
+    renderOnZeroPageCount: undefined,
   };
 
   constructor(props) {
     super(props);
+
+    if (props.initialPage !== undefined && props.forcePage !== undefined) {
+      console.warn(
+        `(react-paginate): Both initialPage (${props.initialPage}) and forcePage (${props.forcePage}) props are provided, which is discouraged.` +
+          " Use exclusively forcePage prop for a controlled component.\nSee https://reactjs.org/docs/forms.html#controlled-components"
+      );
+    }
 
     let initialSelected;
     if (props.initialPage) {
@@ -83,6 +93,7 @@ export default class PaginationBoxView extends Component {
       initialPage,
       disableInitialCallback,
       extraAriaContext,
+      pageCount,
     } = this.props;
     // Call the callback with the initialPage item:
     if (typeof initialPage !== "undefined" && !disableInitialCallback) {
@@ -94,6 +105,12 @@ export default class PaginationBoxView extends Component {
         "DEPRECATED (react-paginate): The extraAriaContext prop is deprecated. You should now use the ariaLabelBuilder instead."
       );
     }
+
+    if (!Number.isInteger(pageCount)) {
+      console.warn(
+        `(react-paginate): The pageCount prop value provided is not an integer (${this.props.pageCount}). Did you forget a Math.ceil()?`
+      );
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -102,6 +119,15 @@ export default class PaginationBoxView extends Component {
       this.props.forcePage !== prevProps.forcePage
     ) {
       this.setState({ selected: this.props.forcePage });
+    }
+
+    if (
+      Number.isInteger(prevProps.pageCount) &&
+      !Number.isInteger(this.props.pageCount)
+    ) {
+      console.warn(
+        `(react-paginate): The pageCount prop value provided is not an integer (${this.props.pageCount}). Did you forget a Math.ceil()?`
+      );
     }
   }
 
@@ -338,9 +364,16 @@ export default class PaginationBoxView extends Component {
   };
 
   render() {
+    const { renderOnZeroPageCount } = this.props;
+    if (this.props.pageCount === 0 && renderOnZeroPageCount !== undefined) {
+      return renderOnZeroPageCount
+        ? renderOnZeroPageCount(this.props)
+        : renderOnZeroPageCount;
+    }
     const {
       disabledClassName,
       pageCount,
+      className,
       containerClassName,
       previousLabel,
       previousClassName,
@@ -366,7 +399,7 @@ export default class PaginationBoxView extends Component {
     const nextAriaDisabled = selected === pageCount - 1 ? "true" : "false";
 
     return (
-      <ul className={containerClassName}>
+      <ul className={className || containerClassName}>
         <li className={previousClasses}>
           <a
             className={previousLinkClassName}

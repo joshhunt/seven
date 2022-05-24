@@ -1,24 +1,24 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
+import { Localizer } from "@bungie/localization";
+import {
+  D2DatabaseComponentProps,
+  withDestinyDefinitions,
+} from "@Database/DestinyDefinitions/WithDestinyDefinitions";
+import { DestinyDefinitions } from "@Definitions";
+import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
+import { Components, World } from "@Platform";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
 import * as React from "react";
-import styles from "./RedeemSeasonRewards.module.scss";
+import SeasonProgressUtils from "../Progress/SeasonProgressUtils";
+import { IClaimedReward } from "../SeasonsUtilityPage";
 import {
   IRedeemSeasonRewardItemProps,
   RedeemSeasonRewardItem,
 } from "./RedeemSeasonRewardItem";
-import {
-  withDestinyDefinitions,
-  D2DatabaseComponentProps,
-} from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { World, Platform, Renderer, Components } from "@Platform";
-import { DestinyDefinitions } from "@Definitions";
-import { Localizer } from "@bungie/localization";
-import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
-import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
-import { IClaimedReward } from "../SeasonsUtilityPage";
-import SeasonProgressUtils from "../Progress/SeasonProgressUtils";
+import styles from "./RedeemSeasonRewards.module.scss";
 
 // Required props
 interface IRedeemSeasonRewardsProps
@@ -81,6 +81,14 @@ class RedeemSeasonRewards extends React.Component<
     prevProps: IRedeemSeasonRewardsProps,
     prevState: IRedeemSeasonRewardsState
   ) {
+    //characterProgressions loaded
+    if (
+      this.props.characterProgressions &&
+      prevProps.characterProgressions !== this.props.characterProgressions
+    ) {
+      this.getUnClaimedRewardItems();
+    }
+
     //update the rewards if user claims from outside this component
     if (prevProps.claimedReward !== this.props.claimedReward) {
       this.claimedReward(
@@ -112,6 +120,10 @@ class RedeemSeasonRewards extends React.Component<
       numUnclaimed: this.state.rewardItems.length,
       seasonName: seasonName,
     });
+
+    if (!this.props.characterProgressions) {
+      return null;
+    }
 
     return (
       <React.Fragment>
@@ -159,70 +171,73 @@ class RedeemSeasonRewards extends React.Component<
       characterProgressions,
     } = this.props;
 
-    const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
-    const seasonPassDef = definitions.DestinySeasonPassDefinition.get(
-      seasonDef.seasonPassHash
-    );
+    if (characterProgressions) {
+      const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
+      const seasonPassDef = definitions.DestinySeasonPassDefinition.get(
+        seasonDef.seasonPassHash
+      );
 
-    //get the players progression
-    const progression =
-      characterProgressions[seasonDef.seasonPassProgressionHash];
+      //get the players progression
+      const progression =
+        characterProgressions[seasonDef.seasonPassProgressionHash];
 
-    const rewardsDef = definitions.DestinyProgressionDefinition.get(
-      seasonPassDef.rewardProgressionHash
-    );
+      const rewardsDef = definitions.DestinyProgressionDefinition.get(
+        seasonPassDef.rewardProgressionHash
+      );
 
-    this.setState({
-      rewardItems: rewardsDef.rewardItems
-        .reduce(
-          (
-            validItems: IRedeemSeasonRewardItemProps[],
-            value: DestinyDefinitions.DestinyProgressionRewardItemQuantity,
-            index: number
-          ) => {
-            const rewardItemState = progression.rewardItemStates[index];
+      this.setState({
+        rewardItems: rewardsDef.rewardItems
+          .reduce(
+            (
+              validItems: IRedeemSeasonRewardItemProps[],
+              value: DestinyDefinitions.DestinyProgressionRewardItemQuantity,
+              index: number
+            ) => {
+              const rewardItemState = progression.rewardItemStates[index];
 
-            if (
-              rewardItemState & DestinyProgressionRewardItemState.Earned &&
-              rewardItemState &
-                DestinyProgressionRewardItemState.ClaimAllowed &&
-              (rewardItemState & DestinyProgressionRewardItemState.Claimed) ===
-                0 &&
-              (rewardItemState &
-                DestinyProgressionRewardItemState.Invisible) ===
-                0
-            ) {
-              const rewardItemDef = definitions.DestinyInventoryItemLiteDefinition.get(
-                value.itemHash
-              );
+              if (
+                rewardItemState & DestinyProgressionRewardItemState.Earned &&
+                rewardItemState &
+                  DestinyProgressionRewardItemState.ClaimAllowed &&
+                (rewardItemState &
+                  DestinyProgressionRewardItemState.Claimed) ===
+                  0 &&
+                (rewardItemState &
+                  DestinyProgressionRewardItemState.Invisible) ===
+                  0
+              ) {
+                const rewardItemDef = definitions.DestinyInventoryItemLiteDefinition.get(
+                  value.itemHash
+                );
 
-              if (rewardItemDef.displayProperties) {
-                const rewardItem: IRedeemSeasonRewardItemProps = {
-                  itemHash: value.itemHash,
-                  rankReward: value.rewardedAtProgressionLevel,
-                  imagePath: rewardItemDef.displayProperties.icon,
-                  title: rewardItemDef.displayProperties.name,
-                  desc: rewardItemDef.displayProperties.description,
-                  characterId: characterId,
-                  membershipType: this.props.membershipType,
-                  rewardIndex: index,
-                  seasonHash: seasonHash,
-                  itemClaimed: () =>
-                    this.props.itemClaimed(value.itemHash, index),
-                  handleClick: () =>
-                    this.props.handleClick(value.itemHash, index, true),
-                };
+                if (rewardItemDef.displayProperties) {
+                  const rewardItem: IRedeemSeasonRewardItemProps = {
+                    itemHash: value.itemHash,
+                    rankReward: value.rewardedAtProgressionLevel,
+                    imagePath: rewardItemDef.displayProperties.icon,
+                    title: rewardItemDef.displayProperties.name,
+                    desc: rewardItemDef.displayProperties.description,
+                    characterId: characterId,
+                    membershipType: this.props.membershipType,
+                    rewardIndex: index,
+                    seasonHash: seasonHash,
+                    itemClaimed: () =>
+                      this.props.itemClaimed(value.itemHash, index),
+                    handleClick: () =>
+                      this.props.handleClick(value.itemHash, index, true),
+                  };
 
-                validItems.push(rewardItem);
+                  validItems.push(rewardItem);
+                }
               }
-            }
 
-            return validItems;
-          },
-          []
-        )
-        .sort((a, b) => (a.rankReward < b.rankReward ? -1 : 1)),
-    });
+              return validItems;
+            },
+            []
+          )
+          .sort((a, b) => (a.rankReward < b.rankReward ? -1 : 1)),
+      });
+    }
   }
 
   private claimedReward(rewardIndex: number, itemHash: number) {

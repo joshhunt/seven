@@ -17,18 +17,18 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
 }) => {
   const { image, subtitle, date, title, url } = articleData;
 
-  const luxonDate = DateTime.fromISO(date.toString());
-  const timeSince = luxonDate.diffNow();
+  const luxonDate = DateTime?.fromISO(date.toString());
+  const timeSince = luxonDate?.diffNow();
   const timeString =
     Math.abs(timeSince.as("hours")) > 24
       ? Localizer.time.CompactMonthDayYear
       : Localizer.time.TimeHoursSince;
 
   const time = Localizer.Format(timeString, {
-    monthabbr: Localizer.time["MonthAbbr" + luxonDate.month],
-    month: luxonDate.month,
-    day: luxonDate.day,
-    year: luxonDate.year,
+    monthabbr: Localizer.time["MonthAbbr" + luxonDate?.month],
+    month: luxonDate?.month,
+    day: luxonDate?.day,
+    year: luxonDate?.year,
     hours: Math.ceil(timeSince.as("hours")),
   });
 

@@ -3,6 +3,14 @@
     "areaName": "Admin",
     "areaObjectName": "Admin",
     "componentImportPath": "@Areas/Admin/AdminArea",
+    "action": "MigrateNews",
+    "params": {},
+    "path": "/7/en/Admin/MigrateNews"
+  },
+  {
+    "areaName": "Admin",
+    "areaObjectName": "Admin",
+    "componentImportPath": "@Areas/Admin/AdminArea",
     "action": "Report",
     "params": {
       "path": ":reportId?"
@@ -479,9 +487,19 @@
     "areaName": "Rewards",
     "areaObjectName": "Rewards",
     "componentImportPath": "@Areas/Rewards/RewardsArea",
-    "action": "index",
+    "action": "Reward",
+    "params": {
+      "path": ":mtype?/:rewardId?"
+    },
+    "path": "/7/en/Rewards/Reward/:mtype?/:rewardId?"
+  },
+  {
+    "areaName": "Rewards",
+    "areaObjectName": "Rewards",
+    "componentImportPath": "@Areas/Rewards/RewardsArea",
+    "action": "Rewards",
     "params": {},
-    "path": "/7/en/Rewards"
+    "path": "/7/en/Rewards/Rewards"
   },
   {
     "areaName": "Search",

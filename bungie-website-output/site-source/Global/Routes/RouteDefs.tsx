@@ -45,6 +45,7 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Reports"),
         (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
+        (area) => new ActionRoute(area, "MigrateNews"),
       ],
     }),
     CrossSave: new Area({
@@ -215,7 +216,11 @@ export class RouteDefs {
         () =>
           import("@Areas/Rewards/RewardsArea" /* webpackChunkName: "Rewards" */)
       ),
-      routes: [(area) => new ActionRoute(area, "index")],
+      routes: [
+        (area) => new ActionRoute(area, "Rewards"),
+        (area) =>
+          new ActionRoute(area, "Reward", { path: ":mtype?/:rewardId?" }),
+      ],
     }),
     Search: new Area({
       name: RouteDefs.AreaNames.Search,

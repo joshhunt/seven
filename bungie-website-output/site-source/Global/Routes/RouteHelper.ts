@@ -16,6 +16,7 @@ import {
   IReportParams,
   NewsParams,
   ISearchParams,
+  IRewardClaimParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -139,6 +140,12 @@ export class RouteHelper {
   );
   public static Rewards = BasicReactPath(
     RouteDefs.Areas.Direct.getAction("Rewards")
+  );
+  public static DigitalRewards = BasicReactPath(
+    RouteDefs.Areas.Rewards.getAction("Rewards")
+  );
+  public static ClaimDigitalReward = BasicReactPath<IRewardClaimParams>(
+    RouteDefs.Areas.Rewards.getAction("Reward")
   );
   public static Join = LegacyPathWithQuery(`/User/JoinUp`);
   public static SignIn = (title?: string, bru?: string) => {
@@ -406,6 +413,9 @@ export class RouteHelper {
   public static SeasonOfTheRisen = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheRisen")
   );
+  public static SeasonOfTheHaunted = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheHaunted")
+  );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")
@@ -418,6 +428,11 @@ export class RouteHelper {
   public static CodeRedemption = BasicReactPath(
     RouteDefs.Areas.Codes.getAction("Redeem")
   );
+  public static CodeRedemptionWithCode = (code: string) => {
+    const baseurl = BasicReactPath(RouteDefs.Areas.Codes.getAction("Redeem"))();
+
+    return `${baseurl.url}?token=${code}`;
+  };
   //temporarily using CodeRedemptionReact so that rollback is easier....famous last words I know
   public static CodeRedemptionReact = BasicReactPath(
     RouteDefs.Areas.Codes.getAction("Redeem")

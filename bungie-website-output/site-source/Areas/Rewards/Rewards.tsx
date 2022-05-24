@@ -1,6 +1,7 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
+import { RewardsDataStore } from "@Areas/Rewards/DataStores/RewardsDataStore";
 import { RewardsDestinyMembershipDataStore } from "@Areas/Rewards/DataStores/RewardsDestinyMembershipDataStore";
 import { RewardsListSection } from "@Areas/Rewards/Shared/RewardsListSection";
 import { RewardsWarning } from "@Areas/Rewards/Shared/RewardsWarning";
@@ -14,6 +15,7 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ParallaxContainer } from "@UIKit/Layout/ParallaxContainer";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
@@ -31,92 +33,22 @@ interface RewardsProps {}
 
 export const Rewards: React.FC<RewardsProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const rewardsData = useDataStore(RewardsDataStore);
 
   const rewardLoc = Localizer.Bungierewards;
 
-  const [claimedRewards, setClaimedRewards] = useState<IReward[]>([]);
-  const [unclaimedLoyaltyRewards, setUnclaimedLoyaltyRewards] = useState<
-    IReward[]
-  >([]);
-  const [unclaimedBungieRewards, setUnclaimedBungieRewards] = useState<
-    IReward[]
-  >([]);
-  const [lockedBungieRewards, setLockedBungieRewards] = useState<IReward[]>([]);
-
-  const parseRewards = (rewards: {
-    [p: string]: Tokens.BungieRewardDisplay;
-  }) => {
-    const _claimedRewards: IReward[] = [];
-    const _lockedBungieRewards: IReward[] = [];
-    const _unclaimedBungieRewards: IReward[] = [];
-    const _unclaimedLoyaltyRewards: IReward[] = [];
-
-    Object.keys(rewards).forEach((rewardId) => {
-      if (
-        rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .IsLoyaltyReward &&
-        !rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .OfferApplied
-      ) {
-        _unclaimedLoyaltyRewards.push({
-          rewardId: rewardId,
-          bungieRewardDisplay: rewards[rewardId],
-        });
-      } else if (
-        !rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .IsLoyaltyReward &&
-        !rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .OfferApplied &&
-        rewards[rewardId].UserRewardAvailabilityModel.IsUnlockedForUser
-      ) {
-        _unclaimedBungieRewards.push({
-          rewardId: rewardId,
-          bungieRewardDisplay: rewards[rewardId],
-        });
-      } else if (
-        !rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .IsLoyaltyReward &&
-        rewards[rewardId].UserRewardAvailabilityModel.IsAvailableForUser
-      ) {
-        _lockedBungieRewards.push({
-          rewardId: rewardId,
-          bungieRewardDisplay: rewards[rewardId],
-        });
-      } else if (
-        rewards[rewardId].UserRewardAvailabilityModel.IsUnlockedForUser &&
-        rewards[rewardId].UserRewardAvailabilityModel.AvailabilityModel
-          .OfferApplied
-      ) {
-        _claimedRewards.push({
-          rewardId: rewardId,
-          bungieRewardDisplay: rewards[rewardId],
-        });
-      }
-    });
-
-    setClaimedRewards(_claimedRewards);
-    setLockedBungieRewards(_lockedBungieRewards);
-    setUnclaimedBungieRewards(_unclaimedBungieRewards);
-    setUnclaimedLoyaltyRewards(_unclaimedLoyaltyRewards);
-  };
-
   const resetRewards = () => {
     RewardsDestinyMembershipDataStore.actions.loadUserData();
-    setClaimedRewards([]);
-    setUnclaimedLoyaltyRewards([]);
-    setLockedBungieRewards([]);
-    setUnclaimedBungieRewards([]);
+    RewardsDataStore.actions.reset();
   };
 
   useEffect(() => {
     resetRewards();
 
     if (UserUtils.isAuthenticated(globalState)) {
-      Platform.TokensService.GetBungieRewardsForUser(
+      RewardsDataStore.actions.getRewardsList(
         globalState.loggedInUser.user.membershipId
-      ).then((result) => {
-        parseRewards(result);
-      });
+      );
 
       RewardsDestinyMembershipDataStore.actions.loadUserData(
         {
@@ -126,11 +58,13 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
         true
       );
     } else {
-      Platform.TokensService.GetBungieRewardsList().then((result) => {
-        parseRewards(result);
-      });
+      RewardsDataStore.actions.getRewardsList();
     }
   }, [globalState.loggedInUser]);
+
+  if (!ConfigUtils.SystemStatus(SystemNames.D2RewardsReact)) {
+    return null;
+  }
 
   return (
     <SystemDisabledHandler systems={[SystemNames.D2Rewards]}>
@@ -165,22 +99,37 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
           <RewardsWarning />
           <div className={styles.containerRewards}>
             <RewardsListSection
-              rewardsList={unclaimedLoyaltyRewards}
+              rewardsList={rewardsData.unclaimedLoyaltyRewards}
               title={rewardLoc.NewPlayerRewardsHeader}
               keyString={"rewardItemUCL"}
             />
             <RewardsListSection
-              rewardsList={unclaimedBungieRewards}
+              rewardsList={rewardsData.unclaimedBungieRewards}
               title={rewardLoc.DigitalRewardsUnlockedHeader}
               keyString={"rewardItemUCB"}
             />
             <RewardsListSection
-              rewardsList={lockedBungieRewards}
+              rewardsList={rewardsData.lockedBungieRewards}
               title={rewardLoc.AvailableRewardsHeader}
               keyString={"rewardItemLR"}
             />
             <RewardsListSection
-              rewardsList={claimedRewards}
+              rewardsList={rewardsData.claimedRewards.sort((a, b) => {
+                const aIsLoyalty =
+                  a.bungieRewardDisplay.UserRewardAvailabilityModel
+                    .AvailabilityModel.IsLoyaltyReward;
+                const bIsLoyalty =
+                  b.bungieRewardDisplay.UserRewardAvailabilityModel
+                    .AvailabilityModel.IsLoyaltyReward;
+
+                if (aIsLoyalty && !bIsLoyalty) {
+                  return -1;
+                } else if (!aIsLoyalty && bIsLoyalty) {
+                  return 1;
+                }
+
+                return 0;
+              })}
               title={rewardLoc.ClaimedRewards}
               keyString={"rewardItemCR"}
             />

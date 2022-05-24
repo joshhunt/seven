@@ -52,9 +52,7 @@ export class AnimatedRouter extends React.Component<
         render={({ location }) => (
           <PoseGroup preEnterPose={"exit"}>
             <RoutesContainer key={location.pathname}>
-              <SwitchWithErrors location={location}>
-                {this.props.children}
-              </SwitchWithErrors>
+              <SwitchWithErrors>{this.props.children}</SwitchWithErrors>
             </RoutesContainer>
           </PoseGroup>
         )}

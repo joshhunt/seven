@@ -2,7 +2,9 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import * as H from "history";
 import * as pathToRegexp from "ptr620";
+import React from "react";
 import { LocalizerUtils } from "./LocalizerUtils";
+import { useLocation } from "react-router-dom";
 import { StringCompareOptions, StringUtils } from "./StringUtils";
 
 export class UrlUtils {
@@ -191,9 +193,7 @@ export class UrlUtils {
   public static getUrlAsString(originalUrl: string | IMultiSiteLink) {
     const isMultiLink = typeof originalUrl === "object";
 
-    const finalUrl = isMultiLink
-      ? (originalUrl as IMultiSiteLink).url
-      : (originalUrl as string);
+    const finalUrl = isMultiLink ? originalUrl.url : originalUrl;
 
     return finalUrl;
   }
@@ -214,7 +214,7 @@ export class UrlUtils {
           legacy: this.isLegacy(originalUrl?.toString() ?? "", legacy),
           url: originalUrl,
         } as IMultiSiteLink)
-      : (originalUrl as IMultiSiteLink);
+      : originalUrl;
 
     return finalMultiLink;
   }
@@ -298,6 +298,14 @@ export class UrlUtils {
     const resolvedUrl = UrlUtils.resolveUrl(anchor, link.legacy, true);
 
     return resolvedUrl;
+  }
+
+  // A custom hook that builds on useLocation to parse
+  // the query string for you.
+  public static useQuery() {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
   }
 
   /**

@@ -83,12 +83,15 @@ export class TwitterFeed extends React.Component {
       <div>
         <TwitterScript />
         <a
-          className={classNames("twitter-timeline", styles["twitter-timeline"])}
+          className={classNames(
+            "twitter-timeline",
+            "twitter-timeline-rendered",
+            styles["twitter-timeline"]
+          )}
           href={`https://twitter.com/Bungie?ref_src=twsrc%5Etfw`}
           data-chrome="nofooter noheaders noborders"
           data-tweet-limit={2}
-          data-width={"350"}
-          data-height={"auto"}
+          data-width={"350px"}
           data-theme={"dark"}
         />
         <Anchor

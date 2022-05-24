@@ -3,19 +3,19 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
-import { PlatformError } from "@CustomErrors";
-import { DestinyComponentType } from "@Enum";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
+import { PlatformError } from "@CustomErrors";
+import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,
@@ -130,11 +130,20 @@ class SeasonsUtilityPage extends React.Component<
 
       Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
         DestinyComponentType.CharacterProgressions,
-      ]).then((data) => {
-        this.setState({
-          characterProgressions: data.characterProgressions,
+      ])
+        .then((data) => {
+          this.setState({
+            characterProgressions: data?.characterProgressions,
+          });
+        })
+        .catch(ConvertToPlatformError)
+        .catch((e: PlatformError) => {
+          if (e.errorCode === PlatformErrorCodes.DestinyAccountNotFound) {
+            Modal.open(Localizer.Seasons.PlayDestiny2ToUnlock);
+          } else {
+            Modal.error(e);
+          }
         });
-      });
     }
 
     // if user logs in then need to load everything

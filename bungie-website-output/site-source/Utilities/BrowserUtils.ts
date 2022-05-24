@@ -36,7 +36,7 @@ export class BrowserUtils {
     onClosed: () => void = () => null,
     features = "height=760, width=790, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no"
   ) {
-    const child = window.open(href, windowName, features, false);
+    const child = window.open(href, windowName, features);
 
     const interval = setInterval(() => {
       try {
@@ -157,14 +157,15 @@ export class BrowserUtils {
   /**
    * Scrolls to the desired position
    * @param y The pixel position to scroll to
-   * @param el
+   * @param target
    */
   public static scrollTo(y: number, target: HTMLElement | Window = window) {
-    const supportsScrollTo = "scrollTo" in target;
-    if (supportsScrollTo) {
-      target.scrollTo(0, y);
-    } else if ("scrollTop" in target) {
+    const supportsScrollTop = "scrollTop" in target;
+
+    if (supportsScrollTop) {
       target.scrollTop = y;
+    } else {
+      target.scrollTo(0, y);
     }
   }
 

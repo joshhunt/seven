@@ -7,5 +7,5 @@
 		exports["ReactPaginate"] = factory(require("react"));
 	else
 		root["ReactPaginate"] = factory(root["React"]);
-})(global, function(__WEBPACK_EXTERNAL_MODULE__1__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE__1__) {
 return 

@@ -217,8 +217,6 @@ const WitchQueen: React.FC = () => {
     sticky_nav_skus,
   } = data?.nova_product_page ?? {};
 
-  const useStickyNav = UrlUtils.QueryToObject()?.t_nov9_nav === "true";
-
   return (
     <SpinnerContainer loading={!data || !hasHeroLoaded}>
       <WitchQueenHelmet
@@ -231,27 +229,23 @@ const WitchQueen: React.FC = () => {
         </div>
 
         <div className={styles.wqLowerContent}>
-          {useStickyNav && (
-            <WQStickyBuyNav
-              heroRef={heroRef}
-              logo={
-                responsive.mobile
-                  ? imageFromConnection(
-                      sticky_buy_nav?.wq_logo_mobileConnection
-                    )?.url
-                  : imageFromConnection(
-                      sticky_buy_nav?.wq_logo_desktopConnection
-                    )?.url
-              }
-              skus={sticky_nav_skus?.map((s) => {
-                return { label: s.wq_sku.label, sku: s.wq_sku.sku_tag };
-              })}
-              buyBtnText={sticky_buy_nav?.buy_btn_text}
-              dropdownTitle={sticky_buy_nav?.dropdown_title}
-              dateText={hero.hero_date_text}
-              mobileSkuLabel={sticky_buy_nav?.mobile_dropdown_label}
-            />
-          )}
+          <WQStickyBuyNav
+            heroRef={heroRef}
+            logo={
+              responsive.mobile
+                ? imageFromConnection(sticky_buy_nav?.wq_logo_mobileConnection)
+                    ?.url
+                : imageFromConnection(sticky_buy_nav?.wq_logo_desktopConnection)
+                    ?.url
+            }
+            skus={sticky_nav_skus?.map((s) => {
+              return { label: s.wq_sku.label, sku: s.wq_sku.sku_tag };
+            })}
+            buyBtnText={sticky_buy_nav?.buy_btn_text}
+            dropdownTitle={sticky_buy_nav?.dropdown_title}
+            dateText={hero.hero_date_text}
+            mobileSkuLabel={sticky_buy_nav?.mobile_dropdown_label}
+          />
 
           {/* map over modular blocks from contentStack for each section of the page */}
           {section_blocks?.map((sectionObj, i) => {

@@ -7,6 +7,7 @@ import { RewardsCollectibleDisplay } from "@Areas/Rewards/Shared/RewardsCollecti
 import { RewardsTriumphsDisplay } from "@Areas/Rewards/Shared/RewardsTriumphsDisplay";
 import { Localizer } from "@bungie/localization/Localizer";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
+import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import React from "react";
@@ -82,15 +83,19 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
               <RewardsTriumphsDisplay reward={bungieRewardDisplay} />
               <RewardsCollectibleDisplay reward={bungieRewardDisplay} />
               <h4 className={styles.sectionHeader}>
-                {props.reward.bungieRewardDisplay.RewardDisplayProperties.Name}
+                {StringUtils.decodeHtmlEntities(
+                  props.reward.bungieRewardDisplay.RewardDisplayProperties.Name
+                )}
               </h4>
               <p className={styles.rewardDescription}>
                 {userAvailability.AvailabilityModel.OfferApplied &&
                 userAvailability.AvailabilityModel.IsLoyaltyReward &&
                 userAvailability.AvailabilityModel.HasOffer
                   ? rewardLoc.rewardAppliedText
-                  : props.reward.bungieRewardDisplay.RewardDisplayProperties
-                      .Description}
+                  : StringUtils.decodeHtmlEntities(
+                      props.reward.bungieRewardDisplay.RewardDisplayProperties
+                        .Description
+                    )}
               </p>
               <ul className={styles.expirationDates}>
                 {gameEarnByDateFormatted && (

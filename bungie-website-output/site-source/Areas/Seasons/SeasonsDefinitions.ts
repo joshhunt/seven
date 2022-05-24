@@ -230,9 +230,32 @@ class SeasonOfTheRisen extends SeasonDefinition {
   public smallIcon = "/7/ca/destiny/bgs/season16/s16_season_icon.png";
 }
 
+class SeasonOfTheHaunted extends SeasonDefinition {
+  public static instance = new SeasonOfTheHaunted();
+
+  public get title(): string {
+    return Localizer.Seasons.SeasonOfTheHaunted;
+  }
+
+  public image = "/7/ca/destiny/bgs/season17/Season_17_Key_Art_4k.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season17/seasonbackground_17.jpg";
+  public productPageLink = RouteHelper.SeasonOfTheHaunted();
+  public calendarContentItem: string;
+  public calendarBackgroundImage = "";
+  public seasonNumber = 17;
+  public actionRouteString = "SeasonOfTheHaunted";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreSeasonOfTheHaunted;
+  }
+
+  public smallIcon = "/7/ca/destiny/bgs/season17/s17_season_icon.png";
+}
+
 export class SeasonsDefinitions {
-  public static previousSeason = SeasonOfTheLost.instance;
-  public static currentSeason = SeasonOfTheRisen.instance;
+  public static previousSeason = SeasonOfTheRisen.instance;
+  public static currentSeason = SeasonOfTheHaunted.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -243,9 +266,11 @@ export class SeasonsDefinitions {
   public static seasonOfTheSplicer = SeasonOfTheSplicer.instance;
   public static seasonOfTheLost = SeasonOfTheLost.instance;
   public static seasonOfTheRisen = SeasonOfTheRisen.instance;
+  public static seasonOfTheHaunted = SeasonOfTheHaunted.instance;
 }
 
 export const SeasonsArray = [
+  SeasonOfTheHaunted.instance,
   SeasonOfTheRisen.instance,
   SeasonOfTheLost.instance,
   SeasonOfTheSplicer.instance,

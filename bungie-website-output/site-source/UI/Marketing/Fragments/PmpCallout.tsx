@@ -29,13 +29,14 @@ type PmpCalloutProps = DataReference<"pmp_callout", BnetStackPmpCallout> & {
     thumbsWrapper?: string;
     thumbnail?: string;
     thumbnailWrapper?: string;
+    upperContent?: string;
   };
 };
 
 export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, classes } = props;
+  const { data, classes, children } = props;
 
   const getThumbnail = (thumbItem: PmpCalloutThumbItem | undefined) => {
     const { Image_Thumb, Video_Thumb } = thumbItem ?? {};
@@ -84,7 +85,7 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
       )}
       style={{ backgroundImage: bgImg, backgroundColor: bg_color }}
     >
-      <div className={styles.upperContent}>
+      <div className={classNames(styles.upperContent, classes?.upperContent)}>
         <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
           <h3
             className={classNames(styles.heading, classes?.heading)}
@@ -94,6 +95,7 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
             className={classNames(styles.blurb, classes?.blurb)}
             dangerouslySetInnerHTML={sanitizeHTML(blurb)}
           />
+          {children}
         </div>
         {asideImg?.url && (
           <img src={asideImg?.url} className={styles.asideImg} />

@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { RewardsDataStore } from "@Areas/Rewards/DataStores/RewardsDataStore";
 import { RewardsDestinyMembershipDataStore } from "@Areas/Rewards/DataStores/RewardsDestinyMembershipDataStore";
 import { IReward } from "@Areas/Rewards/Rewards";
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
@@ -18,9 +19,11 @@ import { ShowAuthModal } from "@UI/User/Auth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { EmailValidationState, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useRef } from "react";
+import { useHistory } from "react-router";
 
 interface RewardButtonsProps {
   reward: IReward;
@@ -32,6 +35,7 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     "crossSavePairingStatus",
   ]);
   const destinyMembership = useDataStore(RewardsDestinyMembershipDataStore);
+  const history = useHistory();
   const membershipType =
     destinyMembership?.selectedMembership?.membershipType ||
     destinyMembership?.membershipData?.destinyMemberships[0]?.membershipType ||
@@ -49,7 +53,7 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
   ) => {
     if (!isVerified) {
       //email not verified
-      Modal.error(rewardLoc.verificationrequiredheader);
+      Modal.error(new Error(rewardLoc.VerificationRequiredHeader));
 
       return;
     }
@@ -77,6 +81,8 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
         destinyMembership?.membershipData?.destinyMemberships?.length > 1
       ) {
         Modal.open(platformSelectorModal(rewardId), {}, platformModalRef);
+
+        return;
       } else {
         const platform = destinyMembership?.isCrossSaved
           ? globalState?.crossSavePairingStatus?.primaryMembershipType
@@ -130,7 +136,16 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     rewardId: string,
     mType: BungieMembershipType
   ) => {
-    window.location.href = `/${Localizer.CurrentCultureName}/Emails/RewardItem?id=${rewardId}&mt=${mType}`;
+    RewardsDataStore.actions.getRewardsList(
+      globalState.loggedInUser.user.membershipId
+    );
+
+    const rewardUrl = RouteHelper.ClaimDigitalReward({
+      rewardId: rewardId,
+      mtype: EnumUtils.getNumberValue(mType, BungieMembershipType).toString(),
+    });
+
+    history.push(rewardUrl.url);
   };
 
   const renderButtons = (): React.ReactElement => {

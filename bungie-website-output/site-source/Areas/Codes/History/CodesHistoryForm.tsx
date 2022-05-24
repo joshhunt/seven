@@ -135,7 +135,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
               )
                 .then((data) => {
                   if (data.OfferDisplayName) {
-                    window.location.reload(true);
+                    window.location.reload();
                   }
                 })
                 .catch(ConvertToPlatformError)
