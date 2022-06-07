@@ -62,10 +62,14 @@ export class SeasonPassRewardStep extends React.Component<
   private readonly onMouseOver = (
     itemDef: DestinyDefinitions.DestinyInventoryItemLiteDefinition
   ) => {
-    //this.setState({ tooltipRewardIndex: rewardIndex });
+    const desc =
+      itemDef.displayProperties.description !== ""
+        ? itemDef.displayProperties.description
+        : itemDef.itemTypeAndTierDisplayName;
+
     this.props.onMouseOver(
       itemDef.displayProperties.name,
-      itemDef.displayProperties.description,
+      desc,
       itemDef.inventory.tierTypeName
     );
   };
@@ -99,10 +103,14 @@ export class SeasonPassRewardStep extends React.Component<
       //multiple reward items of the same display style at the same step means that there are character specific rewards
 
       //Hunter[0], Titan[1], Warlock[2] is always the order
-      premiumReward =
-        typeof premiumRewards[character] !== "undefined"
-          ? premiumRewards[character]
-          : premiumRewards[0];
+      //character specific step
+      const characterStep =
+        premiumRewards.filter((r) => r.acquisitionBehavior)?.length === 3;
+
+      premiumReward = characterStep
+        ? premiumRewards[character]
+        : premiumRewards.find((r) => r.acquisitionBehavior) ??
+          premiumRewards[0];
 
       if (typeof premiumReward !== "undefined") {
         indexOfPremiumReward =
@@ -130,10 +138,12 @@ export class SeasonPassRewardStep extends React.Component<
       //multiple reward items of the same display style at the same step means that there are character specific rewards
 
       //Hunter[0], Titan[1], Warlock[2] is always the order
-      freeReward =
-        typeof freeRewards[character] !== "undefined"
-          ? freeRewards[character]
-          : freeRewards[0];
+      const characterStep =
+        premiumRewards.filter((r) => r.acquisitionBehavior)?.length === 3;
+
+      freeReward = characterStep
+        ? freeRewards[character]
+        : freeRewards.find((r) => r.acquisitionBehavior) ?? freeRewards[0];
 
       if (typeof freeReward !== "undefined") {
         indexOfFreeReward =

@@ -1,12 +1,12 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
+import { FreeToPlayResponsiveBg } from "@Areas/Destiny/FreeToPlay/FreeToPlay";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { BasicImageConnection } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
 import React, { LegacyRef } from "react";
-import { BnetStackFile } from "../../../../../Generated/contentstack-types";
 import styles from "./FreeSection.module.scss";
 
 interface FreeSectionProps {
@@ -15,9 +15,9 @@ interface FreeSectionProps {
   blurb?: string;
   sectionId?: string;
   inputRef?: LegacyRef<HTMLDivElement>;
-  bg?: {
-    desktop?: BnetStackFile;
-    mobile?: BnetStackFile;
+  readonly bg?: {
+    readonly desktopConnection: BasicImageConnection;
+    readonly mobileConnection: BasicImageConnection;
   };
   classes?: {
     section?: string;
@@ -51,9 +51,9 @@ export const FreeSection: React.FC<FreeSectionProps> = (props) => {
       <div
         className={classNames(styles.sectionBg, classes?.sectionBg)}
         style={{
-          backgroundImage: responsiveBgImageFromStackFile(
-            bg?.desktop,
-            bg?.mobile,
+          backgroundImage: FreeToPlayResponsiveBg(
+            bg?.desktopConnection,
+            bg?.mobileConnection,
             mobile
           ),
         }}

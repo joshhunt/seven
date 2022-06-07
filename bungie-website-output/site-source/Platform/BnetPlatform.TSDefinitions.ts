@@ -82,6 +82,9 @@ export declare namespace DestinyDefinitions {
     Dares = 85,
     Offensive = 86,
     LostSector = 87,
+    Rift = 88,
+    ZoneControl = 89,
+    IronBannerRift = 90,
   }
 
   enum DestinyTalentNodeStepWeaponPerformances {
@@ -189,6 +192,12 @@ export declare namespace DestinyDefinitions {
     BitwiseOr = 26,
     BitwiseXor = 27,
     BitwiseNot = 28,
+    FunctionIf = 29,
+    FunctionMax = 30,
+    FunctionMin = 31,
+    FunctionClamp = 32,
+    FunctionExp = 33,
+    FunctionAbs = 34,
   }
 
   enum DestinyGatingScope {
@@ -554,6 +563,7 @@ export declare namespace DestinyDefinitions {
     MaximumValue = 2,
     SumOfValues = 3,
     None = 4,
+    ItemScopeOnlySumOfValues = 5,
   }
 
   enum UnlockValueScope {
@@ -635,6 +645,7 @@ export declare namespace DestinyDefinitions {
     BestDeal = 32768,
     Popular = 65536,
     Free = 131072,
+    Locked = 262144,
   }
 
   enum DestinySocketCategoryStyle {
@@ -4508,6 +4519,8 @@ export declare namespace DestinyDefinitions {
 
     traitCategoryHash: number;
 
+    displayHint: string;
+
     boundToRelease: string;
 
     hash: number;
@@ -4857,6 +4870,8 @@ export declare namespace DestinyDefinitions {
     recordValueStyle: DestinyRecordValueStyle;
 
     forTitleGilding: boolean;
+
+    shouldShowLargeIcons: boolean;
 
     titleInfo: DestinyRecordTitleBlock;
 

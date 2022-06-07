@@ -6160,6 +6160,11 @@ export declare namespace Records {
 
     forTitleGilding: boolean;
 
+    /**
+		A hint to show a large icon for a reward
+		*/
+    shouldShowLargeIcons: boolean;
+
     titleInfo: Records.DestinyRecordTitleBlock;
 
     completionInfo: Records.DestinyRecordCompletionBlock;
@@ -18764,6 +18769,12 @@ export declare namespace Traits {
 
     traitCategoryHash: number;
 
+    /**
+		An identifier for how this trait can be displayed.
+		For example: a 'keyword' hint to show an explanation for certain related terms.
+		*/
+    displayHint: string;
+
     hash: number;
 
     index: number;
@@ -25523,6 +25534,31 @@ class TokensServiceInternal {
     );
 
   /**
+   * Returns the bungie rewards for the targeted user when a platform membership Id and Type are used.
+   * @param membershipId users platform membershipId for requested user rewards. If not self, elevated permissions are required.
+   * @param membershipType The target Destiny 2 membership type.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieRewardsForPlatformUser = (
+    membershipId: string,
+    membershipType: Globals.BungieMembershipType,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<{ [key: string]: Tokens.BungieRewardDisplay }> =>
+    ApiIntermediary.doGetRequest(
+      `/Tokens/Rewards/GetRewardsForPlatformUser/${e(membershipId)}/${e(
+        membershipType
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "GetBungieRewardsForPlatformUser",
+      undefined,
+      clientState
+    );
+
+  /**
    * Returns a list of the current bungie rewards
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -25532,7 +25568,7 @@ class TokensServiceInternal {
     clientState?: any
   ): Promise<{ [key: string]: Tokens.BungieRewardDisplay }> =>
     ApiIntermediary.doGetRequest(
-      `/Tokens/Rewards/BungieRewards`,
+      `/Tokens/Rewards/BungieRewards/`,
       [],
       optionalQueryAppend,
       "Tokens",

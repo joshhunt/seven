@@ -1,6 +1,7 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
+import { FreeToPlayQuery } from "@Areas/Destiny/FreeToPlay/__generated__/FreeToPlayQuery.graphql";
 import { FreeHero } from "@Areas/Destiny/FreeToPlay/Components/FreeHero/FreeHero";
 import { FreeSection } from "@Areas/Destiny/FreeToPlay/Components/FreeSection/FreeSection";
 import { FreeTripleImageSet } from "@Areas/Destiny/FreeToPlay/Components/FreeTripleImageSet/FreeTripleImageSet";
@@ -15,19 +16,17 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
-import { bgImageFromStackFile } from "@Utilities/GraphQLUtils";
-import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
 import {
-  BnetStackFile,
-  BnetStackFreeToPlayProductPage,
-} from "../../../Generated/contentstack-types";
-import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
+  BasicImageConnection,
+  imageFromConnection,
+} from "@Utilities/GraphQLUtils";
+import classNames from "classnames";
+import React, { useState } from "react";
+import { graphql, useLazyLoadQuery } from "react-relay";
 import styles from "./FreeToPlay.module.scss";
 
 interface FreeToPlayProps {}
@@ -37,20 +36,259 @@ const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
   const responsive = useDataStore(Responsive);
 
-  const [data, setData] = useState<BnetStackFreeToPlayProductPage | null>(null);
   const [wrapperRef, setWrapperRef] = useState(null);
-  const rewardsCalloutRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    ContentStackClient()
-      .ContentType("free_to_play_product_page")
-      .Entry("blt95d601ea2e2125c0")
-      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference(["rewards_callout"])
-      .toJSON()
-      .fetch()
-      .then(setData);
-  }, []);
+  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
+  const data = useLazyLoadQuery<FreeToPlayQuery>(
+    graphql`
+      query FreeToPlayQuery($locale: String!) {
+        free_to_play_product_page(uid: "blt95d601ea2e2125c0", locale: $locale) {
+          title
+          meta_imgConnection {
+            edges {
+              node {
+                url
+              }
+            }
+          }
+          section_dividerConnection {
+            edges {
+              node {
+                url
+              }
+            }
+          }
+          platform_imagesConnection {
+            edges {
+              node {
+                url
+              }
+            }
+          }
+          star_bgConnection {
+            edges {
+              node {
+                url
+              }
+            }
+          }
+          sub_nav {
+            btn_text
+            labels {
+              ... on FreeToPlayProductPageSubNavLabels {
+                label
+                label_id
+              }
+            }
+          }
+          hero {
+            bg {
+              desktopConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+              mobileConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+            }
+            btn_text
+            logoConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+          }
+          story_section {
+            bgConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+            bottom_text
+            info_thumb {
+              ... on FreeToPlayProductPageStorySectionInfoThumb {
+                blurb
+                heading
+                imageConnection {
+                  edges {
+                    node {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+            section_title
+            small_title
+          }
+          heroes_cta_section {
+            btn_text
+            logoConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+            text_gradient_bgConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+            logo_bgConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+            subtitle
+            title
+          }
+          guardians_section {
+            small_title
+            blurb
+            bg {
+              desktopConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+              mobileConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+            }
+            section_title
+            guardians {
+              ... on FreeToPlayProductPageGuardiansSectionGuardians {
+                blurb
+                imageConnection {
+                  edges {
+                    node {
+                      url
+                    }
+                  }
+                }
+                mobile_imageConnection {
+                  edges {
+                    node {
+                      url
+                    }
+                  }
+                }
+                logoConnection {
+                  edges {
+                    node {
+                      url
+                    }
+                  }
+                }
+                title
+              }
+            }
+          }
+          supers_section {
+            bg {
+              desktopConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+              mobileConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+            }
+            blurb
+            section_title
+            thumbnail_imagesConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+          }
+          gear_section {
+            section_title
+            blurb
+            thumbnail_imagesConnection {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
+          }
+          bottom_cta {
+            bg {
+              desktopConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+              mobileConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+            }
+            btn_text
+            title
+          }
+          guide_section {
+            bg {
+              desktopConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+              mobileConnection {
+                edges {
+                  node {
+                    url
+                  }
+                }
+              }
+            }
+            blurb
+            section_title
+          }
+        }
+      }
+    `,
+    { locale }
+  );
 
   const {
     title,
@@ -60,29 +298,29 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
     guardians_section,
     guide_section,
     heroes_cta_section,
-    meta_img,
-    section_divider,
+    meta_imgConnection,
+    section_dividerConnection,
     story_section,
     supers_section,
-    platform_images,
-    star_bg,
+    platform_imagesConnection,
+    star_bgConnection,
     sub_nav,
-    rewards_callout,
-    v2_hero,
-    callout_btn_title,
-  } = data ?? {};
+  } = data.free_to_play_product_page ?? {};
 
-  const scrollToRewardsCallout = () => {
-    rewardsCalloutRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const dividerImg = bgImageFromStackFile(section_divider);
-  const heroesWelcomeLogo = heroes_cta_section?.logo?.url;
-  const heroesWelcomeBg = heroes_cta_section?.logo_bg?.url;
+  const dividerImg = bgImageFromConnection(section_dividerConnection);
+  const heroesWelcomeLogo = imageFromConnection(
+    heroes_cta_section?.logoConnection
+  )?.url;
+  const heroesWelcomeBg = imageFromConnection(
+    heroes_cta_section?.logo_bgConnection
+  )?.url;
 
   return (
     <div className={styles.freeToPlayContent}>
-      <BungieHelmet title={title} image={meta_img?.url}>
+      <BungieHelmet
+        title={title}
+        image={imageFromConnection(meta_imgConnection)?.url}
+      >
         <body
           className={classNames(
             styles.freeToPlay,
@@ -95,8 +333,9 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
 
       <FreeHero
         data={hero}
-        V2Data={v2_hero}
-        scrollToRewardsCallout={scrollToRewardsCallout}
+        PlatformList={() =>
+          FreePlatformList({ platforms: platform_imagesConnection })
+        }
       />
 
       <MarketingSubNav
@@ -124,7 +363,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
       >
         <div
           className={styles.tileBg}
-          style={{ backgroundImage: bgImageFromStackFile(star_bg) }}
+          style={{ backgroundImage: bgImageFromConnection(star_bgConnection) }}
         />
 
         <FreeSection
@@ -136,11 +375,14 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
             sectionBg: styles.sectionBg,
           }}
           title={story_section?.section_title}
-          bg={{ desktop: story_section?.bg, mobile: story_section?.bg }}
+          bg={{
+            desktopConnection: story_section?.bgConnection,
+            mobileConnection: story_section?.bgConnection,
+          }}
         >
           <FreeTripleImageSet
             thumbnails={story_section?.info_thumb.map((t) => ({
-              image: t.image?.url,
+              image: imageFromConnection(t.imageConnection)?.url,
               blurb: t.blurb,
               heading: t.heading,
             }))}
@@ -168,8 +410,8 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
                     heroes_cta_section?.title
                   )}
                   style={{
-                    backgroundImage: bgImageFromStackFile(
-                      heroes_cta_section?.text_gradient_bg
+                    backgroundImage: bgImageFromConnection(
+                      heroes_cta_section?.text_gradient_bgConnection
                     ),
                   }}
                 />
@@ -196,7 +438,10 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
             sectionBg: styles.sectionBg,
           }}
           title={guardians_section?.section_title}
-          bg={guardians_section?.bg}
+          bg={{
+            desktopConnection: guardians_section?.bg.desktopConnection,
+            mobileConnection: guardians_section?.bg.mobileConnection,
+          }}
         >
           <ThreeGuardiansGraphic guardians={guardians_section?.guardians} />
         </FreeSection>
@@ -212,12 +457,17 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
             }}
             title={supers_section?.section_title}
             blurb={supers_section?.blurb}
-            bg={supers_section?.bg}
+            bg={{
+              desktopConnection: supers_section?.bg.desktopConnection,
+              mobileConnection: supers_section?.bg.mobileConnection,
+            }}
           >
             <FreeTripleImageSet
-              thumbnails={supers_section?.thumbnail_images?.map((t) => ({
-                image: t?.url,
-              }))}
+              thumbnails={supers_section?.thumbnail_imagesConnection.edges.map(
+                (t) => ({
+                  image: t.node.url,
+                })
+              )}
               classes={{
                 wrapper: styles.thumbnails,
                 thumbnailWrapper: styles.thumbnailWrapper,
@@ -236,40 +486,25 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
             blurb={gear_section?.blurb}
           >
             <FreeTripleImageSet
-              thumbnails={gear_section?.thumbnail_images.map((t) => ({
-                image: t?.url,
-              }))}
+              thumbnails={gear_section?.thumbnail_imagesConnection.edges.map(
+                (t) => ({
+                  image: t.node.url,
+                })
+              )}
               classes={{
                 wrapper: styles.thumbnails,
                 thumbnailWrapper: styles.thumbnailWrapper,
               }}
             />
           </FreeSection>
-
-          <div ref={rewardsCalloutRef} className={styles.calloutScrollAnchor} />
-          <PmpCallout
-            data={rewards_callout?.[0]}
-            classes={{
-              root: styles.rewardsCallout,
-              heading: styles.heading,
-              blurb: styles.blurb,
-              upperContent: styles.flexContent,
-            }}
-          >
-            <div className={styles.btnWrapper}>
-              <FreeToPlayBuyBtn
-                btn_text={callout_btn_title}
-                className={styles.claimBtn}
-                url={`/7${RouteHelper.Rewards().url}`}
-              />
-            </div>
-          </PmpCallout>
         </div>
 
         <div
           className={styles.ctaSection}
           style={{
-            backgroundImage: bgImageFromStackFile(bottom_cta?.bg.desktop),
+            backgroundImage: bgImageFromConnection(
+              bottom_cta?.bg.desktopConnection
+            ),
           }}
         >
           <img
@@ -280,7 +515,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
           <div className={styles.btnWrapper}>
             <FreeToPlayBuyBtn btn_text={bottom_cta?.btn_text} />
           </div>
-          <FreePlatformList platforms={platform_images} />
+          <FreePlatformList platforms={platform_imagesConnection} />
           <img
             className={classNames(styles.divider, styles.bottom)}
             style={{ backgroundImage: dividerImg }}
@@ -317,29 +552,46 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
 export const FreeToPlayBuyBtn: React.FC<{
   btn_text: string;
   className?: string;
-  url?: string;
-}> = ({ btn_text, className, url }) => {
+}> = ({ btn_text, className }) => {
   return (
     <BuyButton
       children={btn_text}
       className={classNames(styles.buyBtn, className)}
       buttonType={"hotPink"}
-      url={url}
       onClick={() =>
-        !url &&
         DestinySkuSelectorModal.show({ skuTag: DestinySkuTags.NewLightDetail })
       }
     />
   );
 };
 
-export const FreePlatformList: React.FC<{ platforms: BnetStackFile[] }> = ({
-  platforms,
-}) => {
+const bgImageFromConnection = (img: BasicImageConnection) => {
+  const bg = imageFromConnection(img)?.url;
+
+  if (bg) {
+    return `url(${bg})`;
+  }
+};
+
+export const FreeToPlayResponsiveBg = (
+  desktopImg: BasicImageConnection,
+  mobileImg: BasicImageConnection,
+  mobile: boolean
+) => {
+  return bgImageFromConnection(mobile ? mobileImg : desktopImg);
+};
+
+export const FreePlatformList: React.FC<{ platforms: BasicImageConnection }> = (
+  props
+) => {
+  const platforms: string[] = [];
+
+  props.platforms?.edges.forEach((e) => platforms.push(e.node.url));
+
   return (
     <div className={styles.platformsWrapper}>
-      {platforms?.map((p, i) => {
-        return <img key={i} src={p?.url} className={styles.icon} />;
+      {platforms.map((p, i) => {
+        return <img key={i} src={p} className={styles.icon} />;
       })}
     </div>
   );

@@ -10,8 +10,9 @@ import { GlobalBar } from "@UI/GlobalAlerts/GlobalBar";
 import { EmailValidationState, UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 
+export const emailLocalStorageKey = "show-email-validation-alert";
+
 export const EmailValidationGlobalBar: React.FC = (props) => {
-  const localStorageKey = "show-email-validation-alert";
   const { loggedInUser } = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
 
   const getEmailValidationState = (): EmailValidationState => {
@@ -24,22 +25,19 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
 
   // the specific global alert bar should not control its visibility status, but it should define the requirements for it to show initially and
   // then defer to localStorage which is updated by GlobalBar itself
+  // previously, once the localStorage value was set to not show, we never updated it again. Now it will update to show again if someone changes their email
   const isVisibleInitially = () => {
-    const isNotVerified =
-      getEmailValidationState() === EmailValidationState.None ||
-      getEmailValidationState() === EmailValidationState.Verifying;
+    const isVerified =
+      getEmailValidationState() !== EmailValidationState.None &&
+      getEmailValidationState() !== EmailValidationState.Verifying;
 
-    if (isNotVerified) {
-      if (JSON.parse(window.localStorage.getItem(localStorageKey)) !== null) {
-        return JSON.parse(window.localStorage.getItem(localStorageKey));
-      } else {
-        window.localStorage.setItem(localStorageKey, "true");
+    if (!!window.localStorage?.getItem(emailLocalStorageKey)) {
+      return window.localStorage.getItem(emailLocalStorageKey) === "true";
+    } else {
+      window.localStorage.setItem(emailLocalStorageKey, isVerified.toString());
 
-        return true;
-      }
+      return isVerified;
     }
-
-    return false;
   };
 
   return (
@@ -49,7 +47,7 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
       url={RouteHelper.EmailAndSms()}
       message={Localizer.Emails.VerifyYourEmail}
       dismissible={true}
-      localStorageKey={localStorageKey}
+      localStorageKey={emailLocalStorageKey}
     />
   );
 };

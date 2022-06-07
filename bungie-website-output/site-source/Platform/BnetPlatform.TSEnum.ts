@@ -2649,6 +2649,10 @@ export enum DestinyVendorItemState {
 		This indicates that the sale item is free.
 		*/
   Free = 131072,
+  /**
+		This indicates that the sale item is locked.
+		*/
+  Locked = 262144,
 }
 
 /**
@@ -3553,6 +3557,9 @@ export enum DestinyActivityModeType {
   Dares = 85,
   Offensive = 86,
   LostSector = 87,
+  Rift = 88,
+  ZoneControl = 89,
+  IronBannerRift = 90,
 }
 
 /**

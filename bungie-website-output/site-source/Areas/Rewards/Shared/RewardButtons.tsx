@@ -13,7 +13,6 @@ import { BungieMembershipType, OptInFlags } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ShowAuthModal } from "@UI/User/Auth";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -41,7 +40,6 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     destinyMembership?.membershipData?.destinyMemberships[0]?.membershipType ||
     BungieMembershipType.None;
   const rewardLoc = Localizer.Bungierewards;
-  const platformModalRef = React.createRef<Modal>();
   const settingsModalRef = React.createRef<Modal>();
 
   const emailCode = (
@@ -75,29 +73,18 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     }
 
     if (isDigital) {
-      //digital item: need to choose platform if more than one platform and not crosssaved
-      if (
-        !destinyMembership?.isCrossSaved &&
-        destinyMembership?.membershipData?.destinyMemberships?.length > 1
-      ) {
-        Modal.open(platformSelectorModal(rewardId), {}, platformModalRef);
+      const platform = destinyMembership?.isCrossSaved
+        ? globalState?.crossSavePairingStatus?.primaryMembershipType
+        : destinyMembership?.selectedMembership.membershipType ??
+          BungieMembershipType.None;
 
-        return;
-      } else {
-        const platform = destinyMembership?.isCrossSaved
-          ? globalState?.crossSavePairingStatus?.primaryMembershipType
-          : destinyMembership?.membershipData?.destinyMemberships[0]
-              ?.membershipType ?? BungieMembershipType.None;
-
-        gotoRewardItemPage(rewardId, platform);
-      }
+      gotoRewardItemPage(rewardId, platform);
     } else {
       // non digital items: send an email
       Platform.TokensService.EmailBungieReward(rewardId, mType)
         .then(() => {
           //email sent
 
-          //goto the reward item Page
           gotoRewardItemPage(rewardId, mType);
         })
         .catch(ConvertToPlatformError)
@@ -107,38 +94,21 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     }
   };
 
-  const platformSelectorModal = (rewardId: string) => {
-    return (
-      <div
-        className={classNames(
-          styles.containerRewards,
-          styles.containerPlatformSelector
-        )}
-      >
-        <p className="header-description">{rewardLoc.WhereWouldYouLikeThis}</p>
-        <DestinyPlatformSelector
-          userMembershipData={destinyMembership?.membershipData}
-          onChange={(value) => {
-            const mtype =
-              BungieMembershipType[value as keyof typeof BungieMembershipType];
-            platformModalRef.current.close();
-
-            gotoRewardItemPage(rewardId, mtype);
-          }}
-          defaultValue={membershipType}
-          crossSavePairingStatus={globalState?.crossSavePairingStatus}
-        />
-      </div>
-    );
-  };
-
   const gotoRewardItemPage = (
     rewardId: string,
     mType: BungieMembershipType
   ) => {
-    RewardsDataStore.actions.getRewardsList(
-      globalState.loggedInUser.user.membershipId
-    );
+    //refresh the rewards list, it has changed
+    if (mType !== BungieMembershipType.BungieNext) {
+      RewardsDataStore.actions.getPlatformRewardsList(
+        destinyMembership.selectedMembership.membershipId,
+        destinyMembership.selectedMembership.membershipType
+      );
+    } else {
+      RewardsDataStore.actions.getRewardsList(
+        globalState.loggedInUser.user.membershipId
+      );
+    }
 
     const rewardUrl = RouteHelper.ClaimDigitalReward({
       rewardId: rewardId,

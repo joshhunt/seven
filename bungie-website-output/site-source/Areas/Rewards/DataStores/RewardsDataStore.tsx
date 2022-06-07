@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { DataStore } from "@bungie/datastore/DataStore";
+import { BungieMembershipType } from "@Enum";
 import { Platform, Tokens } from "@Platform";
 import React from "react";
 
@@ -15,6 +16,7 @@ interface RewardsPayload {
   lockedBungieRewards: IReward[];
   unclaimedBungieRewards: IReward[];
   unclaimedLoyaltyRewards: IReward[];
+  loaded: boolean;
 }
 
 class _RewardsDataStore extends DataStore<RewardsPayload> {
@@ -23,6 +25,7 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
     lockedBungieRewards: [],
     unclaimedBungieRewards: [],
     unclaimedLoyaltyRewards: [],
+    loaded: false,
   };
 
   public static Instance = new _RewardsDataStore(
@@ -34,9 +37,23 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
       return _RewardsDataStore.InitialState;
     },
     getRewardsList: async (state, membershipId?: string) => {
+      //rewards list for anonymous or bungienet user using BungieMembershipType = bnetnext
       const rewards = membershipId
         ? await Platform.TokensService.GetBungieRewardsForUser(membershipId)
         : await Platform.TokensService.GetBungieRewardsList();
+
+      return this.parseRewards(rewards);
+    },
+    getPlatformRewardsList: async (
+      state,
+      membershipId: string,
+      membershipType: BungieMembershipType
+    ) => {
+      //rewards list for user using BungieMembershipType != bnetnext
+      const rewards = await Platform.TokensService.GetBungieRewardsForPlatformUser(
+        membershipId,
+        membershipType
+      );
 
       return this.parseRewards(rewards);
     },
@@ -98,6 +115,7 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
       lockedBungieRewards: _lockedBungieRewards,
       unclaimedBungieRewards: _unclaimedBungieRewards,
       unclaimedLoyaltyRewards: _unclaimedLoyaltyRewards,
+      loaded: true,
     };
   }
 }

@@ -33,7 +33,7 @@ export const RewardClaimButtons: React.FC<RewardClaimButtonsProps> = (
 
     if (props.isAnon) {
       return (
-        <>
+        <div>
           <div className={styles.signinRequired}>
             <h5 className={styles.sectionHeader}>{rewardLoc.SignInRequired}</h5>
             <p>{rewardLoc.SignInInstructions}</p>
@@ -48,7 +48,7 @@ export const RewardClaimButtons: React.FC<RewardClaimButtonsProps> = (
           <RequiresAuth
             onSignIn={() => GlobalStateDataStore.actions.refreshCurrentUser()}
           />
-        </>
+        </div>
       );
     } else {
       if (props.claimResponse.OfferAsCode) {

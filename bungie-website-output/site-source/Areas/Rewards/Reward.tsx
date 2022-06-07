@@ -3,6 +3,7 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/Rewards/Reward.module.scss";
+import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
 import { RewardClaimButtons } from "@Areas/Rewards/Shared/RewardClaimButtons";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
@@ -22,6 +23,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
+import classNames from "classnames";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -134,6 +136,20 @@ export const Reward: React.FC<RewardProps> = (props) => {
       </BungieHelmet>
       <div className={styles.rewardContent}>
         <div className={styles.rewarditemOuter}>
+          <div
+            className={classNames(
+              stylesContainer.claimRewardsBreadcrumb,
+              styles.claimRewardsBreadcrumb
+            )}
+          >
+            <Anchor url={RouteHelper.Rewards()}>
+              {rewardLoc.BungieRewards}
+            </Anchor>
+            <Anchor url={RouteHelper.DigitalRewards()}>
+              {rewardLoc.AvailableRewardsHeader}
+            </Anchor>
+            <p>{claimResponse.RewardDisplayProperties.Name}</p>
+          </div>
           <div className={styles.rewarditemContainer}>
             <div className={styles.rewarditemMeta}>
               <img src={claimResponse.RewardDisplayProperties.ImagePath} />

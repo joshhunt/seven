@@ -65,57 +65,55 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
       : "";
 
   return (
-    <>
-      <li
-        className={classNames(styles.rewardItem, {
-          [styles.loyalty]: userAvailability.AvailabilityModel.IsLoyaltyReward,
-        })}
-      >
-        <GridCol cols={12} className={styles.gridBlock}>
-          <div className={styles.rewardContainer}>
-            <img
-              className={styles.rewardImage}
-              alt={bungieRewardDisplay.RewardDisplayProperties.Name}
-              src={bungieRewardDisplay.RewardDisplayProperties.ImagePath}
-            />
-            <div className={styles.rewardContent}>
-              <RewardAvailability reward={props.reward.bungieRewardDisplay} />
-              <RewardsTriumphsDisplay reward={bungieRewardDisplay} />
-              <RewardsCollectibleDisplay reward={bungieRewardDisplay} />
-              <h4 className={styles.sectionHeader}>
-                {StringUtils.decodeHtmlEntities(
-                  props.reward.bungieRewardDisplay.RewardDisplayProperties.Name
-                )}
-              </h4>
-              <p className={styles.rewardDescription}>
-                {userAvailability.AvailabilityModel.OfferApplied &&
-                userAvailability.AvailabilityModel.IsLoyaltyReward &&
-                userAvailability.AvailabilityModel.HasOffer
-                  ? rewardLoc.rewardAppliedText
-                  : StringUtils.decodeHtmlEntities(
-                      props.reward.bungieRewardDisplay.RewardDisplayProperties
-                        .Description
-                    )}
-              </p>
-              <ul className={styles.expirationDates}>
-                {gameEarnByDateFormatted && (
-                  <li className={styles.date}>
-                    <strong>{rewardLoc.EarnBy}</strong>{" "}
-                    <span>{gameEarnByDateFormatted}</span>
-                  </li>
-                )}
-                {redemptionEndDateFormatted && (
-                  <li className={styles.date}>
-                    <strong>{rewardLoc.CodeGenerationExpires}</strong>{" "}
-                    <span>{redemptionEndDateFormatted}</span>
-                  </li>
-                )}
-              </ul>
-              <RewardButtons reward={props.reward} />
-            </div>
+    <li
+      className={classNames(styles.rewardItem, {
+        [styles.loyalty]: userAvailability.AvailabilityModel.IsLoyaltyReward,
+      })}
+    >
+      <div className={styles.gridBlock}>
+        <div className={styles.rewardContainer}>
+          <img
+            className={styles.rewardImage}
+            alt={bungieRewardDisplay.RewardDisplayProperties.Name}
+            src={bungieRewardDisplay.RewardDisplayProperties.ImagePath}
+          />
+          <div className={styles.rewardContent}>
+            <RewardAvailability reward={props.reward.bungieRewardDisplay} />
+            <RewardsTriumphsDisplay reward={bungieRewardDisplay} />
+            <RewardsCollectibleDisplay reward={bungieRewardDisplay} />
+            <h4 className={styles.sectionHeader}>
+              {StringUtils.decodeHtmlEntities(
+                props.reward.bungieRewardDisplay.RewardDisplayProperties.Name
+              )}
+            </h4>
+            <p className={styles.rewardDescription}>
+              {userAvailability.AvailabilityModel.OfferApplied &&
+              userAvailability.AvailabilityModel.IsLoyaltyReward &&
+              userAvailability.AvailabilityModel.HasOffer
+                ? rewardLoc.rewardAppliedText
+                : StringUtils.decodeHtmlEntities(
+                    props.reward.bungieRewardDisplay.RewardDisplayProperties
+                      .Description
+                  )}
+            </p>
+            <ul className={styles.expirationDates}>
+              {gameEarnByDateFormatted && (
+                <li className={styles.date}>
+                  <strong>{rewardLoc.EarnBy}</strong>{" "}
+                  <span>{gameEarnByDateFormatted}</span>
+                </li>
+              )}
+              {redemptionEndDateFormatted && (
+                <li className={styles.date}>
+                  <strong>{rewardLoc.CodeGenerationExpires}</strong>{" "}
+                  <span>{redemptionEndDateFormatted}</span>
+                </li>
+              )}
+            </ul>
+            <RewardButtons reward={props.reward} />
           </div>
-        </GridCol>
-      </li>
-    </>
+        </div>
+      </div>
+    </li>
   );
 };

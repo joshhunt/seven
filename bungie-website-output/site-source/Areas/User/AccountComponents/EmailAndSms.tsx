@@ -12,6 +12,7 @@ import { EmailValidationStatus } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contract, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { emailLocalStorageKey } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 import { GridCol, GridDivider } from "@UI/UIKit/Layout/Grid/Grid";
 import { EmailVerified } from "@UI/User/EmailVerified";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -92,11 +93,23 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
   };
 
   const trySaveSettings = (userEditRequest: Contract.UserEditRequest) => {
+    let clearEmailLocalStorage = false;
+    // if the user's email has changed, clear the flag that prevents the email verification banner from showing
+    // if the user's email has not changed, we should pass in null for that value
+    if (userEditRequest.emailAddress) {
+      clearEmailLocalStorage = true;
+    }
+
     Platform.UserService.UpdateUser(userEditRequest)
       .then(() => {
         GlobalStateDataStore.actions
           .refreshCurrentUser(true)
-          .async.then((data) => data && showSettingsChangedToast());
+          .async.then((data) => {
+            data && showSettingsChangedToast();
+            // note that the value in localStorage means "should show alert" and not the verification status
+            clearEmailLocalStorage &&
+              window.localStorage.setItem(emailLocalStorageKey, "true");
+          });
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));

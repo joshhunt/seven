@@ -12,6 +12,7 @@ import classNames from "classnames";
 import React from "react";
 import { FiMail } from "react-icons/fi";
 import styles from "./EmailVerified.module.scss";
+import { LocalStorageUtils } from "@Utilities/StorageUtils";
 
 interface EmailVerifiedProps extends React.HTMLProps<HTMLDivElement> {
   hideSubtitle?: boolean;
@@ -30,6 +31,8 @@ export const EmailVerified: React.FC<EmailVerifiedProps> = (props) => {
 
   if (!emailVerified) {
     return null;
+  } else {
+    LocalStorageUtils.setItem("showProfileCallout", "false");
   }
 
   const registrationLoc = Localizer.Registration;
