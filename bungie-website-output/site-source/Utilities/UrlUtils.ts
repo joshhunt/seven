@@ -1,5 +1,6 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
+import { Query } from "contentstack";
 import * as H from "history";
 import * as pathToRegexp from "ptr620";
 import React from "react";
@@ -41,6 +42,22 @@ export class UrlUtils {
     }
 
     return output;
+  }
+
+  /** Adds query param to existing query string */
+  public static addQueryParam(
+    url: string,
+    queryParam: string,
+    value: string
+  ): string {
+    if (!url ?? !queryParam ?? !value) {
+      return url;
+    }
+
+    const parsedUrl = new URL(url);
+    parsedUrl.searchParams.append(queryParam, value);
+
+    return parsedUrl.toString();
   }
 
   /**

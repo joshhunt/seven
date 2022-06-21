@@ -3,9 +3,10 @@
 
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import LazyLoadedBgDiv from "@UI/Utility/LazyLoadedBgDiv";
+import { useCSWebpImages } from "@Utilities/CSUtils";
 import classNames from "classnames";
-import React, { LegacyRef } from "react";
+import React, { LegacyRef, useMemo } from "react";
 import { BnetStackFile } from "../../../../../Generated/contentstack-types";
 import styles from "./FreeSection.module.scss";
 
@@ -39,6 +40,16 @@ export const FreeSection: React.FC<FreeSectionProps> = (props) => {
     sectionId,
   } = props;
 
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        desktopBg: bg?.desktop?.url,
+        mobileBg: bg?.mobile?.url,
+      }),
+      [bg?.desktop, bg?.mobile]
+    )
+  );
+
   const { mobile } = useDataStore(Responsive);
 
   return (
@@ -48,15 +59,9 @@ export const FreeSection: React.FC<FreeSectionProps> = (props) => {
         ref={inputRef}
         id={sectionId}
       />
-      <div
+      <LazyLoadedBgDiv
         className={classNames(styles.sectionBg, classes?.sectionBg)}
-        style={{
-          backgroundImage: responsiveBgImageFromStackFile(
-            bg?.desktop,
-            bg?.mobile,
-            mobile
-          ),
-        }}
+        img={mobile ? images.mobileBg : images.desktopBg}
       />
       <div className={styles.contentWrapper}>
         {smallTitle && (

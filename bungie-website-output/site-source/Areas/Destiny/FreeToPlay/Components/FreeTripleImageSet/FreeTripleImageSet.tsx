@@ -1,9 +1,12 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
+import { intersectObserver } from "@Boot/IntersectObserver";
 import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
+import { useCSWebpImages } from "@Utilities/CSUtils";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./FreeTripleImageSet.module.scss";
 
 interface FreeTripleImageSetProps {
@@ -22,11 +25,31 @@ interface FreeTripleImageSetProps {
 export const FreeTripleImageSet: React.FC<FreeTripleImageSetProps> = (
   props
 ) => {
-  const screenshots = props.thumbnails?.map((t) => t.image);
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        screenshots: props.thumbnails?.map((t) => t.image),
+      }),
+      [props.thumbnails]
+    )
+  );
+
+  const [loadThumbBg, setLoadThumbBg] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    intersectObserver.observeLazyLoadImgEle(wrapperRef.current, setLoadThumbBg);
+  }, []);
 
   return (
-    <div className={classNames(styles.flexWrapper, props.classes?.wrapper)}>
+    <div
+      ref={wrapperRef}
+      className={classNames(styles.flexWrapper, props.classes?.wrapper)}
+    >
       {props.thumbnails?.map((t, i) => {
+        let thumbBg = images.screenshots?.[i];
+        thumbBg = UrlUtils.addQueryParam(thumbBg, "width", "700");
+
         return (
           <div
             className={classNames(
@@ -36,8 +59,8 @@ export const FreeTripleImageSet: React.FC<FreeTripleImageSetProps> = (
             key={i}
           >
             <ClickableMediaThumbnail
-              thumbnail={`${t.image}?width=700`}
-              singleOrAllScreenshots={screenshots}
+              thumbnail={loadThumbBg ? thumbBg : undefined}
+              singleOrAllScreenshots={images.screenshots}
               screenshotIndex={i}
               classes={{
                 btnWrapper: classNames(

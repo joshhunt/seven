@@ -18,11 +18,13 @@ import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import LazyLoadedBgDiv from "@UI/Utility/LazyLoadedBgDiv";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
-import { bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { useCSWebpImages } from "@Utilities/CSUtils";
+import { bgImage, bgImageFromStackFile } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   BnetStackFile,
   BnetStackFreeToPlayProductPage,
@@ -72,13 +74,23 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
     callout_btn_title,
   } = data ?? {};
 
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        heroesWelcomeLogo: heroes_cta_section?.logo?.url,
+        heroesWelcomeBg: heroes_cta_section?.logo_bg?.url,
+        dividerImg: section_divider?.url,
+        staryBg: star_bg?.url,
+      }),
+      [data]
+    )
+  );
+
   const scrollToRewardsCallout = () => {
     rewardsCalloutRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const dividerImg = bgImageFromStackFile(section_divider);
-  const heroesWelcomeLogo = heroes_cta_section?.logo?.url;
-  const heroesWelcomeBg = heroes_cta_section?.logo_bg?.url;
+  const dividerBgImg = bgImage(images.dividerImg);
 
   return (
     <div className={styles.freeToPlayContent}>
@@ -124,7 +136,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
       >
         <div
           className={styles.tileBg}
-          style={{ backgroundImage: bgImageFromStackFile(star_bg) }}
+          style={{ backgroundImage: bgImage(images.staryBg) }}
         />
 
         <FreeSection
@@ -152,16 +164,17 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
         <div className={styles.welcomeSection}>
           <img
             className={classNames(styles.divider, styles.top)}
-            style={{ backgroundImage: dividerImg }}
+            loading={"lazy"}
+            style={{ backgroundImage: dividerBgImg }}
           />
           <div className={styles.contentWrapper}>
             <div className={styles.logoWrapper}>
               <img
-                src={heroesWelcomeLogo ?? heroesWelcomeBg}
+                src={images.heroesWelcomeLogo ?? images.heroesWelcomeBg}
                 className={styles.logo}
               />
               {/* if no localized logo, manually place logo text on top of logo background */}
-              {!heroesWelcomeLogo && (
+              {!images.heroesWelcomeLogo && (
                 <h2
                   className={styles.title}
                   dangerouslySetInnerHTML={sanitizeHTML(
@@ -182,7 +195,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
           </div>
           <img
             className={classNames(styles.divider, styles.bottom)}
-            style={{ backgroundImage: dividerImg }}
+            style={{ backgroundImage: dividerBgImg }}
           />
         </div>
 
@@ -266,15 +279,13 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
           </PmpCallout>
         </div>
 
-        <div
+        <LazyLoadedBgDiv
           className={styles.ctaSection}
-          style={{
-            backgroundImage: bgImageFromStackFile(bottom_cta?.bg.desktop),
-          }}
+          img={bgImageFromStackFile(bottom_cta?.bg.desktop)}
         >
           <img
             className={classNames(styles.divider, styles.top)}
-            style={{ backgroundImage: dividerImg }}
+            style={{ backgroundImage: dividerBgImg }}
           />
           <h2 className={styles.heading}>{bottom_cta?.title}</h2>
           <div className={styles.btnWrapper}>
@@ -283,9 +294,9 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
           <FreePlatformList platforms={platform_images} />
           <img
             className={classNames(styles.divider, styles.bottom)}
-            style={{ backgroundImage: dividerImg }}
+            style={{ backgroundImage: dividerBgImg }}
           />
-        </div>
+        </LazyLoadedBgDiv>
 
         <FreeSection
           sectionId={"guide"}

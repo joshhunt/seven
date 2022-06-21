@@ -3,7 +3,8 @@
 
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import React from "react";
+import { useCSWebpImages } from "@Utilities/CSUtils";
+import React, { useMemo } from "react";
 import { BnetStackFreeToPlayProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./ThreeGuardiansGraphic.module.scss";
 
@@ -15,6 +16,15 @@ export const ThreeGuardiansGraphic: React.FC<ThreeGuardiansGraphicProps> = (
   props
 ) => {
   const { medium } = useDataStore(Responsive);
+  const { guardianImagesMobile, guardianImagesDesktop } = useCSWebpImages(
+    useMemo(
+      () => ({
+        guardianImagesDesktop: props.guardians?.map((g) => g?.image?.url),
+        guardianImagesMobile: props.guardians?.map((g) => g?.mobile_image?.url),
+      }),
+      [props.guardians]
+    )
+  );
 
   return (
     <div className={styles.flexWrapper}>
@@ -23,7 +33,11 @@ export const ThreeGuardiansGraphic: React.FC<ThreeGuardiansGraphicProps> = (
           <div key={i} className={styles.guardianWrapper}>
             <div className={styles.topContent}>
               <img
-                src={(medium ? g.mobile_image : g.image)?.url}
+                src={
+                  medium
+                    ? guardianImagesMobile?.[i]
+                    : guardianImagesDesktop?.[i]
+                }
                 className={styles.guardian}
               />
               <div className={styles.titleWrapper}>

@@ -3,11 +3,13 @@
 
 import { ISearchItemDisplayProperties } from "@Areas/Search/Shared/SearchTabContent";
 import { Localizer } from "@bungie/localization";
+import { BungieMembershipType } from "@Enum";
 import { Img } from "@Helpers";
 import { Content, Definitions, GroupsV2, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
 import React from "react";
@@ -70,7 +72,13 @@ export class SearchUtils {
         const membershipId = user.membershipId;
 
         return {
-          url: RouteHelper.Profile(membershipId),
+          url: RouteHelper.NewProfile({
+            mid: membershipId,
+            mtype: EnumUtils.getNumberValue(
+              user.membershipType,
+              BungieMembershipType
+            ).toString(),
+          }),
           title: `${bungieName.bungieGlobalName}${bungieName.bungieGlobalCodeWithHashtag}`,
           subtitle: "",
           icon: (
@@ -106,12 +114,25 @@ export class SearchUtils {
         const bungieName = UserUtils.getBungieNameFromUserSearchResponseDetail(
           user
         );
-        const membershipId =
-          user.bungieNetMembershipId ??
-          user.destinyMemberships?.[0]?.membershipId;
+
+        const destinyMembership = user.destinyMemberships?.[0];
+
+        const membershipId = destinyMembership
+          ? destinyMembership.membershipId
+          : user.bungieNetMembershipId;
+
+        const membershipType = EnumUtils.getNumberValue(
+          destinyMembership
+            ? destinyMembership.membershipType
+            : BungieMembershipType.BungieNext,
+          BungieMembershipType
+        );
 
         return {
-          url: RouteHelper.Profile(membershipId),
+          url: RouteHelper.NewProfile({
+            mid: membershipId,
+            mtype: membershipType.toString(),
+          }),
           title: `${bungieName.bungieGlobalName}${bungieName.bungieGlobalCodeWithHashtag}`,
           subtitle: "",
           icon: (

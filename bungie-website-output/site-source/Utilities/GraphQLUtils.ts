@@ -25,6 +25,20 @@ export const bgImageFromConnection = (connection: BasicImageConnection) => {
   return img ? `url(${img})` : undefined;
 };
 
+export const bgImage = (img?: string) => {
+  return img ? `url(${img})` : undefined;
+};
+
+export const responsiveBgImage = (
+  desktopImg: string,
+  mobileImg: string,
+  mobile: boolean
+) => {
+  const image = mobile ? mobileImg : desktopImg;
+
+  return bgImage(image);
+};
+
 export const responsiveBgImageFromConnection = (
   desktopConnection: BasicImageConnection,
   mobileConnection: BasicImageConnection,
@@ -36,7 +50,7 @@ export const responsiveBgImageFromConnection = (
   return img ? `url(${img})` : undefined;
 };
 
-export const bgImageFromStackFile = (file: BnetStackFile) => {
+export const bgImageFromStackFile = (file: { url: string }) => {
   const img = file?.url;
 
   return img ? `url(${img})` : undefined;

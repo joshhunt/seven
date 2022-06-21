@@ -10,11 +10,13 @@ import {
   ImageThumbProps,
   ImageVideoThumb,
 } from "@UI/Marketing/ImageThumb";
+import LazyLoadedBgDiv from "@UI/Utility/LazyLoadedBgDiv";
 import ImagePaginationModal, {
   getScreenshotPaginationData,
 } from "@UIKit/Controls/Modal/ImagePaginationModal";
+import { useCSWebpImages } from "@Utilities/CSUtils";
 import classNames from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { BnetStackPmpCallout } from "../../../Generated/contentstack-types";
 import styles from "./PmpCallout.module.scss";
 
@@ -38,6 +40,18 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
 
   const { data, classes, children } = props;
 
+  const imgs = useCSWebpImages(
+    useMemo(
+      () => ({
+        desktopBg: data?.desktop_bg?.url,
+        mobileBg: data?.mobile_bg?.url,
+        mobileAsideImg: data?.aside_img_mobile?.url,
+        desktopAsideImg: data?.aside_img_desktop?.url,
+      }),
+      [data]
+    )
+  );
+
   const getThumbnail = (thumbItem: PmpCalloutThumbItem | undefined) => {
     const { Image_Thumb, Video_Thumb } = thumbItem ?? {};
 
@@ -46,10 +60,6 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
       Image_Thumb?.image?.url ??
       Video_Thumb?.thumbnail?.url
     );
-  };
-
-  const getBgImage = (img: { url?: string }) => {
-    return img?.url ? `url(${img?.url})` : undefined;
   };
 
   const {
@@ -72,18 +82,19 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
     ImagePaginationModal.show({ imgIndex, images });
   };
 
-  const bgImg = getBgImage(mobile ? mobile_bg : desktop_bg);
+  const bgImg = mobile ? imgs.mobileBg : imgs.desktopBg;
 
-  const asideImg = mobile ? data?.aside_img_mobile : data?.aside_img_desktop;
+  const asideImg = mobile ? imgs?.mobileAsideImg : imgs?.desktopAsideImg;
 
   return (
-    <div
+    <LazyLoadedBgDiv
+      img={bgImg}
       className={classNames(
         styles.callout,
-        { [styles.withAsideImg]: !!asideImg?.url },
+        { [styles.withAsideImg]: !!asideImg },
         classes?.root
       )}
-      style={{ backgroundImage: bgImg, backgroundColor: bg_color }}
+      style={{ backgroundColor: bg_color }}
     >
       <div className={classNames(styles.upperContent, classes?.upperContent)}>
         <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
@@ -97,8 +108,8 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
           />
           {children}
         </div>
-        {asideImg?.url && (
-          <img src={asideImg?.url} className={styles.asideImg} />
+        {asideImg && (
+          <img src={asideImg} className={styles.asideImg} loading={"lazy"} />
         )}
       </div>
       <div className={classNames(styles.thumbsWrapper, classes?.thumbsWrapper)}>
@@ -138,6 +149,6 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
           }
         })}
       </div>
-    </div>
+    </LazyLoadedBgDiv>
   );
 };

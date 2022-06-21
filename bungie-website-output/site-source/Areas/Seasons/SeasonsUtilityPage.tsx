@@ -24,7 +24,7 @@ import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
+import seasonItemModalStyles from "./Progress/SeasonItemModal.module.scss";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -206,12 +206,12 @@ class SeasonsUtilityPage extends React.Component<
         {this.state.itemDetailElement !== null && (
           <Modal
             open={this.state.itemDetailModalOpen}
-            className={styles.itemDetailModal}
-            contentClassName={styles.itemDetailModalContent}
+            className={seasonItemModalStyles.seasonItemModal}
+            contentClassName={seasonItemModalStyles.modalContent}
             onClose={this.closeItemDetailModal}
           >
             <div
-              className={styles.itemModal}
+              className={seasonItemModalStyles.itemModal}
               dangerouslySetInnerHTML={sanitizeHTML(
                 this.state.itemDetailElement
                   ?.getElementsByTagName("template")
@@ -257,8 +257,6 @@ class SeasonsUtilityPage extends React.Component<
             <div className={styles.seasonInfoContainer}>
               <SeasonHeader seasonHash={seasonHash} />
 
-              <RequiresAuth />
-
               {UserUtils.isAuthenticated(this.props.globalState) &&
                 memberships === null && (
                   <Button
@@ -289,23 +287,21 @@ class SeasonsUtilityPage extends React.Component<
               )}
             </div>
 
-            {charactersLoaded && (
-              <SeasonPassRewardProgression
-                seasonHash={seasonHash}
-                characterClassHash={
-                  charactersLoaded
-                    ? characters[selectedCharacter?.characterId]?.classHash
-                    : 0
-                }
-                characterProgressions={
-                  charactersLoaded ? forCharacter?.progressions : undefined
-                }
-                handleClick={(itemHash, rewardIndex, canClaim) =>
-                  this.openItemDetailModal(itemHash, rewardIndex, canClaim)
-                }
-                claimedReward={this.state.itemClaimed}
-              />
-            )}
+            <SeasonPassRewardProgression
+              seasonHash={seasonHash}
+              characterClassHash={
+                charactersLoaded
+                  ? characters[selectedCharacter?.characterId]?.classHash
+                  : 0
+              }
+              characterProgressions={
+                charactersLoaded ? forCharacter?.progressions : undefined
+              }
+              handleClaimingClick={(itemHash, rewardIndex, canClaim) =>
+                this.openItemDetailModal(itemHash, rewardIndex, canClaim)
+              }
+              claimedReward={this.state.itemClaimed}
+            />
 
             {charactersLoaded && !isCurrentSeason && (
               <RedeemSeasonRewards

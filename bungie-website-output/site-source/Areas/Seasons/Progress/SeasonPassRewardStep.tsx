@@ -1,8 +1,12 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import React, { CSSProperties } from "react";
+import { Localizer } from "@bungie/localization";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
+import seasonItemModalStyles from "./SeasonItemModal.module.scss";
 import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
 import { Icon } from "@UI/UIKit/Controls/Icon";
@@ -26,7 +30,8 @@ interface ISeasonPassRewardStepProps {
   rewardStates: DestinyProgressionRewardItemState[];
   onMouseOver: (title: string, desc: string, className: string) => void;
   onMouseLeave: () => void;
-  handleClick: (
+  /* if not defined, clicking will show the anonymous item detail modal */
+  handleClaimingClick?: (
     itemHash: number,
     rewardIndex: number,
     canClaim: boolean
@@ -246,13 +251,18 @@ export class SeasonPassRewardStep extends React.Component<
           typeof itemDef.displayProperties !== "undefined" && (
             <div
               className={styles.iconWrapper}
-              onClick={() =>
-                this.props.handleClick(
-                  item.itemHash,
-                  rewardIndex,
-                  !isClaimed && completeState === "Complete"
-                )
-              }
+              onClick={() => {
+                if (!this.props.character || !this.props.handleClaimingClick) {
+                  //anonymous or lack of characters/no destiny account version of modal
+                  this.openItemDetailModal(item.itemHash);
+                } else {
+                  this.props.handleClaimingClick(
+                    item.itemHash,
+                    rewardIndex,
+                    !isClaimed && completeState === "Complete"
+                  );
+                }
+              }}
             >
               <div
                 className={styles.icon}
@@ -265,10 +275,40 @@ export class SeasonPassRewardStep extends React.Component<
                 }}
                 onMouseEnter={() => this.onMouseOver(itemDef)}
                 onMouseLeave={this.onMouseLeave}
-              />
+              >
+                {item.quantity > 1 && <span>{item.quantity}</span>}
+              </div>
             </div>
           )}
       </div>
+    );
+  }
+
+  private async openItemDetailModal(itemHash: number) {
+    const response = await fetch(
+      `/${Localizer.CurrentCultureName}/Gear/ItemSummary/${itemHash}`
+    );
+
+    const myJson = await response.text();
+
+    const doc = new DOMParser().parseFromString(myJson, "text/html");
+
+    Modal.open(
+      <>
+        <div
+          className={seasonItemModalStyles.itemModal}
+          dangerouslySetInnerHTML={sanitizeHTML(
+            doc
+              .getElementById("gear-item-summary-container")
+              ?.getElementsByTagName("template")
+              ?.item(0)?.innerHTML
+          )}
+        />
+      </>,
+      {
+        className: seasonItemModalStyles.seasonItemModal,
+        contentClassName: seasonItemModalStyles.modalContent,
+      }
     );
   }
 }

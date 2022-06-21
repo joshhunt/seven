@@ -5,11 +5,12 @@ import { FreeToPlayBuyBtn } from "@Areas/Destiny/FreeToPlay/FreeToPlay";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ImageVideoThumb } from "@UI/Marketing/ImageThumb";
+import { useCSWebpImages } from "@Utilities/CSUtils";
 import {
-  bgImageFromStackFile,
+  bgImage,
   responsiveBgImageFromStackFile,
 } from "@Utilities/GraphQLUtils";
-import React from "react";
+import React, { useMemo } from "react";
 import { BnetStackFreeToPlayProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./FreeHero.module.scss";
 
@@ -25,6 +26,19 @@ export const FreeHero: React.FC<FreeHeroProps> = (props) => {
   const { data, V2Data, scrollToRewardsCallout } = props;
   const { bg, btn_text, logo } = data ?? {};
 
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        poster: bg?.desktop?.url,
+        logo: logo?.url,
+        hwLogo: V2Data?.heroes_welcome_logo?.url,
+        bugBg: V2Data?.hero_bug?.background?.url,
+        trailerBtnThumbs: V2Data?.trailer_btns?.map((btn) => btn?.bg?.url),
+      }),
+      [data, V2Data]
+    )
+  );
+
   return (
     <div
       className={styles.hero}
@@ -39,7 +53,7 @@ export const FreeHero: React.FC<FreeHeroProps> = (props) => {
       {V2Data?.bg_video?.url && !mobile && (
         <video
           className={styles.bgVideo}
-          poster={bg?.desktop?.url}
+          poster={images.poster}
           loop
           playsInline
           autoPlay
@@ -52,11 +66,8 @@ export const FreeHero: React.FC<FreeHeroProps> = (props) => {
       <div className={styles.videoOverlay} />
 
       <div className={styles.contentWrapper}>
-        <img className={styles.logo} src={logo?.url} />
-        <img
-          className={styles.heroesWelcomeLogo}
-          src={V2Data?.heroes_welcome_logo?.url}
-        />
+        <img className={styles.logo} src={images.logo} />
+        <img className={styles.heroesWelcomeLogo} src={images.hwLogo} />
         <p className={styles.subTitle}>{V2Data?.sub_heading}</p>
 
         <div className={styles.trailerBtns}>
@@ -64,7 +75,7 @@ export const FreeHero: React.FC<FreeHeroProps> = (props) => {
             return (
               <div key={i} className={styles.trailerBtnWrapper}>
                 <ImageVideoThumb
-                  image={btn?.bg?.url}
+                  image={images.trailerBtnThumbs?.[i]}
                   youtubeUrl={btn?.youtube_url}
                   classes={{
                     image: styles.bg,
@@ -82,11 +93,7 @@ export const FreeHero: React.FC<FreeHeroProps> = (props) => {
         <div className={styles.heroBug}>
           <div
             className={styles.bgImg}
-            style={{
-              backgroundImage: bgImageFromStackFile(
-                V2Data?.hero_bug?.background
-              ),
-            }}
+            style={{ backgroundImage: bgImage(images.bugBg) }}
           />
           <p className={styles.bugHeading} onClick={scrollToRewardsCallout}>
             {V2Data?.hero_bug?.heading}

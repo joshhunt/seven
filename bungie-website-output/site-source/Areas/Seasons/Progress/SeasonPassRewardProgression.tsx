@@ -39,7 +39,12 @@ interface ISeasonPassRewardProgressionProps
   seasonHash: number;
   characterProgressions?: { [key: number]: World.DestinyProgression };
   characterClassHash?: number;
-  handleClick: (itemHash: number, rewardIndex: number, canClaim: boolean) => {};
+  /** If you want to be able to claim the reward by clicking on it, pass a function in that will do that */
+  handleClaimingClick?: (
+    itemHash: number,
+    rewardIndex: number,
+    canClaim: boolean
+  ) => {};
   claimedReward?: IClaimedReward;
 }
 
@@ -164,11 +169,11 @@ class SeasonPassRewardProgression extends React.Component<
           character={character}
           completeState={completeState}
           rewardStates={rewardItemStates}
-          handleClick={(
+          handleClaimingClick={(
             itemHash: number,
             rewardIndex: number,
             canClaim: boolean
-          ) => this.props.handleClick(itemHash, rewardIndex, canClaim)}
+          ) => this.props.handleClaimingClick(itemHash, rewardIndex, canClaim)}
           claimedReward={this.props.claimedReward}
         />
       );
