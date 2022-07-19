@@ -341,8 +341,6 @@ class DestinyDefinitionsInternal extends DataStore<
           if (hash in defs) {
             return defs[hash].def;
           }
-
-          throw new DefinitionNotFoundError(hash, type);
         },
         all: () => {
           const defHashTable: Record<string, any> = {};

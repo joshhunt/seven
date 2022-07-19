@@ -255,8 +255,9 @@ const RewardsWarningFragment: React.FC<RewardsWarningFragmentProps> = (
         {props.description && (
           <p className={styles.emailDescription}>{props.description}</p>
         )}
-        {props.className === "marketing" && (
+        {props.className.indexOf("marketing") > -1 && (
           <Button
+            className={styles.optInButton}
             buttonType={"gold"}
             size={BasicSize.Small}
             loading={agreeEmailStarted}

@@ -151,6 +151,7 @@ const Account: React.FC = () => {
   const applicationHistoryPath = actions.AppHistory.resolve();
   const eververseHistoryPath = actions.EververseHistory.resolve();
   const silverBalanceHistoryPath = actions.SilverBalanceHistory.resolve();
+  const notificationsPath = actions.Notifications.resolve();
   const history = useHistory();
 
   const tabsOnly = StringUtils.equals(
@@ -207,6 +208,20 @@ const Account: React.FC = () => {
     pathName: actions.AppHistory.path,
   } as TabData;
 
+  const reactNotifications = {
+    tabLabel: Localizer.Account.NotificationsTitle,
+    contentComponent: <Notifications />,
+    tabTo: notificationsPath,
+    pathName: actions.Notifications.path,
+  } as TabData;
+
+  const oldNotifications = {
+    tabLabel: Localizer.Privacy.Notifications,
+    tabRender: renderAsExternalLink,
+    tabTo: RouteHelper.Settings({ category: "notifications" }),
+    pathName: actions.Notifications.path,
+  } as TabData;
+
   const accountTabDetails: TabData[] = [
     {
       tabLabel: Localizer.account.account,
@@ -238,13 +253,7 @@ const Account: React.FC = () => {
       tabTo: actions.EmailSms.resolve(),
       pathName: actions.EmailSms.path,
     },
-    {
-      tabLabel: Localizer.Privacy.Notifications,
-      tabRender: renderAsExternalLink,
-      contentComponent: <Notifications />,
-      tabTo: RouteHelper.Settings({ category: "notifications" }), //RouteDefs.AreaGroups.User.areas.Account.getAction("Notifications").resolve(),
-      pathName: null, //RouteDefs.AreaGroups.User.areas.Account.getAction("Notifications").path
-    },
+    useReactView ? reactNotifications : oldNotifications,
     {
       tabLabel: Localizer.account.accountLinking,
       contentComponent: <AccountLinking />,

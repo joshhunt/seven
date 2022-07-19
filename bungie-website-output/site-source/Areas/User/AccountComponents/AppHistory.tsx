@@ -83,7 +83,9 @@ export const ApplicationHistory: React.FC<ApplicationHistoryProps> = (
       <TwoLineItem
         icon={<IconCoin iconImageUrl={item?.iconPath} />}
         itemTitle={item?.name}
-        itemSubtitle={`${characterSummary.className} ✧${characterSummary.light}`}
+        itemSubtitle={`${
+          characterSummary.className ?? Localizer.Profile.StatusUnknown
+        }`}
       />
     );
   };

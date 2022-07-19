@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import {S17Hero} from "@Areas/Seasons/ProductPages/Season17/Components/Hero/S17Hero";
+import {S17ProceduralEventSection} from "@Areas/Seasons/ProductPages/Season17/Components/S17EventSection/S17EventSection";
 import {DefaultPmpComponents, extendDefaultComponents, PartialPmpReferenceMap} from "@Boot/ProceduralMarketingPageFallback";
 import {Responsive} from "@Boot/Responsive";
 import {useReferenceMap} from "@bungie/contentstack/ReferenceMap/ReferenceMap";
@@ -21,12 +22,13 @@ import {PmpMedia} from "@UI/Marketing/Fragments/PmpMedia";
 import {PmpMediaCarousel} from "@UI/Marketing/Fragments/PmpMediaCarousel";
 import {PmpRewardsList} from "@UI/Marketing/Fragments/PmpRewardsList/PmpRewardsList";
 import {PmpSectionHeader} from "@UI/Marketing/Fragments/PmpSectionHeader";
+import {PmpStackedInfoThumbBlocks} from "@UI/Marketing/Fragments/PmpStackedInfoThumbBlocks";
 import {BungieHelmet} from "@UI/Routing/BungieHelmet";
 import {Button} from "@UIKit/Controls/Button/Button";
 import {BuyButton} from "@UIKit/Controls/Button/BuyButton";
-import {bgImageFromStackFile, imageFromConnection, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/GraphQLUtils";
+import {bgImageFromStackFile, imageFromConnection, responsiveBgImage, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {BnetStackSeasonOfTheHaunted} from "../../../../Generated/contentstack-types";
 import {ContentStackClient} from "../../../../Platform/ContentStack/ContentStackClient";
 import styles from "./SeasonOfTheHaunted.module.scss"
@@ -44,12 +46,13 @@ const pmpComponentOverrides: PartialPmpReferenceMap = {
 				root: styles.sectionHeader,
 				heading: styles.heading,
 				smallTitle: styles.smallTitle,
-				blurb: styles.blurb
+				blurb: styles.blurb,
+				textWrapper: styles.textWrapper
 			}}
 		/>
 	),
 	pmp_callout: (ref) => (
-		<PmpCallout data={ref?.data} classes={{root: styles.callout, heading: styles.heading, textWrapper: styles.textWrapper}}/>
+		<PmpCallout data={ref?.data} classes={{root: styles.callout, heading: styles.heading, blurb: styles.blurb, textWrapper: styles.textWrapper, upperContent: styles.upperContent}}/>
 	),
 	pmp_icon_action_cards: (ref) => (
 		<PmpIconActionCards data={ref?.data} classes={{}}/>
@@ -70,6 +73,9 @@ const pmpComponentOverrides: PartialPmpReferenceMap = {
 	),
 	pmp_rewards_list: (ref) => (
 		<PmpRewardsList data={ref?.data} classes={{ root: styles.rewardsList }}/>
+	),
+	pmp_stacked_info_thumb_blocks: (ref) => (
+		<PmpStackedInfoThumbBlocks data={ref?.data} classes={{root: styles.stackedInfoBlock, blurb: styles.blurb}}/>
 	)
 }
 
@@ -77,8 +83,10 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 {
 	const [data, setData] = useState<null | BnetStackSeasonOfTheHaunted>(null);
 	const responsive = useDataStore(Responsive);
+	
+	const eventSectionRef = useRef<HTMLDivElement | null>(null);
 
-	const contentReferences: (`${keyof BnetStackSeasonOfTheHaunted}.content` | keyof BnetStackSeasonOfTheHaunted)[] = [
+	const contentReferences: (`${keyof BnetStackSeasonOfTheHaunted}.content` | keyof BnetStackSeasonOfTheHaunted | string)[] = [
 		"story_section.content",
 		"activities_section.content",
 		"light_section.content",
@@ -88,7 +96,8 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 		"silver_bundle_section.content",
 		"media_section.content",
 		"learn_more_section.content",
-		"sub_nav"
+		"sub_nav",
+		"solstice_content_chunks.content_with_background.content"
 	];
 
 	useEffect(() =>
@@ -101,6 +110,10 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 			.fetch()
 			.then(setData)
 	}, [])
+
+	const scrollToEventSection = () => {
+		eventSectionRef?.current?.scrollIntoView({ behavior: "smooth" });
+	}
 
 	type TResponsiveBg = BnetStackSeasonOfTheHaunted["story_section"]["top_bg"];
 
@@ -125,7 +138,9 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 		learn_more_section,
 		sub_nav,
 		sub_nav_btn_text,
-		cta_section
+		cta_section,
+		solstice_content_chunks,
+		solstice_section
 	} = data ?? {};
 
 	const openBuyModal = () =>
@@ -145,7 +160,7 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 			<div className={styles.pageFixedContent}>
 
 				{/* HERO */}
-				<S17Hero data={hero}/>
+				<S17Hero data={hero} scrollToEvent={scrollToEventSection}/>
 
 				{/* SUB NAV */}
 				<PmpNavigationBar
@@ -178,6 +193,13 @@ const SeasonOfTheHaunted = (props: SeasonOfTheHauntedProps) =>
 				{/* ACTIVITIES */}
 				<div id={"activities"} className={classNames(styles.section, styles.activities)} style={{backgroundImage: getResponsiveBg(activities_section?.bg)}}>
 					<S17ProceduralContent content={activities_section?.content} pmpComponents={pmpComponentOverrides}/>
+				</div>
+				
+				{/* SOLSTICE */}
+				<div className={styles.solstice}>
+					<div className={styles.sectionIdAnchor} id={"Solstice"} ref={eventSectionRef}/>
+					<img className={styles.heroImg} src={responsive.mobile ? solstice_section?.hero_bg?.mobile_bg?.url : solstice_section?.hero_bg?.desktop_bg?.url}/>
+					<S17ProceduralEventSection contentChunks={solstice_content_chunks} pmpComponentOverrides={pmpComponentOverrides}/>
 				</div>
 
 				{/* GEAR */}

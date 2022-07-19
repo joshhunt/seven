@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { useField } from "formik";
-import React, { ChangeEvent, MouseEventHandler } from "react";
+import React, { ChangeEvent } from "react";
 
 interface FormikTextInputProps {
   /** Name of field, pass in string version of the property you want to map it to */
@@ -53,8 +53,8 @@ export const FormikTextInput: React.FC<FormikTextInputProps> = ({
           props.onChange && props.onChange(e);
           field.onChange(e);
         }}
-        onFocus={(e) => props.onFocus(e)}
-        onBlur={(e) => props.onBlur(e)}
+        onFocus={(e) => (props.onFocus ? props.onFocus(e) : null)}
+        onBlur={(e) => (props.onBlur ? props.onBlur(e) : null)}
       />
       {meta.touched && meta.error && typeof meta.error === "string" ? (
         <div className={classes?.error}>{meta.error}</div>

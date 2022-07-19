@@ -42,6 +42,11 @@ export const Recent: React.FC<RecentProps> = (props) => {
     <div className={styles.container}>
       <TwitterScript />
       <Grid>
+        <GridCol cols={12}>
+          <div className={styles.header}>
+            <span>{Localizer.Explore.LatestNewsHeader}</span>
+          </div>
+        </GridCol>
         <ArticleSection
           articleList={testMultipleArticles.slice(0, 4)}
           cols={9}

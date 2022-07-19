@@ -111,10 +111,22 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
             .refreshCurrentUser(true)
             .async.then(showSettingsChangedToast);
         })
-        .catch(ConvertToPlatformError)
         .catch((e) => {
           setNameChangeStatus("canEdit");
-          Modal.error(e);
+
+          if (e.MessageData?.ValidationFieldName === "newDisplayName") {
+            Modal.open(
+              Localizer.FormatReact(Localizer.Userpages.InvalidBungieName, {
+                BungieNameHelpLink: (
+                  <Anchor url={"https://www.bungie.net/CrossPlayGuide/"}>
+                    {Localizer.Userpages.CrossPlayGuideLink}
+                  </Anchor>
+                ),
+              })
+            );
+          } else {
+            ConvertToPlatformError(e).then((err) => Modal.error(err));
+          }
         })
         .finally(() => setSubmitting(false));
   };

@@ -24,6 +24,7 @@ interface FreeSectionProps {
     section?: string;
     sectionBg?: string;
     idAnchor?: string;
+    blurb?: string;
   };
   children?: React.ReactNode;
 }
@@ -73,7 +74,9 @@ export const FreeSection: React.FC<FreeSectionProps> = (props) => {
 
         {title && <h2 className={styles.title}>{title}</h2>}
 
-        {blurb && <p className={styles.blurb}>{blurb}</p>}
+        {blurb && (
+          <p className={classNames(styles.blurb, classes?.blurb)}>{blurb}</p>
+        )}
         {children}
       </div>
     </div>

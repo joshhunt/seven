@@ -25,7 +25,11 @@ export const InitializeContentStackClient = () => {
     cachedSettingsObject: GlobalStateDataStore.state.coreSettings,
   });
 
-  client = Stack(apiKey, deliveryToken, environment);
+  client = Stack({
+    api_key: apiKey,
+    delivery_token: deliveryToken,
+    environment: environment,
+  });
 };
 
 export const useLazyLoadEntry = (entry: Entry) => {

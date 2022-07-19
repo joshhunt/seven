@@ -4638,6 +4638,70 @@ export declare namespace DestinyDefinitions {
     scalarValue: number;
   }
 
+  export interface DestinyEventCardDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    linkRedirectPath: string;
+
+    color: DestinyColor;
+
+    images: DestinyEventCardImages;
+
+    activeUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    ownershipUnlockFlagHash: number;
+
+    triumphsPresentationNodeHash: number;
+
+    sealPresentationNodeHash: number;
+
+    ticketCurrencyItemHash: number;
+
+    ticketVendorHash: number;
+
+    ticketVendorCategoryId: string;
+
+    ticketVendorCategoryHash: number;
+
+    endTime: string;
+
+    endTimeOverrideUnlockValueHash: number;
+
+    displayEndingSoonUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    uiThemeHash: number;
+
+    upsellDialogList: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyEventCardImages {
+    unownedCardSleeveImagePath: string;
+
+    unownedCardSleeveWrapImagePath: string;
+
+    cardIncompleteImagePath: string;
+
+    cardCompleteImagePath: string;
+
+    cardCompleteWrapImagePath: string;
+
+    progressIconImagePath: string;
+
+    themeBackgroundImagePath: string;
+  }
+
   export interface DestinySeasonDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
 
@@ -6009,6 +6073,9 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyEquipmentSlotDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEquipmentSlotDefinition;
   };
+  DestinyEventCardDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyEventCardDefinition;
+  };
   DestinyFactionDefinition?: {
     [key: string]: DestinyDefinitions.DestinyFactionDefinition;
   };
@@ -6214,6 +6281,7 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyPlugSetDefinition?: DestinyDefinitions.DestinyPlugSetDefinition;
   DestinySocketCategoryDefinition?: DestinyDefinitions.DestinySocketCategoryDefinition;
   DestinySocketTypeDefinition?: DestinyDefinitions.DestinySocketTypeDefinition;
+  DestinyEventCardDefinition?: DestinyDefinitions.DestinyEventCardDefinition;
   DestinySeasonDefinition?: DestinyDefinitions.DestinySeasonDefinition;
   DestinySeasonPassDefinition?: DestinyDefinitions.DestinySeasonPassDefinition;
   DestinySackRewardItemListDefinition?: DestinyDefinitions.DestinySackRewardItemListDefinition;
@@ -6289,6 +6357,7 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyPlugSetDefinition",
   "DestinySocketCategoryDefinition",
   "DestinySocketTypeDefinition",
+  "DestinyEventCardDefinition",
   "DestinySeasonDefinition",
   "DestinySeasonPassDefinition",
   "DestinySackRewardItemListDefinition",

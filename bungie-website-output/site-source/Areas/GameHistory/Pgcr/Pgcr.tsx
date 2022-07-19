@@ -1,7 +1,10 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { MissingPgcrDataError } from "@Areas/GameHistory/Pgcr/PgcrComponents/MissingPgcrDataError";
 import { PgcrLeaderStatItem } from "@Areas/GameHistory/Pgcr/PgcrComponents/PgcrLeaderStatItem";
+import { PgcrReportButton } from "@Areas/GameHistory/Pgcr/PgcrComponents/PgcrReportButton";
 import PgcrStatBar from "@Areas/GameHistory/Pgcr/PgcrComponents/PgcrStatBar";
 import {
   initialActivityData,
@@ -12,16 +15,23 @@ import {
   PgcrStatsByCharacter,
 } from "@Areas/GameHistory/Pgcr/PgcrDataStore";
 import { PgcrUtils } from "@Areas/GameHistory/Pgcr/PgcrUtils";
+import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { DestinyActivityModeCategory, DestinyActivityModeType } from "@Enum";
+import {
+  DestinyActivityModeCategory,
+  DestinyActivityModeType,
+  IgnoredItemType,
+} from "@Enum";
 import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
 import { Timestamp } from "@UI/Utility/Timestamp";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { StringUtils } from "@Utilities/StringUtils";
 import React, { useEffect, useState } from "react";
@@ -53,8 +63,10 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
   const [pgcrLoaded, setPgcrLoaded] = useState(false);
   const [team1, setTeam1] = useState<PgcrStatsByCharacter>({});
   const [team2, setTeam2] = useState<PgcrStatsByCharacter>({});
+  const [selectedStat, setSelectedStat] = useState<string>("");
   const pgcrData = useDataStore(PgcrDataStore);
   const destinyMembership = useDataStore(GameHistoryDestinyMembershipDataStore);
+  const responsive = useDataStore(Responsive);
 
   useEffect(() => {
     Platform.Destiny2Service.GetPostGameCarnageReport(props.activityId)
@@ -91,7 +103,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
           newDefinitionHashes.activityDefinitionHash
         );
 
-        if (activityDefinition !== null) {
+        if (!!activityDefinition) {
           newDerivedDefinitions.activityTypeHash =
             activityDefinition.activityTypeHash;
           newDerivedDefinitions.destinationHash =
@@ -132,10 +144,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
           derivedDefinitionHashes.activityTypeHash
         );
 
-        if (
-          activityModeDefinition === null ||
-          activityModeDefinition === undefined
-        ) {
+        if (!activityModeDefinition) {
           PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
 
           throw new Error(
@@ -144,11 +153,11 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
         }
 
         if (
-          activityModeDefinition.activityModeCategory ===
+          activityModeDefinition?.activityModeCategory ===
             DestinyActivityModeCategory.PvE &&
-          (activityModeDefinition.modeType ===
+          (activityModeDefinition?.modeType ===
             DestinyActivityModeType.ScoredHeroicNightfall ||
-            activityModeDefinition.modeType ===
+            activityModeDefinition?.modeType ===
               DestinyActivityModeType.ScoredNightfall)
         ) {
           newActivityData.isScoredPvE = true;
@@ -160,7 +169,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
           throw new Error("Can't find parentHashes of this activity mode");
         }
 
-        activityModeDefinition.parentHashes.forEach((parentHash) => {
+        activityModeDefinition?.parentHashes.forEach((parentHash) => {
           const parent = props.definitions.DestinyActivityModeDefinition.get(
             parentHash
           );
@@ -173,7 +182,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
             const parentOfParent = props.definitions.DestinyActivityModeDefinition.get(
               parentOfParentHash
             );
-            if (parentOfParent !== null) {
+            if (parentOfParent) {
               newActivityData.isCrucible =
                 newActivityData.isCrucible ||
                 parentOfParent?.modeType === DestinyActivityModeType.AllPvP;
@@ -183,13 +192,14 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
         if (!activityDefinition && !activityTypeDefinition) {
           PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
+
           throw new Error(
             "activityDefinition or activityTypeDefinition are undefined"
           );
         }
 
         if (
-          activityModeDefinition.activityModeCategory ===
+          activityModeDefinition?.activityModeCategory ===
           DestinyActivityModeCategory.PvECompetitive
         ) {
           newActivityData.isGambit = true;
@@ -202,7 +212,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
           newActivityData.focusedTeamId = PgcrUtils.getTeamIdForCharacter(
             pgcrData.pgcr,
-            destinyMembership.selectedCharacter.characterId
+            destinyMembership?.selectedCharacter?.characterId
           );
 
           const firstTeam = pgcr.teams[0];
@@ -240,30 +250,30 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
         //Set pgcr header image
 
-        newActivityData.pgcrImage = activityModeDefinition.pgcrImage;
+        newActivityData.pgcrImage = activityModeDefinition?.pgcrImage;
 
         PgcrDataStore.actions.updateStats(
           PgcrUtils.createStats(newActivityData, pgcr.entries)
         );
-        PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
 
-        setPgcrLoaded(true);
+        PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
       })
-      .catch((e) => {
-        console.error(e);
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e))
+      .finally(() => {
         setPgcrLoaded(true);
       });
-  }, []);
+  }, [pgcrData]);
 
   useEffect(() => {
-    if (pgcrLoaded && pgcrData.pgcr?.teams.length > 0) {
+    if (pgcrLoaded && pgcrData.pgcr?.teams?.length > 0) {
       const tempTeam1: PgcrStatsByCharacter = {};
       const tempTeam2: PgcrStatsByCharacter = {};
 
-      Object.keys(pgcrData.pgcrStats.statTableData.statsByCharacter).forEach(
+      Object.keys(pgcrData.pgcrStats?.statTableData?.statsByCharacter).forEach(
         (id: string) => {
           const character =
-            pgcrData.pgcrStats.statTableData.statsByCharacter[id];
+            pgcrData.pgcrStats?.statTableData?.statsByCharacter[id];
 
           if (character.team === pgcrData.pgcrActivityData.focusedTeamId) {
             tempTeam1[id] = character;
@@ -278,54 +288,118 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
       setTeam1(tempTeam1);
       setTeam2(tempTeam2);
     }
-  }, [pgcrData.pgcrStats.statTableData.statsByCharacter]);
+  }, [pgcrData.pgcrStats?.statTableData?.statsByCharacter]);
 
   const _makeCharacterStatRowsFromTeam = (
     team: PgcrStatsByCharacter,
     teamLabel: string
   ) => {
-    if (!pgcrData.pgcrStats.statTableData.statsByCharacter) {
+    if (!pgcrData.pgcrStats?.statTableData?.statsByCharacter) {
       return null;
     }
+
+    const isMobile = responsive.mobile;
+    const statSelectionOptions: IDropdownOption[] = pgcrData.pgcrStats?.statTableData.statNames.map(
+      (statName) => {
+        return {
+          label: makeOrAbbreviateStatName(statName),
+          value: statName,
+        };
+      }
+    );
+
+    const getCharacterStatValue = (characterId: string | number) => {
+      return pgcrData.pgcrStats?.statTableData?.statsByCharacter[
+        characterId
+      ].stats.find((statItem) => statItem.name === selectedStat)?.value;
+    };
 
     return (
       <>
         <table>
           <tbody>
-            <tr className={styles.statNames}>
-              <td>{teamLabel}</td>
-              {pgcrData.pgcrStats.statTableData.statNames.map((n, i) => (
-                <th key={i} className={styles.statName}>
-                  {makeOrAbbreviateStatName(n)}
-                </th>
-              ))}
-            </tr>
-            {Object.keys(team).map((ci, i) => {
-              return (
-                <tr key={i} className={styles.playerRow}>
-                  <td className={styles.playerBox}>
-                    <div className={styles.destinyRosterPlayer}>
-                      <div
-                        className={styles.emblem}
-                        style={{
-                          backgroundImage: `url(${
-                            props.definitions.DestinyInventoryItemLiteDefinition.get(
-                              team[ci].emblem
-                            ).displayProperties.icon
-                          }`,
-                        }}
-                      />
-                      <div>{team[ci].displayName}</div>
-                    </div>
+            {isMobile ? (
+              <>
+                <tr>
+                  <td />
+                  <td>
+                    <Dropdown
+                      options={statSelectionOptions}
+                      onChange={(value) => setSelectedStat(value)}
+                    />
                   </td>
-                  {pgcrData.pgcrStats.statTableData.statsByCharacter[
-                    ci
-                  ].stats.map((stat, k) => (
-                    <td key={k}>{stat.value}</td>
+                </tr>
+                {Object.keys(team).map((ci, i) => {
+                  return (
+                    <tr key={i}>
+                      <td className={styles.playerBox}>
+                        <div className={styles.destinyRosterPlayer}>
+                          <div
+                            className={styles.emblem}
+                            style={{
+                              backgroundImage: `url(${
+                                props.definitions.DestinyInventoryItemLiteDefinition.get(
+                                  team[ci].emblem
+                                ).displayProperties.icon
+                              }`,
+                            }}
+                          />
+                          <div className={styles.nameReportContainer}>
+                            <div>{team[ci].displayName}</div>
+                            <PgcrReportButton
+                              ignoredItemId={team[ci]?.membershipId}
+                              itemContextType={IgnoredItemType.UserProfile}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td>{getCharacterStatValue(ci)}</td>
+                    </tr>
+                  );
+                })}
+              </>
+            ) : (
+              <>
+                <tr className={styles.statNames}>
+                  <td>{teamLabel}</td>
+                  {pgcrData.pgcrStats?.statTableData.statNames.map((n, i) => (
+                    <th key={i} className={styles.statName}>
+                      {makeOrAbbreviateStatName(n)}
+                    </th>
                   ))}
                 </tr>
-              );
-            })}
+                {Object.keys(team).map((ci, i) => {
+                  return (
+                    <tr key={i}>
+                      <td className={styles.playerBox}>
+                        <div className={styles.destinyRosterPlayer}>
+                          <div
+                            className={styles.emblem}
+                            style={{
+                              backgroundImage: `url(${
+                                props.definitions.DestinyInventoryItemLiteDefinition.get(
+                                  team[ci].emblem
+                                ).displayProperties.icon
+                              }`,
+                            }}
+                          />
+                          <div>{team[ci].displayName}</div>
+                          <PgcrReportButton
+                            ignoredItemId={team[ci]?.membershipId}
+                            itemContextType={IgnoredItemType.UserProfile}
+                          />
+                        </div>
+                      </td>
+                      {pgcrData.pgcrStats?.statTableData?.statsByCharacter[
+                        ci
+                      ]?.stats.map((stat, k) => (
+                        <td key={k}>{stat.value}</td>
+                      ))}
+                    </tr>
+                  );
+                })}{" "}
+              </>
+            )}
           </tbody>
         </table>
       </>
@@ -348,75 +422,83 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
   return (
     <div className={styles.contentBounds}>
       <SpinnerContainer loading={!pgcrLoaded}>
-        <Grid>
-          <div
-            className={styles.header}
-            style={{
-              backgroundImage: `url(${pgcrData.pgcrActivityData.pgcrImage})`,
-            }}
-          >
-            <img
-              className={styles.activityIcon}
-              src={props.basicActivityData.icon}
-            />
-            <div className={styles.activityName}>
-              {props.basicActivityData.activityName}
-            </div>
-            <div className={styles.activityLocation}>
-              {props.basicActivityData.location}
-            </div>
-            <div className={styles.infoPills}>
-              <div className={styles.timestamp}>
-                <Timestamp time={props.basicActivityData.timestamp} />
+        {props.basicActivityData ? (
+          <div>
+            <div
+              className={styles.header}
+              style={{
+                backgroundImage: `url(${pgcrData.pgcrActivityData?.pgcrImage})`,
+              }}
+            >
+              <img
+                className={styles.activityIcon}
+                src={props.basicActivityData?.icon}
+              />
+              <div className={styles.activityName}>
+                {props.basicActivityData?.activityName}
               </div>
-              {props.basicActivityData.standing && (
-                <div className={styles.standing}>
-                  {props.basicActivityData.standing}
+              <div className={styles.activityLocation}>
+                {props.basicActivityData?.location}
+              </div>
+              <div className={styles.infoPills}>
+                <div className={styles.timestamp}>
+                  <Timestamp time={props.basicActivityData?.timestamp} />
+                </div>
+                {props.basicActivityData?.standing && (
+                  <div className={styles.standing}>
+                    {props.basicActivityData.standing}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className={styles.body}>
+              {pgcrData?.pgcrActivityData?.isScoredPvE && (
+                <>
+                  <div className={styles.subtitle}>
+                    {Localizer.Pgcr.GameStatsSectionHeader}
+                  </div>
+                  <div className={styles.statBars}>
+                    {pgcrData.pgcrStats?.statBarData.map((stat, i) => (
+                      <PgcrStatBar key={i} statId={stat} />
+                    ))}
+                  </div>
+                </>
+              )}
+              <div className={styles.leaderStats}>
+                {pgcrData.pgcrStats?.leaderStatItemData.map((item, i) => (
+                  <PgcrLeaderStatItem key={i} statId={item} />
+                ))}
+              </div>
+              {Object.keys(pgcrData.pgcrStats?.statTableData?.statsByCharacter)
+                .length > 0 && (
+                <div className={styles.statTable}>
+                  {Object.keys(team1).length > 0 ||
+                  Object.keys(team2).length > 0 ? (
+                    <>
+                      {Object.keys(team1).length > 0 &&
+                        _makeCharacterStatRowsFromTeam(
+                          team1,
+                          Localizer.Pgcr.YourTeam
+                        )}
+                      {Object.keys(team2).length > 0 &&
+                        _makeCharacterStatRowsFromTeam(
+                          team2,
+                          Localizer.Pgcr.OpponentTeam
+                        )}
+                    </>
+                  ) : (
+                    _makeCharacterStatRowsFromTeam(
+                      pgcrData.pgcrStats?.statTableData?.statsByCharacter,
+                      ""
+                    )
+                  )}
                 </div>
               )}
             </div>
           </div>
-          <div className={styles.body}>
-            <GridCol cols={12} className={styles.subtitle}>
-              {Localizer.Pgcr.GameStatsSectionHeader}
-            </GridCol>
-            <GridCol cols={6} className={styles.statBars}>
-              {pgcrData.pgcrStats.statBarData.map((stat, i) => (
-                <PgcrStatBar key={i} statId={stat} />
-              ))}
-            </GridCol>
-            <GridCol cols={6} className={styles.leaderStats}>
-              {pgcrData.pgcrStats.leaderStatItemData.map((item, i) => (
-                <PgcrLeaderStatItem key={i} statId={item} />
-              ))}
-            </GridCol>
-            {Object.keys(pgcrData.pgcrStats.statTableData.statsByCharacter)
-              .length > 0 && (
-              <GridCol cols={12} className={styles.statTable}>
-                {Object.keys(team1).length > 0 ||
-                Object.keys(team2).length > 0 ? (
-                  <>
-                    {Object.keys(team1).length > 0 &&
-                      _makeCharacterStatRowsFromTeam(
-                        team1,
-                        Localizer.Pgcr.YourTeam
-                      )}
-                    {Object.keys(team2).length > 0 &&
-                      _makeCharacterStatRowsFromTeam(
-                        team2,
-                        Localizer.Pgcr.OpponentTeam
-                      )}
-                  </>
-                ) : (
-                  _makeCharacterStatRowsFromTeam(
-                    pgcrData.pgcrStats.statTableData.statsByCharacter,
-                    ""
-                  )
-                )}
-              </GridCol>
-            )}
-          </div>
-        </Grid>
+        ) : (
+          <MissingPgcrDataError />
+        )}
       </SpinnerContainer>
     </div>
   );

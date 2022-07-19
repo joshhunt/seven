@@ -89,6 +89,7 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
             placeholder={""}
             enableSearch={true}
             disableSearchIcon={true}
+            enableLongNumbers={true}
             dropdownStyle={{ color: "black" }}
             inputStyle={{
               borderRadius: "unset",

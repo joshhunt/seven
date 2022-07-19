@@ -1,36 +1,33 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import {
   formatDateForAccountTable,
   ViewerPermissionContext,
 } from "@Areas/User/Account";
 import accountStyles from "@Areas/User/Account.module.scss";
-import { EverversePurchaseModal } from "@Areas/User/AccountComponents/Internal/EverversePurchaseModal";
-import { PermissionsGate } from "@UI/User/PermissionGate";
-import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
-import { EnumUtils } from "@Utilities/EnumUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import { DateTime } from "luxon";
-import styles from "./EververseHistory.module.scss";
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
+import { EverversePurchaseModal } from "@Areas/User/AccountComponents/Internal/EverversePurchaseModal";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
-  AclEnum,
   BungieMembershipType,
   EververseChangeEventClassification,
   EververseVendorPurchaseEventClassification,
 } from "@Enum";
 import { MembershipPair } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Platform, Tokens } from "@Platform";
+import { GroupsV2, Platform, Tokens } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import Table from "antd/lib/table";
 import React, { useContext, useEffect, useState } from "react";
+import styles from "./EververseHistory.module.scss";
 
 export interface IEververseRecord {
   rowKey: number;
@@ -44,139 +41,99 @@ export interface IEververseRecord {
   status:
     | EververseVendorPurchaseEventClassification
     | EververseChangeEventClassification;
-  platform: BungieMembershipType;
+  membership: GroupsV2.GroupUserInfoCard;
 }
 
 interface EververseHistoryProps {}
 
 export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
   const { Column } = Table;
-
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
   const destinyMember = useDataStore(AccountDestinyMembershipDataStore);
-  const [selectedPlatform, setSelectedPlatform] = useState<
-    BungieMembershipType
+  const [selectedMembership, setSelectedMembership] = useState<
+    GroupsV2.GroupUserInfoCard
   >(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState(null);
+  const [emptyHistoryString, setEmptyHistoryString] = useState<string>(
+    Localizer.Profile.ThisUserHasNotMadeAny
+  );
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
   const useQueryMid = membershipIdFromQuery && (isSelf || isAdmin);
-  const mId = useQueryMid
-    ? membershipIdFromQuery
-    : globalStateData?.loggedInUser?.user?.membershipId;
+  const profileLoc = Localizer.profile;
 
-  const showNoDestinyAccount = () => {
-    ConfirmationModal.show({
-      children: (
-        <div>
-          <h3 className={styles.errorTitle}>
-            {Localizer.Profile.Error.toUpperCase()}
-          </h3>
-          <div className={styles.errorContent}>
-            {Localizer.Profile.ThisUserDoesNotHaveADestiny}
-          </div>
-        </div>
-      ),
-      type: "warning",
-      cancelButtonProps: {
-        disable: true,
-      },
-      confirmButtonProps: {
-        labelOverride: Localizer.Coderedemption.ErrorAcknowledge,
-      },
-    });
-  };
-
-  useEffect(() => {
-    AccountDestinyMembershipDataStore.actions.loadUserData({
-      membershipType: BungieMembershipType.BungieNext,
-      membershipId: mId,
-    });
-  }, [UserUtils.isAuthenticated(globalStateData)]);
-
-  useEffect(() => {
-    if (destinyMember.loaded) {
-      if (destinyMember?.membershipData?.destinyMemberships?.length === 0) {
-        showNoDestinyAccount();
-      } else {
-        const matchingMembership =
-          destinyMember?.memberships?.find((m) =>
-            EnumUtils.looseEquals(
-              m.membershipType,
-              selectedPlatform,
-              BungieMembershipType
-            )
-          ) ?? destinyMember?.memberships?.[0];
-
-        if (!matchingMembership) {
-          showNoDestinyAccount();
-        } else {
-          setSelectedPlatform(matchingMembership?.membershipType);
-          loadHistory({
-            membershipType: matchingMembership?.membershipType,
-            membershipId: matchingMembership?.membershipId,
-          });
-        }
-      }
-    }
-  }, [destinyMember?.loaded]);
-
-  const loadHistory = async (membership: MembershipPair) => {
-    let response = null;
+  const loadHistory = (membership: MembershipPair) => {
     setLoading(true);
 
-    try {
-      // important: you have to pass a destiny specific membership in here
-      response = await Platform.TokensService.EververseVendorPurchaseHistory(
-        membership.membershipId,
-        membership.membershipType,
-        0
-      );
+    // important: you have to pass a destiny specific membership in here
+    Platform.TokensService.EververseVendorPurchaseHistory(
+      membership.membershipId,
+      membership.membershipType,
+      0
+    )
+      .then((res) => {
+        if (res?.results?.length > 0) {
+          setHistory(
+            res.results.map((x, i) => {
+              const bungieNameObject = useQueryMid
+                ? UserUtils.getBungieNameFromUserInfoCard(selectedMembership)
+                : UserUtils.getBungieNameFromBnetGeneralUser(
+                    globalStateData?.loggedInUser?.user
+                  );
 
-      if (response?.results) {
-        setHistory(
-          response.results.map((x, i) => {
-            const bungieNameObject = useQueryMid
-              ? UserUtils.getBungieNameFromUserInfoCard(
-                  destinyMember?.selectedMembership
-                )
-              : UserUtils.getBungieNameFromBnetGeneralUser(
-                  globalStateData?.loggedInUser?.user
-                );
-
-            return {
-              rowKey: i,
-              order: x.EventId,
-              date: x.Timestamp,
-              productName:
-                x.PaidCosts?.[0]?.ItemDisplayName ??
-                Localizer.Profile.UnknownItemName,
-              quantity: x.PurchasedItemQuantity.toString(),
-              prices: x.PaidCosts,
-              status: x.EventClassification,
-              platform: selectedPlatform,
-              bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
-              productDesc:
-                x?.PaidCosts?.[0]?.ItemDisplayDescription ??
-                Localizer.Profile.UnknownItemDescription,
-            } as IEververseRecord;
-          })
-        );
-      }
-    } catch (e) {
-      console.error(e);
-    }
-
-    setLoading(false);
+              return {
+                rowKey: i,
+                order: x.EventId,
+                date: x.Timestamp,
+                productName:
+                  x.PaidCosts?.[0]?.ItemDisplayName ??
+                  profileLoc.UnknownItemName,
+                quantity: x.PurchasedItemQuantity.toString(),
+                prices: x.PaidCosts,
+                status: x.EventClassification,
+                membership: selectedMembership,
+                bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
+                productDesc:
+                  x?.PaidCosts?.[0]?.ItemDisplayDescription ??
+                  profileLoc.UnknownItemDescription,
+              } as IEververseRecord;
+            })
+          );
+        } else {
+          setHistory(null);
+        }
+      })
+      .catch(ConvertToPlatformError)
+      .catch((err) => Modal.error(err))
+      .finally(() => setLoading(false));
   };
 
+  useEffect(() => {
+    if (destinyMember.loaded && selectedMembership) {
+      loadHistory({
+        membershipType: selectedMembership?.membershipType,
+        membershipId: selectedMembership?.membershipId,
+      });
+      const noDestinyAccount =
+        !selectedMembership ||
+        selectedMembership?.membershipType ===
+          BungieMembershipType.BungieNext ||
+        selectedMembership.membershipType === BungieMembershipType.All;
+
+      if (noDestinyAccount) {
+        setEmptyHistoryString(Localizer.Profile.GoPlayDestiny);
+      }
+    }
+  }, [selectedMembership, destinyMember.loaded]);
+
+  useEffect(() => {
+    setSelectedMembership(destinyMember?.memberships?.[0]);
+  }, [destinyMember?.memberships]);
+
   return (
-    <PermissionsGate
-      permissions={[AclEnum.BNextPrivateUserDataReader]}
-      unlockOverride={isSelf}
-    >
+    <>
       <GridCol cols={12}>
         <h3>{Localizer.account.EververseHistory}</h3>
       </GridCol>
@@ -192,26 +149,14 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
               buttonType={
                 EnumUtils.looseEquals(
                   mem.membershipType,
-                  selectedPlatform,
+                  selectedMembership?.membershipType,
                   BungieMembershipType
                 )
                   ? "white"
                   : "clear"
               }
               onClick={() => {
-                if (
-                  !EnumUtils.looseEquals(
-                    mem.membershipType,
-                    selectedPlatform,
-                    BungieMembershipType
-                  )
-                ) {
-                  loadHistory({
-                    membershipType: mem.membershipType,
-                    membershipId: mem.membershipId,
-                  });
-                  setSelectedPlatform(mem.membershipType);
-                }
+                setSelectedMembership(mem);
               }}
               className={styles.platform}
             >
@@ -232,7 +177,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           bordered={false}
           pagination={false}
           size={"small"}
-          locale={{ emptyText: Localizer.Profile.ThisUserHasNotMadeAny }}
+          locale={{ emptyText: emptyHistoryString }}
           rowKey={(record) => record?.date}
           onRow={(data) => {
             return {
@@ -243,15 +188,13 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           }}
         >
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.OrderNumber}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.OrderNumber}</div>}
             dataIndex={"order"}
             key={"order"}
             fixed={"left"}
           />
           <Column
-            title={<div className={styles.th}>{Localizer.Profile.Date}</div>}
+            title={<div className={styles.th}>{profileLoc.Date}</div>}
             dataIndex={"date"}
             key={"date"}
             fixed={"left"}
@@ -260,9 +203,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
             }}
           />
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.ProductName}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.ProductName}</div>}
             dataIndex={"productName"}
             key={"productName"}
             fixed={"left"}
@@ -270,7 +211,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           <Column
             title={
               <div className={styles.th}>
-                {Localizer.Profile.ProductPurchaseQuantity}
+                {profileLoc.ProductPurchaseQuantity}
               </div>
             }
             dataIndex={"quantity"}
@@ -284,7 +225,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
                 return (
                   <>
                     <p>{value}</p>
-                    <b>{Localizer.Profile.StatusRefund}</b>
+                    <b>{profileLoc.StatusRefund}</b>
                   </>
                 );
               } else {
@@ -294,9 +235,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           />
           <Column
             title={
-              <div className={styles.th}>
-                {Localizer.Profile.InGameCurrencyPrice}
-              </div>
+              <div className={styles.th}>{profileLoc.InGameCurrencyPrice}</div>
             }
             dataIndex={"prices"}
             key={"prices"}
@@ -306,7 +245,7 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
                 <div>
                   {record?.prices?.length > 1 && (
                     <p className={styles.prices}>
-                      {Localizer.Profile.MultiplePaidCostsLabel}
+                      {profileLoc.MultiplePaidCostsLabel}
                     </p>
                   )}
                   <p className={styles.prices}>
@@ -333,6 +272,6 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           />
         </Table>
       </GridCol>
-    </PermissionsGate>
+    </>
   );
 };

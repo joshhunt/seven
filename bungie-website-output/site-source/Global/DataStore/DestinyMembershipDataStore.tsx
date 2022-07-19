@@ -103,13 +103,13 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         try {
           membershipData = loggedInUserIsDefined
             ? await Platform.UserService.GetMembershipDataById(
-                user.membershipId,
-                user.membershipType
+                user?.membershipId,
+                user?.membershipType
               )
             : await Platform.UserService.GetMembershipDataForCurrentUser();
         } catch {
           const loadedForWho = loggedInUserIsDefined
-            ? `${user.membershipType}/${user.membershipId}`
+            ? `${user?.membershipType}/${user?.membershipId}`
             : "Current User";
 
           console.error(`Cannot load user data for ${loadedForWho}`);
@@ -128,19 +128,19 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       }
 
       const isCrossSaved =
-        typeof membershipData.primaryMembershipId !== "undefined";
+        typeof membershipData?.primaryMembershipId !== "undefined";
 
-      let memberships = membershipData.destinyMemberships;
+      let memberships = membershipData?.destinyMemberships;
 
       if (isCrossSaved) {
         memberships = [
-          membershipData.destinyMemberships.find(
-            (a) => a.membershipId === membershipData.primaryMembershipId
+          membershipData?.destinyMemberships.find(
+            (a) => a.membershipId === membershipData?.primaryMembershipId
           ),
         ];
       }
 
-      if (memberships.length === 0) {
+      if (memberships?.length === 0) {
         // rare instance of bnet users without destiny membership, show the anonymous view
         return {
           membershipData,
@@ -168,7 +168,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         if (
           !EnumUtils.looseEquals(
             user?.membershipType,
-            membershipToUse.membershipType,
+            membershipToUse?.membershipType,
             BungieMembershipType
           )
         ) {
@@ -186,8 +186,8 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       try {
         profileResponse = await Platform.Destiny2Service.GetProfile(
-          membershipToUse.membershipType,
-          membershipToUse.membershipId,
+          membershipToUse?.membershipType,
+          membershipToUse?.membershipId,
           [DestinyComponentType.Profiles, DestinyComponentType.Characters]
         );
 
@@ -200,7 +200,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         }
       } catch {
         console.error(
-          `There was an error getting Destiny info for ${membershipToUse.displayName}(${membershipToUse.membershipId}): ${membershipToUse.membershipType}`
+          `There was an error getting Destiny info for ${membershipToUse?.displayName}(${membershipToUse?.membershipId}): ${membershipToUse?.membershipType}`
         );
       }
 
@@ -248,8 +248,8 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       try {
         profileResponse = await Platform.Destiny2Service.GetProfile(
-          membershipToUse.membershipType,
-          membershipToUse.membershipId,
+          membershipToUse?.membershipType,
+          membershipToUse?.membershipId,
           [
             DestinyComponentType.Profiles,
             DestinyComponentType.CharacterProgressions,
@@ -270,7 +270,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         }
       } catch {
         console.error(
-          `There was an error getting Destiny info for ${membershipToUse.displayName}(${membershipToUse.membershipId}): ${membershipToUse.membershipType}`
+          `There was an error getting Destiny info for ${membershipToUse?.displayName}(${membershipToUse?.membershipId}): ${membershipToUse?.membershipType}`
         );
       }
 

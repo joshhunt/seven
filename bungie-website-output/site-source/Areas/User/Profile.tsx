@@ -2,6 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { GameHistoryDestinyMembershipDataStore } from "@Areas/GameHistory/DataStores/GameHistoryDestinyMembershipDataStore";
+import GameHistory from "@Areas/GameHistory/GameHistory";
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
 import { ReportButton } from "@Areas/User/AccountComponents/Internal/ReportButton";
 import { BlockButton } from "@Areas/User/ProfileComponents/BlockButton";
@@ -46,6 +48,12 @@ import { useHistory, useParams } from "react-router";
 import styles from "./Profile.module.scss";
 
 interface ProfileProps {}
+
+export enum pageView {
+  destiny,
+  "destiny-game-history",
+  bungie,
+}
 
 const Profile: React.FC<ProfileProps> = (props) => {
   const params = useParams<IProfileParams>();
@@ -103,11 +111,9 @@ const Profile: React.FC<ProfileProps> = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidUser, setIsValidUser] = useState(true);
 
-  enum pageView {
-    destiny,
-    bungie,
-  }
   const [showView, updateView] = useState<pageView>(pageView.destiny);
+  const isTopLevelView =
+    showView === pageView.destiny || showView === pageView.bungie;
 
   //only used to keep track of pushing the send friend request button if not logged in
   const [sendingFriendRequest, updateSendingFriendRequest] = useState<boolean>(
@@ -430,7 +436,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
               )}
             </GridCol>
             <GridCol cols={9} className={styles.profileMain}>
-              {bungieNetUser && (
+              {bungieNetUser && isTopLevelView && (
                 <div className={styles.tabs}>
                   <div
                     onClick={() => updateView(pageView.destiny)}
@@ -454,7 +460,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
               )}
               {destinyMembership?.membershipData?.destinyMemberships.length >
                 1 &&
-                !isCrossSaved && (
+                !isCrossSaved &&
+                isTopLevelView && (
                   <div className={styles.platformSelector}>
                     <DestinyPlatformSelector
                       userMembershipData={destinyMembership.membershipData}
@@ -497,7 +504,21 @@ const Profile: React.FC<ProfileProps> = (props) => {
                   membershipType={membershipType}
                   membershipId={membershipId}
                   isSelf={isSelf}
+                  updateView={updateView}
                 />
+              )}
+              {showView === pageView["destiny-game-history"] && (
+                <div className={styles.fullWidthElement}>
+                  <div className={styles.destinySubscreenBreadcrumb}>
+                    <a onClick={() => updateView(pageView.destiny)}>
+                      {Localizer.profile.destiny}
+                    </a>
+                    <p>{Localizer.Profile.gamehistory}</p>
+                  </div>
+                  <GameHistory
+                    initialUserPair={{ membershipType, membershipId }}
+                  />
+                </div>
               )}
               {bungieNetUser && showView === pageView.bungie && (
                 <BungieView bungieNetUser={bungieNetUser} />

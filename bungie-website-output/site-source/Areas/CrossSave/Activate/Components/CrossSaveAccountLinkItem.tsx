@@ -157,7 +157,7 @@ export class CrossSaveAccountLinkItem extends React.Component<
           text={Localizer.Crosssave.ErrorModalTitle}
           subtext={modalSubtitle}
         />
-        <div className={styles.errors}>
+        <div>
           {errors.map((error) => (
             <CrossSaveValidationError key={error.errorCode} error={error} />
           ))}

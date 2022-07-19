@@ -5,17 +5,6 @@ import { DataStore } from "@bungie/datastore";
 import { HistoricalStats } from "@Platform";
 import React from "react";
 
-/*
- * pgcrStats:
- * {
- * 	charId: {
- * 		stats: [statName1: statValue, statName2: statValue, statName3: statValue, statName4: statValue]
- * 		team: -1
- *	 }
- * }
- * * This is just to help visualize the structure of pgcrStats ^
- * */
-
 export interface PgcrStat {
   value: string;
   name: string;
@@ -26,6 +15,7 @@ export type PgcrStatCharacter = {
   team: number;
   emblem: number;
   displayName: string;
+  membershipId: string;
 };
 
 export interface PgcrStatsByCharacter {
@@ -116,40 +106,45 @@ class PgcrDataStoreInternal extends DataStore<PgcrDataStorePayload> {
   public actions = this.createActions({
     /**
      * Update pgcr as it comes directly from the endpoint
+     * @param _state
      * @param pgcr
      */
     updatePgcr: (
-      state,
+      _state,
       pgcr: HistoricalStats.DestinyPostGameCarnageReportData
     ) => ({ pgcr }),
     /**
      * Store useful definition hashes
+     * @param _state
      * @param pgcrDefinitionHashes
      */
     updatePgcrDefinitionHashes: (
-      state,
+      _state,
       pgcrDefinitionHashes: PgcrDefinitionHashes
     ) => ({ pgcrDefinitionHashes }),
     /**
      * Store useful definition hashes derived from original definition hashes
+     * @param _state
      * @param pgcrDerivedDefinitionHashes
      */
     updatePgcrDerivedDefinitionHashes: (
-      state,
+      _state,
       pgcrDerivedDefinitionHashes: PgcrDerivedDefinitionHashes
     ) => ({ pgcrDerivedDefinitionHashes }),
     /**
      * Filter pgcr to see what kind of activity it is
+     * @param _state
      * @param pgcrActivityData
      */
-    updatePgcrActivityData: (state, pgcrActivityData: PgcrActivityData) => ({
+    updatePgcrActivityData: (_state, pgcrActivityData: PgcrActivityData) => ({
       pgcrActivityData,
     }),
     /**
      * Create or update stats in the format that is useful for creating the stat bars, stat leaders section and stats data tables in the pgcr
+     * @param _state
      * @param pgcrStats
      */
-    updateStats: (state, pgcrStats: PgcrStats) => ({ pgcrStats }),
+    updateStats: (_state, pgcrStats: PgcrStats) => ({ pgcrStats }),
   });
 }
 

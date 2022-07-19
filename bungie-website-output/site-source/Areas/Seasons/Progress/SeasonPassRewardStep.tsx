@@ -252,7 +252,11 @@ export class SeasonPassRewardStep extends React.Component<
             <div
               className={styles.iconWrapper}
               onClick={() => {
-                if (!this.props.character || !this.props.handleClaimingClick) {
+                //character is 0 for hunter and so need to explicitly check for undefined
+                if (
+                  this.props.character === undefined ||
+                  !this.props.handleClaimingClick
+                ) {
                   //anonymous or lack of characters/no destiny account version of modal
                   this.openItemDetailModal(item.itemHash);
                 } else {

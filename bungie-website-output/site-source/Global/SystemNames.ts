@@ -108,4 +108,5 @@ export const SystemNames = {
   D2RewardsHelpArticleFirehoseId: "D2RewardsHelpArticleFirehoseId",
   D2RewardsReact: "D2RewardsReact",
   CoreUserHistories: "CoreUserHistories",
+  CoreAreaGameHistory: "CoreAreaGameHistory",
 } as const;

@@ -5,6 +5,7 @@ import { Responsive } from "@Boot/Responsive";
 import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { ImageVideoThumb } from "@UI/Marketing/ImageThumb";
 import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
 import React from "react";
@@ -42,6 +43,7 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
     secondary_heading,
     mobile_bg,
     desktop_bg,
+    video_btn,
   } = data ?? {};
 
   const bgImage = responsiveBgImageFromStackFile(desktop_bg, mobile_bg, mobile);
@@ -77,10 +79,30 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
             </div>
           )}
         </div>
-        <p
-          className={classNames(styles.blurb, classes?.blurb)}
-          dangerouslySetInnerHTML={sanitizeHTML(blurb)}
-        />
+        <div
+          className={classNames(styles.lowerContent, {
+            [styles.withVideo]: !!video_btn?.youtube_url,
+          })}
+        >
+          <p
+            className={classNames(styles.blurb, classes?.blurb)}
+            dangerouslySetInnerHTML={sanitizeHTML(blurb)}
+          />
+          {video_btn?.youtube_url && (
+            <div className={styles.videoBtn}>
+              <ImageVideoThumb
+                youtubeUrl={video_btn?.youtube_url}
+                image={video_btn?.thumbnail?.url}
+                classes={{
+                  imageContainer: styles.btnWrapper,
+                  image: styles.bg,
+                  playIcon: styles.playIcon,
+                }}
+              />
+              <p className={styles.caption}>{video_btn?.caption}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

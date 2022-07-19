@@ -28,20 +28,14 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
     quantity,
     prices,
     status,
-    platform,
+    membership,
   },
   platformIcon
 ) => {
-  const destinyMember = useDataStore(AccountDestinyMembershipDataStore);
-  const matchingMembership =
-    destinyMember?.memberships?.find((m) =>
-      EnumUtils.looseEquals(m.membershipType, platform, BungieMembershipType)
-    ) ?? destinyMember?.memberships?.[0];
-
   let platformLink = "";
 
-  if (platform) {
-    switch (platform) {
+  if (membership) {
+    switch (membership?.membershipType) {
       case BungieMembershipType.TigerPsn:
         platformLink = Localizer.Profile.supportplaystation;
         break;
@@ -71,7 +65,7 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
         {" "}
         <div
           className={styles.icon}
-          style={{ backgroundImage: `url(${matchingMembership?.iconPath})` }}
+          style={{ backgroundImage: `url(${membership?.iconPath})` }}
         />
         {bungieName}
       </div>
@@ -112,7 +106,9 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
       </div>
       <div className={styles.buttons}>
         <Button buttonType={"blue"} url={platformLink}>
-          {LocalizerUtils.getPlatformNameFromMembershipType(platform)}
+          {LocalizerUtils.getPlatformNameFromMembershipType(
+            membership?.membershipType
+          )}
         </Button>
         <Button buttonType={"blue"} url={RouteHelper.HelpArticle(13639)}>
           {Localizer.Profile.PurchaseFaq}

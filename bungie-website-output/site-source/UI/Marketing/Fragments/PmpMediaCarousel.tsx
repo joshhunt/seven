@@ -60,6 +60,9 @@ export const PmpMediaCarousel: React.FC<Props> = (props) => {
           styles={{
             arrow: { color: data?.arrow_color },
             paginationBar: { backgroundColor: data?.pagination_bar_color },
+            selectedPaginationBar: {
+              backgroundColor: data?.selected_pagination_bar_color,
+            },
             titleDivider: { backgroundColor: data?.title_divider_color },
           }}
         />

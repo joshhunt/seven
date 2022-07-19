@@ -6,11 +6,12 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Icon } from "@UIKit/Controls/Icon";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import classNames from "classnames";
 import React, { useRef, useState } from "react";
 import styles from "./ClickableImgCarousel.module.scss";
 
-export interface ICarouselSlide {
+export type ICarouselSlide = { [key: string]: any } & {
   thumbnail: string;
   screenshot?: string;
   /* video to open in a lightbox */
@@ -19,10 +20,17 @@ export interface ICarouselSlide {
   inlineVideo?: string;
   title?: string;
   blurb?: string;
-}
+  onClick?: () => void;
+};
 
 export interface ClickableImgCarouselProps {
   slides: ICarouselSlide[];
+  /* renders content within slide thumbnail.  typed as 'any' so unique type can be annotated with each use case */
+  renderSlideChildren?: (
+    slideData: any,
+    isActiveSlide: boolean,
+    index: number
+  ) => JSX.Element;
   classes?: {
     arrow?: string;
     slideTitle?: string;
@@ -31,11 +39,13 @@ export interface ClickableImgCarouselProps {
     paginationIndicator?: string;
     selectedPaginationIndicator?: string;
     root?: string;
+    img?: string;
   };
   styles?: {
     titleDivider?: React.CSSProperties;
     arrow?: React.CSSProperties;
     paginationBar?: React.CSSProperties;
+    selectedPaginationBar?: React.CSSProperties;
   };
 }
 
@@ -63,13 +73,29 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
     }
   };
 
-  const handleThumbnailClick = (slideIndex: number, img: string) => {
-    // if user clicked the current image, open image in thumbnail
-    if (slideIndex === position) {
-      showImage(img);
+  const handleThumbnailClick = ({
+    slideIndex,
+    img,
+    videoId,
+  }: {
+    slideIndex: number;
+    img: string;
+    videoId?: string;
+  }) => {
+    // change slides if user clicks on any slide that isn't the current slide
+    if (slideIndex !== position) {
+      return changeSlide(slideIndex);
+    }
+
+    /* Optional click handler passed in as prop to carousel slide */
+    const handlerProp = props.slides?.[slideIndex]?.onClick;
+
+    if (handlerProp) {
+      handlerProp();
+    } else if (videoId) {
+      YoutubeModal.show({ videoId });
     } else {
-      // else attempt to change slides to clicked image
-      changeSlide(slideIndex);
+      showImage(img);
     }
   };
 
@@ -147,12 +173,20 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
                 <div
                   className={styles.slideWrapper}
                   key={i}
-                  onClick={() => handleThumbnailClick(i, slide.thumbnail)}
+                  onClick={() =>
+                    handleThumbnailClick({
+                      img: slide.thumbnail,
+                      slideIndex: i,
+                      videoId,
+                    })
+                  }
                 >
                   <div
-                    className={classNames(styles.slideImg, {
-                      [styles.showing]: position === i,
-                    })}
+                    className={classNames(
+                      styles.slideImg,
+                      { [styles.showing]: position === i },
+                      props.classes?.img
+                    )}
                     style={{ backgroundImage: bgImage }}
                   >
                     {inlineVideo && (
@@ -160,6 +194,10 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
                         <source src={inlineVideo} />
                       </video>
                     )}
+                    <div className={styles.slideChildren}>
+                      {props.renderSlideChildren &&
+                        props.renderSlideChildren(slide, position === i, i)}
+                    </div>
                   </div>
                 </div>
               );
@@ -197,7 +235,11 @@ const ClickableImgCarousel: React.FC<ClickableImgCarouselProps> = (props) => {
                 { [props.classes?.selectedPaginationIndicator]: position === i }
               )}
               onClick={() => changeSlide(i)}
-              style={props.styles?.paginationBar}
+              style={
+                position === i && props.styles.selectedPaginationBar
+                  ? props.styles?.selectedPaginationBar
+                  : props.styles?.paginationBar
+              }
             />
           );
         })}

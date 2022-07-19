@@ -3,14 +3,19 @@
 
 import { RewardsDataStore } from "@Areas/Rewards/DataStores/RewardsDataStore";
 import { RewardsDestinyMembershipDataStore } from "@Areas/Rewards/DataStores/RewardsDestinyMembershipDataStore";
+import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
+import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
 import { RewardsListSection } from "@Areas/Rewards/Shared/RewardsListSection";
 import { RewardsWarning } from "@Areas/Rewards/Shared/RewardsWarning";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { Localizer } from "@bungie/localization/Localizer";
+import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Tokens } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
@@ -18,12 +23,8 @@ import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ParallaxContainer } from "@UIKit/Layout/ParallaxContainer";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, { useEffect } from "react";
-import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
-import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
-import { Localizer } from "@bungie/localization/Localizer";
-import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import classNames from "classnames";
+import React, { useEffect } from "react";
 
 export interface IReward {
   rewardId: string;
@@ -70,7 +71,7 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
         );
       }
     }
-  }, [destinyUser.selectedMembership]);
+  }, [destinyUser.selectedMembership, destinyUser.loaded]);
 
   if (!ConfigUtils.SystemStatus(SystemNames.D2RewardsReact)) {
     return null;
@@ -107,20 +108,26 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
             {rewardLoc.ClaimRewardsPageTitleMagento}
           </h1>
           <RewardsWarning />
-          {destinyUser?.membershipData && !destinyUser.isCrossSaved && (
-            <div className={stylesContainer.platformSelector}>
-              <DestinyPlatformSelector
-                userMembershipData={destinyUser?.membershipData}
-                onChange={(platform) => {
-                  RewardsDestinyMembershipDataStore.actions.updatePlatform(
-                    platform
-                  );
-                }}
-                defaultValue={destinyUser?.selectedMembership?.membershipType}
-                crossSavePairingStatus={globalState.crossSavePairingStatus}
-              />
-            </div>
-          )}
+          {destinyUser?.membershipData?.destinyMemberships &&
+            destinyUser.membershipData.destinyMemberships.length > 1 &&
+            !destinyUser.isCrossSaved && (
+              <div className={stylesContainer.platformSelector}>
+                <DestinyPlatformSelector
+                  userMembershipData={destinyUser?.membershipData}
+                  onChange={(platform) => {
+                    RewardsDestinyMembershipDataStore.actions.updatePlatform(
+                      platform
+                    );
+                  }}
+                  defaultValue={
+                    destinyUser?.selectedMembership?.membershipType ??
+                    destinyUser?.membershipData?.destinyMemberships[0]
+                      .membershipType
+                  }
+                  crossSavePairingStatus={globalState.crossSavePairingStatus}
+                />
+              </div>
+            )}
           <div className={styles.containerRewards}>
             <SpinnerContainer
               loading={!rewardsData.loaded}

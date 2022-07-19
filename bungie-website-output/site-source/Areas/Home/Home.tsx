@@ -18,33 +18,33 @@ export const Home: React.FC<HomeProps> = (props) => {
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const [homePageData, setHomePageData] = useState<BnetStackHomePage>();
 
-  const Query = () => {
-    return ContentStackClient()
-      .ContentType("home_page")
-      .Query()
-      .language(locale)
-      .includeReference([
-        "homepage_hero",
-        "homepage_featured.featured_block",
-        "homepage_featured.featured_block.callout",
-        "homepage_featured.featured_block.news_article",
-      ])
-      .toJSON();
-  };
-
   useEffect(() => {
-    Query()
-      .find()
+    ContentStackClient()
+      .ContentType("home_page")
+      .Entry("blt801edf5507a32bf5")
+      .language(locale)
+      .includeReference("featured.news_article.reference")
+      .toJSON()
+      .fetch()
       .then((result) => {
-        const data: BnetStackHomePage = result[0][0];
-
-        setHomePageData(data);
+        setHomePageData(result);
       });
   }, []);
 
-  const hero = homePageData?.homepage_hero;
+  const {
+    featured,
+    title,
+    button_one_label,
+    button_one_link,
+    button_two_label,
+    button_two_link,
+    hero_image,
+    hero_video,
+    subtitle,
+    title_as_image,
+  } = homePageData ?? {};
 
-  if (!homePageData || !hero) {
+  if (!homePageData) {
     return null;
   }
 
@@ -52,13 +52,23 @@ export const Home: React.FC<HomeProps> = (props) => {
     <>
       <BungieHelmet
         title={Localizer.News.News}
-        image={BungieHelmet.DefaultBoringMetaImage}
+        image={hero_image.url || BungieHelmet.DefaultBoringMetaImage}
       >
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
       <div>
-        <Hero heroData={homePageData?.homepage_hero[0]} />
-        <Featured featured={homePageData?.homepage_featured?.featured_block} />
+        <Hero
+          heroData={{
+            hero_image,
+            hero_video,
+            title,
+            title_as_image,
+            subtitle,
+            button_one: { label: button_one_label, link: button_one_link },
+            button_two: { label: button_two_label, link: button_two_link },
+          }}
+        />
+        <Featured featured={featured} />
         <Recent />
       </div>
     </>

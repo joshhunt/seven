@@ -1,6 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
+import { MembershipPair } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GameHistoryDestinyMembershipDataStore } from "./DataStores/GameHistoryDestinyMembershipDataStore";
 import GameHistoryEvent from "@Areas/GameHistory/GameHistoryEvent";
 import {
@@ -9,20 +10,14 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyActivityModeType } from "@Enum";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
-import { Img } from "@Helpers";
 import { HistoricalStats, Platform } from "@Platform";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,
 } from "@UI/Destiny/DestinyAccountWrapper";
 import DestinyActivityModesSelector from "@UI/Destiny/DestinyActivityModeSelector";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./GameHistory.module.scss";
@@ -32,7 +27,10 @@ interface GameHistoryProps
     | "DestinyActivityModeDefinition"
     | "DestinyActivityTypeDefinition"
     | "DestinyActivityDefinition"
-  > {}
+  > {
+  initialUserPair: MembershipPair;
+  children?: React.ReactNode;
+}
 
 /**
  * GameHistory - Component that shows filterable game history data
@@ -42,7 +40,9 @@ interface GameHistoryProps
  */
 const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembership = useDataStore(GameHistoryDestinyMembershipDataStore);
+  const gameHistoryMembershipData = useDataStore(
+    GameHistoryDestinyMembershipDataStore
+  );
 
   // Initialize types
   const initialHistory: HistoricalStats.DestinyActivityHistoryResults = null;
@@ -56,18 +56,30 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
   const showAllModeTypes = activityMode === 0;
 
   useEffect(() => {
+    GameHistoryDestinyMembershipDataStore.actions.loadUserData(
+      props.initialUserPair
+    );
+  }, [props.initialUserPair]);
+
+  useEffect(() => {
     UserUtils.isAuthenticated(globalState) &&
-      destinyMembership?.selectedCharacter &&
-      onCharacterChange(destinyMembership?.selectedCharacter.characterId);
-  }, [destinyMembership?.selectedCharacter]);
+    gameHistoryMembershipData?.selectedCharacter
+      ? onCharacterChange(
+          gameHistoryMembershipData?.selectedCharacter.characterId
+        )
+      : setHistory(null);
+  }, [
+    gameHistoryMembershipData?.selectedCharacter,
+    gameHistoryMembershipData?.selectedMembership,
+  ]);
 
   const onCharacterChange = (value: string) => {
     UserUtils.isAuthenticated(globalState) &&
-      destinyMembership?.characters[value].characterId &&
+      gameHistoryMembershipData?.characters[value].characterId &&
       Platform.Destiny2Service.GetActivityHistory(
-        destinyMembership?.selectedMembership.membershipType,
-        destinyMembership?.selectedMembership.membershipId,
-        destinyMembership?.characters[value].characterId,
+        gameHistoryMembershipData?.selectedMembership?.membershipType,
+        gameHistoryMembershipData?.selectedMembership?.membershipId,
+        gameHistoryMembershipData?.characters?.[value]?.characterId,
         activityMode,
         20,
         0
@@ -81,69 +93,43 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
   };
 
   return (
-    <>
-      <BungieHelmet
-        title={Localizer.profile.SubNav_GameHistory}
-        image={Img("/ca/destiny/bgs/new_light/newlight_pvp_1_16x9.jpg")}
+    <div>
+      <DestinyAccountWrapper
+        onCharacterChange={onCharacterChange}
+        membershipDataStore={GameHistoryDestinyMembershipDataStore}
       >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-      </BungieHelmet>
-      <div className={styles.header}>
-        <h1>{Localizer.profile.SubNav_GameHistory}</h1>
-      </div>
-      <Grid>
-        <GridCol cols={12}>
-          <RequiresAuth
-            onSignIn={() =>
-              GameHistoryDestinyMembershipDataStore.actions.loadUserData()
-            }
-          >
-            <DestinyAccountWrapper
-              onCharacterChange={onCharacterChange}
-              membershipDataStore={GameHistoryDestinyMembershipDataStore}
-            >
-              {({
-                platformSelector,
-                characterSelector,
-                bnetProfile,
-              }: IAccountFeatures) => (
-                <>
-                  {bnetProfile}
-                  <div className={styles.flex}>
-                    {platformSelector}
-                    {characterSelector}
-                    <div className={styles.activityModeSelector}>
-                      <DestinyActivityModesSelector
-                        onChange={(value) => onActivityChange(Number(value))}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-            </DestinyAccountWrapper>
-            <div className={styles.historyTable}>
-              {hasHistory ? (
-                showAllModeTypes ? (
-                  history.activities.map((historyItem, i) => (
-                    <GameHistoryEvent key={i} historyItem={historyItem} />
-                  ))
-                ) : (
-                  history.activities
-                    .filter((ac) =>
-                      ac.activityDetails.modes.includes(activityMode)
-                    )
-                    .map((historyItem, i) => (
-                      <GameHistoryEvent key={i} historyItem={historyItem} />
-                    ))
-                )
-              ) : (
-                <div>{Localizer.Profile.NoGamesFound}</div>
-              )}
+        {({ platformSelector, characterSelector }: IAccountFeatures) => (
+          <div>
+            <div className={styles.flex}>
+              {platformSelector}
+              {characterSelector}
+              <div className={styles.activityModeSelector}>
+                <DestinyActivityModesSelector
+                  onChange={(value) => onActivityChange(Number(value))}
+                />
+              </div>
             </div>
-          </RequiresAuth>
-        </GridCol>
-      </Grid>
-    </>
+          </div>
+        )}
+      </DestinyAccountWrapper>
+      <div className={styles.historyTable}>
+        {hasHistory ? (
+          showAllModeTypes ? (
+            history.activities.map((historyItem, i) => (
+              <GameHistoryEvent key={i} historyItem={historyItem} />
+            ))
+          ) : (
+            history.activities
+              .filter((ac) => ac.activityDetails.modes.includes(activityMode))
+              .map((historyItem, i) => (
+                <GameHistoryEvent key={i} historyItem={historyItem} />
+              ))
+          )
+        ) : (
+          <div>{Localizer.Profile.NoGamesFound}</div>
+        )}
+      </div>
+    </div>
   );
 };
 

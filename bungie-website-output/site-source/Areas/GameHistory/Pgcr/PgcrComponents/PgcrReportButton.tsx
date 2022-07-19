@@ -1,34 +1,23 @@
-// Created by larobinson, 2021
+// Created by larobinson, 2022
 // Copyright Bungie, Inc.
 
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import styles from "@Areas/User/Profile.module.scss";
+import styles from "@Areas/GameHistory/Pgcr/Pgcr.module.scss";
+import { ReportButtonProps } from "@Areas/User/AccountComponents/Internal/ReportButton";
 import { ReportUser } from "@Areas/User/ProfileComponents/ReportUser";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { PlatformError } from "@CustomErrors";
-import { IgnoredItemType, ModeratorRequestedPunishment } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Platform } from "@Platform";
-import { PermissionsGate } from "@UI/User/PermissionGate";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { ConfirmationModalInline } from "@UIKit/Controls/Modal/ConfirmationModal";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { Dropdown } from "@UIKit/Forms/Dropdown";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import classNames from "classnames";
 import React, { useState } from "react";
 
-export interface ReportButtonProps {
-  ignoredItemId: string;
-  itemContextType: IgnoredItemType;
-}
+interface PgcrReportButtonProps extends ReportButtonProps {}
 
-export const ReportButton: React.FC<ReportButtonProps> = ({
-  ignoredItemId,
-  itemContextType,
-}) => {
+export const PgcrReportButton: React.FC<PgcrReportButtonProps> = (
+  { ignoredItemId },
+  itemContextType
+) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmSendReport, setConfirmSendReport] = useState(false);
@@ -39,13 +28,13 @@ export const ReportButton: React.FC<ReportButtonProps> = ({
 
   return (
     <>
-      <Button
-        buttonType={"red"}
-        className={classNames(styles.button, styles.btnBlock, styles.btnReport)}
+      <div
+        aria-role={"button"}
+        className={styles.button}
         onClick={() => setModalOpen(true)}
       >
-        {Localizer.actions.ReportProfile}
-      </Button>
+        {Localizer.Profile.ProfileAction_Report}
+      </div>
 
       <ConfirmationModalInline
         type={"none"}

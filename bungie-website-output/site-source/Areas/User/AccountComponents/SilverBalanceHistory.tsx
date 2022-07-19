@@ -1,6 +1,7 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import {
   formatDateForAccountTable,
   ViewerPermissionContext,
@@ -11,16 +12,13 @@ import { SilverChangeModal } from "@Areas/User/AccountComponents/Internal/Silver
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
-  AclEnum,
   BungieMembershipType,
   EververseChangeEventClassification,
 } from "@Enum";
 import { MembershipPair } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Logger } from "@Global/Logger";
 import { Img } from "@Helpers";
-import { Platform, Tokens } from "@Platform";
-import { PermissionsGate } from "@UI/User/PermissionGate";
+import { GroupsV2, Platform, Tokens } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
@@ -29,7 +27,6 @@ import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import Table from "antd/lib/table";
-import { DateTime } from "luxon";
 import React, { useContext, useEffect, useState } from "react";
 import styles from "./EververseHistory.module.scss";
 
@@ -42,16 +39,12 @@ export interface ISilverRecord {
   previousQuantity: number;
   change: number;
   newQuantity: number;
-  platform: BungieMembershipType;
+  membership: GroupsV2.GroupUserInfoCard;
   bungieName: string;
   productDescription: string;
 }
 
-interface SilverBalanceHistoryProps {}
-
-export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
-  props
-) => {
+export const SilverBalanceHistory = () => {
   const { Column } = Table;
   const destinyMember = useDataStore(AccountDestinyMembershipDataStore);
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
@@ -61,155 +54,151 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
   const [silverBalance, setSilverBalance] = useState<
     Tokens.EververseSilverBalanceResponse
   >();
+  const [selectedMembership, setSelectedMembership] = useState<
+    GroupsV2.GroupUserInfoCard
+  >(null);
   const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
   const useQueryMid = membershipIdFromQuery && (isSelf || isAdmin);
-  const mId = useQueryMid
-    ? membershipIdFromQuery
-    : globalStateData?.loggedInUser?.user?.membershipId;
   const [history, setHistory] = useState<ISilverRecord[]>(null);
-  // Maintaining state of membership data in component instead of through datastore because the new membership info has to be ready so quickly
-  const [membershipPair, setMembershipPair] = useState<MembershipPair>({
-    membershipId: mId,
-    membershipType: BungieMembershipType.BungieNext,
-  });
   const [cashout, setCashout] = useState(null);
+  const [emptyHistoryString, setEmptyHistoryString] = useState<string>(
+    Localizer.Profile.ThisUserHasNotMadeAny
+  );
+  const profileLoc = Localizer.profile;
 
   const getLinkToSilver = (mType: BungieMembershipType) => {
     switch (mType) {
       case BungieMembershipType.TigerPsn:
-        return Localizer.Profile.PlaystationSilver;
+        return profileLoc.PlaystationSilver;
       case BungieMembershipType.TigerSteam:
-        return Localizer.Profile.SteamSilver;
+        return profileLoc.SteamSilver;
       case BungieMembershipType.TigerXbox:
-        return Localizer.Profile.MicrosoftSilver;
+        return profileLoc.MicrosoftSilver;
       case BungieMembershipType.TigerStadia:
-        return Localizer.Profile.StadiaSilver;
+        return profileLoc.StadiaSilver;
       default:
         return "";
     }
   };
 
-  const getSilverBalance = async () => {
-    try {
-      const silver = await Platform.TokensService.EververseSilverBalance(
-        membershipPair?.membershipId,
-        membershipPair?.membershipType
-      );
-      setSilverBalance(silver);
-    } catch (e) {
-      Modal.open(e.message);
-    }
+  const getSilverBalance = (membership: MembershipPair) => {
+    Platform.TokensService.EververseSilverBalance(
+      membership?.membershipId,
+      membership?.membershipType
+    )
+      .then((silver) => {
+        if (silver) {
+          setSilverBalance(silver);
+          // This next request never succeeds, I believe it was only needed for Battle.net
+          // getEververseCashout({
+          // 	membershipType: membership?.membershipType,
+          // 	membershipId: membership?.membershipId
+          // })
+        }
+      })
+      .catch
+      // If this fails, we already show the default "undefined" state for silver. We catch other errors that would come from this elsewhere.
+      ();
   };
 
-  const getEververseCashout = async () => {
-    try {
-      const platformCashout = await Platform.TokensService.EververseCashoutInfo(
-        destinyMember?.selectedMembership?.membershipId,
-        destinyMember?.selectedMembership?.membershipType
-      );
-      setCashout(platformCashout);
-    } catch (e) {
-      Modal.open(e.message);
-    }
-  };
-
-  const loadHistory = async (aggregate = false) => {
-    let response = null;
+  const loadHistory = (membership: MembershipPair, aggregate = false) => {
     setLoading(true);
 
-    try {
-      await getSilverBalance();
-      response = await Platform.TokensService.EververseChangePurchaseHistory(
-        membershipPair?.membershipId,
-        membershipPair?.membershipType,
-        currentPage
-      );
+    Platform.TokensService.EververseChangePurchaseHistory(
+      membership.membershipId,
+      membership.membershipType,
+      currentPage
+    )
+      .then((response) => {
+        if (response?.results?.length > 0) {
+          setHasMore(response?.hasMore);
+          const bungieNameObject = useQueryMid
+            ? UserUtils.getBungieNameFromUserInfoCard(selectedMembership)
+            : UserUtils.getBungieNameFromBnetGeneralUser(
+                globalStateData?.loggedInUser?.user
+              );
 
-      if (response) {
-        setHasMore(response?.hasMore);
-        const bungieNameObject = useQueryMid
-          ? UserUtils.getBungieNameFromUserInfoCard(
-              destinyMember?.selectedMembership
-            )
-          : UserUtils.getBungieNameFromBnetGeneralUser(
-              globalStateData?.loggedInUser?.user
-            );
+          const resultsData: ISilverRecord[] = response?.results.map(
+            (x: Tokens.EververseChangeEvent, i) => {
+              return {
+                rowKey: i,
+                order: x.EventId,
+                date: x.Timestamp,
+                status: x.EventClassification,
+                name: x.ItemDisplayName ?? profileLoc.UnknownItemName,
+                previousQuantity: x.PreviousQuantity,
+                change: x.NewQuantity - x.PreviousQuantity,
+                newQuantity: x.NewQuantity,
+                membership: selectedMembership,
+                bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
+                productDescription:
+                  x.ItemDisplayDescription ?? profileLoc.UnknownItemDescription,
+              };
+            }
+          );
 
-        const resultsData: ISilverRecord[] = response?.results.map(
-          (x: Tokens.EververseChangeEvent, i) => {
-            return {
-              rowKey: i,
-              order: x.EventId,
-              date: x.Timestamp,
-              status: x.EventClassification,
-              name: x.ItemDisplayName ?? Localizer.Profile.UnknownItemName,
-              previousQuantity: x.PreviousQuantity,
-              change: x.NewQuantity - x.PreviousQuantity,
-              newQuantity: x.NewQuantity,
-              platform: destinyMember?.selectedMembership?.membershipType,
-              bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
-              productDescription:
-                x.ItemDisplayDescription ??
-                Localizer.Profile.UnknownItemDescription,
-            };
-          }
-        );
+          aggregate
+            ? setHistory(history.concat(resultsData))
+            : setHistory(resultsData);
 
-        aggregate
-          ? setHistory(history.concat(resultsData))
-          : setHistory(resultsData);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
-    setLoading(false);
+          getSilverBalance({
+            membershipType: membership?.membershipType,
+            membershipId: membership?.membershipId,
+          });
+        } else {
+          setHistory(null);
+        }
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e))
+      .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    getEververseCashout();
-  }, []);
-
-  useEffect(() => {
-    if (UserUtils.isAuthenticated(globalStateData)) {
-      if (
-        destinyMember.loaded &&
-        membershipPair?.membershipType &&
-        membershipPair?.membershipType !== BungieMembershipType.BungieNext
-      ) {
-        loadHistory();
-      } else {
-        AccountDestinyMembershipDataStore?.actions
-          .loadUserData({
-            membershipType: BungieMembershipType.BungieNext,
-            membershipId: mId,
-          })
-          .async.then(() => {
-            setMembershipPair({
-              membershipType: destinyMember?.memberships?.[0]?.membershipType,
-              membershipId: destinyMember?.memberships?.[0]?.membershipId,
-            });
-          });
-      }
-    }
-  }, [
-    destinyMember.loaded,
-    membershipPair,
-    UserUtils.isAuthenticated(globalStateData),
-  ]);
+  // const getEververseCashout = async (membership: MembershipPair) => {
+  // 	Platform.TokensService.EververseCashoutInfo(membership?.membershipId, membership?.membershipType)
+  // 		.then((platformCashout => setCashout(platformCashout)))
+  // 		.catch(ConvertToPlatformError)
+  // 		.catch(e => Modal.error(e));
+  // }
 
   const loadMore = () => {
     setCurrentPage(currentPage + 1);
-    loadHistory(true);
+    loadHistory(
+      {
+        membershipType: selectedMembership?.membershipType,
+        membershipId: selectedMembership?.membershipId,
+      },
+      true
+    );
   };
 
+  useEffect(() => {
+    if (destinyMember.loaded && selectedMembership) {
+      loadHistory({
+        membershipType: selectedMembership?.membershipType,
+        membershipId: selectedMembership?.membershipId,
+      });
+      const noDestinyAccount =
+        !selectedMembership ||
+        selectedMembership?.membershipType ===
+          BungieMembershipType.BungieNext ||
+        selectedMembership.membershipType === BungieMembershipType.All;
+
+      if (noDestinyAccount) {
+        setEmptyHistoryString(Localizer.Profile.GoPlayDestiny);
+        setHistory([]);
+      }
+    }
+  }, [selectedMembership, destinyMember.loaded]);
+
+  useEffect(() => {
+    setSelectedMembership(destinyMember?.memberships?.[0]);
+  }, [destinyMember?.memberships]);
+
   return (
-    <PermissionsGate
-      permissions={[AclEnum.BNextPrivateUserDataReader]}
-      unlockOverride={isSelf}
-    >
+    <>
       <GridCol cols={12}>
         <h3>{Localizer.account.SilverBalanceHistory}</h3>
       </GridCol>
@@ -223,7 +212,7 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
                 buttonType={
                   EnumUtils.looseEquals(
                     mem.membershipType,
-                    membershipPair?.membershipType,
+                    selectedMembership?.membershipType,
                     BungieMembershipType
                   )
                     ? "white"
@@ -231,17 +220,7 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
                 }
                 onClick={() => {
                   setCurrentPage(0);
-                  AccountDestinyMembershipDataStore.actions
-                    .loadUserData({
-                      membershipType: mem.membershipType,
-                      membershipId: mem.membershipId,
-                    })
-                    .async.then(() => {
-                      setMembershipPair({
-                        membershipType: mem.membershipType,
-                        membershipId: mem.membershipId,
-                      });
-                    });
+                  setSelectedMembership(mem);
                 }}
                 className={styles.platform}
               >
@@ -267,21 +246,21 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
                 )})`,
               }}
             />
-            <div>{silverBalance?.SilverBalance}</div>
+            <div>{silverBalance?.SilverBalance || profileLoc.Unavailable}</div>
           </div>
           <Button
             size={BasicSize.Small}
             buttonType={"gold"}
-            url={getLinkToSilver(membershipPair?.membershipType)}
+            url={getLinkToSilver(selectedMembership?.membershipType)}
           >
-            {Localizer.Profile.BuySilver}
+            {profileLoc.BuySilver}
           </Button>
         </div>
         {cashout && (
           <div className={styles.cashoutRequests}>
             <div className={styles.cashoutItem}>
               <span className={styles.title}>
-                {Localizer.Profile.BungieGrantedSilver}
+                {profileLoc.BungieGrantedSilver}
               </span>
               <span className={styles.value}>
                 {cashout.BungieGrantedSilver}
@@ -289,20 +268,18 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
             </div>
             <div className={styles.cashoutItem}>
               <span className={styles.title}>
-                {Localizer.Profile.PlatformGrantedSilver}
+                {profileLoc.PlatformGrantedSilver}
               </span>
               <span className={styles.value}>
                 {cashout.PlatformGrantedSilver}
               </span>
             </div>
             <div className={styles.cashoutItem}>
-              <span className={styles.title}>
-                {Localizer.Profile.SilverSpent}
-              </span>
+              <span className={styles.title}>{profileLoc.SilverSpent}</span>
               <span className={styles.value}>{cashout.TotalSilverSpent}</span>
             </div>
             <div className={styles.cashoutItem}>
-              <span className={styles.title}>{Localizer.Profile.Cashout}</span>
+              <span className={styles.title}>{profileLoc.Cashout}</span>
               <span className={styles.value}>{cashout.CashoutQuantity}</span>
             </div>
           </div>
@@ -316,7 +293,7 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
           className={styles.table}
           pagination={false}
           size={"small"}
-          locale={{ emptyText: Localizer.Profile.ThisUserHasNotMadeAny }}
+          locale={{ emptyText: emptyHistoryString }}
           onRow={(data) => {
             return {
               onClick: (e) => {
@@ -326,15 +303,13 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
           }}
         >
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.OrderNumber}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.OrderNumber}</div>}
             dataIndex={"order"}
             key={"order"}
             fixed={"left"}
           />
           <Column
-            title={<div className={styles.th}>{Localizer.Profile.Date}</div>}
+            title={<div className={styles.th}>{profileLoc.Date}</div>}
             dataIndex={"date"}
             key={"date"}
             fixed={"left"}
@@ -343,16 +318,14 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
             }}
           />
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.ChangeType}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.ChangeType}</div>}
             dataIndex={"status"}
             key={"status"}
             fixed={"left"}
             render={(value, record, index) => (
               <div>
                 {
-                  Localizer.Profile[
+                  profileLoc[
                     "ChangeType" +
                       EnumUtils.getStringValue(
                         value,
@@ -364,43 +337,35 @@ export const SilverBalanceHistory: React.FC<SilverBalanceHistoryProps> = (
             )}
           />
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.ProductName}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.ProductName}</div>}
             dataIndex={"name"}
             key={"name"}
             fixed={"left"}
           />
           <Column
             title={
-              <div className={styles.th}>
-                {Localizer.Profile.PreviousQuantity}
-              </div>
+              <div className={styles.th}>{profileLoc.PreviousQuantity}</div>
             }
             dataIndex={"previousQuantity"}
             key={"previousQuantity"}
             fixed={"left"}
           />
           <Column
-            title={<div className={styles.th}>{Localizer.Profile.Change}</div>}
+            title={<div className={styles.th}>{profileLoc.Change}</div>}
             dataIndex={"change"}
             key={"change"}
             fixed={"left"}
           />
           <Column
-            title={
-              <div className={styles.th}>{Localizer.Profile.NewQuantity}</div>
-            }
+            title={<div className={styles.th}>{profileLoc.NewQuantity}</div>}
             dataIndex={"newQuantity"}
             key={"newQuantity"}
             fixed={"left"}
           />
         </Table>
 
-        {hasMore && (
-          <Button onClick={loadMore}>{Localizer.Profile.LoadMore}</Button>
-        )}
+        {hasMore && <Button onClick={loadMore}>{profileLoc.LoadMore}</Button>}
       </GridCol>
-    </PermissionsGate>
+    </>
   );
 };

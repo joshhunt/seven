@@ -16,50 +16,41 @@ interface PgcrLeaderStatItemProps {
 export const PgcrLeaderStatItem: React.FC<PgcrLeaderStatItemProps> = (
   props
 ) => {
-  const [leaderValueNumber, setLeaderValueNumber] = useState(-99);
-  const [leaderValue, setLeaderValue] = useState(null);
-  const [leaderUserName, setLeaderUserName] = useState(null);
+  let leaderValueNumber = -99;
+  let leaderValue = null;
+  let leaderUserName = null;
   const pgcrData = useDataStore(PgcrDataStore);
 
-  useEffect(() => {
-    if (pgcrData.pgcr?.entries === null) {
-      return;
+  if (pgcrData.pgcr?.entries === null) {
+    return;
+  }
+
+  pgcrData.pgcr?.entries?.forEach((entry) => {
+    let statValue: HistoricalStats.DestinyHistoricalStatsValue = null;
+    let statValNumber = 0;
+
+    if (!!entry?.values) {
+      const val = entry.values[props.statId];
+      if (val && val?.basic?.value) {
+        statValNumber = val.basic.value;
+        statValue = val;
+      }
     }
 
-    let leaderEntry: HistoricalStats.DestinyPostGameCarnageReportEntry = null;
-
-    pgcrData.pgcr.entries.forEach((entry) => {
-      let statValue: HistoricalStats.DestinyHistoricalStatsValue = null;
-      let statValNumber = 0;
-
-      if (entry.values !== null && entry.values !== undefined) {
-        const val = entry.values?.[props.statId];
-        if (val && val?.basic?.value !== null) {
-          statValNumber = val.basic.value;
-          statValue = val;
-          leaderEntry = entry;
-        }
+    if (!!entry?.extended?.values) {
+      const extVal = entry.extended.values[props.statId];
+      if (extVal && extVal?.basic?.value) {
+        statValNumber = extVal.basic.value;
+        statValue = extVal;
       }
+    }
 
-      if (
-        entry.extended?.values !== null &&
-        entry.extended?.values !== undefined
-      ) {
-        const extVal = entry.extended.values?.[props.statId];
-        if (extVal && extVal?.basic?.value !== null) {
-          statValNumber = extVal.basic.value;
-          statValue = extVal;
-          leaderEntry = entry;
-        }
-      }
-
-      if (statValNumber > leaderValueNumber) {
-        setLeaderValue(statValue);
-        setLeaderValueNumber(statValNumber);
-        setLeaderUserName(leaderEntry?.player?.destinyUserInfo?.displayName);
-      }
-    });
-  }, []);
+    if (statValNumber > leaderValueNumber) {
+      leaderValue = statValue;
+      leaderValueNumber = statValNumber;
+      leaderUserName = entry?.player?.destinyUserInfo?.displayName;
+    }
+  });
 
   return leaderValue !== null ? (
     <div className={styles.leaderStatItem}>

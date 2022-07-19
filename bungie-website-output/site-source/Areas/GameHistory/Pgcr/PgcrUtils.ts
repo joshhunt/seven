@@ -23,13 +23,12 @@ export class PgcrUtils {
   ) => {
     let characterTeamId = -1;
 
-    const characterEntry = pgcr.entries?.find(
-      (a) => a.characterId === characterId
-    );
-    const team = characterEntry?.values["team"];
+    const characterEntry =
+      pgcr?.entries && pgcr.entries.find((a) => a.characterId === characterId);
+    const team = characterEntry?.values?.["team"];
 
     if (team?.basic !== null) {
-      characterTeamId = team.basic.value;
+      characterTeamId = team?.basic?.value;
     }
 
     return characterTeamId;
@@ -42,7 +41,7 @@ export class PgcrUtils {
 
     const team = entry?.values["team"];
     if (team?.basic?.value) {
-      teamId = team.basic.value;
+      teamId = team?.basic?.value;
     }
 
     return teamId;
@@ -116,12 +115,12 @@ export class PgcrUtils {
 
     if (entries) {
       entries.forEach((entry) => {
-        if (entry.values !== null) {
-          statsFilter.push(...Object.keys(entry.values));
+        if (entry?.values !== null) {
+          statsFilter.push(...Object.keys(entry?.values));
         }
 
-        if (entry.extended?.values !== null) {
-          extendedStatsFilter.push(...Object.keys(entry.extended.values));
+        if (entry?.extended?.values !== null) {
+          extendedStatsFilter.push(...Object.keys(entry?.extended.values));
         }
       });
     }
@@ -168,35 +167,36 @@ export class PgcrUtils {
     if (entries) {
       entries.forEach((entry) => {
         //add character to stat
-        newStats.statTableData.statsByCharacter[entry.characterId] = {
+        newStats.statTableData.statsByCharacter[entry?.characterId] = {
           stats: [],
           team: -1,
-          emblem: entry.player.emblemHash,
+          emblem: entry?.player?.emblemHash,
           displayName: UserUtils.getBungieNameFromUserInfoCard(
             entry?.player?.destinyUserInfo
           )?.bungieGlobalName,
+          membershipId: entry?.player?.destinyUserInfo?.membershipId,
         };
 
         filteredRelevantStats.forEach((statName) => {
           const stat: PgcrStat = {
-            value: entry.values[statName].basic.displayValue,
+            value: entry?.values[statName].basic.displayValue,
             name: statName,
           };
 
-          newStats.statTableData.statsByCharacter[entry.characterId].stats.push(
-            stat
-          );
+          newStats.statTableData.statsByCharacter[
+            entry?.characterId
+          ].stats.push(stat);
         });
 
         filteredRelevantExtendedStats.forEach((statName) => {
           const stat: PgcrStat = {
-            value: entry.extended.values[statName].basic.displayValue,
+            value: entry?.extended.values[statName].basic.displayValue,
             name: statName,
           };
 
-          newStats.statTableData.statsByCharacter[entry.characterId].stats.push(
-            stat
-          );
+          newStats.statTableData.statsByCharacter[
+            entry?.characterId
+          ].stats.push(stat);
         });
       });
     }

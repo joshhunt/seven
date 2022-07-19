@@ -3,6 +3,7 @@
 
 import styles from "@Areas/GameHistory/GameHistoryEvent.module.scss";
 import Pgcr from "@Areas/GameHistory/Pgcr/Pgcr";
+import PgcrModal from "@Areas/GameHistory/Pgcr/PgcrComponents/PgcrModal";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
@@ -11,6 +12,7 @@ import { DestinyActivityModeType } from "@Enum";
 import { HistoricalStats } from "@Platform";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
+import { createCustomModal } from "@UIKit/Controls/Modal/CreateCustomModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React from "react";
 
@@ -24,57 +26,60 @@ interface GameHistoryEventProps
 }
 
 const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
-  const allActivityModes = props.definitions.DestinyActivityModeDefinition.all();
+  const allActivityModes = props.definitions?.DestinyActivityModeDefinition?.all();
 
   const _getHashFromModeType = (modeType: DestinyActivityModeType) => {
     const allActivityHashes = Object.keys(allActivityModes);
 
     return parseInt(
       allActivityHashes.find(
-        (hash) => allActivityModes[hash].modeType === modeType
+        (hash) => allActivityModes?.[hash]?.modeType === modeType
       )
     );
   };
 
   const activityModeHash = _getHashFromModeType(
-    props.historyItem.activityDetails.mode
+    props.historyItem?.activityDetails?.mode
   );
-  const activityModeDisplayProperties = props.definitions.DestinyActivityModeDefinition.get(
+  const activityModeDisplayProperties = props.definitions?.DestinyActivityModeDefinition?.get(
     activityModeHash
-  ).displayProperties;
-  const activityHash = props.historyItem.activityDetails.referenceId;
-  const activityDisplayProperties = props.definitions.DestinyActivityDefinition.get(
+  )?.displayProperties;
+  const activityHash = props.historyItem?.activityDetails?.referenceId;
+  const activityDisplayProperties = props.definitions?.DestinyActivityDefinition?.get(
     activityHash
-  ).displayProperties;
-  const eventValues = props.historyItem.values;
+  )?.displayProperties;
+  const eventValues = props.historyItem?.values;
 
   const onClick = () => {
-    Modal.open(
-      <Pgcr
-        activityId={props.historyItem.activityDetails.instanceId}
-        basicActivityData={{
-          icon: activityModeDisplayProperties.icon,
-          activityName: activityModeDisplayProperties.name,
-          location: activityDisplayProperties.name,
-          timestamp: props.historyItem.period,
-          standing: eventValues.standing?.basic?.displayValue,
-        }}
-      />,
-      {
-        isFrameless: true,
-      }
-    );
+    PgcrModal.show({
+      children: (
+        <Pgcr
+          activityId={props.historyItem?.activityDetails.instanceId}
+          basicActivityData={{
+            icon: activityModeDisplayProperties?.icon,
+            activityName: activityModeDisplayProperties?.name,
+            location: activityDisplayProperties?.name,
+            timestamp: props.historyItem?.period,
+            standing: eventValues.standing?.basic?.displayValue,
+          }}
+        />
+      ),
+    });
   };
 
   return (
-    <div>
+    <div className={styles.mobileContainer}>
       <TwoLineItem
-        itemTitle={activityModeDisplayProperties.name}
-        itemSubtitle={activityDisplayProperties.name}
+        itemTitle={activityModeDisplayProperties?.name}
+        itemSubtitle={
+          <span className={styles.subtitle}>
+            {activityDisplayProperties?.name}
+          </span>
+        }
         icon={
           <img
             className={styles.icon}
-            src={activityModeDisplayProperties.icon}
+            src={activityModeDisplayProperties?.icon}
           />
         }
         flair={
@@ -83,12 +88,12 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
               // this shows victory or defeat or score for rumble
               eventValues.standing?.basic?.displayValue && (
                 <div className={styles.result}>
-                  {eventValues.standing.basic.displayValue}
+                  {eventValues?.standing?.basic?.displayValue}
                 </div>
               )
             }
             <div className={styles.timestamp}>
-              <Timestamp time={props.historyItem.period} />
+              <Timestamp time={props.historyItem?.period} />
             </div>
           </div>
         }

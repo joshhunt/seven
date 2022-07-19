@@ -2,13 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { formatDateForAccountTable } from "@Areas/User/Account";
-import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { ISilverRecord } from "@Areas/User/AccountComponents/SilverBalanceHistory";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import styles from "../EververseHistory.module.scss";
 import { BungieMembershipType } from "@Enum";
@@ -25,29 +22,24 @@ export const SilverChangeModal: React.FC<ISilverRecord> = ({
   previousQuantity,
   rowKey,
   children,
-  platform,
+  membership,
   bungieName,
 }) => {
-  const destinyMember = useDataStore(AccountDestinyMembershipDataStore);
-  const matchingMembership =
-    destinyMember?.memberships?.find((m) =>
-      EnumUtils.looseEquals(m.membershipType, platform, BungieMembershipType)
-    ) ?? destinyMember?.memberships?.[0];
-  let platformLink = "";
+  let membershipLink = "";
 
-  if (platform) {
-    switch (platform) {
+  if (membership) {
+    switch (membership?.membershipType) {
       case BungieMembershipType.TigerPsn:
-        platformLink = Localizer.Profile.supportplaystation;
+        membershipLink = Localizer.Profile.supportplaystation;
         break;
       case BungieMembershipType.TigerStadia:
-        platformLink = Localizer.Profile.supportstadia;
+        membershipLink = Localizer.Profile.supportstadia;
         break;
       case BungieMembershipType.TigerXbox:
-        platformLink = Localizer.Profile.supportmicrosoft;
+        membershipLink = Localizer.Profile.supportmicrosoft;
         break;
       case BungieMembershipType.TigerSteam:
-        platformLink = Localizer.Profile.supportSteam;
+        membershipLink = Localizer.Profile.supportSteam;
         break;
       default:
         Modal.open(Localizer.UserPages.RAF_NoDestinyAccount);
@@ -66,7 +58,7 @@ export const SilverChangeModal: React.FC<ISilverRecord> = ({
         {" "}
         <div
           className={styles.icon}
-          style={{ backgroundImage: `url(${matchingMembership?.iconPath})` }}
+          style={{ backgroundImage: `url(${membership?.iconPath})` }}
         />
         {bungieName}
       </div>
@@ -88,8 +80,10 @@ export const SilverChangeModal: React.FC<ISilverRecord> = ({
         {Localizer.Profile.PurchaseDisclaimer}
       </div>
       <div className={styles.buttons}>
-        <Button buttonType={"blue"} url={platformLink}>
-          {LocalizerUtils.getPlatformNameFromMembershipType(platform)}
+        <Button buttonType={"blue"} url={membershipLink}>
+          {LocalizerUtils.getPlatformNameFromMembershipType(
+            membership?.membershipType
+          )}
         </Button>
         <Button buttonType={"blue"} url={RouteHelper.HelpArticle(13639)}>
           {Localizer.Profile.PurchaseFaq}

@@ -60,36 +60,35 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
       .includeEmbeddedItems()
       .toJSON()
       .find()
-      .then((res: [WithUids<BnetStackNewsArticle[]>]): void => {
+      .then((res): void => {
         // Assume there's only one match because otherwise we have a URL collision
-        /*				const matchingArticle = res?.[0]?.[0];
-				setArticleData(matchingArticle);
+        const matchingArticle = res?.[0]?.[0];
+        setArticleData(matchingArticle);
 
-				if (!matchingArticle)
-				{
-					throw new NotFoundError();
-				}
+        if (!matchingArticle) {
+          throw new NotFoundError();
+        }
 
-				const referenceMetas = matchingArticle.content.embedded_entries?.content?.map((ref: ContentTypeDataPair<any>) =>
-				{
-					return {
-						contentTypeUid: ref.contentTypeUid,
-						data: ref
-					}
-				})
-				
-				const {RenderedComponent} = useRteMap({
-					meta:
-						{
-							contentTypeUid: matchingArticle.content.type as BasicNodeType,
-							data: matchingArticle.content
-						},
-					map: {} as RteMap<BasicNodeType>,
-					referenceMap: {pmp_call_to_action: PmpCallToAction},
-					referenceMetas: referenceMetas
-				});
+        const referenceMetas = matchingArticle._embedded_items?.content?.map(
+          (ref: any) => {
+            return {
+              contentTypeUid: ref._content_type_uid,
+              data: ref,
+            };
+          }
+        );
 
-				setRenderable(RenderedComponent);*/
+        const { RenderedComponent } = useRteMap({
+          meta: {
+            contentTypeUid: matchingArticle.content.type as BasicNodeType,
+            data: matchingArticle.content,
+          },
+          map: {} as RteMap<BasicNodeType>,
+          referenceMap: { pmp_call_to_action: PmpCallToAction },
+          referenceMetas: referenceMetas,
+        });
+
+        setRenderable(RenderedComponent);
       })
       .catch((error: Error) => {
         Logger.logToServer(error, RendererLogLevel.Error);

@@ -10,6 +10,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import styles from "./PgcrStatBar.module.scss";
+import { Localizer } from "@bungie/localization/Localizer";
 
 interface PgcrStatBarProps
   extends D2DatabaseComponentProps<
@@ -23,12 +24,11 @@ const PgcrStatBar: React.FC<PgcrStatBarProps> = (props) => {
   const [focusedTeamTotal, setFocusedTeamTotal] = useState(0);
   const [otherTeamTotal, setOtherTeamTotal] = useState(0);
   const overallTotal = focusedTeamTotal + otherTeamTotal;
-  const focusedTeamPercent = focusedTeamTotal / overallTotal / 100;
-  const otherTeamPercent = otherTeamTotal / overallTotal / 100;
+  const focusedTeamPercent =
+    overallTotal > 0 ? (focusedTeamTotal / overallTotal) * 100 : 50;
+  const otherTeamPercent =
+    overallTotal > 0 ? (otherTeamTotal / overallTotal) * 100 : 50;
   const { statId, definitions } = props;
-  const statDef = definitions.DestinyActivityModeDefinition.get(
-    pgcrData.pgcrDerivedDefinitionHashes.activityTypeHash
-  );
 
   const separatorWidth = focusedTeamPercent > 0 && otherTeamPercent > 0 ? 5 : 0;
   const focusedTeamWidth = `calc(${focusedTeamPercent}% - ${
@@ -61,24 +61,24 @@ const PgcrStatBar: React.FC<PgcrStatBarProps> = (props) => {
           e?.values;
         })
         .forEach((entry) => {
-          let focusedTeamId = pgcrData.pgcrActivityData.focusedTeamId;
           let matchesFocusedTeam = false;
 
           const team = entry.values?.["team"];
-          if (team?.basic !== null) {
+          if (!!team?.basic) {
             if (pgcrData.pgcrActivityData.focusedTeamId === -1) {
-              focusedTeamId = team.basic.value;
+              pgcrData.pgcrActivityData.focusedTeamId = team?.basic?.value;
+            } else {
+              matchesFocusedTeam =
+                pgcrData.pgcrActivityData.focusedTeamId === team?.basic?.value;
             }
-
-            matchesFocusedTeam = focusedTeamId === team.basic.value;
           }
 
           let stat = entry.values?.[statId];
-          if (stat === null && entry.extended?.values !== null) {
+          if (!stat && !!entry.extended?.values) {
             stat = entry.extended.values?.[statId];
           }
 
-          if (stat?.basic?.value !== null) {
+          if (!!stat?.basic?.value) {
             if (matchesFocusedTeam) {
               setFocusedTeamTotal(focusedTeamTotal + stat.basic.value);
             } else {
@@ -87,11 +87,19 @@ const PgcrStatBar: React.FC<PgcrStatBarProps> = (props) => {
           }
         });
     }
-  }, []);
+  }, [pgcrData]);
 
-  return focusedTeamPercent > 0 && otherTeamTotal > 0 ? (
+  if (pgcrData.pgcrActivityData.focusedTeamId === -1) {
+    return null;
+  }
+
+  return (
     <div className={styles.statBars}>
-      <div className={styles.label}>{statDef.displayProperties.name}</div>
+      <div className={styles.label}>
+        {definitions.DestinyActivityModeDefinition.get(
+          pgcrData.pgcrDerivedDefinitionHashes.activityTypeHash
+        )?.displayProperties?.name || Localizer.Pgcr.Classified}
+      </div>
       <div className={styles.values}>
         <div className={classNames(styles.teamValue)}>{focusedTeamTotal}</div>
         <div className={classNames(styles.teamValue)}>{otherTeamTotal}</div>
@@ -107,7 +115,7 @@ const PgcrStatBar: React.FC<PgcrStatBarProps> = (props) => {
         />
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default withDestinyDefinitions(PgcrStatBar, {

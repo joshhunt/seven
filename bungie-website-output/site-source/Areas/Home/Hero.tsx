@@ -5,12 +5,29 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Button } from "@UIKit/Controls/Button/Button";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { BnetStackHomePageHero } from "../../Generated/contentstack-types";
+import {
+  BnetStackFile,
+  BnetStackLink,
+} from "../../Generated/contentstack-types";
 import styles from "./Hero.module.scss";
 import { Responsive } from "@Boot/Responsive";
 
 interface HeroProps {
-  heroData: BnetStackHomePageHero;
+  heroData: {
+    hero_image: BnetStackFile;
+    hero_video: BnetStackFile;
+    title: string;
+    title_as_image: BnetStackFile;
+    subtitle: string;
+    button_one: {
+      label: string;
+      link: BnetStackLink;
+    };
+    button_two: {
+      label: string;
+      link: BnetStackLink;
+    };
+  };
 }
 
 export const Hero: React.FC<HeroProps> = (props) => {
@@ -20,29 +37,15 @@ export const Hero: React.FC<HeroProps> = (props) => {
     return null;
   }
 
-  const backgroundCSS = props.heroData.background_image
-    ? {
-        backgroundImage: `url(${
-          responsive.mobile && props.heroData.mobile_background_image
-            ? props.heroData.mobile_background_image.url
-            : props.heroData.background_image.url
-        })`,
-      }
-    : {};
-
-  const titleImageBackgroundCSS = props.heroData.title_as_image
-    ? {
-        backgroundImage: `url(${props.heroData.title_as_image.url})`,
-      }
-    : {};
-
-  const buttonId = (num: number) => {
-    if (num === 1) {
-      return "two";
-    }
-
-    return "one";
+  const backgroundCSS = {
+    backgroundImage: `url(${props.heroData?.hero_image?.url}`,
   };
+
+  const titleImageBackgroundCSS = props.heroData?.title_as_image
+    ? {
+        backgroundImage: `url(${props.heroData?.title_as_image?.url})`,
+      }
+    : {};
 
   //for animation
   const [initialized, setInitialized] = useState(false);
@@ -62,26 +65,34 @@ export const Hero: React.FC<HeroProps> = (props) => {
           [styles.initialized]: initialized,
         })}
       >
-        {props.heroData.title_as_image && (
+        {props.heroData?.title_as_image ? (
           <div className={styles.titleImage} style={titleImageBackgroundCSS} />
+        ) : (
+          <div className={styles.title}>{props.heroData?.title}</div>
         )}
-        {props.heroData.subtitle && (
-          <div className={styles.subtitle}>{props.heroData.subtitle}</div>
+        {props.heroData?.subtitle && (
+          <div className={styles.subtitle}>{props.heroData?.subtitle}</div>
         )}
-        {props.heroData.link_buttons && (
+        {props.heroData?.button_one && (
           <div className={styles.buttonContainer}>
-            {props.heroData.link_buttons.link.map((item, num) => {
-              return (
-                <Button
-                  buttonType={"gold"}
-                  url={item.href}
-                  key={num}
-                  analyticsId={`button-${buttonId(num)}`}
-                >
-                  {item.title}
-                </Button>
-              );
-            })}
+            {props.heroData?.button_one?.label && (
+              <Button
+                buttonType={"gold"}
+                url={props.heroData?.button_one.link.href}
+                analyticsId={`button-one}`}
+              >
+                {props.heroData?.button_one?.label}
+              </Button>
+            )}
+            {props.heroData?.button_two?.label && (
+              <Button
+                buttonType={"gold"}
+                url={props.heroData?.button_two.link.href}
+                analyticsId={`button-two}`}
+              >
+                {props.heroData?.button_two?.label}
+              </Button>
+            )}
           </div>
         )}
       </div>

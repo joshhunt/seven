@@ -5392,6 +5392,28 @@ export declare namespace Content {
 
     commentCount: number;
   }
+
+  export interface NewsArticleRssResponse {
+    NewsArticles: Content.NewsArticleRssItem[];
+
+    CurrentPaginationToken: number;
+
+    NextPaginationToken?: number;
+
+    ResultCountThisPage: number;
+  }
+
+  export interface NewsArticleRssItem {
+    Title: string;
+
+    Link: string;
+
+    PubDate: string;
+
+    UniqueIdentifier: string;
+
+    Description: string;
+  }
 }
 
 export declare namespace Careers {
@@ -13494,6 +13516,12 @@ export declare namespace Profiles {
     seasonHashes: number[];
 
     /**
+		A list of hashes for event cards that a profile owns.
+		Unlike most values in versionsOwned, these stay with the profile across all platforms.
+		*/
+    eventCardHashesOwned: number[];
+
+    /**
 		If populated, this is a reference to the season that is currently active.
 		*/
     currentSeasonHash?: number;
@@ -13502,6 +13530,11 @@ export declare namespace Profiles {
 		If populated, this is the reward power cap for the current season.
 		*/
     currentSeasonRewardPowerCap?: number;
+
+    /**
+		If populated, this is a reference to the event card that is currently active.
+		*/
+    activeEventCardHash?: number;
   }
 
   /**
@@ -21943,6 +21976,27 @@ class ContentServiceInternal {
       optionalQueryAppend,
       "Content",
       "SearchHelpArticles",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns a JSON string response that is the RSS feed for news articles.
+   * @param pageToken Zero-based pagination token for paging through result sets.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RssNewsArticles = (
+    pageToken: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Content.NewsArticleRssResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Content/Rss/NewsArticles/${e(pageToken)}/`,
+      [],
+      optionalQueryAppend,
+      "Content",
+      "RssNewsArticles",
       undefined,
       clientState
     );

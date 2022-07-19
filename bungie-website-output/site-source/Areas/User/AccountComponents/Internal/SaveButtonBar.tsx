@@ -13,7 +13,7 @@ interface SaveButtonBarProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 export const SaveButtonBar: React.FC<SaveButtonBarProps> = (props) => {
-  const confirmNavigation = function (e: Event) {
+  const confirmNavigation = (e: Event) => {
     // Cancel the event
     e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
     // Chrome requires returnValue to be set
@@ -23,12 +23,14 @@ export const SaveButtonBar: React.FC<SaveButtonBarProps> = (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    window.addEventListener("beforeunload", confirmNavigation);
+    if (props.showing) {
+      window.addEventListener("beforeunload", confirmNavigation);
 
-    return () => {
-      window.removeEventListener("beforeunload", confirmNavigation);
-    };
-  }, []);
+      return () => {
+        window.removeEventListener("beforeunload", confirmNavigation);
+      };
+    }
+  }, [props.showing]);
 
   return (
     <div

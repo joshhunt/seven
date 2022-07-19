@@ -65,80 +65,81 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
   const destinyMembership = useDataStore(membershipDataStore);
 
   useEffect(() => {
-    if (!destinyMembership.loaded) {
+    if (!destinyMembership?.loaded) {
       membershipDataStore.actions.loadUserData();
     }
   }, []);
 
   return destinyMembership?.membershipData ? (
-    <Grid>
-      <SystemDisabledHandler systems={["Destiny2"]}>
-        <RequiresAuth />
-        {destinyMembership.memberships.length > 0 ? (
-          children({
-            bnetProfile: (
-              <div className={styles.bnetProfile}>
-                <TwoLineItem
-                  icon={
-                    <img
-                      src={globalState.loggedInUser.user.profilePicturePath}
-                    />
-                  }
-                  itemTitle={globalState.loggedInUser.user.displayName}
-                  itemSubtitle={
-                    bnetProfileSubtitle ??
+    <SystemDisabledHandler systems={["Destiny2"]}>
+      <RequiresAuth />
+      {destinyMembership?.memberships.length > 0 ? (
+        children({
+          bnetProfile: (
+            <div className={styles.bnetProfile}>
+              <TwoLineItem
+                icon={
+                  <img
+                    src={globalState?.loggedInUser?.user?.profilePicturePath}
+                  />
+                }
+                itemTitle={globalState?.loggedInUser?.user?.displayName}
+                itemSubtitle={
+                  bnetProfileSubtitle ??
+                  (destinyMembership?.selectedMembership &&
                     Localizer.Platforms[
                       EnumUtils.getStringValue(
-                        destinyMembership.selectedMembership.membershipType,
+                        destinyMembership?.selectedMembership?.membershipType,
                         BungieMembershipType
                       )
-                    ]
-                  }
-                />
-              </div>
-            ),
-            platformSelector: (
-              <DestinyPlatformSelector
-                userMembershipData={destinyMembership.membershipData}
-                onChange={(value: string) => {
-                  membershipDataStore.actions.updatePlatform(value);
-                  onPlatformChange?.(value);
-                }}
-                defaultValue={destinyMembership.memberships[0].membershipType}
-                crossSavePairingStatus={globalState.crossSavePairingStatus}
+                    ])
+                }
               />
-            ),
-            characterSelector: (
-              <>
-                {destinyMembership.selectedCharacter ? (
-                  <DestinyCharacterSelector
-                    characterComponent={destinyMembership.characters}
-                    defaultCharacterId={
-                      destinyMembership.selectedCharacter.characterId
-                    }
-                    onChange={(value: string) => {
-                      membershipDataStore.actions.updateCharacter(value);
-                      onCharacterChange?.(value);
-                    }}
-                  />
-                ) : (
-                  <div className={styles.noAccount}>
-                    {Localizer.Format(Localizer.Crosssave.NoCharacters, {
-                      platform: LocalizerUtils.getPlatformNameFromMembershipType(
-                        destinyMembership.selectedMembership.membershipType
-                      ),
-                    })}
-                  </div>
-                )}
-              </>
-            ),
-          })
-        ) : (
-          <div className={styles.noAccount}>
-            {Localizer.CodeRedemption.LinkedDestinyAccountRequiredHeader}
-          </div>
-        )}
-      </SystemDisabledHandler>
-    </Grid>
+            </div>
+          ),
+          platformSelector: (
+            <DestinyPlatformSelector
+              userMembershipData={destinyMembership?.membershipData}
+              onChange={(value: string) => {
+                membershipDataStore.actions.updatePlatform(value);
+                onPlatformChange?.(value);
+              }}
+              defaultValue={destinyMembership?.memberships?.[0]?.membershipType}
+              crossSavePairingStatus={globalState.crossSavePairingStatus}
+            />
+          ),
+          characterSelector: (
+            <>
+              {destinyMembership?.selectedCharacter ? (
+                <DestinyCharacterSelector
+                  characterComponent={destinyMembership?.characters}
+                  defaultCharacterId={
+                    destinyMembership?.selectedCharacter?.characterId
+                  }
+                  onChange={(value: string) => {
+                    membershipDataStore.actions.updateCharacter(value);
+                    onCharacterChange?.(value);
+                  }}
+                />
+              ) : (
+                <div className={styles.noAccount}>
+                  {destinyMembership?.selectedMembership?.membershipType
+                    ? Localizer.Format(Localizer.Crosssave.NoCharacters, {
+                        platform: LocalizerUtils.getPlatformNameFromMembershipType(
+                          destinyMembership?.selectedMembership?.membershipType
+                        ),
+                      })
+                    : Localizer.Messages.GroupMemberInvalidMemberType}
+                </div>
+              )}
+            </>
+          ),
+        })
+      ) : (
+        <div className={styles.noAccount}>
+          {Localizer.CodeRedemption.LinkedDestinyAccountRequiredHeader}
+        </div>
+      )}
+    </SystemDisabledHandler>
   ) : null;
 };

@@ -1,6 +1,7 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
+import { pageView } from "@Areas/User/Profile";
 import styles from "@Areas/User/Profile.module.scss";
 import { Clan } from "@Areas/User/ProfileComponents/Clan";
 import { Localizer } from "@bungie/localization";
@@ -23,6 +24,7 @@ interface DestinyViewProps {
   membershipType: BungieMembershipType;
   membershipId: string;
   isSelf: boolean;
+  updateView: React.Dispatch<React.SetStateAction<pageView>>;
 }
 
 export const DestinyView: React.FC<DestinyViewProps> = (props) => {
@@ -34,6 +36,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
     membershipType,
     membershipId,
     isSelf,
+    updateView,
   } = props;
 
   const profileLoc = Localizer.Profile;
@@ -96,7 +99,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
           </ProfileErrorBoundary>
         )}
         <ProfileErrorBoundary message={profileLoc.GameHistoryLoadingError}>
-          <ProfileGameHistoryLink />
+          <ProfileGameHistoryLink updateView={updateView} />
         </ProfileErrorBoundary>
       </div>
     </>

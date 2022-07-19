@@ -6,18 +6,16 @@ import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
-import {
-  ImageAnchor,
-  ImageThumbBtn,
-  ImageVideoThumb,
-} from "@UI/Marketing/ImageThumb";
+import { ImageAnchor, ImageVideoThumb } from "@UI/Marketing/ImageThumb";
+import { bgImage } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
 import React from "react";
-import styles from "./S17Hero.module.scss";
 import { BnetStackSeasonOfTheHaunted } from "../../../../../../Generated/contentstack-types";
+import styles from "./S17Hero.module.scss";
 
 type S17HeroProps = {
   data?: BnetStackSeasonOfTheHaunted["hero"];
+  scrollToEvent: () => void;
 };
 
 export const S17Hero: React.FC<S17HeroProps> = (props) => {
@@ -31,6 +29,7 @@ export const S17Hero: React.FC<S17HeroProps> = (props) => {
     logo,
     play_now_btn,
     trailer_btn,
+    solstice_bug,
   } = props.data ?? {};
 
   return (
@@ -66,10 +65,16 @@ export const S17Hero: React.FC<S17HeroProps> = (props) => {
               bg={trailer_btn?.thumbnail?.url}
               youtubeUrl={trailer_btn?.youtube_url}
             />
+            {!mobile && (
+              <HeroBug {...solstice_bug} scrollToEvent={props.scrollToEvent} />
+            )}
             <HeroPlayBtn
               title={play_now_btn?.text}
               bg={play_now_btn?.thumbnail?.url}
             />
+            {mobile && (
+              <HeroBug {...solstice_bug} scrollToEvent={props.scrollToEvent} />
+            )}
           </div>
         </div>
       </div>
@@ -123,5 +128,45 @@ const HeroTrailerBtn: React.FC<{
         <p className={styles.btnText}>{title}</p>
       </div>
     </ImageVideoThumb>
+  );
+};
+
+const HeroBug: React.FC<
+  BnetStackSeasonOfTheHaunted["hero"]["solstice_bug"] & {
+    scrollToEvent: () => void;
+  }
+> = (props) => {
+  const { mobile } = useDataStore(Responsive);
+
+  const {
+    scrollToEvent,
+    mobile_text,
+    desktop_text_top,
+    desktop_text_bottom,
+    images,
+  } = props;
+
+  return (
+    <div className={styles.bugWrapper}>
+      <button className={styles.bugContent} onClick={scrollToEvent}>
+        {!mobile && <p className={styles.title}>{desktop_text_top}</p>}
+        <div className={styles.iconOuterWrapper}>
+          <div className={styles.iconWrapper}>
+            {images?.map((image, i) => (
+              <div
+                className={styles.icon}
+                style={{ backgroundImage: bgImage(image?.url) }}
+                key={i}
+              />
+            ))}
+          </div>
+        </div>
+        <p className={styles.title}>
+          {mobile ? mobile_text : desktop_text_bottom}
+        </p>
+
+        <DestinyArrows classes={{ root: styles.arrows }} />
+      </button>
+    </div>
   );
 };
