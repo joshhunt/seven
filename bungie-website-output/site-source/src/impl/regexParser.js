@@ -31,7 +31,7 @@ function combineExtractors(...extractors) {
       .reduce(
         ([mergedVals, mergedZone, cursor], ex) => {
           const [val, zone, next] = ex(m, cursor);
-          return [{ ...mergedVals, ...val }, mergedZone || zone, next];
+          return [Object.assign(mergedVals, val), mergedZone || zone, next];
         },
         [{}, null, 1]
       )
@@ -140,10 +140,8 @@ function extractISODuration(match) {
   ] = match;
 
   const hasNegativePrefix = s[0] === "-";
-  const negativeSeconds = secondStr && secondStr[0] === "-";
 
-  const maybeNegate = (num, force = false) =>
-    num !== undefined && (force || (num && hasNegativePrefix)) ? -num : num;
+  const maybeNegate = (num) => (num && hasNegativePrefix ? -num : num);
 
   return [
     {
@@ -153,8 +151,8 @@ function extractISODuration(match) {
       days: maybeNegate(parseInteger(dayStr)),
       hours: maybeNegate(parseInteger(hourStr)),
       minutes: maybeNegate(parseInteger(minuteStr)),
-      seconds: maybeNegate(parseInteger(secondStr), secondStr === "-0"),
-      milliseconds: maybeNegate(parseMillis(millisecondsStr), negativeSeconds),
+      seconds: maybeNegate(parseInteger(secondStr)),
+      milliseconds: maybeNegate(parseMillis(millisecondsStr)),
     },
   ];
 }
@@ -329,10 +327,9 @@ const extractISOWeekTimeAndOffset = combineExtractors(
   extractISOTime,
   extractISOOffset
 );
-const extractISOOrdinalDateAndTime = combineExtractors(
+const extractISOOrdinalDataAndTime = combineExtractors(
   extractISOOrdinalData,
-  extractISOTime,
-  extractISOOffset
+  extractISOTime
 );
 const extractISOTimeAndOffset = combineExtractors(
   extractISOTime,
@@ -348,7 +345,7 @@ export function parseISODate(s) {
     s,
     [isoYmdWithTimeExtensionRegex, extractISOYmdTimeAndOffset],
     [isoWeekWithTimeExtensionRegex, extractISOWeekTimeAndOffset],
-    [isoOrdinalWithTimeExtensionRegex, extractISOOrdinalDateAndTime],
+    [isoOrdinalWithTimeExtensionRegex, extractISOOrdinalDataAndTime],
     [isoTimeCombinedRegex, extractISOTimeAndOffset]
   );
 }
