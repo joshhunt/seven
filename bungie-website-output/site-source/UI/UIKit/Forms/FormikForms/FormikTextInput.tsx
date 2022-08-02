@@ -13,6 +13,8 @@ interface FormikTextInputProps {
   label?: string;
   /** Initial placeholder */
   placeholder?: string;
+  /* Maximum character limit. Number as string. */
+  maxlength?: string;
   /** Optional function called on input value change */
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   /** Optional function called on input focus */

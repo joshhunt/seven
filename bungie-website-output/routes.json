@@ -26,6 +26,30 @@
     "path": "/7/en/Admin/Reports"
   },
   {
+    "areaName": "Clans",
+    "areaObjectName": "Clans",
+    "componentImportPath": "@Areas/Clans/ClansArea",
+    "action": "Create",
+    "params": {},
+    "path": "/7/en/Clans/Create"
+  },
+  {
+    "areaName": "Clans",
+    "areaObjectName": "Clans",
+    "componentImportPath": "@Areas/Clans/ClansArea",
+    "action": "MyClans",
+    "params": {},
+    "path": "/7/en/Clans/MyClans"
+  },
+  {
+    "areaName": "Clans",
+    "areaObjectName": "Clans",
+    "componentImportPath": "@Areas/Clans/ClansArea",
+    "action": "Suggested",
+    "params": {},
+    "path": "/7/en/Clans/Suggested"
+  },
+  {
     "areaName": "Codes",
     "areaObjectName": "Codes",
     "componentImportPath": "@Areas/Codes/CodesArea",

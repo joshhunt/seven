@@ -300,6 +300,16 @@ export class RouteHelper {
   );
   public static Clans = LegacyPathWithQuery("/ClanV2/Search");
   public static MyClan = LegacyPathWithQuery("/ClanV2/MyClan");
+  public static NewClans = BasicReactPath(
+    RouteDefs.Areas.Clans.getAction("MyClans")
+  );
+  public static NewMyClan = RouteHelper.NewClans;
+  public static NewClansCreate = BasicReactPath(
+    RouteDefs.Areas.Clans.getAction("Create")
+  );
+  public static NewClansSuggested = BasicReactPath(
+    RouteDefs.Areas.Clans.getAction("Suggested")
+  );
   public static Clan = (clanId: string) =>
     LegacyPath(`/ClanV2?groupid=${clanId}`);
   public static Fireteams = LegacyPathWithQuery(
@@ -455,7 +465,7 @@ export class RouteHelper {
   public static About = LegacyPathWithQuery("/AboutUs");
   public static Forums = LegacyPathWithQuery("/Forum/Topics");
   public static ForumsTag = (tag: string) =>
-    LegacyPath(`/Forum/Topics/0/${tag}`);
+    LegacyPath(`/Forum/Topics/0/?tg=${tag}`);
   public static Post = (postId: string) =>
     LegacyPath(`/Forums/Post/${postId}?sort=0&page=0`);
   public static BungieStore = (subPath = "") =>

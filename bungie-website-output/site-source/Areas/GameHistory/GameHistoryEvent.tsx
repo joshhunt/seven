@@ -60,7 +60,7 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
             activityName: activityModeDisplayProperties?.name,
             location: activityDisplayProperties?.name,
             timestamp: props.historyItem?.period,
-            standing: eventValues.standing?.basic?.displayValue,
+            standing: eventValues.standing?.basic?.value,
           }}
         />
       ),

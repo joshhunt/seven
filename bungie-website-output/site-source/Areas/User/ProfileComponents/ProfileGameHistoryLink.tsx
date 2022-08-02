@@ -39,10 +39,11 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
               destinyMembershipData?.selectedMembership?.membershipType
             )
       }
-      onClick={() =>
+      onClick={() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         useReactGameHistory &&
-        props.updateView(pageView["destiny-game-history"])
-      }
+          props.updateView(pageView["destiny-game-history"]);
+      }}
     >
       <h4>{profileLoc.GameHistory}</h4>
       <div className={styles.total}>

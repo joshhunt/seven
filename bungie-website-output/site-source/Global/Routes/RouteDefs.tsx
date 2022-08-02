@@ -18,6 +18,7 @@ export class RouteDefs {
   private static readonly AreaNames = {
     Admin: "Admin",
     BeyondLight: "BeyondLight",
+    Clans: "Clans",
     Codes: "Codes",
     CrossSave: "CrossSave",
     Destiny: "Destiny",
@@ -46,6 +47,17 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reports"),
         (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
         (area) => new ActionRoute(area, "MigrateNews"),
+      ],
+    }),
+    Clans: new Area({
+      name: RouteDefs.AreaNames.Clans,
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/Clans/ClansArea" /* webpackChunkName: "Clans" */)
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "Create"),
+        (area) => new ActionRoute(area, "Suggested"),
+        (area) => new ActionRoute(area, "MyClans"),
       ],
     }),
     CrossSave: new Area({

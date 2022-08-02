@@ -302,6 +302,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     <FormikTextInput
                       name={"displayName"}
                       type={"text"}
+                      maxlength={"26"}
                       disabled={nameChangeStatus === "locked"}
                       classes={{
                         input: classNames(styles.textInput, {

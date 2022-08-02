@@ -5119,6 +5119,8 @@ export declare namespace Models {
 
     groupAvatars: Models.CoreSetting[];
 
+    defaultGroupTheme: Models.CoreSetting;
+
     destinyMembershipTypes: Models.CoreSetting[];
 
     recruitmentPlatformTags: Models.CoreSetting[];

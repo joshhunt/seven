@@ -6,11 +6,14 @@ import { RewardButtons } from "@Areas/Rewards/Shared/RewardButtons";
 import { RewardsCollectibleDisplay } from "@Areas/Rewards/Shared/RewardsCollectibleDisplay";
 import { RewardsTriumphsDisplay } from "@Areas/Rewards/Shared/RewardsTriumphsDisplay";
 import { Localizer } from "@bungie/localization/Localizer";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import React from "react";
+import { ImEnlarge, ImEnlarge2 } from "react-icons/all";
 import { IReward } from "../Rewards";
 import styles from "./RewardItem.module.scss";
 
@@ -43,7 +46,9 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
   const gameEarnByDateFormatted =
     gameEarnByDate && gameEarnByDate > DateTime.now()
       ? gameEarnByDate.setZone(timeZone).toLocaleString({
-          locale: Localizer.CurrentCultureName,
+          locale: LocalizerUtils.useAltChineseCultureString(
+            Localizer.CurrentCultureName
+          ),
           month: "short",
           year: "numeric",
           day: "numeric",
@@ -55,7 +60,9 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
   const redemptionEndDateFormatted =
     redemptionEndDate && redemptionEndDate > DateTime.now()
       ? redemptionEndDate.setZone(timeZone).toLocaleString({
-          locale: Localizer.CurrentCultureName,
+          locale: LocalizerUtils.useAltChineseCultureString(
+            Localizer.CurrentCultureName
+          ),
           month: "short",
           year: "numeric",
           day: "2-digit",
@@ -63,6 +70,15 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
           minute: "2-digit",
         })
       : "";
+
+  const showRewardModal = () => {
+    Modal.open(
+      <img
+        src={bungieRewardDisplay.RewardDisplayProperties.ImagePath}
+        alt={bungieRewardDisplay.RewardDisplayProperties.Name}
+      />
+    );
+  };
 
   return (
     <li
@@ -72,11 +88,19 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
     >
       <div className={styles.gridBlock}>
         <div className={styles.rewardContainer}>
-          <img
-            className={styles.rewardImage}
-            alt={bungieRewardDisplay.RewardDisplayProperties.Name}
-            src={bungieRewardDisplay.RewardDisplayProperties.ImagePath}
-          />
+          <div className={styles.rewardImageContainer}>
+            <img
+              className={styles.rewardImage}
+              alt={bungieRewardDisplay.RewardDisplayProperties.Name}
+              src={bungieRewardDisplay.RewardDisplayProperties.ImagePath}
+            />
+            {!userAvailability.AvailabilityModel.IsLoyaltyReward && (
+              <ImEnlarge2
+                onClick={() => showRewardModal()}
+                title={Localizer.Actions.ClickToEnlarge}
+              />
+            )}
+          </div>
           <div className={styles.rewardContent}>
             <RewardAvailability reward={props.reward.bungieRewardDisplay} />
             <RewardsTriumphsDisplay reward={bungieRewardDisplay} />

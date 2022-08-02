@@ -109,4 +109,6 @@ export const SystemNames = {
   D2RewardsReact: "D2RewardsReact",
   CoreUserHistories: "CoreUserHistories",
   CoreAreaGameHistory: "CoreAreaGameHistory",
+  DestinyClanSearch: "DestinyClanSearch",
+  ExactMatchClanSearchOnly: "ExactMatchClanSearchOnly",
 } as const;

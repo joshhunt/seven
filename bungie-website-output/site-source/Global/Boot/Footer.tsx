@@ -1,21 +1,30 @@
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
-import { SystemNames } from "@Global/SystemNames";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import classNames from "classnames";
-import * as React from "react";
-import styles from "./Footer.module.scss";
-import { RouteHelper, IMultiSiteLink } from "@Global/Routes/RouteHelper";
 import { Localizer } from "@bungie/localization";
-import moment from "moment";
+import { IMultiSiteLink, RouteHelper } from "@Global/Routes/RouteHelper";
+import { SystemNames } from "@Global/SystemNames";
 import { Models } from "@Platform";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { Button } from "@UIKit/Controls/Button/Button";
+import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import classNames from "classnames";
+import moment from "moment";
+import * as React from "react";
+import { IoIosArrowDropupCircle } from "react-icons/all";
+import styles from "./Footer.module.scss";
 
 interface IFooterProps {
   coreSettings: Models.CoreSettingsConfiguration;
+  className?: string;
+  isFixed?: boolean;
 }
 
-interface IFooterState {}
+interface IFooterState {
+  showFooter: boolean;
+}
 
 /**
  * Footer that shows on most pages
@@ -27,7 +36,9 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
   constructor(props: IFooterProps) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      showFooter: false,
+    };
   }
 
   public render() {
@@ -40,6 +51,12 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
     const copyright = Localizer.Format(globalsLoc.Copyright, {
       year: moment().year(),
     });
+
+    const toggleFooter = () => {
+      if (this.props.isFixed) {
+        this.setState({ showFooter: !this.state.showFooter });
+      }
+    };
 
     // get user's current locale (i.e. 'en', 'es', etc.)
     const userLanguage = Localizer.CurrentCultureName.toLowerCase();
@@ -60,8 +77,24 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
       "https://www.instagram.com/bungie/"
     );
 
+    const classes = classNames(styles.footer, {
+      [this.props.className]: this.props.className,
+      [styles.fixedFooter]: this.props.isFixed,
+      [styles.showFooter]: this.state.showFooter,
+    });
+
     return (
-      <footer className={styles.footer}>
+      <footer className={classes}>
+        {this.props.isFixed && (
+          <div className={styles.footerTrigger} onClick={() => toggleFooter()}>
+            <SafelySetInnerHTML
+              html={Localizer.Format(Localizer.Globals.copyright, {
+                year: new Date().getFullYear(),
+              })}
+            />
+            <IoIosArrowDropupCircle className={styles.footerTriggerIcon} />
+          </div>
+        )}
         <a href="/">
           <img
             src="/7/ca/bungie/icons/logos/bungienet/bungie_logo_footer.png"

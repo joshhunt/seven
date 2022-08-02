@@ -32,8 +32,8 @@ import { Timestamp } from "@UI/Utility/Timestamp";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { GameHistoryDestinyMembershipDataStore } from "../DataStores/GameHistoryDestinyMembershipDataStore";
 import styles from "./Pgcr.module.scss";
@@ -43,7 +43,7 @@ export interface BasicDestinyActivityData {
   activityName: string;
   location: string;
   timestamp: string;
-  standing: string | null;
+  standing: number | null;
 }
 
 interface PgcrProps
@@ -63,8 +63,10 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
   const [pgcrLoaded, setPgcrLoaded] = useState(false);
   const [team1, setTeam1] = useState<PgcrStatsByCharacter>({});
   const [team2, setTeam2] = useState<PgcrStatsByCharacter>({});
-  const [selectedStat, setSelectedStat] = useState<string>("");
   const pgcrData = useDataStore(PgcrDataStore);
+  const [selectedStat, setSelectedStat] = useState<string>(
+    pgcrData.pgcrStats?.statTableData?.statNames[0]
+  );
   const destinyMembership = useDataStore(GameHistoryDestinyMembershipDataStore);
   const responsive = useDataStore(Responsive);
 
@@ -215,7 +217,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
             destinyMembership?.selectedCharacter?.characterId
           );
 
-          const firstTeam = pgcr.teams[0];
+          const firstTeam = pgcr.teams?.[0];
           if (
             newActivityData.focusedTeamId === -1 &&
             firstTeam?.teamId !== null
@@ -299,7 +301,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
     }
 
     const isMobile = responsive.mobile;
-    const statSelectionOptions: IDropdownOption[] = pgcrData.pgcrStats?.statTableData.statNames.map(
+    const statSelectionOptions: IDropdownOption[] = pgcrData.pgcrStats?.statTableData?.statNames?.map(
       (statName) => {
         return {
           label: makeOrAbbreviateStatName(statName),
@@ -339,15 +341,15 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
                             style={{
                               backgroundImage: `url(${
                                 props.definitions.DestinyInventoryItemLiteDefinition.get(
-                                  team[ci].emblem
-                                ).displayProperties.icon
+                                  team?.[ci].emblem
+                                ).displayProperties?.icon
                               }`,
                             }}
                           />
                           <div className={styles.nameReportContainer}>
-                            <div>{team[ci].displayName}</div>
+                            <div>{team?.[ci].displayName}</div>
                             <PgcrReportButton
-                              ignoredItemId={team[ci]?.membershipId}
+                              ignoredItemId={team?.[ci]?.membershipId}
                               itemContextType={IgnoredItemType.UserProfile}
                             />
                           </div>
@@ -362,7 +364,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
               <>
                 <tr className={styles.statNames}>
                   <td>{teamLabel}</td>
-                  {pgcrData.pgcrStats?.statTableData.statNames.map((n, i) => (
+                  {pgcrData.pgcrStats?.statTableData?.statNames?.map((n, i) => (
                     <th key={i} className={styles.statName}>
                       {makeOrAbbreviateStatName(n)}
                     </th>
@@ -378,14 +380,14 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
                             style={{
                               backgroundImage: `url(${
                                 props.definitions.DestinyInventoryItemLiteDefinition.get(
-                                  team[ci].emblem
-                                ).displayProperties.icon
+                                  team?.[ci].emblem
+                                ).displayProperties?.icon
                               }`,
                             }}
                           />
-                          <div>{team[ci].displayName}</div>
+                          <div>{team?.[ci].displayName}</div>
                           <PgcrReportButton
-                            ignoredItemId={team[ci]?.membershipId}
+                            ignoredItemId={team?.[ci]?.membershipId}
                             itemContextType={IgnoredItemType.UserProfile}
                           />
                         </div>
@@ -419,6 +421,11 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
     return Localizer.historicalstats[`StatName_${name}`];
   };
 
+  const isRumble =
+    pgcrData?.pgcrDerivedDefinitionHashes?.activityHash ===
+    DestinyActivityModeType.Rumble;
+  const standing = props.basicActivityData?.standing;
+
   return (
     <div className={styles.contentBounds}>
       <SpinnerContainer loading={!pgcrLoaded}>
@@ -445,14 +452,19 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
                   <Timestamp time={props.basicActivityData?.timestamp} />
                 </div>
                 {props.basicActivityData?.standing && (
-                  <div className={styles.standing}>
+                  <div
+                    className={classNames(styles.standing, {
+                      [styles.victory]:
+                        standing < 1 || (isRumble && standing < 3),
+                    })}
+                  >
                     {props.basicActivityData.standing}
                   </div>
                 )}
               </div>
             </div>
             <div className={styles.body}>
-              {pgcrData?.pgcrActivityData?.isScoredPvE && (
+              {pgcrData?.pgcr?.teams?.length > 1 && (
                 <>
                   <div className={styles.subtitle}>
                     {Localizer.Pgcr.GameStatsSectionHeader}

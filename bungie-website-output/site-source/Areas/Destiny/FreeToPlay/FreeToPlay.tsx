@@ -1,6 +1,7 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
+import { CommunitySection } from "@Areas/Destiny/FreeToPlay/Components/CommunitySection/CommunitySection";
 import { FreeHero } from "@Areas/Destiny/FreeToPlay/Components/FreeHero/FreeHero";
 import { FreeSection } from "@Areas/Destiny/FreeToPlay/Components/FreeSection/FreeSection";
 import { FreeTripleImageSet } from "@Areas/Destiny/FreeToPlay/Components/FreeTripleImageSet/FreeTripleImageSet";
@@ -48,7 +49,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
       .ContentType("free_to_play_product_page")
       .Entry("blt95d601ea2e2125c0")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference(["rewards_callout"])
+      .includeReference(["rewards_callout", "video_carousel"])
       .toJSON()
       .fetch()
       .then(setData);
@@ -72,6 +73,9 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
     rewards_callout,
     v2_hero,
     callout_btn_title,
+    community_carousel_slides,
+    community_section,
+    video_carousel,
   } = data ?? {};
 
   const images = useCSWebpImages(
@@ -112,7 +116,10 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
       />
 
       <MarketingSubNav
-        ids={Object.keys(idToElementsMapping)}
+        ids={
+          sub_nav?.labels?.map((l) => l.label_id.replace("_nav_label", "")) ??
+          []
+        }
         renderLabel={(id) => {
           return sub_nav?.labels.find((l) => l.label_id === `${id}_nav_label`)
             ?.label;
@@ -128,6 +135,16 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
           buttonType: "hotPink",
         }}
         withGutter={true}
+      />
+
+      <div
+        id={"community"}
+        ref={(ref) => (idToElementsMapping["community"] = ref)}
+      />
+      <CommunitySection
+        data={community_section}
+        communityCarouselSlides={community_carousel_slides}
+        videoCarousel={video_carousel}
       />
 
       <div

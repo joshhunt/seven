@@ -96,4 +96,24 @@ export class LocalizerUtils {
       return acc;
     }, {} as { [key: string]: string });
   }
+
+  /**
+   * Convert a Chinese localizer culture name to alternate
+   * @param cultureName
+   */
+  public static useAltChineseCultureString(cultureName: string): string {
+    if (cultureName.indexOf("zh") > -1) {
+      if (cultureName.indexOf("chs") > -1) {
+        return "zh-cn";
+      }
+
+      if (cultureName.indexOf("cht") > -1) {
+        return "zh-tw";
+      }
+
+      return cultureName;
+    } else {
+      return cultureName;
+    }
+  }
 }
