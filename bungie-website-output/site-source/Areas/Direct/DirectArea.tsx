@@ -63,6 +63,16 @@ class DirectArea extends React.Component<IDirectRouterProps> {
                 )
             )}
           />
+
+          <Route
+            path={RouteDefs.Areas.Direct.getAction("Reveal").path}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "./NebulaTuneIn/NebualTuneIn" /* webpackChunkName: "Direct-NebulaTuneIn" */
+                )
+            )}
+          />
         </AnimatedRouter>
       </React.Fragment>
     );
