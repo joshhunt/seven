@@ -98,7 +98,7 @@ export class AccountSidebar extends React.Component<
           />
         </Anchor>
 
-        <Anchor url={RouteHelper.Triumphs()}>
+        <Anchor url={RouteHelper.NewTriumphs()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
@@ -108,7 +108,7 @@ export class AccountSidebar extends React.Component<
           />
         </Anchor>
 
-        <Anchor url={RouteHelper.Collections()}>
+        <Anchor url={RouteHelper.NewCollections()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
@@ -118,7 +118,7 @@ export class AccountSidebar extends React.Component<
           />
         </Anchor>
 
-        <Anchor url={RouteHelper.ProfilePage("GameHistory")}>
+        <Anchor url={RouteHelper.GameHistory(null, 254)}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
@@ -289,7 +289,8 @@ export class AccountSidebar extends React.Component<
     const clans = this.props.globalState.loggedInUserClans
       ? this.props.globalState.loggedInUserClans.results
       : [];
-    const clanNames = clans.map((clan) => clan.group.name);
+    const uniqueClans = UserUtils.getUsersUniqueClanMemberships(clans); //clans.filter((c, index, clanarray) => clanarray.findIndex(v => v.group.groupId === c.group.groupId) === index);
+    const clanNames = uniqueClans.map((clan) => clan.group.name);
 
     if (!loggedInUser) {
       return null;

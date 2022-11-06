@@ -104,7 +104,12 @@ export const Clans: React.FC<ClansProps> = (props) => {
         title={Localizer.Pagetitles.ClanSearch}
         description={Localizer.Pagetitles.ClanSearch}
       >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        <body
+          className={classNames(
+            SpecialBodyClasses(BodyClasses.NoSpacer),
+            styles.clanPageBody
+          )}
+        />
       </BungieHelmet>
       <Grid className={styles.clanContainer}>
         <div

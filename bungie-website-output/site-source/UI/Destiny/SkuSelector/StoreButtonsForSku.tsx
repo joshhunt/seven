@@ -6,7 +6,7 @@ import classNames from "classnames";
 import moment from "moment";
 import React from "react";
 import { Img } from "../../../Utilities/helpers";
-import { SquareButton } from "../../UIKit/Controls/Button/SquareButton";
+import { StoreSkuButton } from "../../UIKit/Controls/Button/StoreSkuButton";
 import { IDestinyProductDefinition } from "./DestinyProductDefinitions";
 import {
   IDestinySkuConfig,
@@ -115,7 +115,7 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
                 [styles.activeSale]: activeSale,
               })}
             >
-              <SquareButton
+              <StoreSkuButton
                 buttonStyles={styles.platformTriggerButton}
                 url={url}
                 sameTab={false}
@@ -130,18 +130,21 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
                 )}
 
                 <img
-                  className={styles.icon}
+                  className={classNames(styles.icon, {
+                    [styles.epic]: store.stringKey === "StoreEpic",
+                  })}
                   src={`${Img(
                     `bungie/icons/logos/${storeKeyForIcon}/${storeKeyForIcon}_icon_small.png`
                   )}`}
                   alt={store.key}
                 />
-                {storeKeyForTitle}
-              </SquareButton>
-
-              <div className={styles.saleInfo}>
-                <p className={styles.endDate}>{activeSaleEndDate}&nbsp;</p>
-              </div>
+                <div className={styles.buttonText}>
+                  {storeKeyForTitle}
+                  <div className={styles.saleInfo}>
+                    <p className={styles.endDate}>{activeSaleEndDate}&nbsp;</p>
+                  </div>
+                </div>
+              </StoreSkuButton>
             </div>
           );
         })}

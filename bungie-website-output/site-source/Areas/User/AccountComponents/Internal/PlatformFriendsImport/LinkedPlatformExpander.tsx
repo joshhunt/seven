@@ -55,8 +55,8 @@ export const LinkedPlatformExpander: React.FC<LinkedPlatformExpanderProps> = ({
     (x) => x.platform === linkedPlatform
   )?.isLoaded;
   const needsReauth =
-    specificPlatformFriendData.error &&
-    specificPlatformFriendData.error.errorCode ===
+    specificPlatformFriendData?.error &&
+    specificPlatformFriendData?.error?.errorCode ===
       PlatformErrorCodes.UserFriendsTokenNeedsRefresh;
 
   const classes = classNames(styles.platformHeader, {

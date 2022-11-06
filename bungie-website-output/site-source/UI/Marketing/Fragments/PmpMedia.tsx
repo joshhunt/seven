@@ -62,10 +62,12 @@ export const PmpMedia: React.FC<PmpNewsAndMediaProps> = (props) => {
       {section_heading && (
         <div className={styles.headingWrapper}>
           <h2 className={styles.heading}>{section_heading}</h2>
-          <div className={styles.smallTitles}>
-            <p>{small_title_left}</p>
-            <p>{small_title_right}</p>
-          </div>
+          {small_title_left && small_title_right && (
+            <div className={styles.smallTitles}>
+              <p>{small_title_left}</p>
+              <p>{small_title_right}</p>
+            </div>
+          )}
         </div>
       )}
 

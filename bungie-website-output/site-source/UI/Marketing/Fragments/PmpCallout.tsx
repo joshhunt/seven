@@ -112,43 +112,47 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
           <img src={asideImg} className={styles.asideImg} loading={"lazy"} />
         )}
       </div>
-      <div className={classNames(styles.thumbsWrapper, classes?.thumbsWrapper)}>
-        {thumbnails?.map((thumb, i) => {
-          const thumbProps: ImageThumbProps = {
-            image: getThumbnail(thumb),
-            classes: {
-              imageContainer: classNames(
-                styles.thumb,
-                classes?.thumbnailWrapper
-              ),
-              image: classNames(styles.thumbBg, classes?.thumbnail),
-            },
-            style: { borderColor: thumb_border_color },
-          };
+      {thumbnails && thumbnails.length > 0 ? (
+        <div
+          className={classNames(styles.thumbsWrapper, classes?.thumbsWrapper)}
+        >
+          {thumbnails?.map((thumb, i) => {
+            const thumbProps: ImageThumbProps = {
+              image: getThumbnail(thumb),
+              classes: {
+                imageContainer: classNames(
+                  styles.thumb,
+                  classes?.thumbnailWrapper
+                ),
+                image: classNames(styles.thumbBg, classes?.thumbnail),
+              },
+              style: { borderColor: thumb_border_color },
+            };
 
-          if (thumb?.Image_Thumb) {
-            return (
-              <ImageThumbBtn
-                {...thumbProps}
-                key={i}
-                onClick={() =>
-                  handleImageThumbClick(thumb?.Image_Thumb?.image?.url)
-                }
-              />
-            );
-          } else if (thumb?.Video_Thumb) {
-            return (
-              <ImageVideoThumb
-                {...thumbProps}
-                key={i}
-                youtubeUrl={thumb?.Video_Thumb?.youtube_url}
-              />
-            );
-          } else {
-            return null;
-          }
-        })}
-      </div>
+            if (thumb?.Image_Thumb) {
+              return (
+                <ImageThumbBtn
+                  {...thumbProps}
+                  key={i}
+                  onClick={() =>
+                    handleImageThumbClick(thumb?.Image_Thumb?.image?.url)
+                  }
+                />
+              );
+            } else if (thumb?.Video_Thumb) {
+              return (
+                <ImageVideoThumb
+                  {...thumbProps}
+                  key={i}
+                  youtubeUrl={thumb?.Video_Thumb?.youtube_url}
+                />
+              );
+            } else {
+              return null;
+            }
+          })}
+        </div>
+      ) : null}
     </LazyLoadedBgDiv>
   );
 };

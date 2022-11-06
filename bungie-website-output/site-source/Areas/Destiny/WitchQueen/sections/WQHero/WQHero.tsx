@@ -99,7 +99,7 @@ const WQHero: React.FC<WQHeroProps> = (props) => {
     hero_date_text,
     hero_trailer_id,
     hero_bg_desktop_videoConnection,
-  } = data?.nova_product_page?.hero;
+  } = data?.nova_product_page?.hero ?? {};
 
   const heroBgImage =
     hero_bg_mobileConnection &&

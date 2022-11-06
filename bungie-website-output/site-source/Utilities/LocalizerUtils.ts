@@ -22,6 +22,8 @@ export class LocalizerUtils {
         return Localizer.Registration.NetworkSignInOptionSteam;
       case BungieMembershipType.TigerStadia:
         return Localizer.Registration.NetworkSignInOptionStadia;
+      case BungieMembershipType.TigerEgs:
+        return Localizer.Registration.NetworkSignInOptionEgs;
       case BungieMembershipType.BungieNext:
         return "Bungie.net";
       case BungieMembershipType.TigerDemon:
@@ -115,5 +117,19 @@ export class LocalizerUtils {
     } else {
       return cultureName;
     }
+  }
+
+  /**
+   * Add locale appropriate thousands separator to long numbers
+   */
+
+  public static useThousandsSeparatorByLocale(
+    num: number | string,
+    locale: string,
+    globalState: any
+  ): string {
+    const serverLanguage = globalState.coreSettings.userContentLocales[locale];
+
+    return num?.toLocaleString(serverLanguage);
   }
 }

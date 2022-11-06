@@ -2,11 +2,12 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { PlatformError } from "@CustomErrors";
-import { AclEnum } from "@Enum";
+import { AclEnum, DropStateEnum } from "@Enum";
 import {
   GlobalStateComponentProps,
-  withGlobalState,
+  GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
@@ -19,13 +20,17 @@ import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
+import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
+import { usePrevious } from "@Utilities/ReactUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import moment from "moment";
-import * as React from "react";
-import { RouteComponentProps } from "react-router";
-import { withRouter } from "react-router-dom";
+import { DateTime } from "luxon";
+import React, { useEffect, useState } from "react";
+import { RouteComponentProps, useParams } from "react-router";
 import styles from "./PartnerRewards.module.scss";
+import { FaTwitch } from "react-icons/fa";
 
 interface IPartnerRewardsRouteParams {
   membershipId: string;
@@ -35,22 +40,13 @@ interface IPartnerRewardsProps
   extends GlobalStateComponentProps<"loggedInUser">,
     RouteComponentProps<IPartnerRewardsRouteParams> {}
 
-interface IPartnerRewardsState {
-  rewards: Tokens.PartnerOfferSkuHistoryResponse[];
-  loggedInUserCanReadHistory: boolean;
-}
-
 /**
  * PartnerRewards - Replace this description
  *  *
- * @param {IPartnerRewardsProps} props
  * @returns
  */
-class PartnerRewards extends React.Component<
-  IPartnerRewardsProps,
-  IPartnerRewardsState
-> {
-  private readonly appIds = [
+export const PartnerRewards: React.FC = () => {
+  const appIds = [
     Number(
       ConfigUtils.GetParameter(
         SystemNames.PartnerOfferClaims,
@@ -81,36 +77,37 @@ class PartnerRewards extends React.Component<
     ),
   ].filter((a) => a !== 0);
 
-  constructor(props: IPartnerRewardsProps) {
-    super(props);
+  const [rewards, setRewards] = useState<Tokens.PartnerRewardHistoryResponse[]>(
+    null
+  );
+  const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
+    false
+  );
+  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const prevGlobalState = usePrevious(globalState);
+  const { membershipId } = useParams<IPartnerRewardsRouteParams>();
 
-    this.state = {
-      rewards: null,
-      loggedInUserCanReadHistory: false,
-    };
-  }
+  useEffect(() => {
+    getRewardsHistory();
+  }, []);
 
-  public componentDidMount() {
-    this.getRewardsHistory();
-  }
-
-  public componentDidUpdate(prevProps: IPartnerRewardsProps) {
-    const wasAuthed = UserUtils.isAuthenticated(prevProps.globalState);
-    const isNowAuthed = UserUtils.isAuthenticated(this.props.globalState);
+  useEffect(() => {
+    const wasAuthed =
+      prevGlobalState && UserUtils.isAuthenticated(prevGlobalState);
+    const isNowAuthed = UserUtils.isAuthenticated(globalState);
 
     // if user logs in then need to load everything
     if (!wasAuthed && isNowAuthed) {
-      this.getRewardsHistory();
+      getRewardsHistory();
     }
-  }
+  }, [globalState]);
 
-  private readonly getRewardsHistory = () => {
+  const getRewardsHistory = () => {
     // Get membershipId from url if it is provided - this is so admins can view a user's partner rewards history too
-    const { membershipId } = this.props.match.params;
-    const { loggedInUser } = this.props.globalState;
+    const { loggedInUser } = globalState;
 
     if (ConfigUtils.SystemStatus("PartnerOfferClaims")) {
-      if (UserUtils.isAuthenticated(this.props.globalState)) {
+      if (UserUtils.isAuthenticated(globalState)) {
         const canViewHistory =
           (membershipId && membershipId === loggedInUser.user.membershipId) ||
           loggedInUser.userAcls.includes(AclEnum.BNextPrivateUserDataReader);
@@ -120,25 +117,26 @@ class PartnerRewards extends React.Component<
         // if there isn't a parameter in the url, provide history for the logged in user
         // otherwise use the membershipId provided but only for people with permission to see that user's history)
         if (canViewHistory || !membershipId) {
-          this.setState({ loggedInUserCanReadHistory: true });
+          setLoggedInUserCanReadHistory(true);
           const membershipIdUsedForHistory =
             hasPrivateDataReadPermissions && membershipId
               ? membershipId
               : UserUtils.loggedInUserMembershipIdFromCookie;
 
           // Get history for all partner apps
-          const promises = this.appIds.map((id) => {
-            return Platform.TokensService.GetPartnerOfferSkuHistory(
-              id,
-              membershipIdUsedForHistory
+          const promises = appIds.map((id) => {
+            return Platform.TokensService.GetPartnerRewardHistory(
+              membershipIdUsedForHistory,
+              id
             );
           });
 
           Promise.all(promises)
             .then((dataArray) => {
-              let rewards = dataArray.reduce((a, c) => a.concat(c), []);
-              rewards = this.sortByDate(rewards);
-              this.setState({ rewards });
+              let allRewards = dataArray.reduce((a, c) => a.concat(c), []);
+              allRewards = sortByDate(allRewards);
+
+              setRewards(allRewards);
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e));
@@ -147,29 +145,38 @@ class PartnerRewards extends React.Component<
     }
   };
 
-  private readonly makeDateString = (date: string) => {
-    const d = moment.utc(date);
+  const makeDateString = (date: string) => {
+    const dateObj = DateTime.fromISO(date, { zone: "utc" });
 
-    return Localizer.Format(Localizer.Time.MonthDayYear, {
-      day: d.format("DD"),
-      month: d.format("MMM"),
-      year: d.format("YYYY"),
+    const timeZone = DateTime.now().zone;
+
+    return dateObj.setZone(timeZone).toLocaleString({
+      locale: LocalizerUtils.useAltChineseCultureString(
+        Localizer.CurrentCultureName
+      ),
+      month: "short",
+      year: "numeric",
+      day: "numeric",
     });
   };
 
-  private readonly sortByDate = (
-    array: Tokens.PartnerOfferSkuHistoryResponse[]
-  ) => {
-    return array.sort(
-      (a, b) =>
-        moment.utc(b.ClaimDate).valueOf() - moment.utc(a.ClaimDate).valueOf()
-    );
+  const sortByDate = (array: Tokens.PartnerRewardHistoryResponse[]) => {
+    return array.sort((a, b) => {
+      const aDate =
+        a.PartnerOffers?.[0]?.ClaimDate ?? a.TwitchDrops?.[0]?.CreatedAt;
+      const bDate =
+        b.PartnerOffers?.[0]?.ClaimDate ?? b.TwitchDrops?.[0]?.CreatedAt;
+
+      return DateTime.fromISO(bDate, { zone: "utc" })
+        .diff(DateTime.fromISO(aDate, { zone: "utc" }))
+        .toObject().milliseconds;
+    });
   };
 
-  private readonly claimRewards = () => {
+  const claimRewards = () => {
     let modalShown = false;
     // Get history for all partner apps
-    this.appIds.forEach((i) => {
+    appIds.forEach((i) => {
       Platform.TokensService.ApplyMissingPartnerOffersWithoutClaim(
         i,
         UserUtils.loggedInUserMembershipIdFromCookie
@@ -185,62 +192,135 @@ class PartnerRewards extends React.Component<
     });
   };
 
-  public render() {
-    return (
-      <SystemDisabledHandler systems={["PartnerOfferClaims"]}>
-        <RequiresAuth>
-          <BungieHelmet
-            title={Localizer.CodeRedemption.PartnerRewards}
-            image={"/7/ca/bungie/bgs/pcregister/engram.jpg"}
-          >
-            <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-          </BungieHelmet>
+  const forceDropsRepair = () => {
+    Platform.TokensService.ForceDropsRepair()
+      .then(() => {
+        getRewardsHistory();
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e: PlatformError) => Modal.error(e));
+  };
 
-          {this.state.loggedInUserCanReadHistory && (
-            <div>
-              {this.state.rewards?.map((r, i) => (
-                <div key={i}>
-                  <TwoLineItem
-                    itemTitle={r.LocalizedName}
-                    itemSubtitle={r.LocalizedDescription}
-                    flair={
-                      r.AllOffersApplied ? (
-                        <div>{this.makeDateString(r.ClaimDate)}</div>
-                      ) : (
-                        <Button
-                          size={BasicSize.Small}
-                          onClick={() => this.claimRewards()}
-                        >
-                          {Localizer.PartnerOffers.Claim}
-                        </Button>
-                      )
-                    }
-                  />
-                </div>
-              ))}
-              {!this.state.rewards?.length && (
-                <p className={styles.noResults}>
-                  {Localizer.Coderedemption.NoResults}
-                </p>
-              )}
+  return (
+    <SystemDisabledHandler systems={["PartnerOfferClaims"]}>
+      <RequiresAuth>
+        <BungieHelmet
+          title={Localizer.CodeRedemption.PartnerRewards}
+          image={"/7/ca/bungie/bgs/pcregister/engram.jpg"}
+        >
+          <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        </BungieHelmet>
+        <div className={styles.missingDropsButton}>
+          <GridCol cols={12} className={styles.dropsContainer}>
+            <FaTwitch />
+            <div className={styles.dropsContentContainer}>
+              <p className={styles.dropsTitle}>
+                {Localizer.CodeRedemption.MissingTwitchRewards}
+              </p>
+              <p className={styles.dropsDescription}>
+                {Localizer.CodeRedemption.MissingTwitchRewardsYou}
+              </p>
             </div>
-          )}
+            <Button
+              size={BasicSize.Small}
+              buttonType={"gold"}
+              className={styles.btnRefresh}
+              onClick={() => forceDropsRepair()}
+            >
+              {Localizer.CodeRedemption.IDonTSeeMyTwitchDrops}
+            </Button>
+          </GridCol>
+        </div>
+        {loggedInUserCanReadHistory && (
+          <div>
+            {rewards
+              ?.filter(
+                (
+                  v: Tokens.PartnerRewardHistoryResponse,
+                  i: number,
+                  a: Tokens.PartnerRewardHistoryResponse[]
+                ) => {
+                  // Removes duplicate TwitchDrops rewards due to multiple appid for Twitch by finding the first entry with the specific title
+                  // Partner rewards are excluded from filter
+                  return (
+                    v.PartnerOffers?.[0] ||
+                    a.findIndex(
+                      (v2) =>
+                        v.TwitchDrops?.[0] &&
+                        v2.TwitchDrops?.[0] &&
+                        v2.TwitchDrops[0]?.Title === v.TwitchDrops[0]?.Title
+                    ) === i
+                  );
+                }
+              )
+              ?.filter((r) => r.PartnerOffers?.[0] || r.TwitchDrops?.[0])
+              ?.map((r, i) => {
+                const partnerOffer = r.PartnerOffers?.[0];
+                const twitchDrop = r.TwitchDrops?.[0];
 
-          {
-            // if this isn't your membershipId in the url or you're not an admin, you don't get to see my rewards
-            !this.state.loggedInUserCanReadHistory && (
-              <div>
-                <p className={styles.noResults}>
-                  {Localizer.PartnerOffers.NotYourAccount}
-                </p>
-              </div>
-            )
-          }
-        </RequiresAuth>
-      </SystemDisabledHandler>
-    );
-  }
-}
+                if (twitchDrop) {
+                  return (
+                    <div key={i}>
+                      <TwoLineItem
+                        itemTitle={twitchDrop.Title}
+                        itemSubtitle={twitchDrop.Description}
+                        flair={
+                          twitchDrop.ClaimState &&
+                          twitchDrop.ClaimState === DropStateEnum.Fulfilled ? (
+                            <div>{makeDateString(twitchDrop.CreatedAt)}</div>
+                          ) : (
+                            ""
+                          )
+                        }
+                      />
+                    </div>
+                  );
+                }
 
-const PartnerRewardsOuter = withGlobalState(PartnerRewards, ["loggedInUser"]);
-export default withRouter(PartnerRewardsOuter);
+                if (partnerOffer) {
+                  return (
+                    <div key={i}>
+                      <TwoLineItem
+                        itemTitle={partnerOffer.LocalizedName}
+                        itemSubtitle={partnerOffer.LocalizedDescription}
+                        flair={
+                          partnerOffer.AllOffersApplied ? (
+                            <div>{makeDateString(partnerOffer.ClaimDate)}</div>
+                          ) : (
+                            <Button
+                              size={BasicSize.Small}
+                              onClick={() => claimRewards()}
+                            >
+                              {Localizer.PartnerOffers.Claim}
+                            </Button>
+                          )
+                        }
+                      />
+                    </div>
+                  );
+                }
+
+                return null;
+              })}
+            {!rewards?.length && (
+              <p className={styles.noResults}>
+                {Localizer.Coderedemption.NoResults}
+              </p>
+            )}
+          </div>
+        )}
+
+        {
+          // if this isn't your membershipId in the url or you're not an admin, you don't get to see my rewards
+          !loggedInUserCanReadHistory && (
+            <div>
+              <p className={styles.noResults}>
+                {Localizer.PartnerOffers.NotYourAccount}
+              </p>
+            </div>
+          )
+        }
+      </RequiresAuth>
+    </SystemDisabledHandler>
+  );
+};

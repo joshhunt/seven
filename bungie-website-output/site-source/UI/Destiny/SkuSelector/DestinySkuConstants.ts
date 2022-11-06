@@ -5,6 +5,8 @@ export class DestinySkuTags {
   public static ForsakenDetail = "forsaken";
   public static LegendaryEdition = "legendaryedition";
   public static SilverBundle = "silverbundle";
+  public static LightfallStandard = "lightfallstandardpreorder";
+  public static LightfallAnnualPass = "lightfallannualpreorder";
 }
 
 export class DestinyProductFamilies {

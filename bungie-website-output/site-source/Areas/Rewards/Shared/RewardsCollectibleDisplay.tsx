@@ -3,6 +3,7 @@
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Tokens } from "@Platform";
+import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import classNames from "classnames";
@@ -40,10 +41,11 @@ export const RewardsCollectibleDisplay: React.FC<RewardsCollectibleDisplayProps>
         return (
           <TwoLineItem
             key={`collectible-${index}`}
+            className={styles.twoLineItemTriumph}
             itemTitle={cName}
             itemSubtitle={Localizer.BungieRewards.CollectibleGlobalDescription}
             size={BasicSize.Large}
-            icon={<img src={cIcon} alt={cName} />}
+            icon={<IconCoin iconImageUrl={cIcon} />}
             normalWhiteSpace={true}
           />
         );

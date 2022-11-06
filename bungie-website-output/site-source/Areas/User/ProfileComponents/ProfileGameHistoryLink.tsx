@@ -2,7 +2,6 @@
 // Copyright Bungie, Inc.
 
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
-import { pageView } from "@Areas/User/Profile";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -13,9 +12,7 @@ import React from "react";
 import { BiChevronRight } from "react-icons/bi";
 import styles from "./miniblock.module.scss";
 
-interface ProfileGameHistoryLinkProps {
-  updateView: React.Dispatch<React.SetStateAction<pageView>>;
-}
+interface ProfileGameHistoryLinkProps {}
 
 export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
   props
@@ -32,7 +29,7 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
     <Anchor
       className={classNames(styles.mainContainer, styles.gameHistoryContainer)}
       url={
-        useReactGameHistory
+        !useReactGameHistory
           ? ""
           : RouteHelper.GameHistory(
               destinyMembershipData?.selectedMembership?.membershipId,
@@ -41,8 +38,6 @@ export const ProfileGameHistoryLink: React.FC<ProfileGameHistoryLinkProps> = (
       }
       onClick={() => {
         window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-        useReactGameHistory &&
-          props.updateView(pageView["destiny-game-history"]);
       }}
     >
       <h4>{profileLoc.GameHistory}</h4>

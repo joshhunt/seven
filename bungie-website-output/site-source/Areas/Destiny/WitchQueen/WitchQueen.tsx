@@ -243,8 +243,7 @@ const WitchQueen: React.FC = () => {
             })}
             buyBtnText={sticky_buy_nav?.buy_btn_text}
             dropdownTitle={sticky_buy_nav?.dropdown_title}
-            dateText={hero.hero_date_text}
-            mobileSkuLabel={sticky_buy_nav?.mobile_dropdown_label}
+            dateText={hero?.hero_date_text}
           />
 
           {/* map over modular blocks from contentStack for each section of the page */}

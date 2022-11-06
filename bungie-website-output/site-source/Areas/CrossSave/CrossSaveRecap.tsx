@@ -3,10 +3,12 @@
 
 import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
 import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieMembershipType, DestinyGameVersions } from "@Enum";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import {
   GlobalStateComponentProps,
+  GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
@@ -22,8 +24,8 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import * as React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import classNames from "classnames";
+import React, { PropsWithChildren, useEffect } from "react";
 import { CrossSaveAccountCard } from "./Activate/Components/CrossSaveAccountCard";
 import { CrossSaveAccountLinkItem } from "./Activate/Components/CrossSaveAccountLinkItem";
 import { CrossSaveSilverBalance } from "./Activate/Components/CrossSaveSilverBalance";
@@ -33,17 +35,10 @@ import { CrossSaveClanCard } from "./Shared/CrossSaveClanCard";
 import {
   CrossSaveFlowStateDataStore,
   CrossSaveValidGameVersions,
-  ICrossSaveFlowState,
 } from "./Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 
-interface ICrossSaveRecapProps
-  extends RouteComponentProps,
-    GlobalStateComponentProps<"loggedInUser" | "loggedInUserClans"> {}
-
-interface ICrossSaveRecapState {
-  flowState: ICrossSaveFlowState;
-}
+interface ICrossSaveRecapProps {}
 
 /**
  * CrossSaveRecap - Review an activated Cross Save account
@@ -51,47 +46,31 @@ interface ICrossSaveRecapState {
  * @param {ICrossSaveRecapProps} props
  * @returns
  */
-class CrossSaveRecap extends React.Component<
-  ICrossSaveRecapProps,
-  ICrossSaveRecapState
-> {
-  private readonly subs: DestroyCallback[] = [];
+const CrossSaveRecap: React.FC<
+  ICrossSaveRecapProps & PropsWithChildren<any>
+> = (props) => {
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
+  const globalState = useDataStore(GlobalStateDataStore, [
+    "loggedInUser",
+    "loggedInUserClans",
+  ]);
 
-  constructor(props: ICrossSaveRecapProps) {
-    super(props);
-
-    this.state = {
-      flowState: CrossSaveFlowStateDataStore.state,
-    };
-  }
-
-  public componentDidMount() {
-    this.subs.push(
-      CrossSaveFlowStateDataStore.observe((flowState) => {
-        this.setState({
-          flowState,
-        });
-      })
-    );
-  }
-
-  private entitlementOwned(
+  const entitlementOwned = (
     membershipType: BungieMembershipType,
     gameVersion: DestinyGameVersions
-  ) {
+  ) => {
     const memberShipTypeString = BungieMembershipType[
       membershipType
     ] as EnumStrings<typeof BungieMembershipType>;
-    const entitlements = this.state.flowState.entitlements.platformEntitlements[
-      memberShipTypeString
-    ];
+    const entitlements =
+      flowState.entitlements.platformEntitlements[memberShipTypeString];
 
     return (
       entitlements && EnumUtils.hasFlag(gameVersion, entitlements.gameVersions)
     );
-  }
+  };
 
-  private createBuyOrDownloadLink(gameVersion: DestinyGameVersions) {
+  const createBuyOrDownloadLink = (gameVersion: DestinyGameVersions) => {
     switch (gameVersion) {
       case DestinyGameVersions.Destiny2:
         return RouteHelper.NewLight();
@@ -109,85 +88,72 @@ class CrossSaveRecap extends React.Component<
         return RouteHelper.DestinyBuyDetail({
           productFamilyTag: "anniversary",
         });
+      case DestinyGameVersions.Lightfall:
+        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "lightfall" });
       default:
         return RouteHelper.DestinyBuy();
     }
+  };
+
+  const indexPath = RouteDefs.Areas.CrossSave.resolve("Index");
+  const isLoggedIn = UserUtils.isAuthenticated(globalState);
+  if (!isLoggedIn || (flowState.loaded && !flowState.isActive)) {
+    UrlUtils.PushRedirect(indexPath, props);
+
+    return null;
   }
 
-  public render() {
-    const { flowState } = this.state;
+  const userClans = globalState.loggedInUserClans
+    ? globalState.loggedInUserClans.results
+    : [];
+  const clan = userClans.filter(
+    (myClan) =>
+      myClan.member.destinyUserInfo.membershipType ===
+        flowState.primaryMembershipType && myClan.group.groupType === 1
+  )[0];
+  const linkedAccounts = flowState.includedMembershipTypes || [];
+  const deactivateLink = RouteDefs.Areas.CrossSave.getAction(
+    "Deactivate"
+  ).resolve();
+  const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
+    flowState
+  );
 
-    const { globalState } = this.props;
+  return (
+    <SpinnerContainer
+      loading={!flowState.loaded}
+      delayRenderUntilLoaded={true}
+      loadingLabel={Localizer.Crosssave.LoadingCrossSaveData}
+    >
+      <Grid>
+        <GridCol cols={12}>
+          <DestinyHeader
+            title={Localizer.Crosssave.SystemActive}
+            breadcrumbs={[
+              Localizer.Crosssave.ActivateCrossSaveHeader,
+              Localizer.Crosssave.SubtitleRecapPage,
+            ]}
+            separator={Localizer.Crosssave.Separator}
+          />
+          <p className={styles.description}>
+            {Localizer.Crosssave.SystemActiveExplanation}
+          </p>
+        </GridCol>
+      </Grid>
+      <Grid>
+        <GridCol cols={12}>
+          <p className={styles.connectedAccounts}>
+            {Localizer.Crosssave.ConnectedAccounts}
+          </p>
+        </GridCol>
+      </Grid>
 
-    const indexPath = RouteDefs.Areas.CrossSave.resolve("Index");
-    const isLoggedIn = UserUtils.isAuthenticated(globalState);
-    if (!isLoggedIn || (flowState.loaded && !flowState.isActive)) {
-      UrlUtils.PushRedirect(indexPath, this.props);
-
-      return null;
-    }
-
-    const userClans = globalState.loggedInUserClans
-      ? globalState.loggedInUserClans.results
-      : [];
-    const clan = userClans.filter(
-      (myClan) =>
-        myClan.member.destinyUserInfo.membershipType ===
-          flowState.primaryMembershipType && myClan.group.groupType === 1
-    )[0];
-    const linkedAccounts = flowState.includedMembershipTypes || [];
-    const deactivateLink = RouteDefs.Areas.CrossSave.getAction(
-      "Deactivate"
-    ).resolve();
-    const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
-      flowState
-    );
-
-    return (
-      <SpinnerContainer
-        loading={!flowState.loaded}
-        delayRenderUntilLoaded={true}
-        loadingLabel={Localizer.Crosssave.LoadingCrossSaveData}
-      >
-        <Grid>
-          <GridCol cols={12}>
-            <DestinyHeader
-              title={Localizer.Crosssave.SystemActive}
-              breadcrumbs={[
-                Localizer.Crosssave.ActivateCrossSaveHeader,
-                Localizer.Crosssave.SubtitleRecapPage,
-              ]}
-              separator={Localizer.Crosssave.Separator}
-            />
-            <p className={styles.description}>
-              {Localizer.Crosssave.SystemActiveExplanation}
-            </p>
-          </GridCol>
-        </Grid>
-
-        <Grid>
-          <GridCol cols={12}>
-            <p className={styles.connectedAccounts}>
-              {Localizer.Crosssave.ConnectedAccounts}
-            </p>
-          </GridCol>
-        </Grid>
-
-        <Grid strictMode={true}>
-          {pairableMembershipTypes.map((mt) => (
-            <GridCol
-              key={mt}
-              cols={3}
-              pico={12}
-              tiny={12}
-              mobile={9}
-              medium={6}
-              large={4}
-              className={styles.centerWhenSmall}
-            >
+      <Grid strictMode={true}>
+        <div className={styles.linkedAccounts}>
+          {pairableMembershipTypes.map((mt, i) => (
+            <div className={styles.accountLinkItem} key={i}>
               {linkedAccounts && linkedAccounts.includes(mt) ? (
                 <CrossSaveAccountCard
-                  className={styles.entitlementAccountCard}
                   flowState={flowState}
                   membershipType={mt}
                   hideCharacters={true}
@@ -211,7 +177,7 @@ class CrossSaveRecap extends React.Component<
                   </div>
                   <div className={styles.entitlementsContainer}>
                     {CrossSaveValidGameVersions.map((gv) =>
-                      this.entitlementOwned(mt, gv) ? (
+                      entitlementOwned(mt, gv) ? (
                         <div key={gv} className={styles.owned}>
                           <Icon
                             className={styles.ownedIcon}
@@ -228,7 +194,7 @@ class CrossSaveRecap extends React.Component<
                           key={gv}
                           size={BasicSize.Small}
                           buttonType={"gold"}
-                          url={this.createBuyOrDownloadLink(gv)}
+                          url={createBuyOrDownloadLink(gv)}
                           className={styles.notOwnedButton}
                           caps={true}
                         >
@@ -259,97 +225,94 @@ class CrossSaveRecap extends React.Component<
                   }
                 />
               )}
-            </GridCol>
+            </div>
           ))}
           <br />
-        </Grid>
-        <Grid>
-          <GridCol cols={12}>
-            <p className={styles.connectedAccounts}>
-              {Localizer.Crosssave.CharactersUppercaseHeader}
-            </p>
-          </GridCol>
-        </Grid>
-        <Grid strictMode={true}>
-          <GridCol
-            cols={3}
-            pico={12}
-            tiny={12}
-            mobile={9}
-            medium={6}
-            large={4}
-            className={styles.centerWhenSmall}
-          >
+        </div>
+      </Grid>
+      <Grid>
+        <GridCol cols={12}>
+          <p className={styles.connectedAccounts}>
+            {Localizer.Crosssave.CharactersUppercaseHeader}
+          </p>
+        </GridCol>
+      </Grid>
+      <Grid strictMode={true}>
+        <GridCol
+          cols={3}
+          pico={12}
+          tiny={12}
+          mobile={9}
+          medium={6}
+          large={4}
+          className={styles.centerWhenSmall}
+        >
+          <CrossSaveAccountCard
+            flowState={flowState}
+            membershipType={flowState.primaryMembershipType}
+            hideAccountInfo={true}
+            showCharacterOrigin={true}
+            headerOverride={
+              <CrossSaveCardHeader>
+                <h3>{Localizer.Crosssave.CharactersHeader}</h3>
+              </CrossSaveCardHeader>
+            }
+          />
+        </GridCol>
+        <GridCol
+          cols={3}
+          pico={12}
+          tiny={12}
+          mobile={9}
+          medium={6}
+          large={4}
+          className={styles.centerWhenSmall}
+        >
+          {clan && (
             <CrossSaveAccountCard
               flowState={flowState}
               membershipType={flowState.primaryMembershipType}
               hideAccountInfo={true}
-              showCharacterOrigin={true}
+              hideCharacters={true}
               headerOverride={
                 <CrossSaveCardHeader>
-                  <h3>{Localizer.Crosssave.CharactersHeader}</h3>
+                  <h3>{Localizer.Crosssave.ClanHeader}</h3>
                 </CrossSaveCardHeader>
               }
-            />
-          </GridCol>
-          <GridCol
-            cols={3}
-            pico={12}
-            tiny={12}
-            mobile={9}
-            medium={6}
-            large={4}
-            className={styles.centerWhenSmall}
-          >
-            {clan && (
-              <CrossSaveAccountCard
-                flowState={flowState}
-                membershipType={flowState.primaryMembershipType}
-                hideAccountInfo={true}
-                hideCharacters={true}
-                headerOverride={
-                  <CrossSaveCardHeader>
-                    <h3>{Localizer.Crosssave.ClanHeader}</h3>
-                  </CrossSaveCardHeader>
-                }
-              >
-                <CrossSaveClanCard clan={clan} />
-              </CrossSaveAccountCard>
-            )}
-          </GridCol>
-        </Grid>
-        {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
-          <>
-            <Grid>
-              <GridCol cols={12}>
-                <EntitlementsTable flowState={flowState} />
-                <hr />
-                <SeasonsTable flowState={flowState} />
-              </GridCol>
-            </Grid>
-          </>
-        )}
+            >
+              <CrossSaveClanCard clan={clan} />
+            </CrossSaveAccountCard>
+          )}
+        </GridCol>
+      </Grid>
+      {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
+        <>
+          <Grid>
+            <GridCol cols={12}>
+              <EntitlementsTable flowState={flowState} />
+              <hr />
+              <SeasonsTable flowState={flowState} />
+            </GridCol>
+          </Grid>
+        </>
+      )}
 
-        <Grid>
-          <GridCol cols={12}>
-            <div className={styles.deactivateButton}>
-              <Button
-                buttonType={"red"}
-                url={deactivateLink}
-                caps={true}
-                className={styles.deactivateButton}
-              >
-                {Localizer.Crosssave.DisableButtonLabel}
-              </Button>
-            </div>
-          </GridCol>
-        </Grid>
-      </SpinnerContainer>
-    );
-  }
-}
+      <Grid>
+        <GridCol cols={12}>
+          <div className={styles.deactivateButton}>
+            <Button
+              buttonType={"red"}
+              url={deactivateLink}
+              caps={true}
+              className={styles.deactivateButton}
+            >
+              {Localizer.Crosssave.DisableButtonLabel}
+            </Button>
+          </div>
+        </GridCol>
+      </Grid>
+    </SpinnerContainer>
+  );
+};
 
-export default withGlobalState(CrossSaveRecap, [
-  "loggedInUser",
-  "loggedInUserClans",
-]);
+export default CrossSaveRecap;

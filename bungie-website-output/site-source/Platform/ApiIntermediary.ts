@@ -174,15 +174,47 @@ export class ApiIntermediary {
   ) {
     const settings = ApiIntermediary.PlatformSettings;
 
+    function parseQuery(queryString: string) {
+      let query: Record<string, string> = {};
+      let pairs = (queryString[0] === "?"
+        ? queryString.slice(1)
+        : queryString
+      ).split("&");
+      for (let i = 0; i < pairs.length; i++) {
+        let pair = pairs[i].split("=");
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+      }
+      return query;
+    }
+
     const url = settings.platformUrl + path;
     let queryString = `?lc=${Localizer.CurrentCultureName}&fmt=true&lcin=${Localizer.locInherit}`;
+
+    // if optionalQueryAppend passes in an overlapping parameter with queryString, optionalQueryAppend's value should win
 
     if (requiredParameters) {
       queryString += "&" + requiredParameters;
     }
 
     if (optionalQueryAppend) {
-      queryString += optionalQueryAppend;
+      const paramObject = parseQuery(optionalQueryAppend);
+      const queryStringParamObject = parseQuery(queryString);
+      const setOfParams = [
+        ...new Set([
+          ...Object.keys(paramObject),
+          ...Object.keys(queryStringParamObject),
+        ]),
+      ];
+
+      for (let i = 0; i < setOfParams.length; i++) {
+        if (i === 0) {
+          queryString = `?${setOfParams[i]}=`;
+        } else {
+          queryString += `&${setOfParams[i]}=`;
+        }
+        queryString +=
+          paramObject[setOfParams[i]] ?? queryStringParamObject[setOfParams[i]];
+      }
     }
 
     return url + queryString;

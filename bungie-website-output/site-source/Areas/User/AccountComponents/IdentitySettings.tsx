@@ -42,6 +42,7 @@ const suggestedIconMap: Record<string, string> = {
   StadiaId: Img(`bungie/icons/logos/stadia/icon.png`),
   Xuid: Img(`bungie/icons/logos/xbox/icon.png`),
   TwitchId: Img(`bungie/icons/logos/twitch/icon.png`),
+  EgsId: Img(`bungie/icons/logos/egs/icon.png`),
 };
 
 interface IdentitySettingsProps {}
@@ -101,34 +102,42 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
       // the server throws an error if we pass in a display name that matched the current one
       userEditRequest.displayName = null;
     }
-    isSelf &&
-      Platform.UserService.UpdateUser(userEditRequest)
-        .then(() => {
-          if (updatingName) {
-            setNameChangeStatus("updated");
-          }
-          GlobalStateDataStore.actions
-            .refreshCurrentUser(true)
-            .async.then(showSettingsChangedToast);
-        })
-        .catch((e) => {
-          setNameChangeStatus("canEdit");
 
-          if (e.MessageData?.ValidationFieldName === "newDisplayName") {
-            Modal.open(
-              Localizer.FormatReact(Localizer.Userpages.InvalidBungieName, {
-                BungieNameHelpLink: (
-                  <Anchor url={"https://www.bungie.net/CrossPlayGuide/"}>
-                    {Localizer.Userpages.CrossPlayGuideLink}
-                  </Anchor>
-                ),
-              })
-            );
-          } else {
-            ConvertToPlatformError(e).then((err) => Modal.error(err));
-          }
-        })
-        .finally(() => setSubmitting(false));
+    const promise =
+      isAdmin && !isSelf
+        ? Platform.UserService.UpdateUserAdmin(
+            userEditRequest,
+            onPageUser.membershipId
+          )
+        : Platform.UserService.UpdateUser(userEditRequest);
+
+    promise
+      .then(() => {
+        if (updatingName) {
+          setNameChangeStatus("updated");
+        }
+        GlobalStateDataStore.actions
+          .refreshCurrentUser(true)
+          .async.then(showSettingsChangedToast);
+      })
+      .catch((e) => {
+        setNameChangeStatus("canEdit");
+
+        if (e.MessageData?.ValidationFieldName === "newDisplayName") {
+          Modal.open(
+            Localizer.FormatReact(Localizer.Userpages.InvalidBungieName, {
+              BungieNameHelpLink: (
+                <Anchor url={"https://www.bungie.net/CrossPlayGuide/"}>
+                  {Localizer.Userpages.CrossPlayGuideLink}
+                </Anchor>
+              ),
+            })
+          );
+        } else {
+          ConvertToPlatformError(e).then((err) => Modal.error(err));
+        }
+      })
+      .finally(() => setSubmitting(false));
   };
 
   const showSameNameError = () => {
@@ -321,12 +330,12 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                 <GridCol cols={2} medium={0} />
                 <GridCol cols={10} medium={12}>
                   {nameChangeStatus === "updated" && (
-                    <div className={styles.subtitleContainer}>
+                    <div>
                       <p>{Localizer.Account.NameSuccessfullyChanged}</p>
                     </div>
                   )}
                   {nameChangeStatus === "locked" && (
-                    <div className={styles.subtitleContainer}>
+                    <div>
                       <p>{subtitleToBungieName()}</p>
                     </div>
                   )}

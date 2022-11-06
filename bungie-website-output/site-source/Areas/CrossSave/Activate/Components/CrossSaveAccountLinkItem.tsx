@@ -1,8 +1,11 @@
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveHeader } from "@Areas/CrossSave/Shared/CrossSaveHeader";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { Localizer } from "@bungie/localization";
+import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { CrossSave } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
@@ -13,7 +16,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import { CrossSaveAccountCard } from "./CrossSaveAccountCard";
 import styles from "./CrossSaveAccountLinkItem.module.scss";
 import { CrossSaveSilverBalance } from "./CrossSaveSilverBalance";
@@ -31,49 +34,38 @@ interface ICrossSaveAccountLinkItemProps {
   resetAuth?: boolean;
 }
 
-interface ICrossSaveAccountLinkItemState {
-  isLinked: boolean;
-  needsAuth: boolean;
-  hasErrors: boolean;
-  goodToGo: boolean;
-  loading: boolean;
-}
-
 /**
  * Shows account info for the purpose of choosing an account in CrossSave
  *  *
  * @param {ICrossSaveAccountLinkItemProps} props
  * @returns
  */
-export class CrossSaveAccountLinkItem extends React.Component<
-  ICrossSaveAccountLinkItemProps,
-  ICrossSaveAccountLinkItemState
-> {
-  constructor(props: ICrossSaveAccountLinkItemProps) {
-    super(props);
+export const CrossSaveAccountLinkItem: React.FC<ICrossSaveAccountLinkItemProps> = (
+  props
+) => {
+  const globalState = useDataStore(GlobalStateDataStore, ["credentialTypes"]);
 
-    this.state = {
-      isLinked: false,
-      needsAuth: false,
-      hasErrors: false,
-      goodToGo: false,
-      loading: false,
-    };
-  }
+  const [isLinked, setIsLinked] = useState(false);
+  const [needsAuth, setNeedsAuth] = useState(false);
+  const [hasErrors, setHasErrors] = useState(false);
+  const [goodToGo, setGoodToGo] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  public static getDerivedStateFromProps(
-    props: ICrossSaveAccountLinkItemProps,
-    state: ICrossSaveAccountLinkItemState
-  ): ICrossSaveAccountLinkItemState {
+  const flowStateForMembership = CrossSaveUtils.getFlowStateInfoForMembership(
+    props.flowState,
+    props.membershipType
+  );
+
+  useEffect(() => {
     const { membershipType, linkedCredentialTypes } = props;
 
-    const mt = BungieMembershipType[membershipType] as EnumStrings<
+    const mtype = BungieMembershipType[membershipType] as EnumStrings<
       typeof BungieMembershipType
     >;
 
-    const authStatus = props.flowState.validation.authStatuses[mt];
+    const authStatus = props.flowState.validation.authStatuses[mtype];
     const validationErrors =
-      props.flowState.validation.profileSpecificErrors[mt];
+      props.flowState.validation.profileSpecificErrors[mtype];
 
     const status = CrossSaveUtils.getAccountLinkStatus(
       membershipType,
@@ -82,71 +74,86 @@ export class CrossSaveAccountLinkItem extends React.Component<
       linkedCredentialTypes
     );
 
-    return {
-      ...status,
-      loading: status.needsAuth && state.loading,
-    };
-  }
+    setNeedsAuth(status.needsAuth);
+    setGoodToGo(status.goodToGo);
+    setHasErrors(status.hasErrors);
+    setIsLinked(status.isLinked);
+    setLoading(status.needsAuth && loading);
+  }, [props]);
 
-  private get credentialType() {
-    return UserUtils.getCredentialTypeFromMembershipType(
-      this.props.membershipType
-    );
-  }
+  const accountLinkItemWrapperClasses = classNames(
+    props.className,
+    styles.accountLinkItemWrapper,
+    {
+      [styles.unlinked]: !isLinked || needsAuth,
+      [styles.needsAttention]: hasErrors && !needsAuth,
+    }
+  );
 
-  private get platformName() {
+  const mt = BungieMembershipType[props.membershipType] as EnumStrings<
+    typeof BungieMembershipType
+  >;
+
+  const errors = props.flowState.validation.profileSpecificErrors[mt];
+
+  const credentialType = () => {
+    return UserUtils.getCredentialTypeFromMembershipType(props.membershipType);
+  };
+
+  const platformName = () => {
     return LocalizerUtils.getPlatformNameFromMembershipType(
-      this.props.membershipType
+      props.membershipType
     );
-  }
+  };
 
-  private readonly openAccountLinkWindow = () => {
-    if (this.props.authButtonOverride) {
-      this.props.authButtonOverride();
+  const openAccountLinkWindow = () => {
+    if (props.authButtonOverride) {
+      props.authButtonOverride();
 
       return;
     }
 
-    this.setState({
-      loading: true,
-    });
+    setLoading(true);
 
-    const requiresFlowStateReset = !this.state.isLinked;
+    const requiresFlowStateReset = !isLinked;
     // this checks if resetAuth is set to be true at the environment level but if set to false, will respect whatever props have been passed in to the specific instance
     const resetAuth =
       ConfigUtils.GetParameter("CrossSave", "CrossSaveResetAuth", true) ||
-      this.props.resetAuth;
+      props.resetAuth;
 
-    const url = this.state.isLinked
+    const url = isLinked
       ? RouteHelper.GetAccountAuthVerify(
-          this.credentialType,
-          this.props.stateIdentifier,
+          credentialType(),
+          props.stateIdentifier,
           resetAuth
         ).url
-      : RouteHelper.SignInPreview(this.credentialType).url;
+      : RouteHelper.SignInPreview(credentialType()).url;
 
     BrowserUtils.openWindow(url, "linkui", () => {
-      this.props.onAccountLinked &&
-        this.props.onAccountLinked(requiresFlowStateReset).then(() => {
-          this.setState({
-            loading: false,
-          });
-        });
+      //need to account for closing the modal without linking
+      GlobalStateDataStore.refreshUserAndRelatedData().then(() => {
+        setLoading(false);
+
+        if (
+          globalState.credentialTypes?.find(
+            (c) => c.credentialType === credentialType()
+          )
+        ) {
+          props.onAccountLinked &&
+            props.onAccountLinked(requiresFlowStateReset).then(() => {
+              setLoading(false);
+            });
+        }
+      });
     });
   };
 
-  private readonly showErrors = () => {
-    const mt = BungieMembershipType[this.props.membershipType] as EnumStrings<
-      typeof BungieMembershipType
-    >;
-
-    const errors = this.props.flowState.validation.profileSpecificErrors[mt];
-
+  const showErrors = () => {
     const modalSubtitle = Localizer.Format(
       Localizer.Crosssave.ErrorModalSubtitle,
       {
         platformName: LocalizerUtils.getPlatformNameFromMembershipType(
-          this.props.membershipType
+          props.membershipType
         ),
       }
     );
@@ -158,7 +165,7 @@ export class CrossSaveAccountLinkItem extends React.Component<
           subtext={modalSubtitle}
         />
         <div>
-          {errors.map((error) => (
+          {props.flowState.validation.profileSpecificErrors[mt].map((error) => (
             <CrossSaveValidationError key={error.errorCode} error={error} />
           ))}
         </div>
@@ -170,73 +177,47 @@ export class CrossSaveAccountLinkItem extends React.Component<
     });
   };
 
-  public render() {
-    const { flowState, membershipType } = this.props;
+  return (
+    <CrossSaveAccountCard
+      className={accountLinkItemWrapperClasses}
+      flowState={props.flowState}
+      loading={loading}
+      hideAccountInfo={props.hideAccountInfo}
+      membershipType={props.membershipType}
+    >
+      {UserUtils.isAuthEnabledForMembershipType(props.membershipType) ? (
+        <div className={styles.actionWrapper}>
+          {!!flowStateForMembership.platformMembership && (
+            <CrossSaveSilverBalance
+              membershipType={props.membershipType}
+              flowState={props.flowState}
+            />
+          )}
 
-    const { goodToGo, hasErrors, isLinked, needsAuth } = this.state;
+          {goodToGo && <GoodToGo platformName={platformName()} />}
 
-    const flowStateForMembership = CrossSaveUtils.getFlowStateInfoForMembership(
-      flowState,
-      membershipType
-    );
+          {(needsAuth || !isLinked) && !hasErrors && (
+            <NeedsAuth
+              platformName={platformName()}
+              onClick={() => openAccountLinkWindow()}
+              isLinked={isLinked}
+            />
+          )}
 
-    const accountLinkItemWrapperClasses = classNames(
-      this.props.className,
-      styles.accountLinkItemWrapper,
-      {
-        [styles.unlinked]: !isLinked || needsAuth,
-        [styles.needsAttention]: hasErrors && !needsAuth,
-      }
-    );
-
-    const mt = BungieMembershipType[this.props.membershipType] as EnumStrings<
-      typeof BungieMembershipType
-    >;
-
-    const errors = this.props.flowState.validation.profileSpecificErrors[mt];
-
-    return (
-      <CrossSaveAccountCard
-        className={accountLinkItemWrapperClasses}
-        flowState={this.props.flowState}
-        loading={this.state.loading}
-        hideAccountInfo={this.props.hideAccountInfo}
-        membershipType={membershipType}
-      >
-        {UserUtils.isAuthEnabledForMembershipType(membershipType) ? (
-          <div className={styles.actionWrapper}>
-            {!!flowStateForMembership.platformMembership && (
-              <CrossSaveSilverBalance
-                membershipType={membershipType}
-                flowState={flowState}
-              />
-            )}
-
-            {goodToGo && <GoodToGo platformName={this.platformName} />}
-
-            {(needsAuth || !isLinked) && !hasErrors && (
-              <NeedsAuth
-                platformName={this.platformName}
-                onClick={this.openAccountLinkWindow}
-                isLinked={isLinked}
-              />
-            )}
-
-            {hasErrors && isLinked && (
-              <HasErrors validationErrors={errors} onClick={this.showErrors} />
-            )}
+          {hasErrors && isLinked && (
+            <HasErrors validationErrors={errors} onClick={showErrors} />
+          )}
+        </div>
+      ) : (
+        <div className={styles.actionWrapper}>
+          <div className={styles.text}>
+            {Localizer.Profile.PlatformLinkingOff}
           </div>
-        ) : (
-          <div className={styles.actionWrapper}>
-            <div className={styles.text}>
-              {Localizer.Profile.PlatformLinkingOff}
-            </div>
-          </div>
-        )}
-      </CrossSaveAccountCard>
-    );
-  }
-}
+        </div>
+      )}
+    </CrossSaveAccountCard>
+  );
+};
 
 const GoodToGo = (props: { platformName: string }) => {
   const alreadyLinkedLabel = Localizer.Format(

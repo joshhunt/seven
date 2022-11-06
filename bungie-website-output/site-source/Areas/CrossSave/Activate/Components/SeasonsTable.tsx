@@ -157,7 +157,7 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
   ) => {
     const platformStatusClassName = styles[platformStatus];
     const key = `${EnumUtils.getNumberValue(
-      BungieMembershipType.TigerXbox,
+      membershipType,
       BungieMembershipType
     )}${seasonHash}`;
 

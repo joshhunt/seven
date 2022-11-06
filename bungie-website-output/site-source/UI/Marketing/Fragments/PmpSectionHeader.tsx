@@ -23,6 +23,7 @@ type PmpSectionHeaderProps = DataReference<
     smallTitle?: string;
     blurb?: string;
     textWrapper?: string;
+    btnWrapper?: string;
   };
 };
 
@@ -53,7 +54,7 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
       className={classNames(styles.headerWrapper, classes?.root)}
       style={{ backgroundImage: bgImage }}
     >
-      <div className={styles.textWrapper}>
+      <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
         <div className={styles.headingsFlexWrapper}>
           <div className={styles.leftHeadings}>
             <h3
@@ -94,7 +95,10 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
                 youtubeUrl={video_btn?.youtube_url}
                 image={video_btn?.thumbnail?.url}
                 classes={{
-                  imageContainer: styles.btnWrapper,
+                  imageContainer: classNames(
+                    styles.btnWrapper,
+                    classes?.btnWrapper
+                  ),
                   image: styles.bg,
                   playIcon: styles.playIcon,
                 }}

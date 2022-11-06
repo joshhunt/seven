@@ -12,7 +12,14 @@ import { BungieMembershipType } from "@Enum";
 import { RouteHelper } from "@Routes/RouteHelper";
 import React from "react";
 
-export const SilverChangeModal: React.FC<ISilverRecord> = ({
+interface SilverChangeModalProps {
+  applySeparator: (value: string | number) => string;
+}
+
+export const SilverChangeModal: React.FC<
+  ISilverRecord & SilverChangeModalProps
+> = ({
+  applySeparator,
   productDescription,
   order,
   date,
@@ -40,6 +47,10 @@ export const SilverChangeModal: React.FC<ISilverRecord> = ({
         break;
       case BungieMembershipType.TigerSteam:
         membershipLink = Localizer.Profile.supportSteam;
+        break;
+      case BungieMembershipType.TigerEgs:
+        //Needs to be updated once we have the support link for EGS
+        membershipLink = Localizer.Profile.supportEgs;
         break;
       default:
         Modal.open(Localizer.UserPages.RAF_NoDestinyAccount);
@@ -74,7 +85,7 @@ export const SilverChangeModal: React.FC<ISilverRecord> = ({
       </div>
       <div>
         <div className={styles.title}>{Localizer.Profile.CurrencyChange}</div>
-        <div className={styles.detail}>{change}</div>
+        <div className={styles.detail}>{applySeparator(change)}</div>
       </div>
       <div className={styles.disclaimer}>
         {Localizer.Profile.PurchaseDisclaimer}

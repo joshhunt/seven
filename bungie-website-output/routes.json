@@ -78,6 +78,16 @@
     "path": "/7/en/Codes/Redeem"
   },
   {
+    "areaName": "Collections",
+    "areaObjectName": "Collections",
+    "componentImportPath": "@Areas/Collections/Collections",
+    "action": "index",
+    "params": {
+      "path": ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?"
+    },
+    "path": "/7/en/Collections/:mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?"
+  },
+  {
     "areaName": "CrossSave",
     "areaObjectName": "CrossSave",
     "componentImportPath": "@Areas/CrossSave/CrossSaveArea",
@@ -239,6 +249,14 @@
     "areaName": "Destiny",
     "areaObjectName": "Destiny",
     "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Lightfall",
+    "params": {},
+    "path": "/7/en/Destiny/Lightfall"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
     "action": "NewLight",
     "params": {},
     "path": "/7/en/Destiny/NewLight"
@@ -356,17 +374,19 @@
     "componentImportPath": "@Areas/Direct/DirectArea",
     "action": "Video",
     "params": {
-      "path": ":videoContentId"
+      "path": ":title"
     },
-    "path": "/7/en/Direct/Video/:videoContentId"
+    "path": "/7/en/Direct/Video/:title"
   },
   {
-    "areaName": "GameHistory",
-    "areaObjectName": "GameHistory",
-    "componentImportPath": "@Areas/GameHistory/GameHistoryArea",
+    "areaName": "Guide",
+    "areaObjectName": "Guide",
+    "componentImportPath": "@Areas/Guide/GuideArea",
     "action": "index",
-    "params": {},
-    "path": "/7/en/GameHistory"
+    "params": {
+      "path": ":guide"
+    },
+    "path": "/7/en/Guide/:guide"
   },
   {
     "areaName": "Home",
@@ -609,6 +629,14 @@
     "areaName": "Seasons",
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfPlunder",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfPlunder"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "SeasonOfTheChosen",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheChosen"
@@ -676,6 +704,16 @@
     "action": "index",
     "params": {},
     "path": "/7/en/Sms"
+  },
+  {
+    "areaName": "Triumphs",
+    "areaObjectName": "Triumphs",
+    "componentImportPath": "@Areas/Triumphs/TriumphsArea",
+    "action": "index",
+    "params": {
+      "path": ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?"
+    },
+    "path": "/7/en/Triumphs/:mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?"
   },
   {
     "areaName": "UserResearch",

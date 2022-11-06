@@ -22,16 +22,9 @@ import { BungieFriendsDataStore } from "./Internal/BungieFriends/BungieFriendsDa
 import { LinkedPlatformExpander } from "./Internal/PlatformFriendsImport/LinkedPlatformExpander";
 import { PlatformFriendsDataStore } from "./Internal/PlatformFriendsImport/PlatformFriendsDataStore";
 
-interface FriendsImportProps {}
-
-export const FriendsImport: React.FC<FriendsImportProps> = (props) => {
+export const FriendsImport = () => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const platformFriendsData = useDataStore(PlatformFriendsDataStore);
-
-  const [linkingModalOpen, setLinkingModalOpen] = useState(false);
-  const [platformToLink, setPlatformToLink] = useState<PlatformFriendType>(
-    PlatformFriendType.Unknown
-  );
 
   const [validPlatformsToLink, setValidPlatformsToLink] = useState<
     PlatformFriendType[]

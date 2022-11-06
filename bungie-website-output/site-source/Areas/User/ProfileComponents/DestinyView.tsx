@@ -1,7 +1,6 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import { pageView } from "@Areas/User/Profile";
 import styles from "@Areas/User/Profile.module.scss";
 import { Clan } from "@Areas/User/ProfileComponents/Clan";
 import { Localizer } from "@bungie/localization";
@@ -14,6 +13,7 @@ import { BungieMembershipType } from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GroupsV2, Models, Responses } from "@Platform";
 import React from "react";
+import { pageView } from "./ProfileUserSummary";
 import { ProfileGameHistoryLink } from "./ProfileGameHistoryLink";
 
 interface DestinyViewProps {
@@ -36,7 +36,6 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
     membershipType,
     membershipId,
     isSelf,
-    updateView,
   } = props;
 
   const profileLoc = Localizer.Profile;
@@ -59,14 +58,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
         />
       )}
       <ProfileErrorBoundary message={profileLoc.ClanLoadingError}>
-        <Clan
-          mType={membershipType}
-          mId={membershipId}
-          loggedInUserClans={loggedInUserClans}
-          coreSettings={coreSettings}
-          isSelf={isSelf}
-          destinyMembership={destinyMembership}
-        />
+        <Clan membershipId={membershipId} />
       </ProfileErrorBoundary>
       <ProfileErrorBoundary message={profileLoc.SeasonLoadingError}>
         <Season
@@ -99,7 +91,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
           </ProfileErrorBoundary>
         )}
         <ProfileErrorBoundary message={profileLoc.GameHistoryLoadingError}>
-          <ProfileGameHistoryLink updateView={updateView} />
+          <ProfileGameHistoryLink />
         </ProfileErrorBoundary>
       </div>
     </>

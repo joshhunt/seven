@@ -2,14 +2,10 @@
 // Copyright Bungie, Inc.
 
 import { formatDateForAccountTable } from "@Areas/User/Account";
-import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { IEververseRecord } from "@Areas/User/AccountComponents/EververseHistory";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { DateTime } from "luxon";
 import styles from "../EververseHistory.module.scss";
 import {
   BungieMembershipType,
@@ -18,8 +14,15 @@ import {
 import { RouteHelper } from "@Routes/RouteHelper";
 import React from "react";
 
-export const EverversePurchaseModal: React.FC<IEververseRecord> = (
+interface EverversePurchaseModalProps {
+  applySeparator: (value: string | number) => string;
+}
+
+export const EverversePurchaseModal: React.FC<
+  IEververseRecord & EverversePurchaseModalProps
+> = (
   {
+    applySeparator,
     order,
     date,
     bungieName,
@@ -47,6 +50,10 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
         break;
       case BungieMembershipType.TigerSteam:
         platformLink = Localizer.Profile.supportSteam;
+        break;
+      //Needs to be updated once we have the support link for EGS
+      case BungieMembershipType.TigerEgs:
+        platformLink = Localizer.Profile.supportEgs;
         break;
       default:
         throw new Error(Localizer.UserPages.RAF_NoDestinyAccount);
@@ -83,7 +90,7 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
         <div className={styles.title}>
           {Localizer.Profile.ProductPurchaseQuantity}
         </div>
-        <div className={styles.detail}>{quantity}</div>
+        <div className={styles.detail}>{applySeparator(quantity)}</div>
       </div>
       <div>
         <div className={styles.title}>
@@ -91,7 +98,8 @@ export const EverversePurchaseModal: React.FC<IEververseRecord> = (
         </div>
         <div className={styles.detail}>
           {Array.from(prices.values(), (val) => val).map(
-            (value) => `${value?.Quantity} ${value?.ItemDisplayName}`
+            (value) =>
+              `${applySeparator(value?.Quantity)} ${value?.ItemDisplayName}`
           )}
         </div>
       </div>

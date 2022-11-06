@@ -20,19 +20,22 @@ export class RouteDefs {
     BeyondLight: "BeyondLight",
     Clans: "Clans",
     Codes: "Codes",
+    Collections: "Collections",
     CrossSave: "CrossSave",
     Destiny: "Destiny",
     Direct: "Direct",
-    GameHistory: "GameHistory",
+    Guide: "Guide",
     Home: "Home",
     Legal: "Legal",
     News: "News",
+    Pgcr: "Pgcr",
     Registration: "Registration",
     Rewards: "Rewards",
     Search: "Search",
     Seasons: "Seasons",
     Static: "Static",
     Sms: "Sms",
+    Triumphs: "Triumphs",
     User: "User",
     UserResearch: "UserResearch",
   };
@@ -58,6 +61,25 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Create"),
         (area) => new ActionRoute(area, "Suggested"),
         (area) => new ActionRoute(area, "MyClans"),
+      ],
+    }),
+    Collections: new Area({
+      name: RouteDefs.AreaNames.Collections,
+      indexParams: {
+        path: ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
+      },
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Collections/Collections" /* webpackChunkName: "Collections" */
+          )
+      ),
+      routes: [
+        (area) =>
+          new ActionRoute(area, "index", {
+            path:
+              ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
+          }),
       ],
     }),
     CrossSave: new Area({
@@ -143,6 +165,7 @@ export class RouteDefs {
             path: "WitchQueen/Comparison",
             isOverride: true,
           }),
+        (area) => new ActionRoute(area, "Lightfall"),
       ],
     }),
     Direct: new Area({
@@ -151,7 +174,7 @@ export class RouteDefs {
         () => import("@Areas/Direct/DirectArea")
       ),
       routes: [
-        (area) => new ActionRoute(area, "Video", { path: ":videoContentId" }),
+        (area) => new ActionRoute(area, "Video", { path: ":title" }),
         (area) => new ActionRoute(area, "Circles"),
         (area) => new ActionRoute(area, "RaidRace"),
         (area) => new ActionRoute(area, "Rewards"),
@@ -160,12 +183,13 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reveal"),
       ],
     }),
-    GameHistory: new Area({
-      name: RouteDefs.AreaNames.GameHistory,
+    Guide: new Area({
+      name: RouteDefs.AreaNames.Guide,
       lazyComponent: createAsyncComponent(
-        () => import("@Areas/GameHistory/GameHistoryArea")
+        () => import("@Areas/Guide/GuideArea")
       ),
-      routes: [(area) => new ActionRoute(area, "index")],
+      indexParams: { path: ":guide" },
+      routes: [(area) => new ActionRoute(area, "index", { path: ":guide" })],
     }),
     Home: new Area({
       name: RouteDefs.AreaNames.Home,
@@ -208,6 +232,17 @@ export class RouteDefs {
           }),
       ],
       webmasterSystem: SystemNames.CoreHomeandNews,
+    }),
+    Pgcr: new Area({
+      name: RouteDefs.AreaNames.Pgcr,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Pgcr/PgcrRouter" /* webpackChunkName: "PGCR Direct Link" */
+          )
+      ),
+      indexParams: { path: ":id?" },
+      routes: [],
     }),
     Registration: new Area({
       name: RouteDefs.AreaNames.Registration,
@@ -261,6 +296,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheLost"),
         (area) => new ActionRoute(area, "SeasonOfTheRisen"),
         (area) => new ActionRoute(area, "SeasonOfTheHaunted"),
+        (area) => new ActionRoute(area, "SeasonOfPlunder"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),
@@ -286,6 +322,25 @@ export class RouteDefs {
       indexParams: { path: ":page?" },
       routes: [],
     }),
+    Triumphs: new Area({
+      name: RouteDefs.AreaNames.Triumphs,
+      indexParams: {
+        path: ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
+      },
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Triumphs/TriumphsArea" /* webpackChunkName: "Triumphs" */
+          )
+      ),
+      routes: [
+        (area) =>
+          new ActionRoute(area, "index", {
+            path:
+              ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
+          }),
+      ],
+    }),
     UserResearch: new Area({
       name: RouteDefs.AreaNames.UserResearch,
       lazyComponent: createAsyncComponent(
@@ -305,6 +360,15 @@ export class RouteDefs {
     User: new AreaGroup({
       name: RouteDefs.AreaNames.User,
       children: {
+        ZendeskAuth: {
+          lazyComponent: createAsyncComponent(
+            () =>
+              import(
+                "@Areas/User/ZendeskAuth" /* webpackChunkName: "UserZendesk" */
+              )
+          ),
+          routes: [],
+        },
         SignIn: {
           lazyComponent: createAsyncComponent(
             () =>
@@ -321,7 +385,9 @@ export class RouteDefs {
           ),
           routes: [
             (urlPrefix) =>
-              new ActionRoute(urlPrefix, "index", { path: ":mtype?/:mid?" }),
+              new ActionRoute(urlPrefix, "index", {
+                path: ":mtype?/:mid?/:section?",
+              }),
           ],
         },
         Account: {
@@ -344,6 +410,18 @@ export class RouteDefs {
             (urlPrefix) => new ActionRoute(urlPrefix, "EververseHistory"),
             (urlPrefix) => new ActionRoute(urlPrefix, "SilverBalanceHistory"),
             (urlPrefix) => new ActionRoute(urlPrefix, "AppHistory"),
+          ],
+        },
+        GameHistory: {
+          lazyComponent: createAsyncComponent(
+            () =>
+              import(
+                "@Areas/User/GameHistory/GameHistoryArea" /* webpackChunkName: "GameHistory" */
+              )
+          ),
+          routes: [
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, "index", { path: ":mtype?/:mid?" }),
           ],
         },
       },

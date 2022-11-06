@@ -193,6 +193,7 @@ class AuthInternal extends React.Component<Props, IAuthState> {
     const battleNetSystem = coreSettings.systems.Blizzard;
     const stadiaSystem = coreSettings.systems.StadiaIdAuth;
     const steamSystem = coreSettings.systems.SteamIdAuth;
+    const egsSystem = coreSettings.systems.EpicIdAuth;
     const twitchSystem = coreSettings.systems.Twitch;
 
     const label =
@@ -311,6 +312,26 @@ class AuthInternal extends React.Component<Props, IAuthState> {
                       }}
                     />
                     {Localizer.Registration.networksigninoptionstadia}
+                  </Button>
+                </AuthTrigger>
+              )}
+              {egsSystem?.enabled && (
+                <AuthTrigger
+                  key={Globals.BungieCredentialType.EgsId}
+                  credential={Globals.BungieCredentialType.EgsId}
+                  onAuthWindowClosed={this.onAuthWindowClosed}
+                >
+                  <Button className={styles.authTriggerButton}>
+                    <div
+                      className={styles.icon}
+                      style={{
+                        backgroundImage: `url(${Img(
+                          `/bungie/icons/logos/egs/icon.png`
+                        )})`,
+                        backgroundSize: `auto 2.5rem`,
+                      }}
+                    />
+                    {Localizer.Registration.networksigninoptionegs}
                   </Button>
                 </AuthTrigger>
               )}

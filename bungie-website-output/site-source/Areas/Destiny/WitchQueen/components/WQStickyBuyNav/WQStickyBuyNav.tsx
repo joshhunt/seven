@@ -18,21 +18,12 @@ interface WQStickyBuyNavProps {
   buyBtnText: string;
   dropdownTitle: string;
   dateText: string;
-  mobileSkuLabel: string;
 }
 
 export const WQStickyBuyNav: React.FC<WQStickyBuyNavProps> = (props) => {
-  const {
-    heroRef,
-    skus,
-    logo,
-    buyBtnText,
-    dropdownTitle,
-    dateText,
-    mobileSkuLabel,
-  } = props;
+  const { heroRef, skus, logo, buyBtnText, dropdownTitle, dateText } = props;
 
-  const [selectedSku, setSelectedSku] = useState("witchqueendeluxeanniversary");
+  const [selectedSku, setSelectedSku] = useState("witchqueendeluxe");
   const [isFixed, setIsFixed] = useState(false);
 
   const handleDropdownChange = (sku: string) => {
@@ -62,7 +53,6 @@ export const WQStickyBuyNav: React.FC<WQStickyBuyNavProps> = (props) => {
                 title={dropdownTitle}
                 options={skus}
                 onChange={handleDropdownChange}
-                mobileLabel={mobileSkuLabel}
               />
               <Button
                 className={styles.skuBuyBtn}
@@ -83,7 +73,6 @@ interface IWQNavDropdown {
   options: { label: string; sku: string }[];
   onChange: (value: string) => void;
   title: string;
-  mobileLabel: string;
 }
 
 const WQNavDropdown: React.FC<IWQNavDropdown> = (props) => {
@@ -123,13 +112,12 @@ const WQNavDropdown: React.FC<IWQNavDropdown> = (props) => {
   };
 
   const selected = options?.[selectedOption];
-  const label = responsive.mobile ? props.mobileLabel : selected?.label;
 
   return (
     <div className={styles.skuDropDown}>
       <p className={styles.selectorTitle}>{title}</p>
       <div className={styles.selectedValue} onClick={toggleShowDropdown}>
-        <p>{label}</p>
+        <p>{selected?.label}</p>
         <Icon
           className={classNames(styles.arrow, { [styles.up]: showDropdown })}
           iconName={"arrow_right"}

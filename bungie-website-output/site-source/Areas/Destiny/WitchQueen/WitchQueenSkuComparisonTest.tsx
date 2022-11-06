@@ -77,11 +77,7 @@ const WitchQueenSkuComparisonTest: React.FC = () => {
               DestinySkuUtils.productExists(skuItem.skuTag, skuConfig)
             );
 
-          const wqSkuTags = [
-            "witchqueenstandard",
-            "witchqueendeluxe",
-            "witchqueendeluxeanniversary",
-          ];
+          const wqSkuTags = ["witchqueenstandard", "witchqueendeluxe"];
 
           const comparisonSkus = skus.filter((s) =>
             wqSkuTags.find((tag) => tag === s.skuTag)

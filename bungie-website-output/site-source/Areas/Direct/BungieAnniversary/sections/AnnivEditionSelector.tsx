@@ -20,7 +20,6 @@ import React, { LegacyRef, useEffect, useState } from "react";
 import styles from "./AnnivEditionSelector.module.scss";
 
 enum AnnivEditions {
-  witchqueendeluxeanniversary,
   anniversarypack,
 }
 
@@ -33,10 +32,7 @@ interface AnnivEditionSelectorProps {
 
 const AnnivEditionSelector: React.FC<AnnivEditionSelectorProps> = (props) => {
   const [selectedEdition, setSelectedEdition] = useState(
-    EnumUtils.getStringValue(
-      AnnivEditions.witchqueendeluxeanniversary,
-      AnnivEditions
-    )
+    EnumUtils.getStringValue(AnnivEditions.anniversarypack, AnnivEditions)
   );
   const [skuConfig, setSkuConfig] = useState(DestinySkuConfigDataStore.state);
   const [skuItems, setSkuItems] = useState(null);
@@ -103,10 +99,6 @@ const AnnivEditionSelector: React.FC<AnnivEditionSelectorProps> = (props) => {
   );
 
   const tabs = [
-    {
-      title: props.deluxePackTabTitle,
-      edition: AnnivEditions.witchqueendeluxeanniversary,
-    },
     { title: props.annivPackTabTitle, edition: AnnivEditions.anniversarypack },
   ];
 
@@ -118,27 +110,6 @@ const AnnivEditionSelector: React.FC<AnnivEditionSelectorProps> = (props) => {
         className={styles.sectionBg}
         style={{ backgroundImage: editionsBgImage }}
       />
-      <h3 className={styles.sectionTitle}>{props.sectionTitle}</h3>
-      <div className={styles.tabsWrapper}>
-        {tabs.map(({ title, edition }, i) => {
-          const editionAsString = EnumUtils.getStringValue(
-            edition,
-            AnnivEditions
-          );
-
-          return (
-            <Button
-              className={classNames(styles.tab, {
-                [styles.selected]: editionAsString === selectedEdition,
-              })}
-              key={i}
-              onClick={() => setSelectedEdition(editionAsString)}
-            >
-              {title}
-            </Button>
-          );
-        })}
-      </div>
       <div className={styles.comparisonWrapper}>
         {annivComparisonSkus?.map((value: any, i: number) => (
           <AnnivEditionDisplay
@@ -153,7 +124,7 @@ const AnnivEditionSelector: React.FC<AnnivEditionSelectorProps> = (props) => {
 };
 
 interface IAnnivEditionDisplay {
-  selectedEdition: "anniversarypack" | "witchqueendeluxeanniversary";
+  selectedEdition: "anniversarypack";
   productDef: IDestinyProductDefinition;
 }
 

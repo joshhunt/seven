@@ -36,6 +36,8 @@ interface IDestinyAccountWrapperProps extends GlobalStateComponentProps<any> {
   onPlatformChange?: (value: string) => void;
   /** Enables a parent to do something with the value returned when a different character is selected */
   onCharacterChange?: (value: string) => void;
+  /** Shows the cross save banner in the platformSelector if user is cross saved */
+  showCrossSaveBanner?: boolean;
 }
 
 // Default props - these will have values set in DestinyAccountWrapper.defaultProps
@@ -58,38 +60,56 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
   onPlatformChange,
   onCharacterChange,
   bnetProfileSubtitle,
+  showCrossSaveBanner,
 }) => {
   //check for changes in auth status
 
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const destinyMembership = useDataStore(membershipDataStore);
+  const membershipData = useDataStore(membershipDataStore);
+
+  const isViewingSelf =
+    globalState.loggedInUser?.user?.membershipId &&
+    membershipData?.membershipData?.bungieNetUser?.membershipId &&
+    globalState.loggedInUser?.user?.membershipId ===
+      membershipData?.membershipData?.bungieNetUser?.membershipId;
 
   useEffect(() => {
-    if (!destinyMembership?.loaded) {
+    if (!membershipData?.loaded) {
       membershipDataStore.actions.loadUserData();
     }
   }, []);
 
-  return destinyMembership?.membershipData ? (
+  const errorFetchingMembership =
+    !membershipData || !membershipData?.selectedMembership?.membershipType;
+  const noCharacters =
+    !errorFetchingMembership &&
+    (!membershipData?.characters ||
+      Object.keys(membershipData?.characters)?.length < 1);
+
+  return membershipData?.membershipData ? (
     <SystemDisabledHandler systems={["Destiny2"]}>
-      <RequiresAuth />
-      {destinyMembership?.memberships.length > 0 ? (
+      {membershipData?.memberships.length > 0 ? (
         children({
           bnetProfile: (
             <div className={styles.bnetProfile}>
               <TwoLineItem
                 icon={
                   <img
-                    src={globalState?.loggedInUser?.user?.profilePicturePath}
+                    src={
+                      membershipData?.membershipData?.bungieNetUser
+                        ?.profilePicturePath
+                    }
                   />
                 }
-                itemTitle={globalState?.loggedInUser?.user?.displayName}
+                itemTitle={
+                  membershipData?.membershipData?.bungieNetUser?.displayName
+                }
                 itemSubtitle={
                   bnetProfileSubtitle ??
-                  (destinyMembership?.selectedMembership &&
+                  (membershipData?.selectedMembership &&
                     Localizer.Platforms[
                       EnumUtils.getStringValue(
-                        destinyMembership?.selectedMembership?.membershipType,
+                        membershipData?.selectedMembership?.membershipType,
                         BungieMembershipType
                       )
                     ])
@@ -99,22 +119,26 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
           ),
           platformSelector: (
             <DestinyPlatformSelector
-              userMembershipData={destinyMembership?.membershipData}
+              userMembershipData={membershipData?.membershipData}
               onChange={(value: string) => {
                 membershipDataStore.actions.updatePlatform(value);
                 onPlatformChange?.(value);
               }}
-              defaultValue={destinyMembership?.memberships?.[0]?.membershipType}
-              crossSavePairingStatus={globalState.crossSavePairingStatus}
+              defaultValue={membershipData?.memberships?.[0]?.membershipType}
+              selectedValue={
+                membershipDataStore?.state?.selectedMembership?.membershipType
+              }
+              isViewingOthers={!isViewingSelf}
+              showCrossSaveBanner={showCrossSaveBanner}
             />
           ),
           characterSelector: (
             <>
-              {destinyMembership?.selectedCharacter ? (
+              {membershipData?.selectedCharacter ? (
                 <DestinyCharacterSelector
-                  characterComponent={destinyMembership?.characters}
+                  characterComponent={membershipData?.characters}
                   defaultCharacterId={
-                    destinyMembership?.selectedCharacter?.characterId
+                    membershipData?.selectedCharacter?.characterId
                   }
                   onChange={(value: string) => {
                     membershipDataStore.actions.updateCharacter(value);
@@ -122,21 +146,21 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
                   }}
                 />
               ) : (
-                <div className={styles.noAccount}>
-                  {destinyMembership?.selectedMembership?.membershipType
-                    ? Localizer.Format(Localizer.Crosssave.NoCharacters, {
-                        platform: LocalizerUtils.getPlatformNameFromMembershipType(
-                          destinyMembership?.selectedMembership?.membershipType
-                        ),
-                      })
-                    : Localizer.Messages.GroupMemberInvalidMemberType}
+                <div className={styles.errors}>
+                  {errorFetchingMembership && Localizer.Account.AccountError}
+                  {noCharacters &&
+                    Localizer.Format(Localizer.Crosssave.NoCharacters, {
+                      platform: LocalizerUtils.getPlatformNameFromMembershipType(
+                        membershipData?.selectedMembership?.membershipType
+                      ),
+                    })}
                 </div>
               )}
             </>
           ),
         })
       ) : (
-        <div className={styles.noAccount}>
+        <div className={styles.errors}>
           {Localizer.CodeRedemption.LinkedDestinyAccountRequiredHeader}
         </div>
       )}

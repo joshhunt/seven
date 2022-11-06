@@ -7,6 +7,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { DetailedError, PageDoesNotExistError } from "./CustomErrors";
 import { Error404 } from "./Error404";
 import { ErrorDisplay } from "./ErrorDisplay";
+import { Localizer } from "@bungie/localization/Localizer";
 
 interface IInnerErrorBoundaryProps extends RouteComponentProps {
   error?: Error;
@@ -37,7 +38,10 @@ class InnerErrorBoundaryInternal extends React.Component<
   }
 
   public render() {
-    return this.state.error ? this.renderErrorDisplay() : this.props.children;
+    // if errors are incorrectly handled and nothing is provided as a child element, this will error because nothing is returned from the component, that's why there is a final default error that will show
+    return this.state.error
+      ? this.renderErrorDisplay()
+      : this.props.children ?? <div>{Localizer.errors.UnhandledError}</div>;
   }
 
   public componentDidMount() {
@@ -69,6 +73,7 @@ class InnerErrorBoundaryInternal extends React.Component<
         .then(() => Logger.log("Error logged to server: ", error))
         .catch((e) => null);
     } catch (e) {
+      console.error(e);
       // ignore, we did what we could
     }
 

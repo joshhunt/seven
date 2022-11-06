@@ -15,7 +15,7 @@ import React from "react";
 import { BnetStackPmpCaptionThumbnails } from "../../../Generated/contentstack-types";
 import styles from "./PmpCaptionThumbnails.module.scss";
 
-type PmpCaptionThumbnailsProps = DataReference<
+export type PmpCaptionThumbnailsProps = DataReference<
   "pmp_caption_thumbnails",
   BnetStackPmpCaptionThumbnails
 > & {
@@ -24,6 +24,7 @@ type PmpCaptionThumbnailsProps = DataReference<
     caption?: string;
     thumbnail?: string;
     thumbImg?: string;
+    thumbWrapper?: string;
   };
 };
 
@@ -42,7 +43,13 @@ export const PmpCaptionThumbnails: React.FC<PmpCaptionThumbnailsProps> = (
     <div className={classNames(styles.thumbnailsFlexWrapper, classes?.root)}>
       {data?.thumbnails?.map((thumb, i) => {
         return (
-          <div key={i} className={styles.thumbnailWrapper}>
+          <div
+            key={i}
+            className={classNames(
+              styles.thumbnailWrapper,
+              classes?.thumbWrapper
+            )}
+          >
             <PmpCaptionThumb
               thumbItem={thumb}
               allThumbs={data?.thumbnails}

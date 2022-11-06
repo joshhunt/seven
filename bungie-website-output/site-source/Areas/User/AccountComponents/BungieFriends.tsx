@@ -12,9 +12,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieFriends.module.scss";
 
-interface BungieFriendsProps {}
-
-export const BungieFriends: React.FC<BungieFriendsProps> = (props) => {
+export const BungieFriends = () => {
   const [showFriendsImport, toggleFriendsImport] = useState<boolean>(false);
 
   useEffect(() => {

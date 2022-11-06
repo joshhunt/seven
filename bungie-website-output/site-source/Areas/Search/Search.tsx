@@ -105,8 +105,6 @@ const Search: React.FC<SearchProps> = (props) => {
     };
   }, [inputString]);
 
-  console.log(searchDataStorePayload);
-
   return (
     <>
       <BungieHelmet

@@ -6,14 +6,14 @@ import { Localizer } from "@bungie/localization";
 import { PlatformFriendType } from "@Enum";
 import { Friends, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
-import { ConvertToPlatformError } from "../../../../../Platform/ApiIntermediary";
-import { PlatformError } from "../../../../../UI/Errors/CustomErrors";
+import { SiEpicgames } from "react-icons/si";
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { PlatformError } from "@CustomErrors";
 import { FriendInviteThrottleQueue } from "./FriendInviteThrottleQueue";
 import { PlatformFriendsDataStore } from "./PlatformFriendsDataStore";
 
@@ -33,6 +33,12 @@ export class FriendsImportUtils {
 
       case PlatformFriendType.Steam:
         return <FaSteam className={styles.platformIcon} />;
+
+      case PlatformFriendType.Egs:
+        return <SiEpicgames className={styles.platformIcon} />;
+
+      default:
+        return <div />;
     }
   };
 
@@ -54,6 +60,12 @@ export class FriendsImportUtils {
       case PlatformFriendType.Xbox:
         return {
           title: Localizer.Platforms.TigerXbox,
+          subtitle: "",
+        };
+
+      case PlatformFriendType.Egs:
+        return {
+          title: Localizer.Platforms.TigerEgs,
           subtitle: "",
         };
 
@@ -108,13 +120,15 @@ export class FriendsImportUtils {
       currentPage.toString()
     )
       .then((response: Friends.PlatformFriendResponse) => {
-        if (response) {
+        if (response?.platformFriends?.length >= 0) {
           PlatformFriendsDataStore.actions.setError(platform, null);
 
           PlatformFriendsDataStore.actions.updatePlatformFriendResponse(
             platform,
             response
           );
+        } else {
+          throw new Error(Localizer.Messages.SteamNotAuthorized);
         }
       })
       .catch(ConvertToPlatformError)

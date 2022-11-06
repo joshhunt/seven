@@ -37,6 +37,7 @@ const validCredentialTypes = [
   BungieCredentialType.SteamId,
   BungieCredentialType.StadiaId,
   BungieCredentialType.TwitchId,
+  BungieCredentialType.EgsId,
 ];
 const crossSaveIneligibleTypes = [BungieCredentialType.TwitchId];
 
@@ -59,6 +60,7 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
     showSteamDisplayNamePublic: null,
     showTwitchDisplayNamePublic: null,
     showStadiaDisplayNamePublic: null,
+    // showEgsDisplayNamePublic: null
   };
 
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
@@ -285,6 +287,9 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
           showSteamDisplayNamePublic: checked,
         });
         break;
+      // case BungieCredentialType.EgsId:
+      // 	setCurrentRequestObject({...currentRequestObject, showEgsDisplayNamePublic: checked})
+      // 	break;
       case BungieCredentialType.TwitchId:
         setCurrentRequestObject({
           ...currentRequestObject,

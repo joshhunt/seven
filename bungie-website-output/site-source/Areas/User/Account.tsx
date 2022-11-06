@@ -171,57 +171,6 @@ const Account: React.FC = () => {
     </span>
   );
 
-  const reactSilver = {
-    tabLabel: Localizer.account.SilverBalanceHistory,
-    contentComponent: <SilverBalanceHistory />,
-    tabTo: silverBalanceHistoryPath,
-    pathName: actions.SilverBalanceHistory.path,
-  } as TabData;
-
-  const oldSilver = {
-    tabLabel: Localizer.account.SilverBalanceHistory,
-    tabRender: renderAsExternalLink,
-    contentComponent: null,
-    tabTo: RouteHelper.PurchaseHistory({ type: 0 }),
-    pathName: null,
-  } as TabData;
-
-  const reactEververse = {
-    tabLabel: Localizer.Profile.EverversePurchaseHistory,
-    contentComponent: <EververseHistory />,
-    tabTo: eververseHistoryPath,
-    pathName: actions.EververseHistory.path,
-  } as TabData;
-
-  const reactAppHistory = {
-    tabLabel: Localizer.account.AppHistory,
-    contentComponent: <ApplicationHistory />,
-    tabTo: applicationHistoryPath,
-    pathName: actions.AppHistory.path,
-  } as TabData;
-
-  const oldAppHistory = {
-    tabLabel: Localizer.account.AppHistory,
-    contentComponent: null,
-    tabRender: renderAsExternalLink,
-    tabTo: RouteHelper.ApplicationHistory(),
-    pathName: actions.AppHistory.path,
-  } as TabData;
-
-  const reactNotifications = {
-    tabLabel: Localizer.Account.NotificationsTitle,
-    contentComponent: <Notifications />,
-    tabTo: notificationsPath,
-    pathName: actions.Notifications.path,
-  } as TabData;
-
-  const oldNotifications = {
-    tabLabel: Localizer.Privacy.Notifications,
-    tabRender: renderAsExternalLink,
-    tabTo: RouteHelper.Settings({ category: "notifications" }),
-    pathName: actions.Notifications.path,
-  } as TabData;
-
   const accountTabDetails: TabData[] = [
     {
       tabLabel: Localizer.account.account,
@@ -253,7 +202,12 @@ const Account: React.FC = () => {
       tabTo: actions.EmailSms.resolve(),
       pathName: actions.EmailSms.path,
     },
-    useReactView ? reactNotifications : oldNotifications,
+    {
+      tabLabel: Localizer.Account.NotificationsTitle,
+      contentComponent: <Notifications />,
+      tabTo: notificationsPath,
+      pathName: actions.Notifications.path,
+    },
     {
       tabLabel: Localizer.account.accountLinking,
       contentComponent: <AccountLinking />,
@@ -291,9 +245,24 @@ const Account: React.FC = () => {
       tabTo: RouteHelper.CrossSave(),
       pathName: RouteHelper.CrossSave().url,
     },
-    useReactView ? reactSilver : oldSilver,
-    useReactView && reactEververse,
-    useReactView ? reactAppHistory : oldAppHistory,
+    {
+      tabLabel: Localizer.account.SilverBalanceHistory,
+      contentComponent: <SilverBalanceHistory />,
+      tabTo: silverBalanceHistoryPath,
+      pathName: actions.SilverBalanceHistory.path,
+    },
+    {
+      tabLabel: Localizer.Profile.EverversePurchaseHistory,
+      contentComponent: <EververseHistory />,
+      tabTo: eververseHistoryPath,
+      pathName: actions.EververseHistory.path,
+    },
+    {
+      tabLabel: Localizer.account.AppHistory,
+      contentComponent: <ApplicationHistory />,
+      tabTo: applicationHistoryPath,
+      pathName: actions.AppHistory.path,
+    },
   ];
 
   return (
@@ -316,7 +285,7 @@ const Account: React.FC = () => {
               loggedInUserId: loggedInUserMembershipId,
               isSelf: loggedInUserIsOnPageUser(membershipId),
               isAdmin: globalState?.loggedInUser?.userAcls.includes(
-                AclEnum.BNextPrivateUserDataReader
+                AclEnum.BNextEditUsers
               ),
             }}
           >

@@ -1,9 +1,6 @@
 import { Localizer } from "@bungie/localization";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import * as H from "history";
-import NewsArticle from "../../Areas/News/NewsArticle";
 import { RouteDefs } from "./RouteDefs";
 import { ActionRoute } from "./ActionRoute";
 import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
@@ -17,6 +14,7 @@ import {
   NewsParams,
   ISearchParams,
   IRewardClaimParams,
+  PresentationNodeParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -80,6 +78,9 @@ export class RouteHelper {
   public static NewProfile = BasicReactPath<IProfileParams>(
     RouteDefs.AreaGroups.User.areas.Profile.getAction("Index")
   );
+  public static NewGameHistory = BasicReactPath<IProfileParams>(
+    RouteDefs.AreaGroups.User.areas.GameHistory.getAction("Index")
+  );
 
   public static TargetProfile = (
     membershipId: string,
@@ -96,6 +97,33 @@ export class RouteHelper {
         BungieMembershipType
       ).toString(),
     });
+  };
+
+  public static GameHistory = (
+    membershipId: string,
+    membershipType: BungieMembershipType
+  ) => {
+    if (ConfigUtils.SystemStatus("CoreAreaGameHistory")) {
+      const profileUrlCreator = BasicReactPath<IProfileParams>(
+        RouteDefs.AreaGroups.User.areas.GameHistory.getAction("Index")
+      );
+
+      return profileUrlCreator({
+        mid: membershipId,
+        mtype: EnumUtils.getNumberValue(
+          membershipType,
+          BungieMembershipType
+        ).toString(),
+      });
+    }
+
+    let params = "";
+
+    if (membershipId && membershipType) {
+      params = `/${membershipType}/${membershipId}`;
+    }
+
+    return LegacyPath(`/Profile/GameHistory${params}`);
   };
 
   public static ProfilePage = (action: string) => {
@@ -216,49 +244,13 @@ export class RouteHelper {
     return LegacyPath(`/User/SignInAndPreview/${stringCredValue}`);
   };
 
-  public static GameHistory = (
-    membershipId?: string,
-    membershipType?: BungieMembershipType
-  ) => {
-    let params = "";
+  public static NewTriumphs = BasicReactPath<PresentationNodeParams>(
+    RouteDefs.Areas.Triumphs.getAction("index")
+  );
 
-    if (membershipId && membershipType) {
-      params = `/${membershipType}/${membershipId}`;
-    }
-
-    return LegacyPath(`/Profile/GameHistory${params}`);
-  };
-  public static Triumphs = (
-    membershipId?: string,
-    membershipType?: BungieMembershipType
-  ) => {
-    let params = "";
-
-    if (membershipId && membershipType) {
-      params = `/${EnumUtils.getNumberValue(
-        membershipType,
-        BungieMembershipType
-      )}/${membershipId}`;
-    }
-
-    return LegacyPath(`/Triumphs${params}`);
-  };
-
-  public static Collections = (
-    membershipId?: string,
-    membershipType?: BungieMembershipType
-  ) => {
-    let params = "";
-
-    if (membershipId && membershipType) {
-      params = `/${EnumUtils.getNumberValue(
-        membershipType,
-        BungieMembershipType
-      )}/${membershipId}`;
-    }
-
-    return LegacyPath(`/Collections${params}`);
-  };
+  public static NewCollections = BasicReactPath<PresentationNodeParams>(
+    RouteDefs.Areas.Collections.getAction("index")
+  );
 
   public static ResendEmailVerification = (mid: string) =>
     LegacyPath(`/Emails/ResendVerification?area=Emails&mid=${mid}`);
@@ -386,12 +378,20 @@ export class RouteHelper {
   public static WitchQueen = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("WitchQueen")
   );
+  public static Lightfall = BasicReactPath(
+    RouteDefs.Areas.Destiny.getAction("Lightfall")
+  );
   public static PurchaseHistory = LegacyPathWithQuery(
     "/Profile/PurchaseHistory"
   );
-  public static ApplicationHistory = LegacyPathWithQuery(
-    "/Profile/ApplicationHistory"
-  );
+  public static ApplicationHistory = (appId: string) => {
+    const resolved = BasicReactPath(
+      RouteDefs.AreaGroups.User.areas.Account.getAction("AppHistory")
+    )();
+    resolved.url += appId ? `?app=${appId}` : "";
+
+    return resolved;
+  };
 
   //Seasons
   public static SeasonOfDrifterLink = LegacyPath("/pub/SeasonOfTheDrifter");
@@ -425,6 +425,9 @@ export class RouteHelper {
   );
   public static SeasonOfTheHaunted = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheHaunted")
+  );
+  public static SeasonOfPlunder = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfPlunder")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(

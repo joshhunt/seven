@@ -47,6 +47,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
   const stadiaSystem = globalStateData.coreSettings.systems.StadiaIdAuth;
   const steamSystem = globalStateData.coreSettings.systems.SteamIdAuth;
   const twitchSystem = globalStateData.coreSettings.systems.Twitch;
+  const egsSystem = globalStateData.coreSettings.systems.EpicIdAuth;
 
   switch (credentialType) {
     case BungieCredentialType.Xuid:
@@ -163,6 +164,37 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
           flair={
             <AccountLinkButton
               cred={BungieCredentialType.StadiaId}
+              onCredentialChange={onCredentialChange}
+              flag={flag}
+              openLinkingModal={openLinkingModal}
+              onPageUserLoggedInCred={onPageUserLoggedInCred}
+            />
+          }
+        />
+      ) : null;
+    case BungieCredentialType.EgsId:
+      return egsSystem.enabled ? (
+        <TwoLineItem
+          itemTitle={Localizer.Registration.networksigninoptionegs}
+          itemSubtitle={
+            <AccountLinkItemSubtitle
+              flag={flag}
+              onPageUserLoggedInCred={onPageUserLoggedInCred}
+              credentialType={credentialType}
+              displayName={displayName}
+              onPublicSettingChanged={onPublicSettingChanged}
+              membershipId={membershipSpecificId}
+            />
+          }
+          normalWhiteSpace={true}
+          icon={
+            <IconCoin
+              iconImageUrl={Img(`/bungie/icons/logos/egs/egs_icon_small.png`)}
+            />
+          }
+          flair={
+            <AccountLinkButton
+              cred={BungieCredentialType.EgsId}
               onCredentialChange={onCredentialChange}
               flag={flag}
               openLinkingModal={openLinkingModal}

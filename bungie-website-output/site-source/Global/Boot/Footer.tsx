@@ -139,7 +139,10 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 RouteHelper.SeasonsProgress(),
                 navLoc.TopNavSeasonProgress
               )}
-              {this.renderLink(RouteHelper.Triumphs(), navLoc.TopNavTriumphs)}
+              {this.renderLink(
+                RouteHelper.NewTriumphs(),
+                navLoc.TopNavTriumphs
+              )}
               {this.renderLink(RouteHelper.CrossSave(), navLoc.CrossSave)}
               {this.renderLink(
                 RouteHelper.Rewards(),
@@ -205,7 +208,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 navLoc.WhatSNew
               )}
               {this.renderLink(
-                RouteHelper.BungieStore("collections"),
+                RouteHelper.BungieStore("merchandise"),
                 navLoc.Merchandise
               )}
               {this.renderLink(

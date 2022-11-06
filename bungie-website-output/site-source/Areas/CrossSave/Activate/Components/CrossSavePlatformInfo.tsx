@@ -82,7 +82,7 @@ export class CrossSavePlatformInfo extends React.Component<
     }
 
     return (
-      <React.Fragment>
+      <div className={styles.crossSavePlatformInfo}>
         {!this.props.hideAccountInfo && (
           <div className={styles.flexRow}>
             <div className={styles.accountInfo}>
@@ -100,7 +100,7 @@ export class CrossSavePlatformInfo extends React.Component<
             )}
           </div>
         )}
-      </React.Fragment>
+      </div>
     );
   }
 }

@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { CrossSaveActiveBadge } from "@Areas/CrossSave/Activate/Components/CrossSaveActiveBadge";
 import {
   formatDateForAccountTable,
   ViewerPermissionContext,
@@ -36,9 +37,9 @@ export interface ISilverRecord {
   date: string;
   status: EververseChangeEventClassification;
   name: string;
-  previousQuantity: number;
-  change: number;
-  newQuantity: number;
+  previousQuantity: string;
+  change: string;
+  newQuantity: string;
   membership: GroupsV2.GroupUserInfoCard;
   bungieName: string;
   productDescription: string;
@@ -68,6 +69,14 @@ export const SilverBalanceHistory = () => {
   );
   const profileLoc = Localizer.profile;
 
+  const applySeparator = (value: string | number) => {
+    return LocalizerUtils.useThousandsSeparatorByLocale(
+      value,
+      Localizer.CurrentCultureName,
+      globalStateData
+    );
+  };
+
   const getLinkToSilver = (mType: BungieMembershipType) => {
     switch (mType) {
       case BungieMembershipType.TigerPsn:
@@ -78,6 +87,9 @@ export const SilverBalanceHistory = () => {
         return profileLoc.MicrosoftSilver;
       case BungieMembershipType.TigerStadia:
         return profileLoc.StadiaSilver;
+      //Needs to be updated once we have the silver link for EGS
+      case BungieMembershipType.TigerEgs:
+        return profileLoc.EgsSilver;
       default:
         return "";
     }
@@ -128,9 +140,9 @@ export const SilverBalanceHistory = () => {
                 date: x.Timestamp,
                 status: x.EventClassification,
                 name: x.ItemDisplayName ?? profileLoc.UnknownItemName,
-                previousQuantity: x.PreviousQuantity,
-                change: x.NewQuantity - x.PreviousQuantity,
-                newQuantity: x.NewQuantity,
+                previousQuantity: applySeparator(x.PreviousQuantity),
+                change: applySeparator(x.NewQuantity - x.PreviousQuantity),
+                newQuantity: applySeparator(x.NewQuantity),
                 membership: selectedMembership,
                 bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
                 productDescription:
@@ -149,6 +161,7 @@ export const SilverBalanceHistory = () => {
           });
         } else {
           setHistory(null);
+          setSilverBalance(null);
         }
       })
       .catch(ConvertToPlatformError)
@@ -173,6 +186,19 @@ export const SilverBalanceHistory = () => {
       true
     );
   };
+
+  useEffect(() => {
+    AccountDestinyMembershipDataStore.actions.loadUserData(
+      {
+        membershipId: useQueryMid
+          ? membershipIdFromQuery
+          : globalStateData?.loggedInUser?.user?.membershipId,
+        membershipType: BungieMembershipType.BungieNext,
+      },
+      true,
+      true
+    );
+  }, []);
 
   useEffect(() => {
     if (destinyMember.loaded && selectedMembership) {
@@ -203,6 +229,11 @@ export const SilverBalanceHistory = () => {
         <h3>{Localizer.account.SilverBalanceHistory}</h3>
       </GridCol>
       <GridDivider cols={12} className={accountStyles.mainDivider} />
+      <GridCol cols={12}>
+        {destinyMember?.isCrossSaved && (
+          <CrossSaveActiveBadge className={styles.crosssave} />
+        )}
+      </GridCol>
       <GridCol cols={12} className={styles.platformSilver}>
         <div>
           {destinyMember?.memberships?.map((mem, i) => {
@@ -246,7 +277,10 @@ export const SilverBalanceHistory = () => {
                 )})`,
               }}
             />
-            <div>{silverBalance?.SilverBalance || profileLoc.Unavailable}</div>
+            <div>
+              {applySeparator(silverBalance?.SilverBalance) ||
+                profileLoc.Unavailable}
+            </div>
           </div>
           <Button
             size={BasicSize.Small}
@@ -263,7 +297,7 @@ export const SilverBalanceHistory = () => {
                 {profileLoc.BungieGrantedSilver}
               </span>
               <span className={styles.value}>
-                {cashout.BungieGrantedSilver}
+                {applySeparator(cashout.BungieGrantedSilver)}
               </span>
             </div>
             <div className={styles.cashoutItem}>
@@ -271,16 +305,20 @@ export const SilverBalanceHistory = () => {
                 {profileLoc.PlatformGrantedSilver}
               </span>
               <span className={styles.value}>
-                {cashout.PlatformGrantedSilver}
+                {applySeparator(cashout.PlatformGrantedSilver)}
               </span>
             </div>
             <div className={styles.cashoutItem}>
               <span className={styles.title}>{profileLoc.SilverSpent}</span>
-              <span className={styles.value}>{cashout.TotalSilverSpent}</span>
+              <span className={styles.value}>
+                {applySeparator(cashout.TotalSilverSpent)}
+              </span>
             </div>
             <div className={styles.cashoutItem}>
               <span className={styles.title}>{profileLoc.Cashout}</span>
-              <span className={styles.value}>{cashout.CashoutQuantity}</span>
+              <span className={styles.value}>
+                {applySeparator(cashout.CashoutQuantity)}
+              </span>
             </div>
           </div>
         )}
@@ -297,7 +335,12 @@ export const SilverBalanceHistory = () => {
           onRow={(data) => {
             return {
               onClick: (e) => {
-                Modal.open(<SilverChangeModal {...data} />);
+                Modal.open(
+                  <SilverChangeModal
+                    {...data}
+                    applySeparator={applySeparator}
+                  />
+                );
               },
             };
           }}
@@ -328,7 +371,7 @@ export const SilverBalanceHistory = () => {
                   profileLoc[
                     "ChangeType" +
                       EnumUtils.getStringValue(
-                        value,
+                        applySeparator(value),
                         EververseChangeEventClassification
                       )
                   ]

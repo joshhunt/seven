@@ -1,6 +1,7 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
+import { CommunitySection } from "@Areas/Destiny/FreeToPlay/Components/CommunitySection/CommunitySection";
 import { DestinyNewLightHero } from "@Areas/Destiny/DestinyNewLightHero";
 import { FreeSection } from "@Areas/Destiny/FreeToPlay/Components/FreeSection/FreeSection";
 import { FreeTripleImageSet } from "@Areas/Destiny/FreeToPlay/Components/FreeTripleImageSet/FreeTripleImageSet";
@@ -44,6 +45,7 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
       .ContentType("new_light_product_page")
       .Entry("blta481f40130ba4bb3")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .includeReference(["video_carousel"])
       .toJSON()
       .fetch()
       .then(setData);
@@ -63,6 +65,9 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
     platform_images,
     star_bg,
     sub_nav,
+    community_carousel_slides,
+    community_section,
+    video_carousel,
   } = data ?? {};
 
   const images = useCSWebpImages(
@@ -243,6 +248,16 @@ const FreeToPlay: React.FC<FreeToPlayProps> = (props) => {
         </FreeSection>
 
         <div className={styles.bgGradient} />
+
+        <div
+          id={"community"}
+          ref={(ref) => (idToElementsMapping["community"] = ref)}
+        />
+        <CommunitySection
+          data={community_section}
+          communityCarouselSlides={community_carousel_slides}
+          videoCarousel={video_carousel}
+        />
       </div>
     </div>
   );

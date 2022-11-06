@@ -12,6 +12,7 @@ export interface IReward {
 }
 
 interface RewardsPayload {
+  membershipType: BungieMembershipType;
   claimedRewards: IReward[];
   lockedBungieRewards: IReward[];
   unclaimedBungieRewards: IReward[];
@@ -21,6 +22,7 @@ interface RewardsPayload {
 
 class _RewardsDataStore extends DataStore<RewardsPayload> {
   public static readonly InitialState: RewardsPayload = {
+    membershipType: BungieMembershipType.None,
     claimedRewards: [],
     lockedBungieRewards: [],
     unclaimedBungieRewards: [],
@@ -42,7 +44,7 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
         ? await Platform.TokensService.GetBungieRewardsForUser(membershipId)
         : await Platform.TokensService.GetBungieRewardsList();
 
-      return this.parseRewards(rewards);
+      return this.parseRewards(rewards, BungieMembershipType.None);
     },
     getPlatformRewardsList: async (
       state,
@@ -55,13 +57,14 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
         membershipType
       );
 
-      return this.parseRewards(rewards);
+      return this.parseRewards(rewards, membershipType);
     },
   });
 
-  private parseRewards(rewards: {
-    [p: string]: Tokens.BungieRewardDisplay;
-  }): RewardsPayload {
+  private parseRewards(
+    rewards: { [p: string]: Tokens.BungieRewardDisplay },
+    membershipType: BungieMembershipType
+  ): RewardsPayload {
     const _claimedRewards: IReward[] = [];
     const _lockedBungieRewards: IReward[] = [];
     const _unclaimedBungieRewards: IReward[] = [];
@@ -111,6 +114,7 @@ class _RewardsDataStore extends DataStore<RewardsPayload> {
     });
 
     return {
+      membershipType: membershipType,
       claimedRewards: _claimedRewards,
       lockedBungieRewards: _lockedBungieRewards,
       unclaimedBungieRewards: _unclaimedBungieRewards,

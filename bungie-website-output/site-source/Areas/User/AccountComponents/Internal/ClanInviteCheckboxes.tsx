@@ -34,11 +34,11 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
 
         return membershipArray;
       })
-      .then((mts) => {
+      .then((mtypes) => {
         const promises: Promise<boolean>[] = [];
 
-        mts.forEach((mt) =>
-          promises.push(Platform.GroupV2Service.GetUserClanInviteSetting(mt))
+        mtypes.forEach((mtype) =>
+          promises.push(Platform.GroupV2Service.GetUserClanInviteSetting(mtype))
         );
 
         Promise.all(promises)
@@ -48,7 +48,7 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
 
             const clanSettings: { [p: string]: boolean } = {};
 
-            values.forEach((bool, i) => (clanSettings[mts[i]] = bool));
+            values.forEach((bool, i) => (clanSettings[mtypes[i]] = bool));
 
             ClanInviteDataStore.actions.updateInitialSettings(clanSettings);
             ClanInviteDataStore.actions.updateCurrentSettings(clanSettings);
@@ -61,25 +61,25 @@ export const ClanInviteCheckboxes: React.FC<ClanInviteCheckboxesProps> = (
 
   return (
     <div className={classNames(styles.clanInvites, styles.twoLine)}>
-      {memberships.map((mt, i) => {
+      {memberships.map((mtype, i) => {
         return (
           <div className={styles.checkbox} key={i}>
             <FormikCheckbox
-              name={clanInviteData?.clanInviteSettings?.[mt]?.toString()}
+              name={clanInviteData?.clanInviteSettings?.[mtype]?.toString()}
               label={`${Localizer.Format(
                 Localizer.Clans.AllowClanInvitationsFor,
                 {
                   platform:
                     Localizer.Platforms[
-                      EnumUtils.getStringValue(mt, BungieMembershipType)
+                      EnumUtils.getStringValue(mtype, BungieMembershipType)
                     ],
                 }
               )}`}
-              checked={clanInviteData?.clanInviteSettings?.[mt]}
-              value={clanInviteData?.clanInviteSettings?.[mt]?.toString()}
+              checked={clanInviteData?.clanInviteSettings?.[mtype]}
+              value={clanInviteData?.clanInviteSettings?.[mtype]?.toString()}
               onChange={(e) => {
                 const newSettings = { ...clanInviteData?.clanInviteSettings };
-                newSettings[mt] = e.currentTarget.value === "false";
+                newSettings[mtype] = e.currentTarget.value === "false";
                 ClanInviteDataStore.actions.updateCurrentSettings(newSettings);
               }}
               classes={{ input: styles.input, labelAndCheckbox: styles.label }}

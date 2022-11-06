@@ -3,7 +3,7 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import classNames from "classnames";
 import { Field, FormikProps, FormikValues } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ConvertToPlatformError } from "../../../../Platform/ApiIntermediary";
 import { Platform, User } from "../../../../Platform/BnetPlatform.TSClient";
 import { Modal } from "../../../../UI/UIKit/Controls/Modal/Modal";
@@ -11,6 +11,7 @@ import { SpinnerContainer } from "../../../../UI/UIKit/Controls/Spinner";
 import { GridCol } from "../../../../UI/UIKit/Layout/Grid/Grid";
 import styles from "../IdentitySettings.module.scss";
 import { IdentityPagination } from "./IdentityPagination";
+import { ViewerPermissionContext } from "@Areas/User/Account";
 
 interface IAvatarArrayValue {
   id: number;
@@ -27,6 +28,9 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
   const avatarsPerPage = 48;
   const [avatarOffset, setAvatarOffset] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
+    ViewerPermissionContext
+  );
 
   const handleAvatarPageChange = (pageNumber: { selected: number }) => {
     const newOffset = Math.ceil(pageNumber.selected * avatarsPerPage);
@@ -35,7 +39,14 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
 
   const loadAvatars = () => {
     setLoading(true);
-    Platform.UserService.GetAvailableAvatars()
+
+    //admins can only see admin avatars for themselves not other admins
+    const promise =
+      isAdmin && isSelf
+        ? Platform.UserService.GetAvailableAvatarsAdmin(user?.membershipId)
+        : Platform.UserService.GetAvailableAvatars();
+
+    promise
       .then((data) => {
         // We want to show the newest avatars first, the data comes in with oldest first
 

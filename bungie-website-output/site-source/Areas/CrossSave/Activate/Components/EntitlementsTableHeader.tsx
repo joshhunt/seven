@@ -9,7 +9,7 @@ import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
-import { SiStadia } from "react-icons/all";
+import { SiEpicgames, SiStadia } from "react-icons/si";
 import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
 import { PlatformStatus } from "./EntitlementsTable";
 import styles from "./EntitlementsTable.module.scss";
@@ -77,6 +77,14 @@ export const EntitlementsTableHeader: React.FC<EntitlementsTableHeaderProps> = (
           <th className={styles[platformStatus]} key={key}>
             <FaSteam />
             {crosssaveLoc.SteamHeader} {statusString}
+          </th>
+        );
+
+      case BungieMembershipType.TigerEgs:
+        return (
+          <th className={styles[platformStatus]} key={key}>
+            <SiEpicgames />
+            {crosssaveLoc.EgsHeader} {statusString}
           </th>
         );
 

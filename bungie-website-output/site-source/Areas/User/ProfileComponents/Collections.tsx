@@ -1,6 +1,7 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
+import { EnumUtils } from "@Utilities/EnumUtils";
 import styles from "./miniblock.module.scss";
 import {
   D2DatabaseComponentProps,
@@ -91,7 +92,13 @@ const Collections: React.FC<CollectionsProps> = (props) => {
 
   return (
     <Anchor
-      url={RouteHelper.Collections(props.membershipId, props.membershipType)}
+      url={RouteHelper.NewCollections({
+        mid: props.membershipId,
+        mtype: EnumUtils.getNumberValue(
+          props.membershipType,
+          BungieMembershipType
+        ).toString(),
+      })}
       className={classNames(styles.mainContainer, styles.collectionsContainer)}
     >
       <h4>{profileLoc.Collections}</h4>

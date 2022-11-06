@@ -141,7 +141,7 @@ export const EntitlementsTable: React.FC<EntitlementsTableProps> = (props) => {
     platformStatus: PlatformStatus
   ) => {
     const key = `${EnumUtils.getNumberValue(
-      BungieMembershipType.TigerXbox,
+      membershipType,
       BungieMembershipType
     )}${EnumUtils.getStringValue(gameVersion, DestinyGameVersions)}`;
 
@@ -196,6 +196,10 @@ export const EntitlementsTable: React.FC<EntitlementsTableProps> = (props) => {
           <tr>
             <th scope="row">{crosssaveLoc.TheWitchQueenHeader}</th>
             {entitlementRow(DestinyGameVersions.TheWitchQueen)}
+          </tr>
+          <tr>
+            <th scope="row">{crosssaveLoc.LightfallHeader}</th>
+            {entitlementRow(DestinyGameVersions.Lightfall)}
           </tr>
         </tbody>
       </table>

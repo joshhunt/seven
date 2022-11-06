@@ -1,6 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
+import { NewsMigrator } from "@Areas/Admin/NewsMigrator";
 import { Report } from "@Areas/Admin/Report";
 import Reports from "@Areas/Admin/Reports";
 import { RouteDefs } from "@Routes/RouteDefs";
@@ -25,11 +26,14 @@ export default class AdminArea extends React.Component<
   public render() {
     const reportsPath = RouteDefs.Areas.Admin.getAction("Reports").path;
     const reportPath = RouteDefs.Areas.Admin.getAction("Report").path;
+    const newsMigrationPath = RouteDefs.Areas.Admin.getAction("MigrateNews")
+      .path;
 
     return (
       <SwitchWithErrors>
         <Route path={reportsPath} component={Reports} />
         <Route path={reportPath} component={Report} />
+        <Route path={newsMigrationPath} component={NewsMigrator} />
       </SwitchWithErrors>
     );
   }

@@ -85,6 +85,8 @@ export declare namespace User {
     cachedBungieGlobalDisplayName: string;
 
     cachedBungieGlobalDisplayNameCode?: number;
+
+    egsDisplayName: string;
   }
 
   export interface UserToUserContext {
@@ -367,6 +369,8 @@ export declare namespace User {
 
     stadiaBanExpireDate?: string;
 
+    epicBanExpireDate?: string;
+
     isMsgBanned: boolean;
 
     bnetMessageBanExpireDate?: string;
@@ -382,6 +386,8 @@ export declare namespace User {
     steamMessageBanExpireDate?: string;
 
     stadiaMessageBanExpireDate?: string;
+
+    epicMessageBanExpireDate?: string;
 
     isGroupWallBanned: boolean;
 
@@ -399,6 +405,8 @@ export declare namespace User {
 
     stadiaGroupWallBanExpireDate?: string;
 
+    epicGroupWallBanExpireDate?: string;
+
     isFireteamBanned: boolean;
 
     psnFireteamBanExpireDate?: string;
@@ -410,6 +418,8 @@ export declare namespace User {
     steamFireteamBanExpireDate?: string;
 
     stadiaFireteamBanExpireDate?: string;
+
+    epicFireteamBanExpireDate?: string;
   }
 
   export interface ExactSearchRequest {
@@ -970,32 +980,6 @@ export declare namespace Applications {
     errorDescription: string;
   }
 
-  export interface ZendeskApiCreateUserResponse {
-    User: Applications.ZendeskApiUser;
-
-    Error: string;
-
-    Description: string;
-  }
-
-  export interface ZendeskApiUser {
-    ZenId?: string;
-
-    DisplayName: string;
-
-    Email: string;
-
-    ExternalId: string;
-
-    IsVerified: boolean;
-
-    UserFields: Applications.ZendeskApiUserFields;
-  }
-
-  export interface ZendeskApiUserFields {
-    UserProfileUrl: string;
-  }
-
   export interface ApplicationSummary {
     /**
 		Unique ID assigned to the application
@@ -1312,6 +1296,8 @@ export declare namespace Contract {
 
     twitchDisplayName: string;
 
+    egsDisplayName: string;
+
     userAcls: Globals.AclEnum[];
 
     showGamertagPublic: boolean;
@@ -1327,6 +1313,8 @@ export declare namespace Contract {
     showStadiaPublic: boolean;
 
     showTwitchPublic: boolean;
+
+    showEgsPublic: boolean;
 
     publicCredentialTypes: Globals.BungieCredentialType[];
 
@@ -1446,6 +1434,8 @@ export declare namespace Contract {
     showStadiaDisplayNamePublic?: boolean;
 
     showTwitchDisplayNamePublic?: boolean;
+
+    showEgsDisplayNamePublic?: boolean;
 
     adultMode?: boolean;
 
@@ -6000,6 +5990,22 @@ export declare namespace Tokens {
     ApplyDate?: string;
   }
 
+  export interface PartnerRewardHistoryResponse {
+    PartnerOffers: Tokens.PartnerOfferSkuHistoryResponse[];
+
+    TwitchDrops: Tokens.TwitchDropHistoryResponse[];
+  }
+
+  export interface TwitchDropHistoryResponse {
+    Title: string;
+
+    Description: string;
+
+    CreatedAt?: string;
+
+    ClaimState?: Globals.DropStateEnum;
+  }
+
   export interface BungieRewardDisplay {
     UserRewardAvailabilityModel: Tokens.UserRewardAvailabilityModel;
 
@@ -8532,6 +8538,8 @@ export declare namespace Definitions {
     /**
 		The UI style applied to the objective.  It's an enum, take a look at DestinyUnlockValueUIStyle for details
 		of the possible styles.  Use this info as you wish to customize your UI.
+		
+		DEPRECATED: This is no longer populated by Destiny 2 game content. Please use inProgressValueStyle and completedValueStyle instead.
 		*/
     valueStyle: Globals.DestinyUnlockValueUIStyle;
 
@@ -13379,10 +13387,10 @@ export declare namespace Quests {
     /**
 		If progress has been made, and the progress can be measured numerically, this will be the value of that progress.
 		You can compare it to the DestinyObjectiveDefinition.completionValue property for current vs. upper bounds,
-		and use DestinyObjectiveDefinition.valueStyle to determine how this should be rendered.
+		and use DestinyObjectiveDefinition.inProgressValueStyle or completedValueStyle to determine how this should be rendered.
 		Note that progress, in Destiny 2, need not be a literal numeric progression.  It could be one of a number of
-		possible values, even a Timestamp.  Always examine DestinyObjectiveDefinition.valueStyle before rendering
-		progress.
+		possible values, even a Timestamp. Always examine DestinyObjectiveDefinition.inProgressValueStyle 
+		or completedValueStyle before rendering progress.
 		*/
     progress?: number;
 
@@ -19809,20 +19817,20 @@ class UserServiceInternal {
     );
 
   /**
-   * Creates a support portal user.
+   * Generates and returns a url that that caller can redirect to help.bungie.net as an authenticated user.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
-  public static CreateOrUpdateSupportTicketInfo = (
+  public static ZendeskHelpAuthenticate = (
     optionalQueryAppend?: string,
     clientState?: any
-  ): Promise<Applications.ZendeskApiCreateUserResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/CreateOrUpdateSupportTicketInfo/`,
+  ): Promise<string> =>
+    ApiIntermediary.doGetRequest(
+      `/User/ZendeskHelpAuthenticate/`,
       [],
       optionalQueryAppend,
       "User",
-      "CreateOrUpdateSupportTicketInfo",
+      "ZendeskHelpAuthenticate",
       undefined,
       clientState
     );
@@ -25499,6 +25507,25 @@ class TokensServiceInternal {
     );
 
   /**
+   * Twitch Drops self-repair function - scans twitch for drops not marked as fulfilled and resyncs them.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ForceDropsRepair = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/Tokens/Partner/ForceDropsRepair/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "ForceDropsRepair",
+      undefined,
+      clientState
+    );
+
+  /**
    * Claim a partner offer as the authenticated user.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -25564,6 +25591,31 @@ class TokensServiceInternal {
       optionalQueryAppend,
       "Tokens",
       "GetPartnerOfferSkuHistory",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns the partner rewards history of the targeted user, both partner offers and Twitch drops.
+   * @param targetBnetMembershipId The bungie.net user to return reward history for.
+   * @param partnerApplicationId The partner application identifier.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPartnerRewardHistory = (
+    targetBnetMembershipId: string,
+    partnerApplicationId: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Tokens.PartnerRewardHistoryResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Tokens/Partner/History/${e(targetBnetMembershipId)}/Application/${e(
+        partnerApplicationId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "GetPartnerRewardHistory",
       undefined,
       clientState
     );

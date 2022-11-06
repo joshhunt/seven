@@ -310,10 +310,7 @@ export class UserUtils {
   public static standardizeBungieGlobalCode = (
     bungieGlobalCode: number
   ): string => {
-    const splitString = [...bungieGlobalCode.toString()];
-    const numberNeeded = 4 - splitString.length;
-
-    return Array(numberNeeded).fill("0").concat(splitString).join("");
+    return bungieGlobalCode.toString().padStart(4, "0");
   };
 
   /** Returns the logged in user's email */
@@ -353,6 +350,8 @@ export class UserUtils {
         return Globals.BungieCredentialType.SteamId;
       case Globals.BungieMembershipType.TigerStadia:
         return Globals.BungieCredentialType.StadiaId;
+      case Globals.BungieMembershipType.TigerEgs:
+        return Globals.BungieCredentialType.EgsId;
       default:
         throw new DetailedError(
           "Invalid membership type",
@@ -381,6 +380,8 @@ export class UserUtils {
         return Globals.BungieMembershipType.TigerSteam;
       case Globals.BungieCredentialType.StadiaId:
         return Globals.BungieMembershipType.TigerStadia;
+      case Globals.BungieCredentialType.EgsId:
+        return Globals.BungieMembershipType.TigerEgs;
       default:
         throw new DetailedError(
           "Invalid credential type",
@@ -403,6 +404,8 @@ export class UserUtils {
         return Globals.BungieCredentialType.Psnid;
       case "steam":
         return Globals.BungieCredentialType.SteamId;
+      case "egs":
+        return Globals.BungieCredentialType.EgsId;
       case "stadia":
         return Globals.BungieCredentialType.StadiaId;
       case "twitch":
@@ -426,6 +429,8 @@ export class UserUtils {
         return Globals.PlatformFriendType.PSN;
       case Globals.BungieCredentialType.Xuid:
         return Globals.PlatformFriendType.Xbox;
+      case Globals.BungieCredentialType.EgsId:
+        return Globals.PlatformFriendType.Egs;
       default:
         throw new DetailedError(
           "Invalid credential type",
@@ -448,6 +453,8 @@ export class UserUtils {
         return Globals.BungieMembershipType.TigerPsn;
       case Globals.PlatformFriendType.Xbox:
         return Globals.BungieMembershipType.TigerXbox;
+      case Globals.PlatformFriendType.Egs:
+        return Globals.BungieMembershipType.TigerEgs;
       default:
         throw new DetailedError(
           "Invalid platformFriend type",
@@ -470,6 +477,8 @@ export class UserUtils {
         return Globals.BungieCredentialType.Psnid;
       case Globals.PlatformFriendType.Xbox:
         return Globals.BungieCredentialType.Xuid;
+      case Globals.PlatformFriendType.Egs:
+        return Globals.BungieCredentialType.EgsId;
       default:
         return Globals.BungieCredentialType.None;
     }
@@ -494,6 +503,8 @@ export class UserUtils {
         return ConfigUtils.SystemStatus("SteamIdAuth");
       case Globals.BungieMembershipType.TigerStadia:
         return ConfigUtils.SystemStatus("StadiaIdAuth");
+      case Globals.BungieMembershipType.TigerEgs:
+        return ConfigUtils.SystemStatus("EpicIdAuth");
       default:
         throw new DetailedError(
           "Invalid membership type",
@@ -603,5 +614,17 @@ export class UserUtils {
       },
       {} as Record<string, string>
     );
+  }
+
+  public static getUsersUniqueClanMemberships(
+    clans: GroupsV2.GroupMembership[]
+  ) {
+    const uniqueClans = clans?.filter(
+      (c, index, clanarray) =>
+        clanarray.findIndex((v) => v.group.groupId === c.group.groupId) ===
+        index
+    );
+
+    return uniqueClans ?? clans ?? [];
   }
 }

@@ -8,6 +8,7 @@ import {
 import { DestinyDefinitions } from "@Definitions";
 import { BungieMembershipType } from "@Enum";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import styles from "./miniblock.module.scss";
 import { Models, Responses } from "@Platform";
 import React from "react";
@@ -82,7 +83,13 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
 
   return (
     <Anchor
-      url={RouteHelper.Triumphs(props.membershipId, props.membershipType)}
+      url={RouteHelper.NewTriumphs({
+        mid: props.membershipId,
+        mtype: EnumUtils.getNumberValue(
+          props.membershipType,
+          BungieMembershipType
+        ).toString(),
+      })}
       className={classNames(styles.mainContainer, styles.triumphsContainer)}
     >
       <h4>{profileLoc.Triumphs}</h4>

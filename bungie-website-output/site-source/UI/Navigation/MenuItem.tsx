@@ -2,6 +2,7 @@ import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
+import { GroupsV2 } from "@Platform";
 import {
   IMenuParentItem,
   INavigationLinkItem,
@@ -225,20 +226,22 @@ const MenuLink = (props: ILinkProps) => {
   }
 
   if (UserUtils.isAuthenticated(GlobalStateDataStore.state)) {
+    const uniqueLoggedInClans = UserUtils.getUsersUniqueClanMemberships(
+      GlobalStateDataStore.state.loggedInUserClans?.results
+    );
+
     if (
       link.StringKey === "TopNavClan" &&
-      GlobalStateDataStore.state.loggedInUserClans &&
-      GlobalStateDataStore.state.loggedInUserClans.results.length > 1
+      uniqueLoggedInClans &&
+      uniqueLoggedInClans.length > 1
     ) {
-      const loggedInClans =
-        GlobalStateDataStore.state.loggedInUserClans.results;
       const clansByActiveCrossSaveFirst = [
-        ...loggedInClans.filter(
+        ...uniqueLoggedInClans.filter(
           (r) =>
             r.member.destinyUserInfo.crossSaveOverride ===
             r.member.destinyUserInfo.membershipType
         ),
-        ...loggedInClans.filter(
+        ...uniqueLoggedInClans.filter(
           (r) =>
             r.member.destinyUserInfo.crossSaveOverride !==
             r.member.destinyUserInfo.membershipType

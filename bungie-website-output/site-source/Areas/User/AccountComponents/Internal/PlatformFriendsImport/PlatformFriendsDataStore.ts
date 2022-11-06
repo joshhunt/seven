@@ -43,6 +43,12 @@ class _PlatformFriendsDataStore extends DataStore<
       isLoaded: false,
       totalPages: 10,
     },
+    {
+      platform: PlatformFriendType.Egs,
+      friendsResponse: null,
+      isLoaded: false,
+      totalPages: 10,
+    },
   ];
 
   public static Instance = new _PlatformFriendsDataStore({

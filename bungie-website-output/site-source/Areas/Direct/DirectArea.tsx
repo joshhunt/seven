@@ -1,5 +1,6 @@
 import { RouteDefs } from "@Routes/RouteDefs";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
 import { Route } from "react-router-dom";
 import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
@@ -8,15 +9,17 @@ interface IDirectRouterProps {}
 
 class DirectArea extends React.Component<IDirectRouterProps> {
   public render() {
+    const directVideoComponent = ConfigUtils.SystemStatus("DirectVideoCS")
+      ? () =>
+          import("./DirectVideoCS" /* webpackChunkName: "Direct-Video-CS" */)
+      : () => import("./DirectVideo" /* webpackChunkName: "Direct-Video" */);
+
     return (
       <React.Fragment>
         <AnimatedRouter>
           <Route
             path={RouteDefs.Areas.Direct.getAction("Video").path}
-            component={createAsyncComponent(
-              () =>
-                import("./DirectVideo" /* webpackChunkName: "Direct-Video" */)
-            )}
+            component={createAsyncComponent(directVideoComponent)}
           />
 
           <Route

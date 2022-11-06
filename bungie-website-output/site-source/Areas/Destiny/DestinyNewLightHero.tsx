@@ -7,6 +7,7 @@ import {
 } from "@Areas/Destiny/DestinyNewLight";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { Localizer } from "@bungie/localization";
 import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
 import React from "react";
 import {
@@ -25,7 +26,7 @@ export const DestinyNewLightHero: React.FC<DestinyNewLightHeroProps> = (
 ) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { bg, btn_text, logo } = props.data ?? {};
+  const { bg, btn_text, logo, subtitle } = props.data ?? {};
 
   return (
     <div
@@ -40,6 +41,8 @@ export const DestinyNewLightHero: React.FC<DestinyNewLightHeroProps> = (
     >
       <div className={styles.overlay} />
       <div className={styles.content}>
+        <br />
+        <div className={styles.subtitle}>{subtitle}</div>
         <img src={logo?.url} className={styles.logo} />
         <br />
         <FreeToPlayBuyBtn btn_text={btn_text} />

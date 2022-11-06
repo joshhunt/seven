@@ -5,30 +5,32 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
 import { DataStore } from "@bungie/datastore";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
+  GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,
 } from "@UI/Destiny/DestinyAccountWrapper";
+import DestinyCollectibleDetailItemContent from "@UI/Destiny/DestinyCollectibleDetailItemContent";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
+import React, { ReactNode, useEffect, useState } from "react";
 import seasonItemModalStyles from "./Progress/SeasonItemModal.module.scss";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import * as React from "react";
 import SeasonCalendar from "./Progress/SeasonCalendar";
 import SeasonHeader from "./Progress/SeasonHeader";
 import SeasonPassRewardProgression from "./Progress/SeasonPassRewardProgression";
@@ -41,28 +43,8 @@ export interface IClaimedReward {
   itemHash: number;
 }
 
-// Required props
-interface ISeasonsUtilityPageProps
-  extends GlobalStateComponentProps<"loggedInUser" | "crossSavePairingStatus"> {
+interface ISeasonsUtilityPageProps {
   seasonHash: number;
-}
-
-// Default props - these will have values set in SeasonsUtilityPage.defaultProps
-interface DefaultProps {}
-
-type Props = ISeasonsUtilityPageProps;
-
-interface ISeasonsUtilityPageState {
-  destinyMembershipData: DestinyMembershipDataStorePayload;
-  itemDetailCanClaim: boolean;
-  itemDetailModalOpen: boolean;
-  itemDetailLoading: boolean;
-  itemDetailElement: Element;
-  itemDetailHash: number;
-  itemDetailRewardIndex: number;
-  itemDetailClaiming: boolean;
-  itemClaimed: IClaimedReward;
-  characterProgressions: Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent;
 }
 
 /**
@@ -71,70 +53,38 @@ interface ISeasonsUtilityPageState {
  * @param {ISeasonsUtilityPageProps} props
  * @returns
  */
-class SeasonsUtilityPage extends React.Component<
-  Props,
-  ISeasonsUtilityPageState
-> {
-  private readonly destroy: DestroyCallback[] = [];
+const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
+  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const destinyMembership = useDataStore(SeasonsDestinyMembershipDataStore);
 
-  private static readonly InitialState: ISeasonsUtilityPageState = {
-    destinyMembershipData: SeasonsDestinyMembershipDataStore.state,
-    itemDetailCanClaim: false,
-    itemDetailModalOpen: false,
-    itemDetailLoading: false,
-    itemDetailElement: null,
-    itemDetailRewardIndex: 0,
-    itemDetailHash: 0,
-    itemDetailClaiming: false,
-    itemClaimed: {
-      itemHash: 0,
-      rewardIndex: 0,
-    },
-    characterProgressions: null,
-  };
+  const [itemDetailCanClaim, setItemDetailCanClaim] = useState(false);
+  const [itemDetailModalOpen, setItemDetailModalOpen] = useState(false);
+  const [itemDetailLoading, setItemDetailLoading] = useState(false);
+  const [itemDetailElement, setItemDetailElement] = useState<ReactNode>();
+  const [itemDetailRewardIndex, setItemDetailRewardIndex] = useState(0);
+  const [itemDetailHash, setItemDetailHash] = useState(0);
+  const [itemDetailClaiming, setItemDetailClaiming] = useState(false);
+  const [itemClaimed, setItemClaimed] = useState<IClaimedReward>({
+    itemHash: 0,
+    rewardIndex: 0,
+  });
+  const [characterProgressions, setCharacterProgressions] = useState<
+    Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
+  >();
 
-  constructor(props: Props) {
-    super(props);
-
-    this.state = SeasonsUtilityPage.InitialState;
-  }
-
-  public componentDidMount() {
-    this.destroy.push(
-      SeasonsDestinyMembershipDataStore.observe((destinyMembershipData) => {
-        this.setState({
-          destinyMembershipData,
-        });
-      })
-    );
-
+  useEffect(() => {
     SeasonsDestinyMembershipDataStore.actions.loadUserData();
-  }
+  }, []);
 
-  public componentDidUpdate(
-    prevProps: Props,
-    prevState: ISeasonsUtilityPageState
-  ) {
-    const wasAuthed = UserUtils.isAuthenticated(prevProps.globalState);
-    const isNowAuthed = UserUtils.isAuthenticated(this.props.globalState);
-
-    if (
-      this.state.destinyMembershipData?.selectedMembership &&
-      prevState.destinyMembershipData?.selectedMembership?.membershipId !==
-        this.state.destinyMembershipData?.selectedMembership?.membershipId
-    ) {
-      const {
-        membershipId,
-        membershipType,
-      } = this.state.destinyMembershipData?.selectedMembership;
-
-      Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
-        DestinyComponentType.CharacterProgressions,
-      ])
+  useEffect(() => {
+    if (destinyMembership?.selectedMembership) {
+      Platform.Destiny2Service.GetProfile(
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
+        [DestinyComponentType.CharacterProgressions]
+      )
         .then((data) => {
-          this.setState({
-            characterProgressions: data?.characterProgressions,
-          });
+          setCharacterProgressions(data?.characterProgressions);
         })
         .catch(ConvertToPlatformError)
         .catch((e: PlatformError) => {
@@ -145,282 +95,232 @@ class SeasonsUtilityPage extends React.Component<
           }
         });
     }
+  }, [globalState.loggedInUser, destinyMembership?.selectedMembership]);
 
-    // if user logs in then need to load everything
-    if (!wasAuthed && isNowAuthed) {
-      SeasonsDestinyMembershipDataStore.actions.loadUserData(undefined, true);
-    }
+  const isAnonymous = !UserUtils.isAuthenticated(globalState);
 
-    //user logs out
-    if (wasAuthed && !isNowAuthed) {
-      this.setState(SeasonsUtilityPage.InitialState);
-    }
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.destroy);
-  }
-
-  public render() {
-    const isAnonymous = !UserUtils.isAuthenticated(this.props.globalState);
-
-    if (
-      ConfigUtils.SystemStatus("AccountServices") &&
-      !isAnonymous &&
-      !this.state.destinyMembershipData?.loaded
-    ) {
-      return (
-        <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
-      );
-    }
-
-    const { characterProgressions } = this.state;
-
-    const {
-      loaded,
-      membershipData,
-      memberships,
-      characters,
-      selectedCharacter,
-      selectedMembership,
-      isCrossSaved,
-    } = this.state.destinyMembershipData;
-
-    const charactersLoaded =
-      !isAnonymous && loaded && characters && characterProgressions;
-
-    const forCharacter =
-      selectedCharacter?.characterId !== ""
-        ? characterProgressions?.data[selectedCharacter?.characterId]
-        : null;
-
-    const seasonHash = this.props.seasonHash;
-
-    const isCurrentSeason =
-      seasonHash ===
-      this.props.globalState.coreSettings.destiny2CoreSettings
-        .currentSeasonHash;
-
+  if (
+    ConfigUtils.SystemStatus("AccountServices") &&
+    !isAnonymous &&
+    !destinyMembership?.loaded
+  ) {
     return (
-      <React.Fragment>
-        {this.state.itemDetailElement !== null && (
-          <Modal
-            open={this.state.itemDetailModalOpen}
-            className={seasonItemModalStyles.seasonItemModal}
-            contentClassName={seasonItemModalStyles.modalContent}
-            onClose={this.closeItemDetailModal}
-          >
-            <div
-              className={seasonItemModalStyles.itemModal}
-              dangerouslySetInnerHTML={sanitizeHTML(
-                this.state.itemDetailElement
-                  ?.getElementsByTagName("template")
-                  ?.item(0)?.innerHTML
-              )}
-            />
-            {charactersLoaded &&
-              !isCurrentSeason &&
-              this.state.itemDetailCanClaim && (
-                <div className={styles.buttonHolder}>
-                  <Button
-                    buttonType={"gold"}
-                    onClick={() => this.claimFromModal()}
-                    disabled={this.state.itemDetailClaiming}
-                    loading={this.state.itemDetailClaiming}
-                  >
-                    {Localizer.Seasons.Claim}
-                  </Button>
-                </div>
-              )}
-          </Modal>
-        )}
-
-        <Grid>
-          <GridCol cols={12}>
-            <SystemDisabledHandler systems={["Destiny2"]}>
-              {UserUtils.isAuthenticated(this.props.globalState) &&
-                memberships !== null &&
-                charactersLoaded && (
-                  <SeasonsPageNav
-                    characterId={selectedCharacter?.characterId}
-                    seasonHash={seasonHash}
-                    characterProgressions={forCharacter?.progressions}
-                    platformProgression={characterProgressions}
-                    membershipType={selectedMembership?.membershipType}
-                  />
-                )}
-            </SystemDisabledHandler>
-            {UserUtils.isAuthenticated(this.props.globalState) &&
-              (memberships === null || !charactersLoaded) && (
-                <SeasonsPageNav seasonHash={seasonHash} />
-              )}
-            <div className={styles.seasonInfoContainer}>
-              <SeasonHeader seasonHash={seasonHash} />
-
-              {UserUtils.isAuthenticated(this.props.globalState) &&
-                memberships === null && (
-                  <Button
-                    buttonType={"gold"}
-                    url={RouteHelper.ProfileSettings(
-                      this.props.globalState?.loggedInUser?.user?.membershipId,
-                      "Accounts"
-                    )}
-                  >
-                    {Localizer.Seasons.LinkADestinyAccountTo}
-                  </Button>
-                )}
-
-              {charactersLoaded && (
-                <DestinyAccountWrapper
-                  membershipDataStore={SeasonsDestinyMembershipDataStore}
-                >
-                  {({
-                    platformSelector,
-                    characterSelector,
-                  }: IAccountFeatures) => (
-                    <div className={styles.dropdownFlexWrapper}>
-                      {platformSelector}
-                      {characterSelector}
-                    </div>
-                  )}
-                </DestinyAccountWrapper>
-              )}
-            </div>
-
-            <SeasonPassRewardProgression
-              seasonHash={seasonHash}
-              characterClassHash={
-                charactersLoaded
-                  ? characters[selectedCharacter?.characterId]?.classHash
-                  : 0
-              }
-              characterProgressions={
-                charactersLoaded ? forCharacter?.progressions : undefined
-              }
-              handleClaimingClick={(itemHash, rewardIndex, canClaim) =>
-                this.openItemDetailModal(itemHash, rewardIndex, canClaim)
-              }
-              claimedReward={this.state.itemClaimed}
-            />
-
-            {charactersLoaded && !isCurrentSeason && (
-              <RedeemSeasonRewards
-                characterId={selectedCharacter?.characterId}
-                seasonHash={seasonHash}
-                platformProgressions={characterProgressions}
-                characterProgressions={forCharacter?.progressions}
-                membershipType={selectedMembership?.membershipType}
-                handleClick={(itemHash, rewardIndex, canClaim) =>
-                  this.openItemDetailModal(itemHash, rewardIndex, canClaim)
-                }
-                itemClaimed={(itemHash: number, rewardIndex: number) =>
-                  this.markItemClaimed(itemHash, rewardIndex)
-                }
-                claimedReward={this.state.itemClaimed}
-              />
-            )}
-          </GridCol>
-        </Grid>
-        {isCurrentSeason && <SeasonCalendar seasonHash={seasonHash} />}
-      </React.Fragment>
+      <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
     );
   }
 
-  private async openItemDetailModal(
+  const charactersLoaded =
+    !isAnonymous &&
+    destinyMembership?.loaded &&
+    destinyMembership?.characters &&
+    characterProgressions;
+
+  const forCharacter =
+    destinyMembership?.selectedCharacter?.characterId !== ""
+      ? characterProgressions?.data[
+          destinyMembership?.selectedCharacter?.characterId
+        ]
+      : null;
+
+  const seasonHash = props.seasonHash;
+
+  const isCurrentSeason =
+    seasonHash ===
+    globalState.coreSettings.destiny2CoreSettings.currentSeasonHash;
+
+  const openItemDetailModal = (
     itemHash: number,
     rewardIndex: number,
     canClaim: boolean
-  ) {
-    //add loading spinner
-    this.setState({
-      itemDetailHash: itemHash,
-      itemDetailLoading: true,
-      itemDetailModalOpen: true,
-      itemDetailRewardIndex: rewardIndex,
-      itemDetailCanClaim: canClaim,
-    });
+  ) => {
+    setItemDetailHash(itemHash);
+    setItemDetailModalOpen(true);
+    setItemDetailRewardIndex(rewardIndex);
+    setItemDetailCanClaim(canClaim);
 
-    const response = await fetch(
-      `/${Localizer.CurrentCultureName}/Gear/ItemSummary/${itemHash}`
+    setItemDetailLoading(false);
+    setItemDetailElement(
+      <DestinyCollectibleDetailItemContent
+        itemHash={itemHash}
+        membershipType={destinyMembership?.selectedMembership?.membershipType}
+        membershipId={destinyMembership?.selectedMembership?.membershipId}
+      />
     );
 
-    const myJson = await response.text();
+    return {};
+  };
 
-    const doc = new DOMParser().parseFromString(myJson, "text/html");
-
-    this.setState({
-      itemDetailLoading: false,
-      itemDetailElement: doc.getElementById("gear-item-summary-container"),
-    });
-  }
-
-  private claimFromModal() {
-    const {
-      selectedCharacter,
-      selectedMembership,
-    } = this.state.destinyMembershipData;
-
-    if (!this.state.itemDetailClaiming) {
-      this.setState({ itemDetailClaiming: true });
+  const claimFromModal = () => {
+    if (!itemDetailClaiming) {
+      setItemDetailClaiming(true);
 
       const input: Actions.DestinyClaimSeasonPassRewardActionRequest = {
-        characterId: selectedCharacter?.characterId,
-        membershipType: selectedMembership?.membershipType,
-        rewardIndex: this.state.itemDetailRewardIndex,
-        seasonHash: this.props.seasonHash,
+        characterId: destinyMembership?.selectedCharacter?.characterId,
+        membershipType: destinyMembership?.selectedMembership?.membershipType,
+        rewardIndex: itemDetailRewardIndex,
+        seasonHash: props.seasonHash,
       };
 
       Platform.Destiny2Service.ClaimSeasonPassReward(input)
         .then(() => {
-          this.setState({
-            itemDetailClaiming: false,
-            itemDetailModalOpen: false,
-            itemClaimed: {
-              itemHash: this.state.itemDetailHash,
-              rewardIndex: this.state.itemDetailRewardIndex,
-            },
+          setItemDetailClaiming(false);
+          setItemDetailModalOpen(false);
+          setItemClaimed({
+            itemHash: itemDetailHash,
+            rewardIndex: itemDetailRewardIndex,
           });
         })
         .catch(ConvertToPlatformError)
         .catch((e: PlatformError) => {
-          this.setState({
-            itemDetailClaiming: false,
-          });
+          setItemDetailClaiming(false);
 
-          this.closeItemDetailModal();
+          closeItemDetailModal();
 
           Modal.error(e);
         });
     }
-  }
-
-  private markItemClaimed(itemHash: number, rewardIndex: number) {
-    if (
-      typeof this.state.itemClaimed === "undefined" ||
-      (typeof this.state.itemClaimed !== "undefined" &&
-        this.state.itemClaimed.rewardIndex !== rewardIndex)
-    ) {
-      this.setState({
-        itemClaimed: {
-          itemHash: itemHash,
-          rewardIndex: rewardIndex,
-        },
-      });
-    }
-  }
-
-  private readonly closeItemDetailModal = () => {
-    this.setState({
-      itemDetailModalOpen: false,
-      itemDetailElement: null,
-      itemDetailRewardIndex: 0,
-      itemDetailHash: 0,
-      itemDetailCanClaim: false,
-    });
   };
-}
 
-export default withGlobalState(SeasonsUtilityPage, [
-  "loggedInUser",
-  "crossSavePairingStatus",
-]);
+  const markItemClaimed = (itemHash: number, rewardIndex: number) => {
+    if (
+      !itemClaimed ||
+      (itemClaimed && itemClaimed.rewardIndex !== rewardIndex)
+    ) {
+      setItemClaimed({ itemHash: itemHash, rewardIndex: rewardIndex });
+    }
+  };
+
+  const closeItemDetailModal = () => {
+    setItemDetailModalOpen(false);
+    setItemDetailElement(null);
+    setItemDetailRewardIndex(0);
+    setItemDetailHash(0);
+    setItemDetailCanClaim(false);
+  };
+
+  return (
+    <>
+      {itemDetailElement && (
+        <Modal
+          open={itemDetailModalOpen}
+          className={seasonItemModalStyles.seasonItemModal}
+          contentClassName={seasonItemModalStyles.modalContent}
+          onClose={() => closeItemDetailModal()}
+        >
+          <div className={seasonItemModalStyles.itemModal}>
+            {itemDetailElement}
+          </div>
+          {charactersLoaded && !isCurrentSeason && itemDetailCanClaim && (
+            <div className={styles.buttonHolder}>
+              <Button
+                buttonType={"gold"}
+                onClick={() => claimFromModal()}
+                disabled={itemDetailClaiming}
+                loading={itemDetailClaiming}
+              >
+                {Localizer.Seasons.Claim}
+              </Button>
+            </div>
+          )}
+        </Modal>
+      )}
+
+      <Grid>
+        <GridCol cols={12}>
+          <SystemDisabledHandler systems={["Destiny2"]}>
+            {!isAnonymous &&
+              destinyMembership?.memberships &&
+              charactersLoaded && (
+                <SeasonsPageNav
+                  characterId={
+                    destinyMembership?.selectedCharacter?.characterId
+                  }
+                  seasonHash={seasonHash}
+                  characterProgressions={forCharacter?.progressions}
+                  platformProgression={characterProgressions}
+                  membershipType={
+                    destinyMembership?.selectedMembership?.membershipType
+                  }
+                />
+              )}
+          </SystemDisabledHandler>
+          {!isAnonymous &&
+            (!destinyMembership?.memberships || !charactersLoaded) && (
+              <SeasonsPageNav seasonHash={seasonHash} />
+            )}
+          <div className={styles.seasonInfoContainer}>
+            <SeasonHeader seasonHash={seasonHash} />
+
+            {!isAnonymous && !destinyMembership?.memberships && (
+              <Button
+                buttonType={"gold"}
+                url={RouteHelper.ProfileSettings(
+                  globalState?.loggedInUser?.user?.membershipId,
+                  "Accounts"
+                )}
+              >
+                {Localizer.Seasons.LinkADestinyAccountTo}
+              </Button>
+            )}
+
+            {charactersLoaded && (
+              <DestinyAccountWrapper
+                membershipDataStore={SeasonsDestinyMembershipDataStore}
+              >
+                {({
+                  platformSelector,
+                  characterSelector,
+                }: IAccountFeatures) => (
+                  <div className={styles.dropdownFlexWrapper}>
+                    {platformSelector}
+                    {characterSelector}
+                  </div>
+                )}
+              </DestinyAccountWrapper>
+            )}
+          </div>
+
+          <SeasonPassRewardProgression
+            seasonHash={seasonHash}
+            characterClassHash={
+              charactersLoaded
+                ? destinyMembership?.characters[
+                    destinyMembership?.selectedCharacter?.characterId
+                  ]?.classHash
+                : 0
+            }
+            characterProgressions={
+              charactersLoaded ? forCharacter?.progressions : undefined
+            }
+            handleClaimingClick={(itemHash, rewardIndex, canClaim) =>
+              openItemDetailModal(itemHash, rewardIndex, canClaim)
+            }
+            claimedReward={itemClaimed}
+          />
+
+          {charactersLoaded && !isCurrentSeason && (
+            <RedeemSeasonRewards
+              characterId={destinyMembership?.selectedCharacter?.characterId}
+              seasonHash={seasonHash}
+              platformProgressions={characterProgressions}
+              characterProgressions={forCharacter?.progressions}
+              membershipType={
+                destinyMembership?.selectedMembership?.membershipType
+              }
+              handleClick={(itemHash, rewardIndex, canClaim) =>
+                openItemDetailModal(itemHash, rewardIndex, canClaim)
+              }
+              itemClaimed={(itemHash: number, rewardIndex: number) =>
+                markItemClaimed(itemHash, rewardIndex)
+              }
+              claimedReward={itemClaimed}
+            />
+          )}
+        </GridCol>
+      </Grid>
+      {isCurrentSeason && <SeasonCalendar seasonHash={seasonHash} />}
+    </>
+  );
+};
+
+export default SeasonsUtilityPage;

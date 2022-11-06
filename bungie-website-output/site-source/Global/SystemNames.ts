@@ -110,5 +110,10 @@ export const SystemNames = {
   CoreUserHistories: "CoreUserHistories",
   CoreAreaGameHistory: "CoreAreaGameHistory",
   DestinyClanSearch: "DestinyClanSearch",
+  EpicIdAuth: "EpicIdAuth",
   ExactMatchClanSearchOnly: "ExactMatchClanSearchOnly",
+  CoreAreaCollections: "CoreAreaCollections",
+  CoreAreaTriumphs: "CoreAreaTriumphs",
+  FirehoseNewsMigrator: "FirehoseNewsMigrator",
+  DirectVideoCS: "DirectVideoCS",
 } as const;

@@ -20,7 +20,7 @@ import classNames from "classnames";
 import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 
 interface IDirectVideoRouterParams {
-  videoContentId: string;
+  title: string;
 }
 
 interface IDirectVideoProps
@@ -50,7 +50,7 @@ class DirectVideoInternal extends React.Component<
 
   public componentDidMount() {
     Platform.ContentService.GetContentById(
-      this.props.match.params.videoContentId,
+      this.props.match.params.title,
       Localizer.CurrentCultureName,
       false
     ).then((response) =>

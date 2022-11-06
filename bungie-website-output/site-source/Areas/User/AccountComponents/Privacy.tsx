@@ -20,7 +20,7 @@ import classNames from "classnames";
 import { Form, Formik, FormikProps, FormikValues } from "formik";
 import React, { useEffect, useState } from "react";
 import { BNetAccountPrivacy } from "@Enum";
-import { ObjectUtils } from "../../../Utilities/ObjectUtils";
+import { ObjectUtils } from "@Utilities/ObjectUtils";
 import { SaveButtonBar } from "./Internal/SaveButtonBar";
 import styles from "./Privacy.module.scss";
 import accountStyles from "../Account.module.scss";
@@ -170,7 +170,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
           {(formikProps) => {
             return (
               <Form className={styles.form}>
-                <div className={styles.section}>
+                <div>
                   <GridCol cols={2} medium={12} className={styles.sectionTitle}>
                     {Localizer.privacy.social}
                   </GridCol>
@@ -210,7 +210,7 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
                   <GridDivider cols={12} />
                 </div>
 
-                <div className={styles.section}>
+                <div>
                   <GridCol cols={2} medium={12} className={styles.sectionTitle}>
                     {Localizer.privacy.destiny}
                   </GridCol>

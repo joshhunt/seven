@@ -110,10 +110,24 @@ export const Notifications: React.FC = () => {
       settings: [
         {
           notificationType: type,
-          notifyEmail: method === NotificationMethods.EMAIL ? checked : false,
-          notifyWeb: method === NotificationMethods.WEB_ONLY ? checked : false,
+          notifyEmail:
+            method === NotificationMethods.EMAIL
+              ? checked
+              : notifications.find(
+                  (notification) => notification.type === type
+                )[NotificationMethods.EMAIL],
+          notifyWeb:
+            method === NotificationMethods.WEB_ONLY
+              ? checked
+              : notifications.find(
+                  (notification) => notification.type === type
+                )[NotificationMethods.WEB_ONLY],
           notifyMobile:
-            method === NotificationMethods.MOBILE_PUSH ? checked : false,
+            method === NotificationMethods.MOBILE_PUSH
+              ? checked
+              : notifications.find(
+                  (notification) => notification.type === type
+                )[NotificationMethods.MOBILE_PUSH],
         },
       ],
     };

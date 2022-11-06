@@ -33,6 +33,8 @@ type PmpStackedInfoThumbBlocksProps = DataReference<
     thumb?: string;
     thumbImg?: string;
   };
+  /** Reverses the alignment of the text and image for each block */
+  reverseAlignment?: boolean;
 };
 
 export const PmpStackedInfoThumbBlocks: React.FC<PmpStackedInfoThumbBlocksProps> = (
@@ -40,7 +42,7 @@ export const PmpStackedInfoThumbBlocks: React.FC<PmpStackedInfoThumbBlocksProps>
 ) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, classes } = props;
+  const { data, classes, reverseAlignment } = props;
 
   const getBlockItem = (
     item: BnetStackPmpStackedInfoThumbBlocks["info_blocks"][number]
@@ -53,7 +55,9 @@ export const PmpStackedInfoThumbBlocks: React.FC<PmpStackedInfoThumbBlocksProps>
       {data?.info_blocks?.map((block, i) => {
         const blockItem = getBlockItem(block);
 
-        const isReverseFlex = i % 2 === 0;
+        let isReverseFlex = i % 2 === 0;
+
+        reverseAlignment && (isReverseFlex = !isReverseFlex);
 
         const blockClasses = classNames(
           styles.infoThumbBlock,

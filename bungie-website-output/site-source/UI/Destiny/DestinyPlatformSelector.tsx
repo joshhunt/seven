@@ -3,9 +3,9 @@
 
 import { EnumUtils } from "@Utilities/EnumUtils";
 import * as React from "react";
-import { UserUtils } from "../../Utilities/UserUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import styles from "./DestinyPlatformSelector.module.scss";
-import { User, CrossSave, Platform } from "@Platform";
+import { User, Platform } from "@Platform";
 import { IDropdownOption, Dropdown } from "@UI/UIKit/Forms/Dropdown";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
@@ -15,7 +15,9 @@ interface IDestinyPlatformSelectorProps {
   userMembershipData: User.UserMembershipData;
   onChange: (value: string) => void;
   defaultValue: BungieMembershipType;
-  crossSavePairingStatus: CrossSave.CrossSavePairingStatus;
+  selectedValue?: BungieMembershipType;
+  isViewingOthers?: boolean;
+  showCrossSaveBanner?: boolean;
 }
 
 // Default props - these will have values set in DestinyPlatformSelector.defaultProps
@@ -43,7 +45,7 @@ export class DestinyPlatformSelector extends React.Component<
 
     this.state = {
       selectedValue: EnumUtils.getStringValue(
-        this.props.defaultValue,
+        this.props.selectedValue ?? this.props.defaultValue,
         BungieMembershipType
       ),
       credentialNameMap: null,
@@ -54,7 +56,8 @@ export class DestinyPlatformSelector extends React.Component<
 
   private readonly getSanitizedNames = () => {
     Platform.UserService.GetSanitizedPlatformDisplayNames(
-      this.props.userMembershipData.bungieNetUser.membershipId
+      this.props.userMembershipData?.bungieNetUser?.membershipId ??
+        this.props.userMembershipData?.destinyMemberships?.[0]?.membershipId
     ).then((names) =>
       this.setState({
         credentialNameMap: UserUtils.getStringKeyedMapForSanitizedCredentialNames(
@@ -65,20 +68,26 @@ export class DestinyPlatformSelector extends React.Component<
   };
 
   private readonly getLoggedInCredential = () => {
-    //update the default selected credential to the logged in credential
-    Platform.UserService.GetCurrentUserAuthContextState().then((result) => {
-      const platform = UserUtils.getMembershipTypeFromCredentialType(
-        result.AuthProvider
-      );
-
-      if (this.props.defaultValue !== platform) {
-        const platformString = EnumUtils.getStringValue(
-          platform,
-          BungieMembershipType
+    //only for non-crosssaved accounts
+    if (
+      !this.props.isViewingOthers &&
+      !this.props.userMembershipData?.primaryMembershipId
+    ) {
+      //update the default selected credential to the logged in credential
+      Platform.UserService.GetCurrentUserAuthContextState().then((result) => {
+        const platform = UserUtils.getMembershipTypeFromCredentialType(
+          result.AuthProvider
         );
-        this.onDropdownChange(platformString);
-      }
-    });
+
+        if (this.props.defaultValue !== platform) {
+          const platformString = EnumUtils.getStringValue(
+            platform,
+            BungieMembershipType
+          );
+          this.onDropdownChange(platformString);
+        }
+      });
+    }
   };
 
   public componentDidMount() {
@@ -97,61 +106,71 @@ export class DestinyPlatformSelector extends React.Component<
       this.getSanitizedNames();
     }
 
+    if (
+      nextProps.selectedValue &&
+      nextProps.selectedValue !== this.props.selectedValue
+    ) {
+      this.setState({
+        selectedValue: EnumUtils.getStringValue(
+          nextProps.selectedValue,
+          BungieMembershipType
+        ),
+      });
+    }
+
     return true;
   }
 
   public render() {
-    const primaryMembershipType =
-      this.props.crossSavePairingStatus?.primaryMembershipType ??
-      BungieMembershipType.None;
-    const crossSavePlatform =
-      this.props.userMembershipData.destinyMemberships?.find(
-        (v) => v.membershipType === primaryMembershipType
-      ) ?? null;
+    const crossSavePlatform = this.props.userMembershipData?.destinyMemberships?.find(
+      (dm) =>
+        dm.membershipId === this.props.userMembershipData?.primaryMembershipId
+    );
 
     // if cross saved only show the cross saved one
-    const platformOptions: IDropdownOption[] =
-      crossSavePlatform !== null
-        ? [
-            {
-              iconPath: crossSavePlatform.iconPath,
-              label: `${crossSavePlatform.displayName} : ${
-                Localizer.Platforms[
-                  EnumUtils.getStringValue(
-                    crossSavePlatform.membershipType,
-                    BungieMembershipType
-                  )
-                ]
-              }`,
-              value: EnumUtils.getStringValue(
-                crossSavePlatform.membershipType,
-                BungieMembershipType
-              ),
-            },
-          ]
-        : this.props.userMembershipData.destinyMemberships.map((value) => {
-            const bMembershipTypeString = EnumUtils.getStringValue(
-              value.membershipType,
+    const platformOptions: IDropdownOption[] = crossSavePlatform
+      ? [
+          {
+            iconPath: crossSavePlatform.iconPath,
+            label: `${crossSavePlatform.displayName} : ${
+              Localizer.Platforms[
+                EnumUtils.getStringValue(
+                  crossSavePlatform.membershipType,
+                  BungieMembershipType
+                )
+              ]
+            }`,
+            value: EnumUtils.getStringValue(
+              crossSavePlatform.membershipType,
               BungieMembershipType
-            );
-            const bCredentialTypeString = EnumUtils.getStringValue(
-              UserUtils.getCredentialTypeFromMembershipType(
-                value.membershipType
-              ),
-              BungieCredentialType
-            );
-            const sanitizedPlatformName = this.state.credentialNameMap?.[
-              bCredentialTypeString
-            ];
+            ),
+          },
+        ]
+      : this.props.userMembershipData.destinyMemberships.map((value) => {
+          const bMembershipTypeString = EnumUtils.getStringValue(
+            value.membershipType,
+            BungieMembershipType
+          );
+          const bCredentialTypeString = EnumUtils.getStringValue(
+            UserUtils.getCredentialTypeFromMembershipType(value.membershipType),
+            BungieCredentialType
+          );
+          const sanitizedPlatformName = this.state.credentialNameMap?.[
+            bCredentialTypeString
+          ];
 
-            return {
-              iconPath: value.iconPath,
-              label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
-              value: bMembershipTypeString,
-            };
-          });
+          return {
+            iconPath: value.iconPath,
+            label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
+            value: bMembershipTypeString,
+          };
+        });
 
-    return (
+    return !!crossSavePlatform && this.props.showCrossSaveBanner ? (
+      <div className={styles.crossSaveBanner}>
+        {Localizer.Profile.Crosssave}
+      </div>
+    ) : (
       <Dropdown
         className={styles.platformDropdown}
         onChange={(newValue: string) => this.onDropdownChange(newValue)}

@@ -53,8 +53,14 @@ export abstract class DestinyMembershipDataStore extends DataStore<
     /**
      * Refresh state with all valid destiny memberships for user, accounting for cross save.
      * Loads current user by default, unless membership info is provided
+     * showAllMembershipsWhenCrossaved makes it so that you can access every membership, not just the primary one
      */
-    loadUserData: async (state, user?: MembershipPair, force = false) => {
+    loadUserData: async (
+      state,
+      user?: MembershipPair,
+      force = false,
+      showAllMembershipsWhenCrossaved = false
+    ) => {
       const isSameMembershipType =
         user &&
         user?.membershipType === this.state.selectedMembership?.membershipType;
@@ -132,7 +138,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       let memberships = membershipData?.destinyMemberships;
 
-      if (isCrossSaved) {
+      if (isCrossSaved && !showAllMembershipsWhenCrossaved) {
         memberships = [
           membershipData?.destinyMemberships.find(
             (a) => a.membershipId === membershipData?.primaryMembershipId
@@ -240,6 +246,10 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         )
       );
 
+      if (!membershipToUse) {
+        return;
+      }
+
       let profileResponse: Responses.DestinyProfileResponse = null;
       let characters: {
         [x: string]: Characters.DestinyCharacterComponent;
@@ -293,6 +303,17 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       }
 
       return { selectedCharacter: this.state.characters[value] };
+    },
+    resetMembership: () => {
+      return {
+        membershipData: null,
+        memberships: [],
+        selectedMembership: null,
+        characters: {},
+        selectedCharacter: null,
+        loaded: false,
+        isCrossSaved: false,
+      };
     },
   });
 

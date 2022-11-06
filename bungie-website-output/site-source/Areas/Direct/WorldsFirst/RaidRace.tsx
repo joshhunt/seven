@@ -24,6 +24,10 @@ import { BnetStackDisciplesRaidRacePage } from "../../../Generated/contentstack-
 import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./RaidRace.module.scss";
 
+const redirectToNebula = () => {
+  return <Redirect to={RouteHelper.Lightfall().url} />;
+};
+
 /**
  * Wrapper for Worlds First
  * @constructor
@@ -32,22 +36,23 @@ const WorldsFirst: React.FC = () => {
   const { mobile } = useDataStore(Responsive);
   const [data, setData] = useState<BnetStackDisciplesRaidRacePage>();
 
-  // if webmaster system for page is disabled, redirect to WQ product page
+  // if webmaster system for page is disabled, redirect to nebula product page
   const enabled = ConfigUtils.SystemStatus("DirectWorldsFirst");
   if (!enabled) {
-    return <Redirect to={RouteHelper.WitchQueen().url} />;
+    return redirectToNebula();
   }
 
   useEffect(() => {
     ContentStackClient()
-      .ContentType("disciples_raid_race_page")
-      .Entry("blt722dd3bab6410855")
+      .ContentType("nebula_raid_race_page")
+      .Entry("bltca83911b5a3317a8")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
       .toJSON()
       .fetch()
       .then((res) => {
         setData(res);
-      });
+      })
+      .catch(redirectToNebula);
   }, []);
 
   // check if stream is live
@@ -105,12 +110,6 @@ const WorldsFirst: React.FC = () => {
       >
         <div className={styles.hero}>
           <img className={styles.destinyLogo} src={destiny_logo?.url} />
-          <div className={styles.logoDividerWrapper}>
-            <div
-              className={styles.logoDivider}
-              style={{ backgroundImage: bgImageFromStackFile(wq_logo) }}
-            />
-          </div>
           <h1
             className={styles.title}
             dangerouslySetInnerHTML={sanitizeHTML(page_title)}
@@ -122,27 +121,43 @@ const WorldsFirst: React.FC = () => {
 
         {!isLive && <PreReveal data={data} />}
 
-        <a className={styles.streamBtn} href={twitch_btn_url}>
-          {twitch_caption}
-          <span>
-            <img src={twitch_logo?.url} />
-          </span>
-        </a>
+        {!isLive && (
+          <a className={styles.streamBtn} href={twitch_btn_url}>
+            {twitch_caption}
+            <span>
+              <img src={twitch_logo?.url} />
+            </span>
+          </a>
+        )}
+
+        {isLive && (
+          <div className={styles.streamBtnWrapper}>
+            <a className={styles.liveStreamBtn} href={twitch_btn_url}>
+              <img src={twitch_logo?.url} />
+            </a>
+          </div>
+        )}
 
         {!isLive && (
-          <ClickableMediaThumbnail
-            thumbnail={pre_reveal?.trailer_btn.thumbnail?.url}
-            videoId={pre_reveal?.trailer_btn.trailer_id}
-            classes={{
-              btnWrapper: styles.trailerBtn,
-              btnBg: styles.btnBg,
-            }}
-            showShadowBehindPlayIcon
-          >
-            <div className={styles.btnContent}>
-              {pre_reveal?.trailer_btn.btn_text}
+          <>
+            <ClickableMediaThumbnail
+              thumbnail={pre_reveal?.trailer_btn.thumbnail?.url}
+              videoId={pre_reveal?.trailer_btn.trailer_id}
+              classes={{
+                btnWrapper: styles.trailerBtn,
+                btnBg: styles.btnBg,
+              }}
+              showShadowBehindPlayIcon
+            >
+              <div className={styles.btnContent}>
+                {pre_reveal?.trailer_btn.btn_text}
+              </div>
+            </ClickableMediaThumbnail>
+
+            <div className={styles.optInBtnWrapper}>
+              <MarketingOptInButton />
             </div>
-          </ClickableMediaThumbnail>
+          </>
         )}
 
         <div className={styles.lowerContentWrapper}>
@@ -191,7 +206,6 @@ const PreReveal = ({ data }: { data: BnetStackDisciplesRaidRacePage }) => {
           data?.pre_reveal?.race_begins_blurb
         )}
       />
-      <MarketingOptInButton />
     </div>
   );
 };
@@ -217,11 +231,6 @@ const LiveRaidReveal = ({ data }: { data: BnetStackDisciplesRaidRacePage }) => {
           </a>
         </div>
         <DestinyArrows classes={{ root: styles.arrows }} />
-      </div>
-      <div className={styles.streamFrameWrapper}>
-        <div className={styles.aspectRatioWrapper}>
-          <TwitchFrame username={twitchChannelName.current} />
-        </div>
       </div>
     </div>
   );

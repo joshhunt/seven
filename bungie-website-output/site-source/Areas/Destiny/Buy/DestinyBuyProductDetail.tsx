@@ -1,16 +1,6 @@
-import {
-  NextGenBuyFlowModule,
-  NextGenModule,
-} from "@Areas/Destiny/BeyondLight/Components/NextGen/NextGenModule";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import {
-  SafelySetInnerHTML,
-  sanitizeHTML,
-} from "@UI/Content/SafelySetInnerHTML";
-import {
-  DestinyProductFamilies,
-  DestinySkuTags,
-} from "@UI/Destiny/SkuSelector/DestinySkuConstants";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { DestinyProductFamilies } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
@@ -50,9 +40,9 @@ import { StickySubNav } from "@UI/Navigation/StickySubNav";
 import { DestinyBuyDataStore } from "./Shared/DestinyBuyDataStore";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
+import { SiEpicgames } from "react-icons/si";
 
 export interface IDestinyBuyProductDetailProps
   extends GlobalStateComponentProps<"responsive"> {
@@ -474,6 +464,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     <div className={styles.playstation} />
                     <div className={styles.steam} />
                     <div className={styles.stadia} />
+                    <SiEpicgames className={styles.epic} />
                   </div>
                 </div>
               </div>
@@ -567,6 +558,27 @@ class DestinyBuyProductDetailInternal extends React.Component<
                           </GridCol>
                         )
                     )}
+                  </>
+                )}
+
+                {collectorsEdition && (
+                  <>
+                    <div className={styles.borderTop}>
+                      <div className={styles.sectionTitle}>
+                        {destinyProductFamily.collectorsEditionSectionTitle}
+                      </div>
+                    </div>
+                    <GridCol
+                      cols={12}
+                      className={styles.collectorsEditionSection}
+                    >
+                      <DestinyBuyDetailItem
+                        imagesForPagination={collectorsEdition.imagePath}
+                        orientation={"textblock-media"}
+                        skuItem={collectorsEdition}
+                        collectorsEdition={true}
+                      />
+                    </GridCol>
                   </>
                 )}
               </Grid>

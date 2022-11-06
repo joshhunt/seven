@@ -7,6 +7,7 @@ import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
 import { RewardsListSection } from "@Areas/Rewards/Shared/RewardsListSection";
 import { RewardsWarning } from "@Areas/Rewards/Shared/RewardsWarning";
+import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
@@ -14,6 +15,10 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Tokens } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import {
+  DestinyAccountWrapper,
+  IAccountFeatures,
+} from "@UI/Destiny/DestinyAccountWrapper";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -22,6 +27,7 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ParallaxContainer } from "@UIKit/Layout/ParallaxContainer";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect } from "react";
@@ -73,6 +79,27 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
     }
   }, [destinyUser.selectedMembership, destinyUser.loaded]);
 
+  useEffect(() => {
+    if (
+      rewardsData?.membershipType !== BungieMembershipType.None &&
+      destinyUser?.selectedMembership &&
+      !EnumUtils.looseEquals(
+        rewardsData.membershipType,
+        destinyUser.selectedMembership.membershipType,
+        BungieMembershipType
+      )
+    ) {
+      //there is a miss-match between membershipType of the rewards data and the selected membershipType
+      //RewardsDataStore.actions.getPlatformRewardsList(destinyUser.selectedMembership.membershipId, destinyUser.selectedMembership.membershipType);
+      RewardsDestinyMembershipDataStore.actions.updatePlatform(
+        EnumUtils.getStringValue(
+          rewardsData.membershipType,
+          BungieMembershipType
+        )
+      );
+    }
+  }, [rewardsData.membershipType]);
+
   if (!ConfigUtils.SystemStatus(SystemNames.D2RewardsReact)) {
     return null;
   }
@@ -112,20 +139,15 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
             destinyUser.membershipData.destinyMemberships.length > 1 &&
             !destinyUser.isCrossSaved && (
               <div className={stylesContainer.platformSelector}>
-                <DestinyPlatformSelector
-                  userMembershipData={destinyUser?.membershipData}
-                  onChange={(platform) => {
-                    RewardsDestinyMembershipDataStore.actions.updatePlatform(
-                      platform
-                    );
-                  }}
-                  defaultValue={
-                    destinyUser?.selectedMembership?.membershipType ??
-                    destinyUser?.membershipData?.destinyMemberships[0]
-                      .membershipType
-                  }
-                  crossSavePairingStatus={globalState.crossSavePairingStatus}
-                />
+                <DestinyAccountWrapper
+                  membershipDataStore={RewardsDestinyMembershipDataStore}
+                >
+                  {({ platformSelector }: IAccountFeatures) => (
+                    <div className={styles.dropdownFlexWrapper}>
+                      {platformSelector}
+                    </div>
+                  )}
+                </DestinyAccountWrapper>
               </div>
             )}
           <div className={styles.containerRewards}>

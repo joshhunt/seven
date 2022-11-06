@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { CrossSaveActiveBadge } from "@Areas/CrossSave/Activate/Components/CrossSaveActiveBadge";
 import {
   formatDateForAccountTable,
   ViewerPermissionContext,
@@ -64,6 +65,14 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
   const useQueryMid = membershipIdFromQuery && (isSelf || isAdmin);
   const profileLoc = Localizer.profile;
 
+  const applySeparator = (value: string | number) => {
+    return LocalizerUtils.useThousandsSeparatorByLocale(
+      value,
+      Localizer.CurrentCultureName,
+      globalStateData
+    );
+  };
+
   const loadHistory = (membership: MembershipPair) => {
     setLoading(true);
 
@@ -87,16 +96,14 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
                 rowKey: i,
                 order: x.EventId,
                 date: x.Timestamp,
-                productName:
-                  x.PaidCosts?.[0]?.ItemDisplayName ??
-                  profileLoc.UnknownItemName,
+                productName: x.PurchasedItemDisplayName,
                 quantity: x.PurchasedItemQuantity.toString(),
                 prices: x.PaidCosts,
                 status: x.EventClassification,
                 membership: selectedMembership,
                 bungieName: `${bungieNameObject.bungieGlobalName}${bungieNameObject.bungieGlobalCodeWithHashtag}`,
                 productDesc:
-                  x?.PaidCosts?.[0]?.ItemDisplayDescription ??
+                  x.PurchasedItemDisplayDescription ??
                   profileLoc.UnknownItemDescription,
               } as IEververseRecord;
             })
@@ -109,6 +116,19 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
       .catch((err) => Modal.error(err))
       .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    AccountDestinyMembershipDataStore.actions.loadUserData(
+      {
+        membershipId: useQueryMid
+          ? membershipIdFromQuery
+          : globalStateData?.loggedInUser?.user?.membershipId,
+        membershipType: BungieMembershipType.BungieNext,
+      },
+      true,
+      true
+    );
+  }, []);
 
   useEffect(() => {
     if (destinyMember.loaded && selectedMembership) {
@@ -138,6 +158,11 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
         <h3>{Localizer.account.EververseHistory}</h3>
       </GridCol>
       <GridDivider cols={12} className={accountStyles.mainDivider} />
+      <GridCol cols={12}>
+        {destinyMember?.isCrossSaved && (
+          <CrossSaveActiveBadge className={styles.crosssave} />
+        )}
+      </GridCol>
       <GridCol cols={12}>
         {destinyMember?.memberships?.map((mem, i) => {
           // For cross save - only show one platform as clickable
@@ -182,7 +207,12 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
           onRow={(data) => {
             return {
               onClick: (e) => {
-                Modal.open(<EverversePurchaseModal {...data} />);
+                Modal.open(
+                  <EverversePurchaseModal
+                    {...data}
+                    applySeparator={applySeparator}
+                  />
+                );
               },
             };
           }}
@@ -224,12 +254,12 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
               ) {
                 return (
                   <>
-                    <p>{value}</p>
+                    <p>{applySeparator(value)}</p>
                     <b>{profileLoc.StatusRefund}</b>
                   </>
                 );
               } else {
-                return <p>{value}</p>;
+                return <p>{applySeparator(value)}</p>;
               }
             }}
           />
@@ -254,14 +284,14 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
                         return record.status ===
                           EververseVendorPurchaseEventClassification.Refund ? (
                           <span key={i}>
-                            <b
-                              key={i}
-                            >{`${pc?.Quantity} ${pc?.ItemDisplayName}`}</b>
+                            <b key={i}>{`${applySeparator(pc?.Quantity)} ${
+                              pc?.ItemDisplayName
+                            }`}</b>
                           </span>
                         ) : (
-                          <span
-                            key={i}
-                          >{`${pc?.Quantity} ${pc?.ItemDisplayName}`}</span>
+                          <span key={i}>{`${applySeparator(pc?.Quantity)} ${
+                            pc?.ItemDisplayName
+                          }`}</span>
                         );
                       }
                     )}

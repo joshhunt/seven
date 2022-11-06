@@ -21,7 +21,6 @@ import styles from "./WQEditionSelector.module.scss";
 
 enum WQEditions {
   witchqueendeluxe,
-  witchqueendeluxeanniversary,
   witchqueenstandard,
 }
 
@@ -38,7 +37,7 @@ interface WQEditionSelectorProps {
 const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
   const responsive = useDataStore(Responsive);
   const [selectedEdition, setSelectedEdition] = useState(
-    EnumUtils.getStringValue(WQEditions.witchqueendeluxeanniversary, WQEditions)
+    EnumUtils.getStringValue(WQEditions.witchqueendeluxe, WQEditions)
   );
   const [skuItems, setSkuItems] = useState(null);
   const [
@@ -107,10 +106,6 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
   );
 
   const tabs = [
-    {
-      title: props.annivPackTabTitle,
-      edition: WQEditions.witchqueendeluxeanniversary,
-    },
     { title: props.deluxeTabTitle, edition: WQEditions.witchqueendeluxe },
     { title: props.standardTabTitle, edition: WQEditions.witchqueenstandard },
   ];
@@ -161,10 +156,7 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
 };
 
 interface IWQEditionDisplay {
-  selectedEdition:
-    | "witchqueendeluxe"
-    | "witchqueendeluxeanniversary"
-    | "witchqueenstandard";
+  selectedEdition: "witchqueendeluxe" | "witchqueenstandard";
   productDef: IDestinyProductDefinition;
 }
 

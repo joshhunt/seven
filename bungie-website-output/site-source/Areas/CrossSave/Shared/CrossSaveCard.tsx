@@ -1,6 +1,7 @@
 // Created by larobinson, 2019
 // Copyright Bungie, Inc.
 
+import { EnumUtils } from "@Utilities/EnumUtils";
 import * as React from "react";
 import classNames from "classnames";
 import { Localizer } from "@bungie/localization";
@@ -74,12 +75,24 @@ export class CrossSaveCard extends React.Component<
       ) : (
         <>&nbsp;</>
       );
-    const platformName =
-      platform === "Xbox" ? (
-        <>{Localizer.Crosssave.MicrosoftAccount}</>
-      ) : (
-        <>&nbsp;</>
-      );
+    let platformName = EnumUtils.looseEquals(
+      membershipType,
+      BungieMembershipType.TigerXbox,
+      BungieMembershipType
+    ) ? (
+      <>{Localizer.Crosssave.MicrosoftAccount}</>
+    ) : (
+      <>&nbsp;</>
+    );
+    if (
+      EnumUtils.looseEquals(
+        membershipType,
+        BungieMembershipType.TigerEgs,
+        BungieMembershipType
+      )
+    ) {
+      platformName = <>{Localizer.Crosssave.EpicAccount}</>;
+    }
 
     return (
       <div className={classNames(className, styles.accountCard)} {...rest}>

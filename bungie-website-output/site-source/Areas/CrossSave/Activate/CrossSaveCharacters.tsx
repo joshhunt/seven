@@ -331,6 +331,12 @@ const CharacterChoice = (props: {
           ) {
             hasInactiveSilver = true;
           }
+          if (
+            platformSilverComponents.TigerEgs &&
+            platformSilverComponents.TigerEgs.quantity > 0
+          ) {
+            hasInactiveSilver = true;
+          }
         }
       }
 

@@ -157,9 +157,9 @@ export const AuthorizedApplications: React.FC<AuthorizedApplicationsProps> = (
                     </span>
                     <Anchor
                       className={styles.appHistory}
-                      url={RouteHelper.ApplicationHistory({
-                        app: app.applicationId,
-                      })}
+                      url={RouteHelper.ApplicationHistory(
+                        app.applicationId.toString()
+                      )}
                     >
                       {Localizer.Accountlinking.GetHistory}
                     </Anchor>

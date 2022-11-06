@@ -224,13 +224,17 @@ const HeroSpotlightModalContent = (props: HeroSpotlightModalContentProps) => {
           <div className={classNames(styles.modalDivider, styles.left)} />
           <div className={styles.socials}>
             {insta_url && (
-              <a href={insta_url} className={styles.socialImg}>
+              <a href={insta_url} target="_blank" className={styles.socialImg}>
                 <img src={props.instaIcon} />
               </a>
             )}
 
             {twitter_url && (
-              <a href={twitter_url} className={styles.socialImg}>
+              <a
+                href={twitter_url}
+                target="_blank"
+                className={styles.socialImg}
+              >
                 <img src={props.twitterIcon} />
               </a>
             )}

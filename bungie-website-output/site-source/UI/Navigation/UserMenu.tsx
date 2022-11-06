@@ -245,12 +245,12 @@ class SignInTriggers extends React.Component<{
             {Localizer.Registration.networksigninoptiontwitch}
           </AuthTrigger>
         )}
-        {ConfigUtils.SystemStatus(SystemNames.Blizzard) && (
+        {ConfigUtils.SystemStatus(SystemNames.EpicIdAuth) && (
           <AuthTrigger
-            key={BungieCredentialType.BattleNetId}
-            credential={BungieCredentialType.BattleNetId}
+            key={BungieCredentialType.EgsId}
+            credential={BungieCredentialType.EgsId}
           >
-            {Localizer.Registration.networksigninoptionblizzard}
+            {Localizer.Registration.networksigninoptionegsid}
           </AuthTrigger>
         )}
 
