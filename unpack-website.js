@@ -13,7 +13,7 @@ const BASE_URL = "https://www.bungie.net/7/en/Destiny/NewLight";
 
 const INITIAL_CHUNKS_RE = /^\/7\/static\/js\//;
 const SOURCE_MAP_RE = /\/\/# sourceMappingURL=([\w-\.\?=]+)/;
-const NAMED_CHUNKS_RE = /__webpack_require__\.p \+ "static\/js\/" \+ \(([{}"\w:,-]+)/;
+const NAMED_CHUNKS_RE = /__webpack_require__\.p \+ "static\/js\/" \+ \(([ {}"\w:,-]+)/;
 const CHUNK_HASHES_RE = /chunkId\) \+ "\." \+ ([{}"\w:,-]+)\[chunkId\] \+ "\.chunk\.js"/;
 const CSS_CHUNKS_RE = /chunkId\) \+ "\." \+ ([{}"\w:,-]+)\[chunkId\] \+ "\.chunk\.css";/;
 const NAMED_CSS_CHUNKS_RE = /"static\/css\/" \+ \(([{}"\w:,-]+)/;
@@ -88,6 +88,7 @@ async function getBootstrapJS(runtimePath) {
 
 function getAllSourceMapURLSFromBootstrap(bootstrapSource) {
   const namedChunksMatch = NAMED_CHUNKS_RE.exec(bootstrapSource);
+  console.log(namedChunksMatch[1]);
   const namedChunks =
     namedChunksMatch && namedChunksMatch[1] && JSON.parse(namedChunksMatch[1]);
 
