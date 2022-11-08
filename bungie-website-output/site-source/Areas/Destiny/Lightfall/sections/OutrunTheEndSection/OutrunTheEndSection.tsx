@@ -12,7 +12,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import {
   bgImage,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import React from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./OutrunTheEndSection.module.scss";

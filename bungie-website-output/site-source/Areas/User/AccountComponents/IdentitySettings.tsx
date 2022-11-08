@@ -21,7 +21,7 @@ import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
 import { Img } from "../../../Utilities/helpers";
 import accountStyles from "../Account.module.scss";
@@ -66,7 +66,6 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   );
   const [onPageUser, setOnPageUser] = useState<User.GeneralUser>();
   const [bungieName, setBungieName] = useState<IBungieName>(null);
-  const [validatingNames, setValidatingNames] = useState(false);
   const [displayNameSuggestions, setDisplayNameSuggestions] = useState<
     Record<string, string>
   >(null);
@@ -169,49 +168,47 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   };
 
   const getSuggestedNames = (userMembershipData: User.UserMembershipData) => {
-    setValidatingNames(true);
-
     Platform.UserService.GetSanitizedPlatformDisplayNames(
       userMembershipData.bungieNetUser.membershipId
-    )
-      .then((credentialNameMap) => {
-        const stringMap = UserUtils.getStringKeyedMapForSanitizedCredentialNames(
-          credentialNameMap
+    ).then((credentialNameMap) => {
+      const stringMap = UserUtils.getStringKeyedMapForSanitizedCredentialNames(
+        credentialNameMap
+      );
+      const filteredCredTypes =
+        stringMap &&
+        Object.keys(stringMap).filter(
+          (credentialType) => !stringMap[credentialType].includes("★")
         );
-        const filteredCredTypes =
-          stringMap &&
-          Object.keys(stringMap).filter(
-            (credentialType) => !stringMap[credentialType].includes("★")
-          );
-        const filteredSuggestedNames: Record<string, string> = {};
-        filteredCredTypes.forEach(
-          (ct) => (filteredSuggestedNames[ct] = stringMap[ct])
-        );
-        setDisplayNameSuggestions(filteredSuggestedNames);
-      })
-      .finally(() => setValidatingNames(false));
+      const filteredSuggestedNames: Record<string, string> = {};
+      filteredCredTypes.forEach(
+        (ct) => (filteredSuggestedNames[ct] = stringMap[ct])
+      );
+      setDisplayNameSuggestions(filteredSuggestedNames);
+    });
   };
 
   const BungieNameAndHelpLink: React.FC = () => {
     return (
       <div className={styles.helpSentence}>
-        {Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
-          bungieName: (
-            <>
-              <span className={styles.displayName}>
-                {bungieName?.bungieGlobalName}
-              </span>
-              <span className={styles.displayNameCode}>
-                {bungieName?.bungieGlobalCodeWithHashtag}
-              </span>
-            </>
-          ),
-          helpLink: (
-            <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
-              {Localizer.Userpages.CrossPlayGuideLink}
-            </Anchor>
-          ),
-        })}
+        <>
+          {Localizer.FormatReact(Localizer.Userpages.BungieNameSentence, {
+            bungieName: (
+              <>
+                <span className={styles.displayName}>
+                  {bungieName?.bungieGlobalName}
+                </span>
+                <span className={styles.displayNameCode}>
+                  {bungieName?.bungieGlobalCodeWithHashtag}
+                </span>
+              </>
+            ),
+            helpLink: (
+              <Anchor url={"https://www.bungie.net/CrossPlayGuide"}>
+                {Localizer.Userpages.CrossPlayGuideLink}
+              </Anchor>
+            ),
+          })}
+        </>
       </div>
     );
   };
@@ -340,55 +337,67 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     </div>
                   )}
                   {<BungieNameAndHelpLink />}
-                  {validatingNames
-                    ? Localizer.Userpages.LookingForSuggestedNames
-                    : nameChangeStatus === "canEdit" &&
-                      displayNameSuggestions &&
-                      Object.keys(displayNameSuggestions).length > 0 && (
-                        <div className={styles.suggestedNamesContainer}>
-                          <p>{Localizer.userpages.suggestedNames}</p>
-                          <div>
-                            {Object.keys(displayNameSuggestions).map(
-                              (credentialType, i) => {
-                                if (
-                                  !displayNameSuggestions[
-                                    credentialType
-                                  ].includes("★")
-                                ) {
-                                  return (
-                                    <a
-                                      className={styles.suggestedNames}
-                                      key={i}
-                                      onClick={(e) => {
-                                        formikProps.setFieldValue(
-                                          "displayName",
+                  {
+                    <Suspense
+                      fallback={
+                        <div className={styles.spacer}>
+                          {Localizer.Userpages.LookingForSuggestedNames}
+                        </div>
+                      }
+                    >
+                      {nameChangeStatus === "canEdit" &&
+                        displayNameSuggestions &&
+                        Object.keys(displayNameSuggestions).length > 0 && (
+                          <div className={styles.suggestedNamesContainer}>
+                            <p>{Localizer.userpages.suggestedNames}</p>
+                            <div>
+                              {Object.keys(displayNameSuggestions).map(
+                                (credentialType, i) => {
+                                  if (
+                                    !displayNameSuggestions[
+                                      credentialType
+                                    ].includes("★")
+                                  ) {
+                                    return (
+                                      <a
+                                        className={styles.suggestedNames}
+                                        key={i}
+                                        onClick={(e) => {
+                                          formikProps.setFieldValue(
+                                            "displayName",
+                                            displayNameSuggestions[
+                                              credentialType
+                                            ],
+                                            true
+                                          );
                                           displayNameSuggestions[
                                             credentialType
-                                          ],
-                                          true
-                                        );
-                                        displayNameSuggestions[
-                                          credentialType
-                                        ] !== bungieName?.bungieGlobalName
-                                          ? setNameChangeStatus("confirm")
-                                          : showSameNameError();
-                                      }}
-                                    >
-                                      <img
-                                        src={suggestedIconMap[credentialType]}
-                                        className={styles.platformIcon}
-                                      />
-                                      <p>
-                                        {displayNameSuggestions[credentialType]}
-                                      </p>
-                                    </a>
-                                  );
+                                          ] !== bungieName?.bungieGlobalName
+                                            ? setNameChangeStatus("confirm")
+                                            : showSameNameError();
+                                        }}
+                                      >
+                                        <img
+                                          src={suggestedIconMap[credentialType]}
+                                          className={styles.platformIcon}
+                                        />
+                                        <p>
+                                          {
+                                            displayNameSuggestions[
+                                              credentialType
+                                            ]
+                                          }
+                                        </p>
+                                      </a>
+                                    );
+                                  }
                                 }
-                              }
-                            )}
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
+                    </Suspense>
+                  }
                   {formikProps.values.displayName !==
                     bungieName?.bungieGlobalName && (
                     <div className={styles.confirmButtons}>
@@ -460,9 +469,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                   </div>
                 </GridCol>
                 <GridDivider cols={12} />
-                <Avatars user={onPageUser} formikProps={formikProps} />
+                <Suspense fallback={<div />}>
+                  <Avatars user={onPageUser} formikProps={formikProps} />
+                </Suspense>
                 <GridDivider cols={12} />
-                <Themes user={onPageUser} formikProps={formikProps} />
+                <Suspense fallback={<div />}>
+                  <Themes user={onPageUser} formikProps={formikProps} />
+                </Suspense>
                 <SaveButtonBar
                   saveButton={
                     <button

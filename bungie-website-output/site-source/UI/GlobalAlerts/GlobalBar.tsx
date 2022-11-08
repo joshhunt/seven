@@ -2,8 +2,9 @@
 // Copyright Bungie, Inc.
 
 import React, { useEffect, useState } from "react";
-import { FaCheckCircle, MdClose } from "react-icons/all";
-import { IoMdWarning } from "react-icons/io";
+import { FaCheckCircle } from "@react-icons/all-files/fa/FaCheckCircle";
+import { MdClose } from "@react-icons/all-files/md/MdClose";
+import { IoMdWarning } from "@react-icons/all-files/io/IoMdWarning";
 import styles from "./GlobalBar.module.scss";
 import classNames from "classnames";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -20,6 +21,7 @@ interface IGlobalBarProps {
   barClassNames?: string;
   showWarningIcon?: boolean;
   showCheckIcon?: boolean;
+  children?: React.ReactNode;
 }
 
 /**
@@ -61,13 +63,13 @@ export const GlobalBar: React.FC<IGlobalBarProps> = (props) => {
         className={classNames(styles.globalAlertsBar, barClassNames)}
         url={url}
       >
-        <Grid className={styles.globalBar}>
+        <Grid>
           <GridCol cols={12}>
             {showWarningIcon && <IoMdWarning />}
             {showCheckIcon && <FaCheckCircle />}
-            <span className={styles.content}>{message}</span>
+            <span>{message}</span>
             {dismissible && (
-              <div className={styles.closeButton} onClick={(e) => removeBar(e)}>
+              <div onClick={(e) => removeBar(e)}>
                 <MdClose />
               </div>
             )}

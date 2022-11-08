@@ -1,4 +1,5 @@
 import { EnumUtils } from "@Utilities/EnumUtils";
+import { DateTime } from "luxon";
 import {
   ICrossSaveFlowState,
   CrossSaveMode,
@@ -11,7 +12,6 @@ import {
 import { Localizer } from "@bungie/localization";
 import { CrossSave, Responses, GroupsV2, Platforms, Contract } from "@Platform";
 import { RouteDefs } from "@Routes/RouteDefs";
-import moment from "moment/moment";
 import { Logger } from "@Global/Logger";
 import { BungieMembershipType, BungieCredentialType } from "@Enum";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -217,7 +217,7 @@ export class CrossSaveUtils {
     validationErrors: CrossSave.CrossSaveValidationError[],
     linkedCredentialTypes: BungieCredentialType[]
   ): ICrossSaveAccountState {
-    const now = moment();
+    const now = DateTime.now();
     const credentialType = UserUtils.getCredentialTypeFromMembershipType(
       targetMembershipType
     );
@@ -225,7 +225,7 @@ export class CrossSaveUtils {
     const isLinked = linkedCredentialTypes.indexOf(credentialType) > -1;
     const needsAuth =
       !authStatus.isAuthenticated ||
-      now.add(5, "minutes").isAfter(moment(authStatus.expirationDate));
+      now.plus({ minutes: 5 }) > DateTime.fromISO(authStatus.expirationDate);
     const hasErrors =
       isLinked && validationErrors && validationErrors.length > 0;
     const goodToGo = !needsAuth && !hasErrors;

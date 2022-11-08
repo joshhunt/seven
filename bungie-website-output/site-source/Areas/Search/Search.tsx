@@ -22,7 +22,7 @@ import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
-import { AiOutlineClose } from "react-icons/all";
+import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { useHistory, useParams } from "react-router";
 
 interface SearchProps {}

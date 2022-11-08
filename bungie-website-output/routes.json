@@ -26,6 +26,24 @@
     "path": "/7/en/Admin/Reports"
   },
   {
+    "areaName": "BungieTech",
+    "areaObjectName": "BungieTech",
+    "componentImportPath": "@Areas/BungieTech/BungieTechArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/BungieTech"
+  },
+  {
+    "areaName": "BungieTech",
+    "areaObjectName": "BungieTech",
+    "componentImportPath": "@Areas/BungieTech/BungieTechArea",
+    "action": "article",
+    "params": {
+      "path": "articleUrl?"
+    },
+    "path": "/7/en/BungieTech/article/articleUrl?"
+  },
+  {
     "areaName": "Clans",
     "areaObjectName": "Clans",
     "componentImportPath": "@Areas/Clans/ClansArea",
@@ -389,14 +407,6 @@
     "path": "/7/en/Guide/:guide"
   },
   {
-    "areaName": "Home",
-    "areaObjectName": "Home",
-    "componentImportPath": "@Areas/Home/HomeArea",
-    "action": "index",
-    "params": {},
-    "path": "/7/en/Home"
-  },
-  {
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
@@ -464,12 +474,11 @@
     "areaName": "News",
     "areaObjectName": "News",
     "componentImportPath": "@Areas/News/NewsArea",
-    "action": "TempNewsArticle",
+    "action": "article",
     "params": {
-      "path": ":articleUrl",
-      "isOverride": true
+      "path": ":articleUrl?"
     },
-    "path": "/7/en/News/:articleUrl"
+    "path": "/7/en/News/article/:articleUrl?"
   },
   {
     "areaName": "News",

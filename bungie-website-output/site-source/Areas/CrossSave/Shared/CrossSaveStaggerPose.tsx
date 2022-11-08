@@ -44,6 +44,8 @@ interface ICrossSaveStaggerPoseProps {
 
   /** If true, will animate immediately instead of using the index */
   instant?: boolean;
+
+  children?: React.ReactNode;
 }
 
 interface ICrossSaveStaggerState {

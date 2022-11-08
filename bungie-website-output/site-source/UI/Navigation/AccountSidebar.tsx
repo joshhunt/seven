@@ -4,6 +4,7 @@ import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { PermissionsGate } from "@UI/User/PermissionGate";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
+import { DateTime } from "luxon";
 import * as React from "react";
 import { Route } from "react-router";
 import styles from "./Sidebar.module.scss";
@@ -13,7 +14,6 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "./Anchor";
 import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import moment from "moment";
 import { Icon } from "@UIKit/Controls/Icon";
 import { AclEnum } from "@Enum";
 
@@ -348,8 +348,10 @@ export class AccountSidebar extends React.Component<
       return null;
     }
 
-    const date = moment(this.props.globalState.loggedInUser.user.firstAccess);
-    const accountIsNew = moment().diff(date, "days") < 15;
+    const date = DateTime.fromISO(
+      this.props.globalState.loggedInUser.user.firstAccess
+    );
+    const accountIsNew = DateTime.now().diff(date).days < 15;
 
     if (!accountIsNew) {
       return null;

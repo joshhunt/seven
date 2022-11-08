@@ -10,7 +10,7 @@ import {
   createCustomModal,
   CustomModalProps,
 } from "@UIKit/Controls/Modal/CreateCustomModal";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackPmpIconActionCards } from "../../../../Generated/contentstack-types";

@@ -226,7 +226,7 @@ const SubCategories: React.FC<SubCategoriesProps> = (props) => {
           </div>
           <Dropdown
             className={styles.categoriesDropdown}
-            selectedValue={subListItems.find((sl) => sl.isActive)?.url.url}
+            selectedValue={subListItems.find((sl) => sl.isActive)?.url?.url}
             onChange={(newValue) => history.push(newValue)}
             options={subListItems
               .filter((sl) => sl)

@@ -17,7 +17,9 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { AiFillCheckCircle, AiFillCloseCircle, ImMinus } from "react-icons/all";
+import { AiFillCheckCircle } from "@react-icons/all-files/ai/AiFillCheckCircle";
+import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
+import { ImMinus } from "@react-icons/all-files/im/ImMinus";
 
 interface SeasonsTableProps
   extends D2DatabaseComponentProps<

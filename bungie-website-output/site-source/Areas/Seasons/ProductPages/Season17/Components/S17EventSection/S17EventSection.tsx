@@ -9,7 +9,7 @@ import { Responsive } from "@Boot/Responsive";
 import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { useCSWebpImages } from "@Utilities/CSUtils";
-import { WithContentTypeUids } from "@Utilities/GraphQLUtils";
+import { WithContentTypeUids } from "@Utilities/ContentStackUtils";
 import React, { useMemo } from "react";
 import { BnetStackSeasonOfTheHaunted } from "../../../../../../Generated/contentstack-types";
 import styles from "./S17EventSection.module.scss";

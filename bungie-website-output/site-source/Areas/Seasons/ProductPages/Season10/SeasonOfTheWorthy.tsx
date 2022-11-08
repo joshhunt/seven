@@ -879,7 +879,7 @@ class SeasonOfTheWorthyInner extends React.Component<
           <div className={styles.buyButton}>
             <Button
               className={styles.seasonsButtonMore}
-              url={RouteHelper.NewsArticle(48105)}
+              url={RouteHelper.NewsArticle({ articleUrl: "48105" })}
               buttonType="teal"
               size={BasicSize.Large}
             >

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { DOMAttributes } from "react";
+import React, { DetailedHTMLProps, DOMAttributes } from "react";
 import styles from "./Button.module.scss";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { BasicSize } from "../../UIKitUtils";
@@ -63,6 +63,10 @@ export class Button extends React.Component<ButtonProps> {
     disabled: false,
     size: BasicSize.Medium,
   };
+
+  private readonly divButtonRef: React.RefObject<
+    HTMLDivElement
+  > = React.createRef();
 
   private readonly onKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (this.props.disabled) {
@@ -145,17 +149,19 @@ export class Button extends React.Component<ButtonProps> {
         {...props}
         onKeyDown={this.onKeyDown}
         data-analytics-id={analyticsId}
+        {...rest}
       >
         {inner}
       </Anchor>
     ) : (
-      <div
-        {...props}
-        onKeyDown={this.onKeyDown}
+      <button
+        className={classes}
+        disabled={disabled}
         data-analytics-id={analyticsId}
+        {...rest}
       >
         {inner}
-      </div>
+      </button>
     );
   }
 }

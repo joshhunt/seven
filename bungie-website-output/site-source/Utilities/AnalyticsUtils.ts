@@ -1,9 +1,8 @@
 import BungieAnalytics from "@bungie/analytics";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Logger } from "@Global/Logger";
 import { SystemNames } from "@Global/SystemNames";
-import moment from "moment/moment";
+import { DateTime } from "luxon";
 import ReactGA from "react-ga";
 import { ConfigUtils } from "./ConfigUtils";
 import { SessionStorageUtils } from "./StorageUtils";
@@ -12,21 +11,11 @@ import { UserUtils } from "./UserUtils";
 
 interface ISession {
   sessionId: string;
-  refreshDate: moment.Moment;
-}
-
-declare global {
-  interface Window {
-    ba?: BungieAnalytics;
-  }
+  refreshDate: DateTime;
 }
 
 export class AnalyticsUtils {
-  private static destroyLoggedInUserObserver: DestroyCallback;
-
   private static initSuccess = false;
-
-  private static userId: string = undefined;
 
   private static initOnce() {
     if (AnalyticsUtils.initSuccess) {
@@ -44,38 +33,10 @@ export class AnalyticsUtils {
       ReactGA.initialize("UA-5262186-1", {
         testMode: reactGaTestMode,
         debug: reactGaTestMode,
-        useExistingGa: true,
-      } as any); // todo $jlauer - remove "as any" once react-ga supports useExistingGa in its types
-
-      AnalyticsUtils.destroyLoggedInUserObserver = GlobalStateDataStore.observe(
-        (data) => {
-          const userId = data?.loggedInUser?.user?.membershipId;
-
-          if (userId && userId !== AnalyticsUtils.userId) {
-            AnalyticsUtils.onUserLoggedIn(userId);
-          }
-
-          if (!userId && AnalyticsUtils.userId) {
-            AnalyticsUtils.onUserLoggedOut();
-          }
-        },
-        ["loggedInUser"]
-      );
+      });
 
       AnalyticsUtils.initSuccess = true;
     }
-  }
-
-  private static onUserLoggedIn(userId: string) {
-    AnalyticsUtils.userId = userId;
-    ReactGA.set({ userId: userId });
-    window.ba?.setUserId(userId);
-  }
-
-  private static onUserLoggedOut() {
-    AnalyticsUtils.userId = undefined;
-    ReactGA.set({ userId: undefined });
-    window.ba?.setUserId(undefined);
   }
 
   /** Tracks the current page to Google Analytics */
@@ -105,14 +66,16 @@ export class AnalyticsUtils {
 
     const existingSessionItem = SessionStorageUtils.getItem("Session");
     if (existingSessionItem) {
-      const now = moment();
+      const now = DateTime.now();
       const existingSessionObj = JSON.parse(existingSessionItem);
       const existingSession: ISession = {
         sessionId: existingSessionObj.sessionId,
-        refreshDate: moment(existingSessionObj.refreshDate),
+        refreshDate: DateTime.fromISO(existingSessionObj.refreshDate),
       };
 
-      if (existingSession.refreshDate.isBefore(now.add(-timeout, "seconds"))) {
+      if (
+        existingSession.refreshDate < DateTime.now().plus({ seconds: -timeout })
+      ) {
         this.createOrUpdateSession();
       } else {
         this.createOrUpdateSession(existingSession.sessionId);
@@ -125,7 +88,7 @@ export class AnalyticsUtils {
   private static createOrUpdateSession(existingSessionId?: string) {
     const newSession: ISession = {
       sessionId: existingSessionId || StringUtils.generateGuid(),
-      refreshDate: moment(),
+      refreshDate: DateTime.now(),
     };
 
     SessionStorageUtils.setItem("Session", JSON.stringify(newSession));

@@ -45,20 +45,21 @@ export class CrossSaveSteamMessage extends React.Component<
       0
     );
     const faqLink = RouteHelper.HelpArticle(faqArticleId);
-    const message = Localizer.FormatReact(
-      Localizer.Crosssave.CrossSaveSteamMessage,
-      {
-        learnMoreLink: (
-          <Anchor
-            className={styles.learnMoreLink}
-            onClick={(e) => e.stopPropagation()}
-            url={faqLink}
-            sameTab={false}
-          >
-            {Localizer.Crosssave.LearnMore}
-          </Anchor>
-        ),
-      }
+    const message = (
+      <>
+        {Localizer.FormatReact(Localizer.Crosssave.CrossSaveSteamMessage, {
+          learnMoreLink: (
+            <Anchor
+              className={styles.learnMoreLink}
+              onClick={(e) => e.stopPropagation()}
+              url={faqLink}
+              sameTab={false}
+            >
+              {Localizer.Crosssave.LearnMore}
+            </Anchor>
+          ),
+        })}
+      </>
     );
 
     return (

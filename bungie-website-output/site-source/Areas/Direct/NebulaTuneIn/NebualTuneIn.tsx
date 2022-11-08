@@ -12,7 +12,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { MarketingOptInButton } from "@UI/User/MarketingOptInButton";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";

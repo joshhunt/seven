@@ -1,4 +1,5 @@
 import { RouteDefs } from "@Routes/RouteDefs";
+import { TwitterScript } from "@UI/Content/TwitterFeed";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import React from "react";
@@ -12,6 +13,7 @@ class NewsArea extends React.Component<RouteComponentProps> {
     const destinyPath = RouteDefs.Areas.News.getAction("destiny").path;
     const communityPath = RouteDefs.Areas.News.getAction("community").path;
     const updatesPath = RouteDefs.Areas.News.getAction("updates").path;
+    const articlePath = RouteDefs.Areas.News.getAction("article").path;
 
     return (
       <React.Fragment>
@@ -57,7 +59,7 @@ class NewsArea extends React.Component<RouteComponentProps> {
             )}
           />
           <Route
-            path={`${indexPath}/:articleUrl`}
+            path={articlePath}
             component={createAsyncComponent(
               () =>
                 import(
@@ -71,4 +73,4 @@ class NewsArea extends React.Component<RouteComponentProps> {
   }
 }
 
-export default WithRouteData(NewsArea);
+export default NewsArea;

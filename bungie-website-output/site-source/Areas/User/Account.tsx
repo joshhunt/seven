@@ -31,7 +31,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { PermissionsGate } from "@UI/User/PermissionGate";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Icon } from "@UIKit/Controls/Icon";
-import TabSystem, { TabData } from "@UIKit/Layout/TabSystem";
+import { TabData, TabSystem } from "@UIKit/Layout/TabSystem";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";

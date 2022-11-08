@@ -582,7 +582,7 @@ class SeasonOfTheUndyingInternal extends React.Component<
               <div className={styles.buttonSection}>
                 <Button
                   className={styles.seasonsButtonMore}
-                  url={RouteHelper.NewsArticle(48105)}
+                  url={RouteHelper.NewsArticle({ articleUrl: "48105" })}
                   buttonType="teal"
                 >
                   {Localizer.Seasons.SeasonsButtonMore}

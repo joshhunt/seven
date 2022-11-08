@@ -15,8 +15,6 @@ import {
   ClickableMediaThumbnail,
   ClickableMediaThumbnailProps,
 } from "@UI/Marketing/ClickableMediaThumbnail";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
@@ -55,6 +53,7 @@ interface IDestinyNewsAndMediaUpdatedProps
     sectionTitle?: string;
     thumbnail?: string;
   };
+  children?: React.ReactNode;
 }
 
 interface IDestinyNewsAndMediaState {
@@ -345,7 +344,7 @@ export const DestinyNewsAndMediaUpdated = withGlobalState(
 );
 
 interface IBasicDivProps extends React.HTMLProps<HTMLDivElement> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 interface ISectionTitleProps extends IBasicDivProps {

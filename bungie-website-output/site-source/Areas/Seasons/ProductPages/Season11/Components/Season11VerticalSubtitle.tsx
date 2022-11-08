@@ -63,7 +63,7 @@ export const Season11MobileSubtitle: React.FC<Season11MobileSubtitleProps> = (
         responsive.mobile && (
           <div className={classNames(styles.wrapper, className)}>
             <div className={styles.subtitle}>
-              <span className={styles.piece}>{pieces[1]}</span>
+              <span>{pieces[1]}</span>
             </div>
           </div>
         )

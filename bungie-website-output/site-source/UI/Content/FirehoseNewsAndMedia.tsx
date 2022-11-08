@@ -116,7 +116,9 @@ export class FirehoseNewsAndMedia extends React.Component<
         : null;
       this._hasItems(content.LoreItems) &&
         content.LoreItems.forEach((li: any) => {
-          const lorePath = RouteHelper.NewsArticle(Number(li.contentId));
+          const lorePath = RouteHelper.NewsArticle({
+            articleUrl: li.contentId,
+          });
 
           lore.push({
             isVideo: false,

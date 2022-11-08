@@ -29,7 +29,7 @@ import {PmpStackedInfoThumbBlocks} from "@UI/Marketing/Fragments/PmpStackedInfoT
 import {BungieHelmet} from "@UI/Routing/BungieHelmet";
 import {Button} from "@UIKit/Controls/Button/Button";
 import {BuyButton} from "@UIKit/Controls/Button/BuyButton";
-import {bgImageFromStackFile, imageFromConnection, responsiveBgImage, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/GraphQLUtils";
+import {bgImageFromStackFile, responsiveBgImage, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {BnetStackS18ProductPage, BnetStackPmpCallout} from "../../../../Generated/contentstack-types";
@@ -188,38 +188,6 @@ const SeasonOfPlunder = (props: SeasonOfPlunderProps) =>
 					<div id={"activities"}>
 						<PmpSectionHeader data={story_section?.content?.[2]} classes={{ root: styles.activitiesHeader }}/>
 						<PmpIconActionCards data={story_section?.content?.[3]} classes={{}}/>
-					</div>
-				</div>
-
-				{/* FESTIVAL */}
-				<div className={classNames(styles.section, styles.festival)}>
-					<div ref={festivalSectionRef} id={"festival"} className={styles.festivalAnchor} />
-					<div className={styles.festivalInner}>
-						<PmpSectionHeader data={festival?.content?.[0]} classes={{
-							root: styles.festivalRoot,
-							heading: styles.festivalHeading,
-							textWrapper: styles.festivalTextWrapper,
-							btnWrapper: styles.festivalBtnWrapper
-						}}/>
-						<div
-							 className={styles.festivalContent}
-							 style={{
-								 backgroundImage: getResponsiveBg(festival?.bg),
-							 }}
-						>
-							<PmpInfoThumbnailGroup data={festival?.content?.[1]} classes={{}}/>
-							<S18FestivalGuns data={festival?.gun_holder} />
-							<PmpCallout data={{
-								...festival?.content?.[2],
-								blurb: `${(festival?.content?.[2] as BnetStackPmpCallout)?.blurb} <img src="${festival?.callout_img?.url}" class="${styles.festivalCalloutImg}" alt="${festival?.callout_img?.title}" />`
-							}} classes={{
-								root: styles.festivalCalloutRoot,
-								heading: styles.festivalCalloutHeading,
-								blurb: styles.festivalCalloutBlurb,
-								textWrapper: styles.festivalCalloutTextWrapper,
-							}}/>
-							<S18FestivalRewards data={festival?.rewards} />
-						</div>
 					</div>
 				</div>
 

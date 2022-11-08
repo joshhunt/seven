@@ -4,7 +4,7 @@
 import classNames from "classnames";
 import React from "react";
 import { Localizer } from "@bungie/localization/Localizer";
-import { AiFillCheckSquare } from "react-icons/all";
+import { AiFillCheckSquare } from "@react-icons/all-files/ai/AiFillCheckSquare";
 import styles from "./ProgressBar.module.scss";
 
 interface ProgressBarProps {

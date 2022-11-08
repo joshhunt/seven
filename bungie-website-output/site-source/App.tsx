@@ -1,13 +1,9 @@
+import Home from "@Areas/Home/Home";
 import AppLayout from "@Boot/AppLayout";
-import { ProceduralMarketingPageFallback } from "@Boot/ProceduralMarketingPageFallback";
-import { RelayEnvironmentFactory } from "@bungie/contentstack";
-import { BungieNetRelayEnvironmentPreset } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetRelayEnvironmentPreset";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { BuildVersion } from "@Helpers";
-import { Models } from "@Platform";
-import { LoadingFallback } from "@Routes/AsyncRoute";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
@@ -16,53 +12,25 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { ToastContent } from "@UI/UIKit/Controls/Toast/Toast";
 import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Helmet from "react-helmet";
-import { Environment, RelayEnvironmentProvider } from "react-relay";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-
-const createRelayEnvironment = async (
-  coreSettings: Models.CoreSettingsConfiguration
-) => {
-  const preset = BungieNetRelayEnvironmentPreset({
-    cachedSettingsObject: coreSettings,
-  });
-  const relayEnvironmentFactory = new RelayEnvironmentFactory(preset);
-
-  return relayEnvironmentFactory.create();
-};
 
 /**
  * The wrapper component for the rest of the application
  *  *
- * @param {IAppProps} props
  * @returns
  */
 export const App: React.FC = () => {
   const AppBaseUrl = UrlUtils.AppBaseUrl;
   const { coreSettings } = useDataStore(GlobalStateDataStore, []);
-  const [relayEnvironment, setRelayEnvironment] = useState<Environment | null>(
-    null
-  );
 
   useEffect(() => {
     GlobalStateDataStore.initialize();
   }, []);
 
-  useEffect(() => {
-    if (coreSettings) {
-      createRelayEnvironment(coreSettings)
-        .then(setRelayEnvironment)
-        .catch(console.error);
-    }
-  }, [coreSettings]);
-
-  if (!relayEnvironment) {
-    return null;
-  }
-
   return (
-    <RelayEnvironmentProvider environment={relayEnvironment}>
+    <React.StrictMode>
       <Router basename={AppBaseUrl}>
         <BasicErrorBoundary>
           <AppLayout>
@@ -78,11 +46,6 @@ export const App: React.FC = () => {
                     }
                   </Route>
                   {RouteDefs.AllAreaRoutes}
-                  <Route path={"/:locale/:slug?"}>
-                    <React.Suspense fallback={<LoadingFallback />}>
-                      <ProceduralMarketingPageFallback />
-                    </React.Suspense>
-                  </Route>
                 </SwitchWithErrors>
               </React.Fragment>
             )}
@@ -90,7 +53,7 @@ export const App: React.FC = () => {
           <GlobalElements />
         </BasicErrorBoundary>
       </Router>
-    </RelayEnvironmentProvider>
+    </React.StrictMode>
   );
 };
 

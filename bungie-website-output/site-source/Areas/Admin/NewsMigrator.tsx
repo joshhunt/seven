@@ -31,11 +31,7 @@ export const NewsMigrator = () => {
   const [itemsInput, setItemsInput] = useState(3);
   const itemsPerPage = 3;
   const apiKey = ConfigUtils.GetParameter("ContentStack", "ApiKey", "");
-  const authToken = ConfigUtils.GetParameter(
-    "ContentStack",
-    "AuthorizationNews",
-    ""
-  );
+  const authToken = "";
 
   // Let's keep this off in Prod until we are ready, then do it via stage
   if (!ConfigUtils.SystemStatus("FirehoseNewsMigrator")) {

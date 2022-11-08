@@ -172,15 +172,19 @@ export const withDestinyDefinitions = <
 
       // If we encounter any errors, we'll show this modal which will let users hit the DestinyDefinitions.scorchedEarth() function (deletes the databases and attempts to redownload stuff).
       if (hasError) {
-        const label = Localizer.FormatReact(
-          Localizer.Destiny.DestinyDefinitionLoadIssue,
-          {
-            helpForumLink: (
-              <Anchor url={RouteHelper.Forums({ tg: "Help" })}>
-                {Localizer.Destiny.HelpForumLinkLabel}
-              </Anchor>
-            ),
-          }
+        const label = (
+          <>
+            {Localizer.FormatReact(
+              Localizer.Destiny.DestinyDefinitionLoadIssue,
+              {
+                helpForumLink: (
+                  <Anchor url={RouteHelper.Forums({ tg: "Help" })}>
+                    {Localizer.Destiny.HelpForumLinkLabel}
+                  </Anchor>
+                ),
+              }
+            )}
+          </>
         );
 
         return (

@@ -11,7 +11,7 @@ import { SystemNames } from "@Global/SystemNames";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import { Info } from "luxon";
 import React, { LegacyRef, useState } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";

@@ -3,7 +3,6 @@
 
 import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
-import moment from "moment";
 import React from "react";
 import { Img } from "../../../Utilities/helpers";
 import { StoreSkuButton } from "../../UIKit/Controls/Button/StoreSkuButton";
@@ -15,6 +14,7 @@ import {
 } from "./DestinySkuConfigDataStore";
 import styles from "./DestinySkuSelectorOptions.module.scss";
 import { DestinySkuUtils } from "./DestinySkuUtils";
+import luxon, { DateTime } from "luxon";
 
 interface StoreButtonsForSkuProps {
   subtitle: string;
@@ -42,15 +42,12 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
   } = props;
 
   const getSaleDateString = (activeSale: IDestinySkuSale) => {
-    const ed = moment(
-      moment(activeSale.endDate).local(true),
-      "YYYY-MM-DD HH:mm"
-    );
+    const ed = DateTime.fromISO(activeSale.endDate);
     const saleDescription = Localizer.Buyflow.GenericSaleDescription;
     const endDateString = Localizer.Format(Localizer.Time.CompactMonthDayYear, {
-      month: ed.format("MM"),
-      day: ed.format("DD"),
-      year: ed.format("YYYY"),
+      month: ed.toFormat("M"),
+      day: ed.toFormat("dd"),
+      year: ed.toFormat("y"),
     });
 
     return Localizer.Format(Localizer.Buyflow.SaleEndsOn, {
@@ -76,18 +73,28 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
 
   const isPlaystation = (store: IDestinySkuStore) =>
     store.stringKey === "StorePlaystation";
-  const region = selectedRegion ?? DestinySkuUtils.REGION_GLOBAL_KEY;
 
   return (
     <>
       <div className={styles.modalSubtitle}>{subtitle}</div>
       <div className={styles.modalButtons}>
         {stores.map((store) => {
+          const storeRegions = DestinySkuUtils.getRegionsForProduct(
+            skuDefinition.skuTag,
+            store.key,
+            skuConfig
+          );
+          const storeRegion =
+            selectedRegion ??
+            (storeRegions.length > 1
+              ? storeRegions[0].key
+              : DestinySkuUtils.REGION_GLOBAL_KEY);
+
           const url = DestinySkuUtils.getStoreUrlForSku(
             skuDefinition.skuTag,
             store.key,
             skuConfig,
-            region,
+            storeRegion,
             utmParams
           );
           const activeSale =
@@ -119,27 +126,34 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
                 buttonStyles={styles.platformTriggerButton}
                 url={url}
                 sameTab={false}
-                onClick={(e) => onStoreSelected(e, store, isPlaystation(store))}
+                onClick={(e) => {
+                  if (storeRegion !== DestinySkuUtils.REGION_GLOBAL_KEY) {
+                    e.preventDefault();
+                  }
+
+                  onStoreSelected(e, store, isPlaystation(store));
+                }}
                 analyticsId={`${store}|${skuDefinition.skuTag}`}
               >
-                {activeSale && (
-                  <div className={styles.saleTag}>
-                    {Localizer.Sales[skuDefinition.skuTag] ??
-                      Localizer.Sales[productFamily]}
+                <div className={styles.buttonInner}>
+                  {activeSale && (
+                    <div className={styles.saleTag}>
+                      {Localizer.Sales[skuDefinition.skuTag] ??
+                        Localizer.Sales[productFamily]}
+                    </div>
+                  )}
+                  <div className={styles.platformInfo}>
+                    <img
+                      className={classNames(styles.icon, {
+                        [styles.epic]: store.stringKey === "StoreEpic",
+                      })}
+                      src={`${Img(
+                        `bungie/icons/logos/${storeKeyForIcon}/${storeKeyForIcon}_icon_small.png`
+                      )}`}
+                      alt={store.key}
+                    />
+                    <div className={styles.buttonText}>{storeKeyForTitle}</div>
                   </div>
-                )}
-
-                <img
-                  className={classNames(styles.icon, {
-                    [styles.epic]: store.stringKey === "StoreEpic",
-                  })}
-                  src={`${Img(
-                    `bungie/icons/logos/${storeKeyForIcon}/${storeKeyForIcon}_icon_small.png`
-                  )}`}
-                  alt={store.key}
-                />
-                <div className={styles.buttonText}>
-                  {storeKeyForTitle}
                   <div className={styles.saleInfo}>
                     <p className={styles.endDate}>{activeSaleEndDate}&nbsp;</p>
                   </div>

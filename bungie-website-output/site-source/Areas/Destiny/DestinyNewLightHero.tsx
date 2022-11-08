@@ -8,7 +8,7 @@ import {
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import React from "react";
 import {
   BnetStackFile,

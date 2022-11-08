@@ -1,7 +1,7 @@
 import { EventMuxStorage } from "@Global/EventMux/EventMuxStorage";
 import { Logger } from "@Global/Logger";
 import { Platform, RealTimeEventing } from "@Platform";
-import moment from "moment";
+import { DateTime } from "luxon";
 import { EventMux } from "./EventMuxBase";
 
 export class EventMuxChannelClient {
@@ -81,7 +81,7 @@ export class EventMuxChannelClient {
 
     if (EventMux.isAuthed) {
       Logger.logVerbose(
-        `[ChannelClient][${moment().format(
+        `[ChannelClient][${DateTime.now().toFormat(
           "HH:mm:ss"
         )}] Performing GET from Tab ${this.tabId}`
       );
@@ -101,7 +101,7 @@ export class EventMuxChannelClient {
           this.pendingGets--;
           if (!EventMux.isCurrentTabOverlord) {
             Logger.warnVerbose(
-              `[ChannelClient][${moment().format(
+              `[ChannelClient][${DateTime.now().toFormat(
                 "HH:mm:ss"
               )}] Get succeeded, but this tab is no longer overlord! Throwing out results...`
             );
@@ -110,7 +110,9 @@ export class EventMuxChannelClient {
           }
 
           Logger.logVerbose(
-            `[ChannelClient][${moment().format("HH:mm:ss")}] GET Succeeded`,
+            `[ChannelClient][${DateTime.now().toFormat(
+              "HH:mm:ss"
+            )}] GET Succeeded`,
             response
           );
 
@@ -133,7 +135,7 @@ export class EventMuxChannelClient {
 
           if (!EventMux.isCurrentTabOverlord) {
             Logger.warnVerbose(
-              `[ChannelClient][${moment().format(
+              `[ChannelClient][${DateTime.now().toFormat(
                 "HH:mm:ss"
               )}] Get failed, but this tab is no longer overlord! Throwing out results...`
             );

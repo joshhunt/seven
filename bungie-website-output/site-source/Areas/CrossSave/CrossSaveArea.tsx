@@ -1,12 +1,7 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { PlatformError } from "@CustomErrors";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { DataStore } from "@bungie/datastore";
-import {
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -15,8 +10,8 @@ import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import * as React from "react";
-import { Route, RouteComponentProps } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Route } from "react-router-dom";
 import CrossSaveActivate from "./CrossSaveActivate";
 import styles from "./CrossSaveArea.module.scss";
 import { CrossSaveConfirmation } from "./CrossSaveConfirmation";
@@ -24,151 +19,105 @@ import CrossSaveDeactivate from "./CrossSaveDeactivate";
 import { CrossSaveIndex } from "./CrossSaveIndex";
 import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
 import CrossSaveRecap from "./CrossSaveRecap";
-import {
-  CrossSaveFlowStateContext,
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-} from "./Shared/CrossSaveFlowStateDataStore";
-
-interface ICrossSaveAreaParams {}
-
-interface ICrossSaveAreaState {
-  error: PlatformError;
-  crossSaveFlowState: ICrossSaveFlowState;
-}
-
-interface ICrossSaveAreaProps
-  extends RouteComponentProps<ICrossSaveAreaParams>,
-    GlobalStateComponentProps<"loggedInUser"> {}
+import { CrossSaveFlowStateDataStore } from "./Shared/CrossSaveFlowStateDataStore";
 
 /**
  * The Cross-Save Area
  *  *
- * @param {ICrossSaveAreaProps} props
  * @returns
  */
-class CrossSaveArea extends React.Component<
-  ICrossSaveAreaProps,
-  ICrossSaveAreaState
-> {
-  private readonly subs: DestroyCallback[] = [];
+const CrossSaveArea = () => {
+  const crossSaveEnabled = ConfigUtils.SystemStatus("CrossSave");
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
+  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const [error, setError] = useState<PlatformError>(null);
 
-  constructor(props: ICrossSaveAreaProps) {
-    super(props);
+  useEffect(() => {
+    loadUserData();
+  }, [UserUtils.isAuthenticated(globalState)]);
 
-    this.state = {
-      error: null,
-      crossSaveFlowState: CrossSaveFlowStateDataStore.state,
-    };
-  }
+  useEffect(() => {
+    if (error) {
+      throw error;
+    }
 
-  public componentDidMount() {
-    this.subs.push(
-      CrossSaveFlowStateDataStore.observe((crossSaveFlowState) =>
-        this.setState({
-          crossSaveFlowState,
-        })
-      )
-    );
-  }
+    setError(null);
+  }, [error]);
 
-  public onGlobalStateUpdated() {
-    this.loadUserData();
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.subs);
-  }
-
-  private loadUserData(forceReload = false) {
-    const crossSaveEnabled = ConfigUtils.SystemStatus("CrossSave");
-
+  const loadUserData = (forceReload = false) => {
     /**
      * If the user isn't logged in, we'll reset the state of everything.
      * That way, if one user logs out and another logs in, they aren't
      * going to see anything from the previous user.
      */
-    if (!UserUtils.isAuthenticated(GlobalStateDataStore.state)) {
+    if (!UserUtils.isAuthenticated(globalState)) {
       CrossSaveFlowStateDataStore.actions.reset();
     }
 
-    if (
-      crossSaveEnabled &&
-      (forceReload || !this.state.crossSaveFlowState.loaded)
-    ) {
+    if (crossSaveEnabled && (forceReload || !flowState.loaded)) {
       CrossSaveFlowStateDataStore.loadUserData()
         .catch(ConvertToPlatformError)
-        .catch((error: PlatformError) => {
-          this.setState({
-            error,
-          });
+        .catch((err: PlatformError) => {
+          setError(err);
         });
     }
-  }
+  };
 
-  public render() {
-    const crossSaveEnabled = ConfigUtils.SystemStatus("CrossSave");
+  const routes = [
+    <Route
+      key={0}
+      path={RouteDefs.Areas.CrossSave.getAction("Index").path}
+      component={CrossSaveIndex}
+    />,
+  ];
 
-    if (this.state.error) {
-      throw this.state.error;
-    }
-
-    const routes = [
+  if (crossSaveEnabled) {
+    routes.unshift(
       <Route
-        key={0}
-        path={RouteDefs.Areas.CrossSave.getAction("Index").path}
-        component={CrossSaveIndex}
+        key={1}
+        path={RouteDefs.Areas.CrossSave.getAction("Activate").path}
+        component={CrossSaveActivate}
       />,
-    ];
-
-    if (crossSaveEnabled) {
-      routes.unshift(
-        <Route
-          key={1}
-          path={RouteDefs.Areas.CrossSave.getAction("Activate").path}
-          component={CrossSaveActivate}
-        />,
-        <Route
-          key={2}
-          path={RouteDefs.Areas.CrossSave.getAction("Confirmation").path}
-          component={CrossSaveConfirmation}
-        />,
-        <Route
-          key={3}
-          path={RouteDefs.Areas.CrossSave.getAction("Deactivate").path}
-          component={CrossSaveDeactivate}
-        />,
-        <Route
-          key={4}
-          path={RouteDefs.Areas.CrossSave.getAction("Recap").path}
-          component={CrossSaveRecap}
-        />
-      );
-    }
-
-    return (
-      <CrossSaveFlowStateContext.Provider value={this.state.crossSaveFlowState}>
-        <BungieHelmet
-          title={Localizer.Crosssave.CrossSaveAreaHeader}
-          image={CrossSaveIndexDefinitions.MetaImage}
-        >
-          <body className={styles.crossSaveArea} />
-        </BungieHelmet>
-        <div className={styles.contentWrapper}>
-          <SwitchWithErrors>{routes}</SwitchWithErrors>
-        </div>
-        <div className={styles.helpBar}>
-          <Anchor url={"/en/Forums/Topics/?tg=Help"}>
-            {Localizer.Crosssave.HelpBarHelp}
-          </Anchor>
-          <span>|</span>
-          <Anchor url={RouteHelper.CrossSave()}>
-            {Localizer.Crosssave.HelpBarAboutCrossSave}
-          </Anchor>
-        </div>
-      </CrossSaveFlowStateContext.Provider>
+      <Route
+        key={2}
+        path={RouteDefs.Areas.CrossSave.getAction("Confirmation").path}
+        component={CrossSaveConfirmation}
+      />,
+      <Route
+        key={3}
+        path={RouteDefs.Areas.CrossSave.getAction("Deactivate").path}
+        component={CrossSaveDeactivate}
+      />,
+      <Route
+        key={4}
+        path={RouteDefs.Areas.CrossSave.getAction("Recap").path}
+        component={CrossSaveRecap}
+      />
     );
   }
-}
 
-export default withGlobalState(CrossSaveArea, ["loggedInUser"]);
+  return (
+    <>
+      <BungieHelmet
+        title={Localizer.Crosssave.CrossSaveAreaHeader}
+        image={CrossSaveIndexDefinitions.MetaImage}
+      >
+        <body className={styles.crossSaveArea} />
+      </BungieHelmet>
+      <div className={styles.contentWrapper}>
+        <SwitchWithErrors>{routes}</SwitchWithErrors>
+      </div>
+      <div className={styles.helpBar}>
+        <Anchor url={"/en/Forums/Topics/?tg=Help"}>
+          {Localizer.Crosssave.HelpBarHelp}
+        </Anchor>
+        <span>|</span>
+        <Anchor url={RouteHelper.CrossSave()}>
+          {Localizer.Crosssave.HelpBarAboutCrossSave}
+        </Anchor>
+      </div>
+    </>
+  );
+};
+
+export default CrossSaveArea;

@@ -16,6 +16,7 @@ interface IDestinySkuStoreButtonProps extends RouteComponentProps {
   config: IDestinySkuConfig;
   disabled: boolean;
   utmParams?: string;
+  children?: React.ReactNode;
 }
 
 interface IDestinySkuStoreButtonState {}
@@ -57,7 +58,6 @@ class DestinySkuStoreButton extends React.Component<
       <Button
         buttonType="gold"
         sameTab={false}
-        className={styles.storeButton}
         url={url}
         legacy={true}
         disabled={this.props.disabled}

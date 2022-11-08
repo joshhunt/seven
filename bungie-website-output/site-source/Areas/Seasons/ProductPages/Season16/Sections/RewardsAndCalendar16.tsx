@@ -19,7 +19,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import {
   bgImageFromStackFile,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import { SeasonUtils } from "@Utilities/SeasonUtils";
 import classNames from "classnames";
 import React, { LegacyRef, useEffect, useState } from "react";

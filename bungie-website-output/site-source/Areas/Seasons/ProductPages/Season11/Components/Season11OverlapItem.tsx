@@ -22,6 +22,7 @@ export interface Season11OverlapAssetProps {
   disableOverlap?: boolean;
   fade?: boolean;
   hideLine?: boolean;
+  children?: React.ReactNode;
 }
 
 export const Season11OverlapItem: React.FC<
@@ -31,24 +32,26 @@ export const Season11OverlapItem: React.FC<
   className,
   asset,
   title,
-  children,
   size,
   disableOverlap,
   fade,
   hideLine,
   mobileSubtitle,
+  children,
 }) => {
   return (
     <ResponsiveContext.Consumer>
       {(responsive) => (
         <div
-          className={classNames(className, styles[size], {
-            [styles.fade]: fade,
-          })}
+          className={classNames(
+            className,
+            { [styles.small]: size === "small" },
+            { [styles.fade]: fade }
+          )}
         >
           <Season11GridBoundary
             size={12}
-            className={classNames(styles.mediaWrapper, classes?.mediaWrapper)}
+            className={classNames(classes?.mediaWrapper)}
           >
             <div
               className={classNames(styles.media, {
@@ -64,7 +67,7 @@ export const Season11OverlapItem: React.FC<
               [styles.noOverlap]: disableOverlap,
             })}
           >
-            <div className={styles.below}>
+            <div>
               {mobileSubtitle && (
                 <Season11MobileSubtitle separator={"//"}>
                   {mobileSubtitle}

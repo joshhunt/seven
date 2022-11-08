@@ -1,6 +1,3 @@
-import moment from "moment";
-import { RouteDefs } from "@Routes/RouteDefs";
-
 //BEGIN:VCALENDAR
 //VERSION:2.0
 //PRODID:-//ZContent.net//Zap Calendar 1.0//EN

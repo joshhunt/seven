@@ -17,6 +17,7 @@ interface IRespondProps {
    * But we don't want you to have to set up global state just to use this component. Basically, if you already have IGlobalState,
    * pass globalState.responsive here. Otherwise, it's fine to pass null. */
   responsive: IResponsiveState;
+  children?: React.ReactNode;
 }
 
 interface IRespondState {

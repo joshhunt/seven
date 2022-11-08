@@ -38,7 +38,7 @@ import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { IoMdLink } from "react-icons/io";
+import { IoMdLink } from "@react-icons/all-files/io/IoMdLink";
 import styles from "./Pgcr.module.scss";
 
 export interface BasicDestinyActivityData {

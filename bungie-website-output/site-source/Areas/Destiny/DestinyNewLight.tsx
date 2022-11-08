@@ -20,7 +20,7 @@ import LazyLoadedBgDiv from "@UI/Utility/LazyLoadedBgDiv";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
 import { useCSWebpImages } from "@Utilities/CSUtils";
-import { bgImage, bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { bgImage, bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { useEffect, useMemo, useState } from "react";
 import {

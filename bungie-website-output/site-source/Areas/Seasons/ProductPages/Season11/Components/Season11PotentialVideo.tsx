@@ -12,6 +12,7 @@ interface Season11PotentialVideoProps {
   className?: string;
   playButtonClasses?: Season11PlayButtonClasses;
   nonVideoClick?: () => void;
+  children?: React.ReactNode;
 }
 
 export const Season11PotentialVideo: React.FC<Season11PotentialVideoProps> = (
@@ -26,7 +27,6 @@ export const Season11PotentialVideo: React.FC<Season11PotentialVideoProps> = (
   } = props;
 
   const classes = classNames(className, styles.wrapper, {
-    [styles.hasVideo]: !!videoId,
     [styles.modalClick]: !videoId && !!nonVideoClick,
   });
 

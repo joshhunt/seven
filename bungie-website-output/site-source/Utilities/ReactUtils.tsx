@@ -59,7 +59,7 @@ export const useAsyncError = () => {
   const [_, setError] = React.useState();
 
   return React.useCallback(
-    (e) => {
+    (e: Error) => {
       setError(() => {
         throw e;
       });

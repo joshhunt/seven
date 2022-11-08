@@ -3,13 +3,12 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import React from "react";
 import { useHistory, useLocation } from "react-router";
 import { Route } from "react-router-dom";
-import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import { RouteDefs } from "../../Global/Routes/RouteDefs";
-import { BodyClasses, SpecialBodyClasses } from "../../UI/HelmetUtils";
-import { AnimatedRouter } from "../../UI/Routing/AnimatedRouter";
-import { ISubNavLink, SubNav } from "../../UI/UIKit/Controls/SubNav";
-import { Grid, GridCol } from "../../UI/UIKit/Layout/Grid/Grid";
-import { UrlUtils } from "../../Utilities/UrlUtils";
+import { RouteDefs } from "@Routes/RouteDefs";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
+import { ISubNavLink, SubNav } from "@UIKit/Controls/SubNav";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import styles from "./News.module.scss";
 import NewsByCategory from "./NewsByCategory";
 
@@ -39,22 +38,22 @@ const News: React.FC = () => {
 
   const categoryLinks: ISubNavLink[] = [
     {
-      label: Localizer.news.TagNone,
+      label: Localizer.news.TagNone.toUpperCase(),
       to: actions.none.resolve(),
       current: !UrlUtils.GetUrlAction(location),
     },
     {
-      label: Localizer.news["TagNews-Destiny"],
+      label: Localizer.news["TagNews-Destiny"].toUpperCase(),
       to: actions.destiny.resolve(),
       current: actions.destiny.action === UrlUtils.GetUrlAction(location),
     },
     {
-      label: Localizer.news["TagNews-Community"],
+      label: Localizer.news["TagNews-Community"].toUpperCase(),
       to: actions.community.resolve(),
       current: actions.community.action === UrlUtils.GetUrlAction(location),
     },
     {
-      label: Localizer.news["TagNews-Updates"],
+      label: Localizer.news["TagNews-Updates"].toUpperCase(),
       to: actions.updates.resolve(),
       current: actions.updates.action === UrlUtils.GetUrlAction(location),
     },

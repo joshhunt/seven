@@ -55,8 +55,6 @@ export const FormikTextInput: React.FC<FormikTextInputProps> = ({
           props.onChange && props.onChange(e);
           field.onChange(e);
         }}
-        onFocus={(e) => (props.onFocus ? props.onFocus(e) : null)}
-        onBlur={(e) => (props.onBlur ? props.onBlur(e) : null)}
       />
       {meta.touched && meta.error && typeof meta.error === "string" ? (
         <div className={classes?.error}>{meta.error}</div>

@@ -1,12 +1,8 @@
-import { DestinyShadowkeepQuery } from "@Areas/Destiny/__generated__/DestinyShadowkeepQuery.graphql";
 import { IDestinyNewsMedia } from "@Areas/Destiny/Shared/DestinyNewsAndMedia";
 import { DestinyNewsAndMediaUpdated } from "@Areas/Destiny/Shared/DestinyNewsAndMediaUpdated";
 import { Responsive } from "@Boot/Responsive";
 import { RouteHelper } from "@Routes/RouteHelper";
-import {
-  SafelySetInnerHTML,
-  sanitizeHTML,
-} from "@UI/Content/SafelySetInnerHTML";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import {
   ClickableMediaThumbnail,
@@ -15,12 +11,10 @@ import {
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
-import {
-  BasicImageConnection,
-  imageFromConnection,
-} from "@Utilities/GraphQLUtils";
-import React, { useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { Spinner } from "@UIKit/Controls/Spinner";
+import { bgImageFromStackFile } from "@Utilities/ContentStackUtils";
+import React, { useEffect, useState } from "react";
+import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
 import styles from "./DestinyShadowkeep.module.scss";
 import Hero from "./Shadowkeep/ShadowkeepHero";
 import { Localizer } from "@bungie/localization";
@@ -33,350 +27,100 @@ interface DestinyShadowkeepProps {}
 const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
 const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
-  const { mobile } = useDataStore(Responsive);
+  const isMobile = useDataStore(Responsive)?.mobile;
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName ?? "en");
-  const data = useLazyLoadQuery<DestinyShadowkeepQuery>(
-    graphql`
-      query DestinyShadowkeepQuery($locale: String!) {
-        shadowkeep_product_page(uid: "blt844464dc79de73b7", locale: $locale) {
-          title
-          meta_imgConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          hero {
-            btn_title
-            background {
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-          subnav {
-            btn_title
-            labels {
-              ... on ShadowkeepProductPageSubnavLabels {
-                label_id
-                label
-              }
-            }
-          }
-          gear_section {
-            section_bg {
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            small_title
-            section_title
-            info_blocks {
-              ... on ShadowkeepProductPageGearSectionInfoBlocks {
-                blurb
-                heading
-                imageConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                video_id
-              }
-            }
-          }
-          story_section {
-            section_bg {
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            mobile_flames_bgConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            small_title
-            section_title
-            blurb
-            thumbnailConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            thumbnail_blurb
-            thumb_video_id
-            thumbnail_heading
-          }
-          endgame_section {
-            section_bg {
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            eris_iconConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            small_title
-            section_title
-            info_blocks {
-              ... on ShadowkeepProductPageEndgameSectionInfoBlocks {
-                blurb
-                heading
-                imageConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                video_id
-              }
-            }
-          }
-          cta {
-            section_bg {
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            btn_title
-            logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-          media {
-            screenshot {
-              ... on ShadowkeepProductPageMediaScreenshot {
-                screenshotConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-            video {
-              ... on ShadowkeepProductPageMediaVideo {
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                video_id
-              }
-            }
-            wallpaper {
-              ... on ShadowkeepProductPageMediaWallpaper {
-                wallpaperConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    { locale }
-  );
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("shadowkeep_product_page")
+      .Entry("blt844464dc79de73b7")
+      .language(locale)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
 
   const {
+    title,
+    meta_img,
     hero,
+    subnav,
     story_section,
     gear_section,
     endgame_section,
     cta,
-    subnav,
-    meta_imgConnection,
-    title,
     media,
-  } = data?.shadowkeep_product_page ?? {};
-
-  const getResponsiveBg = (
-    desktopImg: BasicImageConnection,
-    mobileImg: BasicImageConnection,
-    isMobile: boolean
-  ): string | undefined => {
-    const img = isMobile
-      ? imageFromConnection(mobileImg)?.url
-      : imageFromConnection(desktopImg)?.url;
-
-    return img ? `url(${img})` : undefined;
-  };
+  } = data ?? {};
 
   const [heroRef, setHeroRef] = useState(null);
 
-  const storyBg = getResponsiveBg(
-    story_section?.section_bg.desktopConnection,
-    story_section?.section_bg.mobileConnection,
-    mobile
-  );
-  const storyFlamesBg = imageFromConnection(
-    story_section?.mobile_flames_bgConnection
-  )?.url;
-  const gearBg = getResponsiveBg(
-    gear_section?.section_bg.desktopConnection,
-    gear_section?.section_bg.mobileConnection,
-    mobile
-  );
-  const endgameBg = getResponsiveBg(
-    endgame_section?.section_bg.desktopConnection,
-    endgame_section?.section_bg.mobileConnection,
-    mobile
-  );
-  const ctaBg = getResponsiveBg(
-    cta?.section_bg.desktopConnection,
-    cta?.section_bg.mobileConnection,
-    mobile
-  );
+  if (!data) {
+    return <Spinner on={true} />;
+  }
 
+  const storyBg = bgImageFromStackFile(story_section.section_bg.desktop);
+  const storyBgMobile = bgImageFromStackFile(story_section.section_bg.mobile);
+  const storyFlamesBg = story_section?.mobile_flames_bg?.url;
+  const gearBgDesktop = bgImageFromStackFile(gear_section?.section_bg.desktop);
+  const gearBgMobile = bgImageFromStackFile(gear_section?.section_bg.mobile);
+  const endgameBgDesktop = bgImageFromStackFile(
+    endgame_section?.section_bg.desktop
+  );
+  const endgameBgMobile = bgImageFromStackFile(
+    endgame_section?.section_bg.mobile
+  );
+  const ctaBgDesktop = bgImageFromStackFile(cta?.section_bg.desktop);
+  const ctaBgMobile = bgImageFromStackFile(cta?.section_bg.mobile);
   const gearScreenshots = gear_section?.info_blocks
-    .filter((block) => !block.video_id)
-    .map((block) => imageFromConnection(block.imageConnection)?.url);
+    .filter((block: { video_id: any }) => !block.video_id)
+    .map((block: { image: any }) => block.image?.url);
   const endgameScreenshots = endgame_section?.info_blocks
-    .filter((block) => !block.video_id)
-    .map((block) => imageFromConnection(block.imageConnection)?.url);
+    .filter((block: { video_id: any }) => !block.video_id)
+    .map((block: { image: any }) => block.image?.url);
 
-  const endgameIcon = endgame_section?.eris_iconConnection
-    ? `url(${imageFromConnection(endgame_section?.eris_iconConnection)?.url})`
+  const endgameIcon = endgame_section?.eris_icon
+    ? `url(${endgame_section?.eris_icon?.url})`
     : undefined;
 
-  const mediaScreenshots: IDestinyNewsMedia[] = media?.screenshot.map((s) => ({
-    isVideo: false,
-    thumbnail:
-      imageFromConnection(s.thumbnailConnection)?.url ||
-      `${imageFromConnection(s.screenshotConnection)?.url}?width=500`,
-    detail: imageFromConnection(s.screenshotConnection)?.url,
-  }));
+  const mediaScreenshots: IDestinyNewsMedia[] = media?.screenshots?.map(
+    (s: any) => ({
+      isVideo: false,
+      thumbnail:
+        s.screenshot?.thumbnail?.url || `${s.screenshot?.image?.url}?width=500`,
+      detail: s.screenshot?.image?.url,
+    })
+  );
 
-  const mediaVideos: IDestinyNewsMedia[] = media?.video.map((v) => ({
+  const mediaVideos: IDestinyNewsMedia[] = media?.videos?.map((vid: any) => ({
     isVideo: true,
-    thumbnail: imageFromConnection(v?.thumbnailConnection)?.url,
-    detail: v?.video_id,
+    thumbnail: vid.thumbnail?.url,
+    detail: vid.video_id,
   }));
 
-  const mediaWallpapers: IDestinyNewsMedia[] = media?.wallpaper.map((w) => ({
-    isVideo: false,
-    thumbnail: imageFromConnection(w?.thumbnailConnection).url,
-    detail: imageFromConnection(w?.wallpaperConnection)?.url,
-  }));
+  const mediaWallpapers: IDestinyNewsMedia[] = media?.wallpapers?.map(
+    (wall: any) => ({
+      isVideo: false,
+      thumbnail: wall?.thumbnail?.url,
+      detail: wall?.wallpaper?.url,
+    })
+  );
 
   // map over subnav labels coming from CS to ensure labels are in correct order
   const subNavIds = subnav?.labels
-    ?.map((l) => {
-      const navId = l.label_id?.replace("_nav_label", "");
+    ?.map((eLabel: { label_id: string }) => {
+      const navId = eLabel.label_id?.replace("_nav_label", "");
 
       return idToElementsMapping[navId] && navId;
     })
-    .filter((label) => !!label);
+    .filter((eLabel: any) => !!eLabel);
 
   return (
     <div className={styles.shadowkeepPage}>
-      <BungieHelmet
-        title={title}
-        image={imageFromConnection(meta_imgConnection)?.url}
-      >
+      <BungieHelmet title={title} image={meta_img?.url}>
         <body
           className={classNames(
-            styles.shadowkeep,
             SpecialBodyClasses(
               BodyClasses.NoSpacer | BodyClasses.HideServiceAlert
             )
@@ -390,11 +134,12 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
         <MarketingSubNav
           ids={subNavIds}
           renderLabel={(id, index) => {
-            const label = subnav?.labels.find(
-              (l) => l.label_id === `${id}_nav_label`
+            const currentLabel = subnav?.labels.find(
+              (currLabel: { label_id: string }) =>
+                currLabel.label_id === `${id}_nav_label`
             );
 
-            return label?.label;
+            return currentLabel?.label;
           }}
           buttonProps={{
             children: subnav?.btn_title,
@@ -414,7 +159,7 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
         >
           <div
             className={styles.sectionBg}
-            style={{ backgroundImage: storyBg }}
+            style={{ backgroundImage: isMobile ? storyBgMobile : storyBg }}
           />
           <div
             className={styles.mobileFlamesBg}
@@ -424,7 +169,6 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
             <h3 className={styles.smallTitle}>{story_section?.small_title}</h3>
             <div className={styles.titleDivider} />
             <h2
-              className={styles.sectionTitle}
               dangerouslySetInnerHTML={sanitizeHTML(
                 story_section?.section_title
               )}
@@ -434,9 +178,7 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
               <div className={styles.thumbnailWrapper}>
                 <ClickableMediaThumbnail
                   videoId={story_section?.thumb_video_id}
-                  thumbnail={
-                    imageFromConnection(story_section?.thumbnailConnection)?.url
-                  }
+                  thumbnail={story_section?.thumbnail?.url}
                   showShadowBehindPlayIcon
                 />
                 <p className={styles.blurbHeading}>
@@ -455,42 +197,49 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
         >
           <div
             className={classNames(styles.sectionBg, styles.top)}
-            style={{ backgroundImage: gearBg }}
+            style={{ backgroundImage: isMobile ? gearBgMobile : gearBgDesktop }}
           />
           <div
             className={classNames(styles.sectionBg, styles.bottom)}
-            style={{ backgroundImage: endgameBg }}
+            style={{
+              backgroundImage: isMobile ? endgameBgMobile : endgameBgDesktop,
+            }}
           />
           <div className={styles.contentWrapper}>
             <div className={styles.topContent}>
               <h3 className={styles.smallTitle}>{gear_section?.small_title}</h3>
               <div className={styles.titleDivider} />
               <h2
-                className={styles.sectionTitle}
                 dangerouslySetInnerHTML={sanitizeHTML(
                   gear_section?.section_title
                 )}
               />
               <div>
-                {gear_section?.info_blocks?.map((block, i) => {
-                  return (
-                    <ShadowkeepInfoBlock
-                      key={i}
-                      blurb={block.blurb}
-                      blurbHeading={block.heading}
-                      direction={i % 2 !== 0 ? "normal" : "reverse"}
-                      singleOrAllScreenshots={gearScreenshots}
-                      screenshotIndex={i}
-                      thumbnail={
-                        imageFromConnection(block.imageConnection)?.url
-                      }
-                    />
-                  );
-                })}
+                {gear_section?.info_blocks?.map(
+                  (
+                    block: {
+                      blurb: string;
+                      heading: string;
+                      image: { url: string };
+                    },
+                    i: number
+                  ) => {
+                    return (
+                      <ShadowkeepInfoBlock
+                        key={i}
+                        blurb={block.blurb}
+                        blurbHeading={block.heading}
+                        direction={i % 2 !== 0 ? "normal" : "reverse"}
+                        singleOrAllScreenshots={gearScreenshots}
+                        screenshotIndex={i}
+                        thumbnail={block.image?.url}
+                      />
+                    );
+                  }
+                )}
               </div>
             </div>
             <div
-              className={styles.bottomContent}
               id={"endgame"}
               ref={(el) => (idToElementsMapping["endgame"] = el)}
             >
@@ -503,37 +252,43 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
               </h3>
               <div className={styles.titleDivider} />
               <h2
-                className={styles.sectionTitle}
                 dangerouslySetInnerHTML={sanitizeHTML(
                   endgame_section?.section_title
                 )}
               />
               <div>
-                {endgame_section?.info_blocks?.map((block, i) => {
-                  return (
-                    <ShadowkeepInfoBlock
-                      key={i}
-                      blurb={block.blurb}
-                      blurbHeading={block.heading}
-                      direction={i % 2 === 0 ? "normal" : "reverse"}
-                      singleOrAllScreenshots={endgameScreenshots}
-                      screenshotIndex={i}
-                      thumbnail={
-                        imageFromConnection(block.imageConnection)?.url
-                      }
-                    />
-                  );
-                })}
+                {endgame_section?.info_blocks?.map(
+                  (
+                    block: {
+                      blurb: string;
+                      heading: string;
+                      image: { url: string };
+                    },
+                    i: number
+                  ) => {
+                    return (
+                      <ShadowkeepInfoBlock
+                        key={i}
+                        blurb={block.blurb}
+                        blurbHeading={block.heading}
+                        direction={i % 2 === 0 ? "normal" : "reverse"}
+                        singleOrAllScreenshots={endgameScreenshots}
+                        screenshotIndex={i}
+                        thumbnail={block.image?.url}
+                      />
+                    );
+                  }
+                )}
               </div>
             </div>
           </div>
         </div>
-        <div className={styles.cta} style={{ backgroundImage: ctaBg }}>
+        <div
+          className={styles.cta}
+          style={{ backgroundImage: isMobile ? ctaBgMobile : ctaBgDesktop }}
+        >
           <div className={styles.ctaContent}>
-            <img
-              className={styles.logo}
-              src={imageFromConnection(cta?.logoConnection)?.url}
-            />
+            <img className={styles.logo} src={cta?.logo?.url} />
             <Button
               url={RouteHelper.DestinyBuyDetail({
                 productFamilyTag: "Shadowkeep",
@@ -595,10 +350,7 @@ const ShadowkeepInfoBlock: React.FC<IShadowkeepInfoBlock> = (props) => {
         <ClickableMediaThumbnail
           {...rest}
           showBottomShade={true}
-          classes={{
-            btnWrapper: styles.clickableImg,
-            btnBottomShade: styles.btnShade,
-          }}
+          classes={{ btnWrapper: styles.clickableImg }}
         />
       </div>
     </div>

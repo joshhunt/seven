@@ -20,7 +20,7 @@ import { Spinner } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { CgChevronDown } from "react-icons/cg";
+import { CgChevronDown } from "@react-icons/all-files/cg/CgChevronDown";
 
 interface LinkedPlatformExpanderProps {
   title: string;

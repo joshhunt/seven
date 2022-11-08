@@ -1,3 +1,4 @@
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieMembershipType } from "@Enum";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
@@ -10,7 +11,7 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React, { useState } from "react";
 import {
   CrossSaveFlowStateDataStore,
   ICrossSaveFlowState,
@@ -23,76 +24,47 @@ import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInf
 import { CrossSaveSilverBalance } from "./Components/CrossSaveSilverBalance";
 import styles from "./CrossSaveCharacters.module.scss";
 
-interface ICrossSaveCharactersProps {
-  flowState: ICrossSaveFlowState;
-}
-
-interface ICrossSaveCharactersState {
-  primaryMembership: BungieMembershipType;
-  hoveredAccount: BungieMembershipType;
-}
-
 /**
  * The steps to choose your characters in Cross-Save
  *  *
- * @param {ICrossSaveCharactersProps} props
  * @returns
  */
-export class CrossSaveCharacters extends React.Component<
-  ICrossSaveCharactersProps,
-  ICrossSaveCharactersState
-> {
-  constructor(props: ICrossSaveCharactersProps) {
-    super(props);
+export const CrossSaveCharacters = () => {
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
+  const [hoveredAccount, setHoveredAccount] = useState(null);
+  const [primaryMembership, setPrimaryMembership] = useState(
+    flowState.primaryMembershipType
+  );
 
-    this.state = {
-      hoveredAccount: null,
-      primaryMembership: props.flowState.primaryMembershipType,
-    };
-  }
-
-  private onCharactersSelected(membershipType: BungieMembershipType) {
-    this.setState({
-      primaryMembership: membershipType,
-    });
-
+  const onCharactersSelected = (membershipType: BungieMembershipType) => {
+    setPrimaryMembership(membershipType);
     CrossSaveFlowStateDataStore.actions.updatePrimaryMembershipType(
       membershipType
     );
-  }
-
-  private onCharactersHovered(membershipType: BungieMembershipType) {
-    if (this.state.primaryMembership <= 0) {
-      this.setState({
-        hoveredAccount: membershipType,
-      });
-    }
-  }
-
-  private readonly deHover = () => {
-    this.setState({
-      hoveredAccount: null,
-    });
   };
 
-  private readonly deselect = () => {
-    this.setState({
-      primaryMembership: null,
-    });
+  const onCharactersHovered = (membershipType: BungieMembershipType) => {
+    if (primaryMembership <= 0) {
+      setHoveredAccount(membershipType);
+    }
+  };
+
+  const deHover = () => {
+    setHoveredAccount(null);
+  };
+
+  const deselect = () => {
+    setPrimaryMembership(null);
 
     CrossSaveFlowStateDataStore.actions.updatePrimaryMembershipType(null);
 
-    setTimeout(() => this.deHover, 500);
+    setTimeout(() => deHover, 500);
   };
 
-  private renderAccounts() {
-    const flowState = this.props.flowState;
-
+  const renderAccounts = () => {
     if (!flowState.loaded) {
       return null;
     }
-
-    const { hoveredAccount, primaryMembership } = this.state;
 
     const accounts = flowState.includedMembershipTypes.map((membershipType) => {
       const canBePrimary = CrossSaveUtils.membershipTypeCanBePrimary(
@@ -118,15 +90,15 @@ export class CrossSaveCharacters extends React.Component<
         [styles.unselectable]: !canBePrimary,
       });
 
-      const onSelected = () => this.onCharactersSelected(membershipType);
-      const onMouseOver = () => this.onCharactersHovered(membershipType);
+      const onSelected = () => onCharactersSelected(membershipType);
+      const onMouseOver = () => onCharactersHovered(membershipType);
 
       return (
         <div key={membershipType} className={classes} onMouseOver={onMouseOver}>
           <CrossSaveAccountCard
             style={{ cursor: "pointer" }}
             onClick={onSelected}
-            onMouseOut={this.deHover}
+            onMouseOut={deHover}
             flowState={flowState}
             membershipType={membershipType}
           >
@@ -140,107 +112,102 @@ export class CrossSaveCharacters extends React.Component<
     });
 
     return accounts;
-  }
+  };
 
-  public render() {
-    const accountRendered = this.renderAccounts();
+  const accountRendered = renderAccounts();
 
-    const nextPrevSteps = CrossSaveUtils.getNextPrevStepPaths(
-      this.props.flowState,
-      "Characters"
-    );
+  const nextPrevSteps = CrossSaveUtils.getNextPrevStepPaths(
+    flowState,
+    "Characters"
+  );
 
-    const buttonContainerClasses = classNames(styles.buttonContainer, {
-      [styles.disabled]:
-        this.state.primaryMembership === BungieMembershipType.None,
-    });
+  const buttonContainerClasses = classNames(styles.buttonContainer, {
+    [styles.disabled]: primaryMembership === BungieMembershipType.None,
+  });
 
-    const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
-      this.props.flowState
-    );
+  const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(flowState);
 
-    // If we came from the Pair page, we don't want to stagger the animation.
-    const cameFromPair = stepDefs.some((a) => a.step === "Pair");
+  // If we came from the Pair page, we don't want to stagger the animation.
+  const cameFromPair = stepDefs.some((a) => a.step === "Pair");
 
-    const helpStepId = ConfigUtils.GetParameter(
-      SystemNames.CrossSave,
-      "CrossSaveHelpStepId",
-      0
-    );
+  const helpStepId = ConfigUtils.GetParameter(
+    SystemNames.CrossSave,
+    "CrossSaveHelpStepId",
+    0
+  );
 
-    const desc = Localizer.FormatReact(
-      Localizer.Crosssave.CharacterStepDescription,
-      {
+  const desc = (
+    <>
+      {Localizer.FormatReact(Localizer.Crosssave.CharacterStepDescription, {
         helpLink: (
           <Anchor url={RouteHelper.HelpStep(helpStepId)}>
             {Localizer.Crosssave.CharactersHelpLinkLabel}
           </Anchor>
         ),
-      }
-    );
+      })}
+    </>
+  );
 
-    return (
-      <div>
-        <CrossSaveStaggerPose index={0} instant={cameFromPair}>
-          <CrossSaveActivateStepInfo
-            title={Localizer.Crosssave.CharacterStepTitle}
-            desc={desc}
+  return (
+    <div>
+      <CrossSaveStaggerPose index={0} instant={cameFromPair}>
+        <CrossSaveActivateStepInfo
+          title={Localizer.Crosssave.CharacterStepTitle}
+          desc={desc}
+        />
+      </CrossSaveStaggerPose>
+
+      <CrossSaveStaggerPose index={1} instant={cameFromPair}>
+        <div className={styles.characterAccounts}>
+          {accountRendered}
+
+          <CharacterChoice
+            primaryMembership={primaryMembership}
+            nextPath={nextPrevSteps.nextPath}
           />
-        </CrossSaveStaggerPose>
+        </div>
+      </CrossSaveStaggerPose>
 
-        <CrossSaveStaggerPose index={1} instant={cameFromPair}>
-          <div className={styles.characterAccounts}>
-            {accountRendered}
-
-            <CharacterChoice
-              flowState={this.props.flowState}
-              primaryMembership={this.state.primaryMembership}
-              nextPath={nextPrevSteps.nextPath}
-            />
-          </div>
-        </CrossSaveStaggerPose>
-
-        <CrossSaveStaggerPose index={2} instant={cameFromPair}>
-          <div className={buttonContainerClasses}>
-            {!this.state.primaryMembership ? (
-              <Button
-                className={styles.buttonBack}
-                buttonType={"white"}
-                url={nextPrevSteps.prevPath}
-                caps={true}
-              >
-                <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
-                {Localizer.Crosssave.Back}
-              </Button>
-            ) : (
-              <Button
-                className={styles.buttonBack}
-                buttonType={"white"}
-                onClick={this.deselect}
-                caps={true}
-              >
-                <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
-                {Localizer.Crosssave.Back}
-              </Button>
-            )}
-          </div>
-        </CrossSaveStaggerPose>
-      </div>
-    );
-  }
-}
+      <CrossSaveStaggerPose index={2} instant={cameFromPair}>
+        <div className={buttonContainerClasses}>
+          {!primaryMembership ? (
+            <Button
+              className={styles.buttonBack}
+              buttonType={"white"}
+              url={nextPrevSteps.prevPath}
+              caps={true}
+            >
+              <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
+              {Localizer.Crosssave.Back}
+            </Button>
+          ) : (
+            <Button
+              className={styles.buttonBack}
+              buttonType={"white"}
+              onClick={deselect}
+              caps={true}
+            >
+              <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
+              {Localizer.Crosssave.Back}
+            </Button>
+          )}
+        </div>
+      </CrossSaveStaggerPose>
+    </div>
+  );
+};
 
 const CharacterChoice = (props: {
   primaryMembership: BungieMembershipType;
-  flowState: ICrossSaveFlowState;
   nextPath: IMultiSiteLink;
 }) => {
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
   if (!props.primaryMembership) {
     return null;
   }
 
   const flowStateForMembership = CrossSaveUtils.getFlowStateInfoForMembership(
-    props.flowState,
+    flowState,
     props.primaryMembership
   );
   const { userInfo } = flowStateForMembership;
@@ -258,23 +225,25 @@ const CharacterChoice = (props: {
     ),
   });
 
-  const subtitle = Localizer.FormatReact(
-    Localizer.Crosssave.ChooseCharactersSubtitle,
-    {
-      crossSaveHelpLink: (
-        <Anchor url={faqLink}>
-          {Localizer.Crosssave.CrossSaveHelpLinkLabel}
-        </Anchor>
-      ),
-    }
+  const subtitle = (
+    <>
+      {Localizer.FormatReact(Localizer.Crosssave.ChooseCharactersSubtitle, {
+        crossSaveHelpLink: (
+          <Anchor url={faqLink}>
+            {Localizer.Crosssave.CrossSaveHelpLinkLabel}
+          </Anchor>
+        ),
+      })}
+    </>
   );
 
-  const alertContentSilver = Localizer.FormatReact(
-    Localizer.Crosssave.AlertContentSilver,
-    {
-      silver: <span>{Localizer.Crosssave.Silver}</span>,
-      seasons: <span>{Localizer.Crosssave.Seasons}</span>,
-    }
+  const alertContentSilver = (
+    <>
+      {Localizer.FormatReact(Localizer.Crosssave.AlertContentSilver, {
+        silver: <span>{Localizer.Crosssave.Silver}</span>,
+        seasons: <span>{Localizer.Crosssave.Seasons}</span>,
+      })}
+    </>
   );
 
   const stadiaIsPrimary =
@@ -293,7 +262,7 @@ const CharacterChoice = (props: {
   /** this is the check for silver on other platforms, we will want to check for seasons owned on other platforms too */
   let hasInactiveSilver = false;
   if (userInfo) {
-    props.flowState.linkedDestinyProfiles.profiles.map((profile) => {
+    flowState.linkedDestinyProfiles.profiles.map((profile) => {
       // Check if there's any silver on accounts being overridden in expected Destiny Platform buckets, if those
       // buckets exist.
       if (profile.membershipId !== userInfo.membershipId) {
@@ -345,9 +314,9 @@ const CharacterChoice = (props: {
       >;
 
       // Check old school location for silver if it's there.
-      if (props.flowState.profileResponses[mt]) {
+      if (flowState.profileResponses[mt]) {
         const profileResponse: Responses.DestinyProfileResponse =
-          props.flowState.profileResponses[mt];
+          flowState.profileResponses[mt];
 
         if (
           profileResponse.profileCurrencies &&

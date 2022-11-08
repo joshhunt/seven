@@ -268,43 +268,48 @@ class CodesRedemptionForm extends React.Component<
       userMemberships?.length > 0 &&
       userMemberships?.[0] !== Globals.BungieMembershipType.None;
 
-    const noDestinyAccountsErrorMessage = Localizer.FormatReact(
-      Localizer.Coderedemption.LinkedDestinyAccountRequired,
-      {
-        settings: (
-          <Anchor
-            url={RouteHelper.Settings({ category: "Accounts" })}
-            className={styles.link}
-            sameTab={false}
-          >
-            {Localizer.Coderedemption.settingsLinkLabel}
-          </Anchor>
-        ),
-        codeHistory: (
-          <Anchor
-            url={RouteHelper.CodeHistoryReact()}
-            className={styles.link}
-            sameTab={false}
-          >
-            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
-          </Anchor>
-        ),
-      }
+    const noDestinyAccountsErrorMessage = (
+      <>
+        {Localizer.FormatReact(
+          Localizer.Coderedemption.LinkedDestinyAccountRequired,
+          {
+            settings: (
+              <Anchor
+                url={RouteHelper.Settings({ category: "Accounts" })}
+                className={styles.link}
+                sameTab={false}
+              >
+                {Localizer.Coderedemption.settingsLinkLabel}
+              </Anchor>
+            ),
+            codeHistory: (
+              <Anchor
+                url={RouteHelper.CodeHistoryReact()}
+                className={styles.link}
+                sameTab={false}
+              >
+                {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
+              </Anchor>
+            ),
+          }
+        )}
+      </>
     );
 
-    const helpErrorMessage = Localizer.FormatReact(
-      Localizer.Coderedemption.HelpForumsMessage,
-      {
-        helpLink: (
-          <Anchor
-            url={RouteHelper.Help()}
-            className={styles.link}
-            sameTab={false}
-          >
-            {Localizer.Coderedemption.helpLinkLabel}
-          </Anchor>
-        ),
-      }
+    const helpErrorMessage = (
+      <>
+        {Localizer.FormatReact(Localizer.Coderedemption.HelpForumsMessage, {
+          helpLink: (
+            <Anchor
+              url={RouteHelper.Help()}
+              className={styles.link}
+              sameTab={false}
+            >
+              {Localizer.Coderedemption.helpLinkLabel}
+            </Anchor>
+          ),
+        })}
+      </>
     );
 
     const platformPickupMessage =
@@ -319,7 +324,7 @@ class CodesRedemptionForm extends React.Component<
 
     const lineColor = codeValid ? styles.gold_line : styles.white_line;
 
-    const loggedInUser = this.props.globalState.loggedInUser;
+    const loggedInUser = this.props.globalState?.loggedInUser;
 
     return (
       <SystemDisabledHandler systems={["BungieTokens"]}>

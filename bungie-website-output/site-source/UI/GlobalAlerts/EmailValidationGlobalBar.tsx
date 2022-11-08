@@ -40,6 +40,10 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
     }
   };
 
+  if (!loggedInUser) {
+    return null;
+  }
+
   return (
     <GlobalBar
       initiallyVisible={isVisibleInitially()}

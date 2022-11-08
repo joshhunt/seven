@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { intersectObserver } from "@Boot/IntersectObserver";
-import { bgImage } from "@Utilities/GraphQLUtils";
+import { bgImage } from "@Utilities/ContentStackUtils";
 import React, { useEffect, useRef, useState } from "react";
 
 type LazyLoadedBgDivProps = React.HTMLProps<HTMLDivElement> & {

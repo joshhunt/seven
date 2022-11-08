@@ -7,7 +7,7 @@ import YoutubeModal, {
   IYoutubeModalBaseProps,
 } from "@UIKit/Controls/Modal/YoutubeModal";
 import classNames from "classnames";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import styles from "./ImageThumb.module.scss";
 
 type BaseImageThumbProps<TClasses extends { [key: string]: string } = {}> = {
@@ -22,7 +22,9 @@ type BaseImageThumbProps<TClasses extends { [key: string]: string } = {}> = {
 export type ImageThumbProps = BaseImageThumbProps;
 
 /* Renders a single image at a maintained aspect ratio with optional children to be rendered within the image */
-export const ImageThumb: React.FC<ImageThumbProps> = (props) => {
+export const ImageThumb: React.FC<PropsWithChildren<ImageThumbProps>> = (
+  props
+) => {
   const { classes, image, children, style } = props;
 
   const getImageUrl = (img: string | undefined) => {
@@ -47,7 +49,9 @@ type ImageVideoThumbProps = BaseImageThumbProps<{ playIcon?: string }> &
   IYoutubeModalBaseProps & {};
 
 /* Renders <ImageThumbBtn> with a play icon and functionality to open a youtube video */
-export const ImageVideoThumb: React.FC<ImageVideoThumbProps> = (props) => {
+export const ImageVideoThumb: React.FC<PropsWithChildren<
+  ImageVideoThumbProps
+>> = (props) => {
   const {
     youtubeUrl,
     videoId,
@@ -84,7 +88,9 @@ type ImageThumbBtnProps = BaseImageThumbProps & {
 };
 
 /* Renders <ImageThumb> inside <button> wrapper and provides button props & functionality */
-export const ImageThumbBtn: React.FC<ImageThumbBtnProps> = (props) => {
+export const ImageThumbBtn: React.FC<PropsWithChildren<ImageThumbBtnProps>> = (
+  props
+) => {
   const { classes, onClick, style, ...restProps } = props;
   // pull out imageContainer class so it can be appended to new <button> wrapper
   const { imageContainer, ...restClasses } = classes ?? {};

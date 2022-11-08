@@ -1,7 +1,7 @@
 // Created by jlauer, 2020
 // Copyright Bungie, Inc.
 
-import React from "react";
+import React, { useEffect } from "react";
 import { FullPageLoadingBar } from "@UI/UIKit/Controls/FullPageLoadingBar";
 import { AppLoadingDataStore } from "@Global/DataStore/AppLoadingDataStore";
 
@@ -28,19 +28,17 @@ export const retry = (
   });
 };
 
-export class LoadingFallback extends React.Component {
-  public componentDidMount() {
+export const LoadingFallback = () => {
+  useEffect(() => {
     AppLoadingDataStore.actions.updateLoading(true);
-  }
 
-  public componentWillUnmount() {
-    AppLoadingDataStore.actions.updateLoading(false);
-  }
+    return () => {
+      AppLoadingDataStore.actions.updateLoading(false);
+    };
+  }, []);
 
-  public render() {
-    return <FullPageLoadingBar />;
-  }
-}
+  return <FullPageLoadingBar />;
+};
 
 export const createAsyncComponent = (
   componentPromise: () => Promise<{ default: React.ComponentType<any> }>

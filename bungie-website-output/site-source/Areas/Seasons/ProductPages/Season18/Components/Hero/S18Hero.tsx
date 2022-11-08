@@ -9,7 +9,7 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { ImageAnchor, ImageVideoThumb } from "@UI/Marketing/ImageThumb";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
-import { bgImage } from "@Utilities/GraphQLUtils";
+import { bgImage } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackS18ProductPage } from "../../../../../../Generated/contentstack-types";
@@ -84,7 +84,6 @@ export const S18Hero: React.FC<S18HeroProps> = (props) => {
               {trailer_btn?.text}
             </Button>
           </div>
-          <HeroBug {...bug_group} scrollToEvent={props.scrollToEvent} />
         </div>
       </div>
     </div>

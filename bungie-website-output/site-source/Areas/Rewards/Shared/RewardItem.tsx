@@ -13,7 +13,8 @@ import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import React from "react";
-import { ImEnlarge, ImEnlarge2 } from "react-icons/all";
+import { ImEnlarge2 } from "@react-icons/all-files/im/ImEnlarge2";
+import { ImEnlarge } from "@react-icons/all-files/im/ImEnlarge";
 import { IReward } from "../Rewards";
 import styles from "./RewardItem.module.scss";
 

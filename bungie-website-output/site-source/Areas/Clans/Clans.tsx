@@ -25,7 +25,8 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { AiOutlineClose, IoIosArrowForward } from "react-icons/all";
+import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
+import { IoIosArrowForward } from "@react-icons/all-files/io/IoIosArrowForward";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 
 export type pageType = "myClans" | "create" | "suggested";

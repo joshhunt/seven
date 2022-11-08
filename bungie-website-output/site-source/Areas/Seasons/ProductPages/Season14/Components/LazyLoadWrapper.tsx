@@ -10,6 +10,7 @@ interface LazyLoadWrapperProps {
   shownClassName?: string;
   style?: React.CSSProperties;
   useCustomEffect?: boolean;
+  children?: React.ReactNode;
 }
 
 const LazyLoadWrapper: React.FC<LazyLoadWrapperProps> = (props) => {

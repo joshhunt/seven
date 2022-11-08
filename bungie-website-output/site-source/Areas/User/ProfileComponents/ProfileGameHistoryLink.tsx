@@ -9,7 +9,7 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React from "react";
-import { BiChevronRight } from "react-icons/bi";
+import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import styles from "./miniblock.module.scss";
 
 interface ProfileGameHistoryLinkProps {}

@@ -17,7 +17,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
-import { IoIosArrowForward } from "react-icons/all";
+import { IoIosArrowForward } from "@react-icons/all-files/io/IoIosArrowForward";
 import styles from "./Clans.module.scss";
 
 interface MyClansProps {}

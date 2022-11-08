@@ -15,7 +15,7 @@ import { PmpMediaCarousel } from "@UI/Marketing/Fragments/PmpMediaCarousel";
 import { Icon } from "@UIKit/Controls/Icon";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { useCSWebpImages } from "@Utilities/CSUtils";
-import { bgImage, responsiveBgImage } from "@Utilities/GraphQLUtils";
+import { bgImage, responsiveBgImage } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { useMemo } from "react";
 import { BnetStackFreeToPlayProductPage } from "../../../../../Generated/contentstack-types";

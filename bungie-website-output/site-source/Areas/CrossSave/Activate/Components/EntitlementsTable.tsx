@@ -11,12 +11,13 @@ import {
   DestinyGameVersions,
 } from "@Enum";
 import { Responses } from "@Platform";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
 import React from "react";
-import { AiFillCheckCircle, AiFillCloseCircle, ImMinus } from "react-icons/all";
+import { AiFillCheckCircle } from "@react-icons/all-files/ai/AiFillCheckCircle";
+import { AiFillCloseCircle } from "@react-icons/all-files/ai/AiFillCloseCircle";
+import { ImMinus } from "@react-icons/all-files/im/ImMinus";
 import styles from "./EntitlementsTable.module.scss";
 
 export type PlatformStatus = "active" | "linked" | "unlinked";

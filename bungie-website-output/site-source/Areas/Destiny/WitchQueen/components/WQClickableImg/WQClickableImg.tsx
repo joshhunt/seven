@@ -6,7 +6,6 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Icon } from "@UIKit/Controls/Icon";
 import ImagePaginationModal from "@UIKit/Controls/Modal/ImagePaginationModal";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import classNames from "classnames";
 import React from "react";
@@ -32,7 +31,7 @@ export const WQClickableImg: React.FC<WQClickableImgProps> = (props) => {
   };
 
   const showImage = () => {
-    ImagePaginationModal.show({
+    return ImagePaginationModal.show({
       images: props.screenshots ?? [],
       imgIndex: props.screenshotIndex,
     });
@@ -41,7 +40,7 @@ export const WQClickableImg: React.FC<WQClickableImgProps> = (props) => {
   const handleClick = () =>
     props.videoId ? showVideo(props.videoId) : showImage();
 
-  const bgImage = props.thumbnail ? `url(${props.thumbnail})` : undefined;
+  const bgImage = props.thumbnail;
 
   return (
     <div className={classNames(styles.imgWrapper, props.classes?.root)}>

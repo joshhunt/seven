@@ -11,6 +11,7 @@ type ObserverCallback = (entry: IntersectionObserverEntry) => void;
  */
 class IOInternal {
   private readonly io: IntersectionObserver;
+
   /* Unique callbacks to be fired for specific elements */
   public readonly callbacks: Map<Element, ObserverCallback> = new Map();
 

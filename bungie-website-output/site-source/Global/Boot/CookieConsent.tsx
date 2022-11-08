@@ -11,13 +11,14 @@ import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { CookieConsentValidity, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import * as H from "history";
 import * as React from "react";
+// @ts-ignore
+import * as h from "history";
 import { EnumUtils } from "../../Utilities/EnumUtils";
 import styles from "./CookieConsent.module.scss";
 
 interface ICookieConsentProps {
-  history: H.History;
+  history: h.History;
 }
 
 interface ICookieConsentState {
@@ -136,18 +137,22 @@ export class CookieConsent extends React.Component<
         : Localizer.Messages.CookieConsentMessagePassive;
     }
 
-    const consentText = Localizer.FormatReact(baseString, {
-      cookiePolicyLink: (
-        <Anchor url={RouteHelper.LegalCookiePolicy()}>
-          {Localizer.Messages.CookieConsentCookiePolicyLink}
-        </Anchor>
-      ),
-      privacyPolicyLink: (
-        <Anchor url={RouteHelper.LegalPrivacyPolicy()}>
-          {Localizer.Messages.CookieConsentPrivacyPolicyLink}
-        </Anchor>
-      ),
-    });
+    const consentText = (
+      <>
+        {Localizer.FormatReact(baseString, {
+          cookiePolicyLink: (
+            <Anchor url={RouteHelper.LegalCookiePolicy()}>
+              {Localizer.Messages.CookieConsentCookiePolicyLink}
+            </Anchor>
+          ),
+          privacyPolicyLink: (
+            <Anchor url={RouteHelper.LegalPrivacyPolicy()}>
+              {Localizer.Messages.CookieConsentPrivacyPolicyLink}
+            </Anchor>
+          ),
+        })}
+      </>
+    );
 
     const classes = classNames(styles.cookieConsent, {
       [styles.on]: this.state.on,

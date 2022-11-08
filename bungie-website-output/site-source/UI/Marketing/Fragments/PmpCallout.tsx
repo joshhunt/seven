@@ -33,6 +33,7 @@ type PmpCalloutProps = DataReference<"pmp_callout", BnetStackPmpCallout> & {
     thumbnailWrapper?: string;
     upperContent?: string;
   };
+  children?: React.ReactNode;
 };
 
 export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {

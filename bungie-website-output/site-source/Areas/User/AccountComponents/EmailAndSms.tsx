@@ -5,6 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SmsPage } from "@Areas/Sms/SmsPage";
 import styles from "@Areas/User/AccountComponents/EmailSms.module.scss";
 import { EmailCheckbox } from "@Areas/User/AccountComponents/Internal/EmailCheckbox";
+import { EmailToRewardsBanner } from "@Areas/User/AccountComponents/Internal/EmailToRewardsBanner";
 import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButtonBar";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -183,9 +184,10 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                 </div>
                 <GridCol cols={2} medium={0} />
                 <GridCol cols={10} medium={12}>
-                  {emailVerified ? (
+                  {!emailVerified ? (
                     <div className={styles.emailSettings}>
                       <hr />
+                      {/*<EmailToRewardsBanner/>*/}
                       <div className={styles.checkboxContainer}>
                         {Object.keys(emailOptInValues).map((flag: string) => {
                           return (
@@ -199,6 +201,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                           );
                         })}
                       </div>
+                      <></>
                     </div>
                   ) : (
                     <div className={styles.containerVerifyEmail}>

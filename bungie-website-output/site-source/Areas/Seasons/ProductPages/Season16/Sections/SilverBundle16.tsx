@@ -11,7 +11,7 @@ import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
 import React, { LegacyRef, useEffect, useState } from "react";

@@ -1,4 +1,3 @@
-import { PartnerRewards } from "@Areas/Codes/PartnerRewards/PartnerRewards";
 import { ResponsiveSize } from "@bungie/responsive";
 import { RouteDefs } from "@Global/Routes/RouteDefs";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
@@ -11,9 +10,9 @@ import { Localizer } from "@bungie/localization";
 import { AnimatedRouter } from "@UI/Routing/AnimatedRouter";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import CodesRedemption from "./Redemption/CodesRedemption";
-import CodesHistory from "./History/CodesHistory";
-
+import { CodesRedemption } from "./Redemption/CodesRedemption";
+import { CodesHistory } from "./History/CodesHistory";
+import { PartnerRewards } from "./PartnerRewards/PartnerRewards";
 import styles from "./Codes.module.scss";
 import { UrlUtils } from "@Utilities/UrlUtils";
 

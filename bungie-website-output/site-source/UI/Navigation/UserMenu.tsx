@@ -263,9 +263,10 @@ class SignInTriggers extends React.Component<{
                 });
               }}
               buttonType={"gold"}
+              style={{ width: "100%" }}
               size={BasicSize.Small}
             >
-              {Localizer.Nav.JoinUp}
+              {Localizer.Nav.JoinUp.toUpperCase()}
             </Button>
           </div>
         )}

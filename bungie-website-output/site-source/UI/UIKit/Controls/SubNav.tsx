@@ -8,15 +8,16 @@ import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import { History } from "history";
 import * as React from "react";
+// @ts-ignore
+import * as h from "history";
 import { Dropdown, IDropdownOption } from "../Forms/Dropdown";
 import styles from "./SubNav.module.scss";
 import defaultStyles from "./SubNavDefaults.module.scss";
 
 interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
   /** Requires the history object from the page's props (this.props.history). Required to redirect when using mobile dropdown. */
-  history: History;
+  history: h.History;
   /** If true, elements will render as spans instead of links */
   renderAsSpans?: boolean;
   /** Array of links to display in subnav */

@@ -6,7 +6,7 @@ import { Responsive } from "@Boot/Responsive";
 import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ScrollingSeasonCarousel } from "@UI/Destiny/ScrollingSeasonCarousel";
-import { bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackPmpRewardsCarousel } from "../../../Generated/contentstack-types";

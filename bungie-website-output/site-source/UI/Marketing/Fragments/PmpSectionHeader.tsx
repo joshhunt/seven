@@ -6,7 +6,7 @@ import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { ImageVideoThumb } from "@UI/Marketing/ImageThumb";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackPmpSectionHeader } from "../../../Generated/contentstack-types";

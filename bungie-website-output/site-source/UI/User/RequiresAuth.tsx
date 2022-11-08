@@ -25,7 +25,8 @@ interface IRequiresAuthState {
 
 interface DefaultProps {
   /** If you want to do something with global state on sign in, we'll pass it here. This global state will not keep updating! */
-  onSignIn: (temporaryGlobalState: AuthTemporaryGlobalState) => void;
+  onSignIn?: (temporaryGlobalState: AuthTemporaryGlobalState) => void;
+  children?: React.ReactNode;
 }
 
 type Props = IRequiresAuthProps & Partial<DefaultProps>;

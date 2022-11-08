@@ -4,7 +4,8 @@
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import * as React from "react";
 import { InvalidPropsError } from "@CustomErrors";
-import YouTube, { Options } from "react-youtube";
+import YouTube from "react-youtube";
+import type { Options } from "youtube-player/dist/types";
 import styles from "./YoutubeModal.module.scss";
 import { createCustomModal, CustomModalProps } from "./CreateCustomModal";
 import { ReactUtils } from "@Utilities/ReactUtils";
@@ -79,7 +80,7 @@ class YoutubeModal extends React.Component<
 
       return (
         <YouTube
-          containerClassName={styles.youtubeWrapper}
+          className={styles.youtubeWrapper}
           videoId={youtubeId}
           opts={opts}
         />

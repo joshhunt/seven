@@ -12,11 +12,10 @@ import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import { Auth, AuthTemporaryGlobalState } from "@UI/User/Auth";
+import { Auth } from "@UI/User/Auth";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import { RouteHelper } from "@Routes/RouteHelper";
-import moment from "moment";
+import { DateTime } from "luxon";
 import * as React from "react";
 
 // Required props
@@ -106,7 +105,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
 
     if (
       user.firstAccess?.length > 0 &&
-      moment().diff(moment(user.firstAccess), "minutes") < 10
+      DateTime.now().diff(DateTime.fromISO(user.firstAccess)).minutes < 10
     ) {
       //new account created - critera is less than 10 min ago
       //ex. firstAccess: 2020-06-30T15:42:25.457Z

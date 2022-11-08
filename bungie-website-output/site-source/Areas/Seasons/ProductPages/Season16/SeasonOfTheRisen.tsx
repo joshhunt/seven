@@ -33,7 +33,7 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import {
   bgImageFromStackFile,
   WithContentTypeUids,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../Generated/contentstack-types";

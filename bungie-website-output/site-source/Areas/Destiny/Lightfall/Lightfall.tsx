@@ -23,7 +23,7 @@ import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackC
 import {
   responsiveBgImage,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import styles from "./Lightfall.module.scss";
 
 const contentReferences: string[] = [

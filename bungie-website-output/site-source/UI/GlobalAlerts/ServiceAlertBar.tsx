@@ -1,121 +1,92 @@
 import { Respond } from "@Boot/Respond";
+import { Responsive } from "@Boot/Responsive";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ResponsiveSize } from "@bungie/responsive";
-import { IResponsiveState } from "@bungie/responsive/Responsive";
-import { GlobalAlertLevel, GlobalAlertType } from "@Enum";
-import {
-  GlobalStateComponentProps,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalAlertLevel } from "@Enum";
 import { Localizer } from "@bungie/localization";
-import {
-  SafelySetInnerHTML,
-  sanitizeHTML,
-} from "@UI/Content/SafelySetInnerHTML";
-import { Content, Platform } from "@Platform";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Icon } from "@UI/UIKit/Controls/Icon";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
-import * as React from "react";
+import { BnetStackGlobalAlert } from "../../Generated/contentstack-types";
+import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
 import styles from "./ServiceAlertBar.module.scss";
+import React, { useState, useEffect } from "react";
 
-interface IServiceAlertProps extends GlobalStateComponentProps<"responsive"> {}
+export const ServiceAlertBar = () => {
+  const [alerts, setAlerts] = useState<BnetStackGlobalAlert[]>([]);
 
-interface IServiceAlertState {
-  contentItem: Content.ContentItemPublicContract[];
-}
+  const responseCacheObject: Record<string, BnetStackGlobalAlert[]> = {};
+  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
 
-/**
- * Renders a content item either by ID or tag and type
- *  *
- * @param {IServiceAlertProps} props
- * @returns
- */
-class ServiceAlertBarInner extends React.Component<
-  IServiceAlertProps,
-  IServiceAlertState
-> {
-  constructor(props: IServiceAlertProps) {
-    super(props);
-
-    this.state = {
-      contentItem: null,
-    };
-  }
-
-  public componentDidMount() {
-    Platform.ContentService.GetContentByTagAndType(
-      "global-alert-content-set",
-      "ContentSet",
-      Localizer.CurrentCultureName,
-      true
-    ).then((contentSet) => {
-      if (contentSet) {
-        const allItems: Content.ContentItemPublicContract[] =
-          contentSet.properties["ContentItems"];
-        const globalAlerts = allItems.filter((i) => i.cType === "GlobalAlert");
-
-        this.setState({
-          contentItem: globalAlerts,
+  useEffect(() => {
+    if (responseCacheObject[locale]) {
+      setAlerts(responseCacheObject[locale]);
+    } else {
+      ContentStackClient()
+        .ContentType("global_alert")
+        .Query()
+        .language(locale)
+        .toJSON()
+        .find()
+        .then((result: BnetStackGlobalAlert[][]) => {
+          responseCacheObject[locale] = result[0] ?? [];
+          setAlerts(result[0] ?? []);
         });
-      }
-    });
-  }
+    }
+  }, [locale]);
 
-  public render() {
-    return (
-      <div className={styles.wrapper}>
-        {this.state.contentItem?.map((firehoseItem, i) => {
-          return (
-            <GlobalAlert
-              key={i}
-              globalAlert={firehoseItem}
-              responsiveState={this.props.globalState.responsive}
-            />
-          );
+  return (
+    <div className={styles.wrapper}>
+      {alerts
+        ?.filter((a) => a.enabled)
+        .map((alert, i) => {
+          return <GlobalAlert key={i} globalAlert={alert} />;
         })}
-      </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 interface IGlobalAlertProps {
-  globalAlert: Content.ContentItemPublicContract;
-  responsiveState: IResponsiveState;
+  globalAlert: BnetStackGlobalAlert;
 }
 
-const GlobalAlert = (props: IGlobalAlertProps) => {
-  const alert = props.globalAlert.properties;
-  let alertLevelString = isNaN(alert.AlertLevel)
-    ? alert.AlertLevel
-    : GlobalAlertLevel[alert.AlertLevel];
+export const GlobalAlert = (props: IGlobalAlertProps) => {
+  const responsive = useDataStore(Responsive);
+
+  const {
+    title,
+    alert_level,
+    canned_messages,
+    custom_message,
+    click_through_link,
+  } = props.globalAlert;
+
+  const alertLevelString = EnumUtils.getStringValue(
+    alert_level ?? 3,
+    GlobalAlertLevel
+  ).toLowerCase();
 
   document.documentElement.classList.add("service-alert-shown");
 
-  if (alertLevelString === "Unknown") {
-    alertLevelString = GlobalAlertLevel[3];
-  }
+  const alertKey = canned_messages;
 
-  alert.AlertType = GlobalAlertType.GlobalAlert;
-  alert.AlertTimestamp = alert.creationDate;
-  const alertKey = alert.CannedMessage;
-
-  const alertLink =
-    alert.AlertLink !== null &&
-    typeof alert.AlertLink === "string" &&
-    !StringUtils.isNullOrWhiteSpace(alert.AlertLink)
-      ? alert.AlertLink.toLowerCase()
-      : RouteHelper.Help();
+  const alertLink = !StringUtils.isNullOrWhiteSpace(click_through_link?.href)
+    ? click_through_link?.href
+    : RouteHelper.Help();
 
   return (
     <Anchor url={alertLink}>
       <div
         className={classNames(
           styles.globalServiceAlertBar,
-          styles[alertLevelString.toLowerCase()]
+          styles[alertLevelString]
         )}
-        key={alert.Title}
+        key={title}
       >
         <Icon
           iconName={"exclamation-circle"}
@@ -127,9 +98,9 @@ const GlobalAlert = (props: IGlobalAlertProps) => {
           <Respond
             at={ResponsiveSize.mobile}
             hide={true}
-            responsive={props.responsiveState}
+            responsive={responsive}
           >
-            <AlertMessage customHTML={alert.CustomHTML} alertKey={alertKey} />
+            <AlertMessage customHTML={custom_message} alertKey={alertKey} />
           </Respond>
         }
       </div>
@@ -152,10 +123,9 @@ const AlertMessage = (props: IAlertMessageProps) => {
   return useCustomHtml ? (
     <div dangerouslySetInnerHTML={sanitizeHTML(props.customHTML)} />
   ) : (
-    <div> {Localizer.Globals[backupMessage]} </div>
+    <div className={styles.backupMessage}>
+      {" "}
+      {Localizer.Globals[backupMessage]}{" "}
+    </div>
   );
 };
-
-export const ServiceAlertBar = withGlobalState(ServiceAlertBarInner, [
-  "responsive",
-]);

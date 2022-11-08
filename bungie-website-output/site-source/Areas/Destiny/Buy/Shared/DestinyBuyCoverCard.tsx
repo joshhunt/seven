@@ -4,7 +4,6 @@
 import * as React from "react";
 import styles from "./DestinyBuyCoverCard.module.scss";
 import { IDestinyProductFamilyDefinition } from "@UI/Destiny/SkuSelector/DestinyProductDefinitions";
-import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 

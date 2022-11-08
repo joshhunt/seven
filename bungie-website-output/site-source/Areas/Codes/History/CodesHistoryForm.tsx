@@ -20,7 +20,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
-import moment from "moment";
+import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 
 interface CodesHistoryFormProps {
@@ -79,33 +79,38 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
     const hasDestinyAccount =
       codesDataStorePayload.userMemberships?.length > 0 &&
       codesDataStorePayload.userMemberships?.[0] !== BungieMembershipType.None;
-    const noDestinyAccountsErrorMessage = Localizer.FormatReact(
-      Localizer.Coderedemption.LinkedDestinyAccountRequiredHistory,
-      {
-        settings: (
-          <Anchor
-            url={RouteHelper.Settings({ category: "Accounts" })}
-            sameTab={false}
-          >
-            {Localizer.Coderedemption.settingsLinkLabel}
-          </Anchor>
-        ),
-        codeHistory: (
-          <Anchor url={RouteHelper.CodeHistoryReact()} sameTab={false}>
-            {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
-          </Anchor>
-        ),
-      }
+    const noDestinyAccountsErrorMessage = (
+      <>
+        {Localizer.FormatReact(
+          Localizer.Coderedemption.LinkedDestinyAccountRequiredHistory,
+          {
+            settings: (
+              <Anchor
+                url={RouteHelper.Settings({ category: "Accounts" })}
+                sameTab={false}
+              >
+                {Localizer.Coderedemption.settingsLinkLabel}
+              </Anchor>
+            ),
+            codeHistory: (
+              <Anchor url={RouteHelper.CodeHistoryReact()} sameTab={false}>
+                {Localizer.Coderedemption.RedemptionHistoryLinkLabel}
+              </Anchor>
+            ),
+          }
+        )}
+      </>
     );
-    const helpErrorMessage = Localizer.FormatReact(
-      Localizer.Coderedemption.HelpForumsMessage,
-      {
-        helpLink: (
-          <Anchor url={RouteHelper.Help()} sameTab={false}>
-            {Localizer.Coderedemption.helpLinkLabel}
-          </Anchor>
-        ),
-      }
+    const helpErrorMessage = (
+      <>
+        {Localizer.FormatReact(Localizer.Coderedemption.HelpForumsMessage, {
+          helpLink: (
+            <Anchor url={RouteHelper.Help()} sameTab={false}>
+              {Localizer.Coderedemption.helpLinkLabel}
+            </Anchor>
+          ),
+        })}
+      </>
     );
 
     const twoLineItem = (
@@ -231,28 +236,24 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
                 );
               })
             ) : (
-              <p className={styles.noResponse}>
-                {Localizer.Coderedemption.NoResults}
-              </p>
+              <p>{Localizer.Coderedemption.NoResults}</p>
             )
           }
         </>
       ) : (
         // if this isn't your membershipId in the url or you're not an admin, you don't get to see the history!
-        <p className={styles.noResponse}>
-          {Localizer.Coderedemption.NotYourAccount}
-        </p>
+        <p>{Localizer.Coderedemption.NotYourAccount}</p>
       )}
     </SystemDisabledHandler>
   );
 };
 
 const _makeDateString = (date: string) => {
-  const d = moment.utc(date);
+  const d = DateTime.fromISO(date);
   const dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
-    month: d.format("MMM"),
-    day: d.format("DD"),
-    year: d.format("YYYY"),
+    month: d.toFormat("MMM"),
+    day: d.toFormat("DD"),
+    year: d.toFormat("YYYY"),
   });
 
   return dateString;

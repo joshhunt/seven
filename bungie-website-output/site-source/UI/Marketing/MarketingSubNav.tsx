@@ -72,7 +72,7 @@ export class MarketingSubNav extends React.Component<
     super(props);
 
     this.state = {
-      currentId: this.props.ids[0],
+      currentId: this.props.ids?.[0],
       menuOpen: false,
       fixed: false,
     };
@@ -160,14 +160,6 @@ export class MarketingSubNav extends React.Component<
     });
   }
 
-  private readonly onChange = (fixed: boolean) => {
-    this.props.onChange(fixed);
-
-    this.setState({
-      fixed,
-    });
-  };
-
   public render() {
     const {
       ids,
@@ -178,6 +170,9 @@ export class MarketingSubNav extends React.Component<
     } = this.props;
 
     const path = location.pathname.replace(UrlUtils.AppBaseUrl, "");
+
+    this.state.fixed &&
+      document.querySelector("html").classList.add("solid-header");
 
     const menuItems = ids.map((id, index) => {
       const classes = classNames(

@@ -30,6 +30,7 @@ export interface ClickableMediaThumbnailProps {
   showShadowBehindPlayIcon?: boolean;
   href?: string | IMultiSiteLink;
   analyticsId?: string;
+  children?: React.ReactNode;
 }
 
 export const ClickableMediaThumbnail: React.FC<ClickableMediaThumbnailProps> = (

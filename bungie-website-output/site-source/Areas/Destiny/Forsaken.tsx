@@ -13,12 +13,13 @@ import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { BasicSize } from "@UIKit/UIKitUtils";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React from "react";
 import styles from "./Forsaken.module.scss";
+
+interface IForsakenPageProps {
+  children?: React.ReactNode;
+}
 
 interface IForsakenPageState {
   menuLocked: boolean;

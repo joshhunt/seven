@@ -9,7 +9,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { PmpCallout } from "@UI/Marketing/Fragments/PmpCallout";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { LegacyRef } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";

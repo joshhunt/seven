@@ -52,6 +52,8 @@ interface IModalProps {
 
   /** Classname for the modal content */
   contentClassName?: string;
+
+  children?: React.ReactNode;
 }
 
 interface IModalState {
@@ -315,7 +317,7 @@ interface IHistoryListener extends RouteComponentProps {
   modalRef: HTMLDivElement;
 }
 
-const _HistoryListener: React.SFC<IHistoryListener> = ({
+const _HistoryListener: React.FC<IHistoryListener> = ({
   history,
   modalRef,
 }) => {

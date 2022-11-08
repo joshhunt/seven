@@ -1,7 +1,6 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { WitchQueenQuery } from "@Areas/Destiny/WitchQueen/__generated__/WitchQueenQuery.graphql";
 import { WQClickableImg } from "@Areas/Destiny/WitchQueen/components/WQClickableImg/WQClickableImg";
 import WQEditionSelector from "@Areas/Destiny/WitchQueen/components/WQEditionSelector/WQEditionSelector";
 import { WQFlexInfoImgBlock } from "@Areas/Destiny/WitchQueen/components/WQFlexInfoImgBlock/WQFlexInfoImgBlock";
@@ -15,177 +14,32 @@ import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { imageFromConnection } from "@Utilities/GraphQLUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
+import { bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
-import React, { useRef, useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import React, { useEffect, useRef, useState } from "react";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./WitchQueen.module.scss";
 
 const WitchQueen: React.FC = () => {
   const responsive = useDataStore(Responsive);
   const heroRef = useRef<HTMLDivElement | null>(null);
-  const [hasHeroLoaded, setHasHeroLoaded] = useState(false);
   // indicates if a check has been made for a hash in the current url
   const [hasCheckedForHash, setHasCheckedForHash] = useState(false);
   const [editionsRef, setEditionsRef] = useState<null | HTMLDivElement>(null);
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const data = useLazyLoadQuery<WitchQueenQuery>(
-    graphql`
-      query WitchQueenQuery($locale: String!) {
-        nova_product_page(uid: "blt6927482d223d0222", locale: $locale) {
-          title
-          meta_imageConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          hero {
-            hero_date_text
-          }
-          page_bottom_img_desktopConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          page_bottom_img_mobileConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          section_heading_wq_text
-          editions_section_title
-          editions_tab_anniversary_bundle
-          editions_tab_standard
-          editions_tab_deluxe
-          editions_section_bg_desktopConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          collectors_edition_bg_imageConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          locale_supports_gradient_font
-          sticky_buy_nav {
-            buy_btn_text
-            dropdown_title
-            wq_logo_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            wq_logo_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            mobile_dropdown_label
-          }
-          sticky_nav_skus {
-            ... on NovaProductPageStickyNavSkusWqSku {
-              wq_sku {
-                label
-                sku_tag
-              }
-            }
-          }
-          section_blocks {
-            ... on NovaProductPageSectionBlocksSectionContent {
-              section_content {
-                section
-                section_class
-                section_bg_desktopConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                section_bg_mobileConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                img_above_headingConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                section_heading
-                primary_section_blurbs {
-                  blurb_text
-                  uses_special_font
-                }
-                clickable_thumbnails {
-                  thumbnail_imgConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                  screenshot_imgConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                  img_caption
-                  bottom_caption
-                  video_id
-                }
-                image_and_text_blocks {
-                  blurb
-                  blurb_heading
-                  thumbnail_imgConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                  screenshot_imgConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                  caption
-                  video_id
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    { locale }
-  );
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("nova_product_page")
+      .Entry("blt6927482d223d0222")
+      .language(locale)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
 
   // if user provided a hash of 'editions' in the url, scroll to the corresponding element if the editions selector has loaded
   if (
@@ -200,9 +54,9 @@ const WitchQueen: React.FC = () => {
 
   const {
     title,
-    meta_imageConnection,
-    page_bottom_img_desktopConnection,
-    page_bottom_img_mobileConnection,
+    meta_image,
+    page_bottom_img_desktop,
+    page_bottom_img_mobile,
     hero,
     section_blocks,
     section_heading_wq_text,
@@ -210,22 +64,19 @@ const WitchQueen: React.FC = () => {
     editions_tab_anniversary_bundle,
     editions_tab_deluxe,
     editions_tab_standard,
-    editions_section_bg_desktopConnection,
-    collectors_edition_bg_imageConnection,
+    editions_section_bg_desktop,
+    collectors_edition_bg_image,
     locale_supports_gradient_font,
     sticky_buy_nav,
     sticky_nav_skus,
-  } = data?.nova_product_page ?? {};
+  } = data ?? {};
 
   return (
-    <SpinnerContainer loading={!data || !hasHeroLoaded}>
-      <WitchQueenHelmet
-        title={title}
-        img={WQImgUrlFromQueryProp(meta_imageConnection)}
-      />
+    <SpinnerContainer loading={!data}>
+      <WitchQueenHelmet title={title} img={bgImageFromStackFile(meta_image)} />
       <div className={styles.witchQueenContent}>
         <div ref={heroRef}>
-          <WQHero setHasLoaded={setHasHeroLoaded} />
+          <WQHero heroContent={data?.hero} />
         </div>
 
         <div className={styles.wqLowerContent}>
@@ -233,12 +84,10 @@ const WitchQueen: React.FC = () => {
             heroRef={heroRef}
             logo={
               responsive.mobile
-                ? imageFromConnection(sticky_buy_nav?.wq_logo_mobileConnection)
-                    ?.url
-                : imageFromConnection(sticky_buy_nav?.wq_logo_desktopConnection)
-                    ?.url
+                ? sticky_buy_nav?.wq_logo_mobile?.url
+                : sticky_buy_nav?.wq_logo_desktop?.url
             }
-            skus={sticky_nav_skus?.map((s) => {
+            skus={sticky_nav_skus?.map((s: any) => {
               return { label: s.wq_sku.label, sku: s.wq_sku.sku_tag };
             })}
             buyBtnText={sticky_buy_nav?.buy_btn_text}
@@ -247,12 +96,12 @@ const WitchQueen: React.FC = () => {
           />
 
           {/* map over modular blocks from contentStack for each section of the page */}
-          {section_blocks?.map((sectionObj, i) => {
+          {section_blocks?.map((sectionObj: any, i: number) => {
             const {
               section_class,
-              section_bg_desktopConnection,
-              section_bg_mobileConnection,
-              img_above_headingConnection,
+              section_bg_desktop,
+              section_bg_mobile,
+              img_above_heading,
               image_and_text_blocks,
               clickable_thumbnails,
               primary_section_blurbs,
@@ -272,19 +121,13 @@ const WitchQueen: React.FC = () => {
                   imgAboveHeading: styles.imgAboveHeading,
                 }}
                 heading={section_heading}
-                imgAboveHeading={WQImgUrlFromQueryProp(
-                  img_above_headingConnection
-                )}
+                imgAboveHeading={img_above_heading?.url}
                 useGradientFont={locale_supports_gradient_font}
                 headingSectionName={sectionName}
                 headingSmallWQText={section_heading_wq_text}
-                desktopBgImage={WQImgUrlFromQueryProp(
-                  section_bg_desktopConnection
-                )}
-                mobileBgImage={WQImgUrlFromQueryProp(
-                  section_bg_mobileConnection
-                )}
-                bodyBlurbs={primary_section_blurbs.map((blurbObj) => {
+                desktopBgImage={bgImageFromStackFile(section_bg_desktop)}
+                mobileBgImage={bgImageFromStackFile(section_bg_mobile)}
+                bodyBlurbs={primary_section_blurbs.map((blurbObj: any) => {
                   return {
                     blurb: blurbObj?.blurb_text,
                     hasSpecialFont: blurbObj?.uses_special_font,
@@ -293,17 +136,13 @@ const WitchQueen: React.FC = () => {
               >
                 {(clickable_thumbnails?.length ?? 0) > 0 && (
                   <div className={styles.sectionImagesWrapper}>
-                    {clickable_thumbnails.map((img, j: number) => {
+                    {clickable_thumbnails.map((img: any, j: number) => {
                       return (
                         <WQClickableImg
                           key={j}
-                          thumbnail={WQImgUrlFromQueryProp(
-                            img?.thumbnail_imgConnection
-                          )}
-                          screenshots={clickable_thumbnails.map((thumb) =>
-                            WQImgUrlFromQueryProp(
-                              thumb?.screenshot_imgConnection
-                            )
+                          thumbnail={bgImageFromStackFile(img?.thumbnail_img)}
+                          screenshots={clickable_thumbnails.map(
+                            (image: any) => image?.screenshot_img?.url
                           )}
                           screenshotIndex={j}
                           caption={img?.img_caption}
@@ -322,24 +161,19 @@ const WitchQueen: React.FC = () => {
                 {(image_and_text_blocks?.length ?? 0) > 0 && (
                   <div
                     className={classNames(
-                      styles[`imageTextBlock${section_class}`],
-                      styles.bottomContentWrapper
+                      styles[`imageTextBlock${section_class}`]
                     )}
                   >
-                    {image_and_text_blocks?.map((blockObj, j: number) => {
+                    {image_and_text_blocks?.map((blockObj: any, j: number) => {
                       const isFlexReverse = j % 2 !== 0;
 
                       const screenshotsInSection = image_and_text_blocks.filter(
-                        (b) => !b.video_id
+                        (b: any) => !b.video_id
                       );
-                      const screenshot = imageFromConnection(
-                        blockObj.screenshot_imgConnection
-                      )?.url;
+                      const screenshot = blockObj.screenshot_img?.url;
                       let screenshotIndex = screenshotsInSection.findIndex(
-                        (s) =>
-                          screenshot &&
-                          screenshot ===
-                            imageFromConnection(s.screenshot_imgConnection)?.url
+                        (s: any) =>
+                          screenshot && screenshot === s.screenshot_img?.url
                       );
 
                       if (screenshotIndex === -1) {
@@ -351,11 +185,11 @@ const WitchQueen: React.FC = () => {
                           key={j}
                           blurb={blockObj?.blurb}
                           blurbHeading={blockObj?.blurb_heading}
-                          thumbnail={WQImgUrlFromQueryProp(
-                            blockObj?.thumbnail_imgConnection
+                          thumbnail={bgImageFromStackFile(
+                            blockObj?.thumbnail_img
                           )}
-                          screenshotsInSection={screenshotsInSection.map((s) =>
-                            WQImgUrlFromQueryProp(s?.screenshot_imgConnection)
+                          screenshotsInSection={screenshotsInSection.map(
+                            (s: any) => s?.screenshot_img?.url
                           )}
                           screenshotIndex={screenshotIndex}
                           direction={isFlexReverse ? "reverse" : "normal"}
@@ -377,12 +211,8 @@ const WitchQueen: React.FC = () => {
             standardTabTitle={editions_tab_standard}
             deluxeTabTitle={editions_tab_deluxe}
             annivPackTabTitle={editions_tab_anniversary_bundle}
-            bgImage={WQImgUrlFromQueryProp(
-              editions_section_bg_desktopConnection
-            )}
-            ceBgImage={WQImgUrlFromQueryProp(
-              collectors_edition_bg_imageConnection
-            )}
+            bgImage={bgImageFromStackFile(editions_section_bg_desktop)}
+            ceBgImage={bgImageFromStackFile(collectors_edition_bg_image)}
             editionsRef={(ref) => setEditionsRef(ref)}
           />
 
@@ -403,22 +233,17 @@ const WitchQueen: React.FC = () => {
           <div className={styles.bottomImgWrapper}>
             <img
               className={styles.bottomImg}
-              src={WQImgUrlFromQueryProp(
+              src={
                 responsive.mobile
-                  ? page_bottom_img_mobileConnection
-                  : page_bottom_img_desktopConnection
-              )}
+                  ? page_bottom_img_mobile?.url
+                  : page_bottom_img_desktop?.url
+              }
             />
           </div>
         </div>
       </div>
     </SpinnerContainer>
   );
-};
-
-// returns the url of an image from an its property in the contentStack query
-export const WQImgUrlFromQueryProp = (property: any) => {
-  return property?.edges[0]?.node?.url;
 };
 
 const WitchQueenHelmet: React.FC<{ title: string; img: string }> = ({
@@ -429,7 +254,9 @@ const WitchQueenHelmet: React.FC<{ title: string; img: string }> = ({
     <BungieHelmet title={title} image={img}>
       <body
         className={classNames(
-          SpecialBodyClasses(BodyClasses.NoSpacer),
+          SpecialBodyClasses(
+            BodyClasses.NoSpacer | BodyClasses.HideServiceAlert
+          ),
           styles.witchQueen
         )}
       />

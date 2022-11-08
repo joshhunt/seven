@@ -1,6 +1,7 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
+import { DateTime } from "luxon";
 import * as React from "react";
 import styles from "./SeasonHeader.module.scss";
 import {
@@ -9,7 +10,6 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { Localizer } from "@bungie/localization";
 import { SeasonsArray } from "../SeasonsDefinitions";
-import moment from "moment";
 
 // Required props
 interface ISeasonHeaderProps
@@ -51,18 +51,28 @@ class SeasonHeader extends React.Component<Props, ISeasonHeaderState> {
       (season) => season.seasonNumber === seasonDef.seasonNumber
     );
 
-    const timeDisplay = moment(
-      seasonDef.endDate,
-      undefined,
-      Localizer.CurrentCultureName
-    ).locale(Localizer.CurrentCultureName);
+    const timeDisplay = DateTime.fromISO(seasonDef.endDate);
 
-    const diff = moment(seasonDef.endDate).diff(moment.now());
+    const diff = timeDisplay.diff(DateTime.now());
+    let timeString = "";
+
+    if (diff.months === 1) {
+      timeString = `1 ${Localizer.time.month}`;
+    } else {
+      if (diff.months > 1) {
+        timeString = `${diff.months} ${Localizer.time.months}`;
+      } else {
+        timeString =
+          diff.days > 1
+            ? `${diff.days} ${Localizer.time.days}`
+            : `1 ${Localizer.time.day}`;
+      }
+    }
 
     const remaining =
-      diff > 0
+      diff.valueOf() > 0
         ? Localizer.Format(Localizer.Seasons.TimeRemaining, {
-            time: timeDisplay.fromNow(true),
+            time: timeString,
           })
         : Localizer.Seasons.SeasonComplete;
 

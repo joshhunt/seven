@@ -4,7 +4,9 @@
 import * as React from "react";
 import styles from "./CrossSaveCardHeader.module.scss";
 
-interface ICrossSaveCardHeaderProps {}
+interface ICrossSaveCardHeaderProps {
+  children?: React.ReactNode;
+}
 
 interface ICrossSaveCardHeaderState {}
 

@@ -7,7 +7,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ImageThumb } from "@UI/Marketing/ImageThumb";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";

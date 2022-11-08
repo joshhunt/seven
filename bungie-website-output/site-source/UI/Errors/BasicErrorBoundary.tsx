@@ -9,9 +9,11 @@ import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import styles from "./BasicErrorBoundary.module.scss";
-import { DetailedError } from "./CustomErrors";
+import { DetailedError } from "@CustomErrors";
 
-interface IBasicErrorBoundaryProps extends RouteComponentProps {}
+interface IBasicErrorBoundaryProps extends RouteComponentProps {
+  children?: React.ReactNode;
+}
 
 interface IBasicErrorBoundaryState {
   error: Error;

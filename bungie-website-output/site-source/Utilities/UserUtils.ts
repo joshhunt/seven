@@ -15,11 +15,10 @@ import {
   Platform,
   User,
 } from "@Platform";
-import * as H from "history";
 import Cookies from "js-cookie";
-import moment from "moment";
-import { ConvertToPlatformError } from "../Platform/ApiIntermediary";
-import { Modal } from "../UI/UIKit/Controls/Modal/Modal";
+// @ts-ignore
+import * as h from "history";
+import { DateTime } from "luxon";
 import { AnalyticsUtils } from "./AnalyticsUtils";
 import { ConfigUtils } from "./ConfigUtils";
 import { EnumUtils } from "./EnumUtils";
@@ -73,7 +72,7 @@ export class UserUtils {
   public static isAuthenticated(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser !== undefined;
+    return gs?.loggedInUser !== undefined;
   }
 
   public static getAuthChangeStatus(
@@ -119,14 +118,14 @@ export class UserUtils {
   public static loggedInUserMembershipId(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser ? gs.loggedInUser?.user?.membershipId : null;
+    return gs?.loggedInUser ? gs?.loggedInUser?.user?.membershipId : null;
   }
 
   /** Returns the logged in user's display name */
   public static loggedInUserDisplayName(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser ? gs.loggedInUser?.user?.displayName : null;
+    return gs?.loggedInUser ? gs?.loggedInUser?.user?.displayName : null;
   }
 
   public static formatBungieGlobalCode = (code: number) => {
@@ -317,7 +316,7 @@ export class UserUtils {
   public static loggedInUserEmail(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs.loggedInUser ? gs.loggedInUser.email : null;
+    return gs?.loggedInUser ? gs?.loggedInUser.email : null;
   }
 
   /** Returns the profile picture path or defaults to tricorn for a bungieFriend */
@@ -529,7 +528,7 @@ export class UserUtils {
       );
 
       const opts: Cookies.CookieAttributes = {
-        expires: moment().add(7, "years").toDate(),
+        expires: DateTime.now().plus({ years: 7 }).toJSDate(),
       };
 
       if (ConfigUtils.EnvironmentIsProduction) {
@@ -578,7 +577,7 @@ export class UserUtils {
   }
 
   public static SignIn(
-    history: H.History,
+    history: h.History,
     prevPath?: string,
     registrationLocKey?: string
   ) {

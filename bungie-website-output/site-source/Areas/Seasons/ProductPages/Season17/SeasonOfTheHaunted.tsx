@@ -26,7 +26,7 @@ import {PmpStackedInfoThumbBlocks} from "@UI/Marketing/Fragments/PmpStackedInfoT
 import {BungieHelmet} from "@UI/Routing/BungieHelmet";
 import {Button} from "@UIKit/Controls/Button/Button";
 import {BuyButton} from "@UIKit/Controls/Button/BuyButton";
-import {bgImageFromStackFile, imageFromConnection, responsiveBgImage, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/GraphQLUtils";
+import {bgImageFromStackFile, responsiveBgImage, responsiveBgImageFromStackFile, WithContentTypeUids} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {BnetStackSeasonOfTheHaunted} from "../../../../Generated/contentstack-types";

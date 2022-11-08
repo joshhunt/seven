@@ -1,12 +1,11 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import * as React from "react";
+import React, { PropsWithChildren } from "react";
 import styles from "./DestinyNewsAndMedia.module.scss";
 import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { RouteHelper } from "@Routes/RouteHelper";
 import YoutubeModal from "@UI/UIKit/Controls/Modal/YoutubeModal";
 import {
   GlobalStateComponentProps,
@@ -143,7 +142,7 @@ class DestinyNewsAndMediaInternal extends React.Component<
                 <div className={classNames(styles.tabs, styles.media)}>
                   {this.props.videos && (
                     <a
-                      className={classNames(styles.mediaTab2, {
+                      className={classNames({
                         [styles.selected]: selectedMediaTab === "videos",
                       })}
                       onClick={() => this.selectMediaTab("videos")}
@@ -153,7 +152,7 @@ class DestinyNewsAndMediaInternal extends React.Component<
                   )}
                   {this.props.screenshots && (
                     <a
-                      className={classNames(styles.mediaTab3, {
+                      className={classNames({
                         [styles.selected]: selectedMediaTab === "screenshots",
                       })}
                       onClick={() => this.selectMediaTab("screenshots")}
@@ -163,7 +162,7 @@ class DestinyNewsAndMediaInternal extends React.Component<
                   )}
                   {this.props.lore && (
                     <a
-                      className={classNames(styles.mediaTab1, {
+                      className={classNames({
                         [styles.selected]: selectedMediaTab === "lore",
                       })}
                       onClick={() => this.selectMediaTab("lore")}
@@ -173,7 +172,7 @@ class DestinyNewsAndMediaInternal extends React.Component<
                   )}
                   {this.props.wallpapers && (
                     <a
-                      className={classNames(styles.mediaTab4, {
+                      className={classNames({
                         [styles.selected]: selectedMediaTab === "wallpapers",
                       })}
                       onClick={() => this.selectMediaTab("wallpapers")}
@@ -287,7 +286,7 @@ const SectionTitle = (props: ISectionTitleProps) => {
     </div>
   );
 };
-const SmallTitle = (props: IBasicDivProps) => {
+const SmallTitle = (props: IBasicDivProps & PropsWithChildren<any>) => {
   return <div className={styles.smallTitle}>{props.children}</div>;
 };
 

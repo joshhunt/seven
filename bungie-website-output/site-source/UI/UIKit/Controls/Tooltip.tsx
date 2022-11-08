@@ -27,6 +27,8 @@ interface ITooltipProps {
 
   /** If provided, allows for custom positioning of the tooltip */
   customPosition?: (e?: MouseEvent) => XY;
+
+  children?: React.ReactNode;
 }
 
 interface DefaultProps {
@@ -203,7 +205,6 @@ export class Tooltip extends React.Component<Props, ITooltipState> {
       tooltip,
       styles[this.props.position],
       {
-        [styles.cursorBase]: base === "cursor",
         [styles.visible]: this.props.visible,
         [styles.textOnly]: typeof this.props.children === "string",
       }

@@ -1,5 +1,9 @@
+import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import { DestinyProductFamilies } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import {
   SpinnerContainer,
@@ -42,7 +46,7 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { SiEpicgames } from "react-icons/si";
+import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
 
 export interface IDestinyBuyProductDetailProps
   extends GlobalStateComponentProps<"responsive"> {

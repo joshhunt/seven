@@ -6,7 +6,7 @@ import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { IconActionCard } from "@UI/Marketing/IconActionCard";
-import { responsiveBgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import React, {
   LegacyRef,
   useCallback,

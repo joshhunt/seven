@@ -39,6 +39,7 @@ interface IDestinyTooltipProps {
     /** Children that will render after the body */
     childrenAfter?: React.ReactNode;
   };
+  children?: React.ReactNode;
 }
 
 // Default props - these will have values set in DestinyTooltip.defaultProps

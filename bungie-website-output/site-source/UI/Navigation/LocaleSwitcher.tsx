@@ -2,7 +2,7 @@ import { Localizer, StringFetcher } from "@bungie/localization";
 import LocalizationState from "@bungie/localization/LocalizationState";
 import classNames from "classnames";
 import * as React from "react";
-import { MdLanguage } from "react-icons/all";
+import { MdLanguage } from "@react-icons/all-files/md/MdLanguage";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import styles from "./LocaleSwitcher.module.scss";
 

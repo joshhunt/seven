@@ -18,6 +18,7 @@ export class RouteDefs {
   private static readonly AreaNames = {
     Admin: "Admin",
     BeyondLight: "BeyondLight",
+    BungieTech: "BungieTech",
     Clans: "Clans",
     Codes: "Codes",
     Collections: "Collections",
@@ -25,7 +26,6 @@ export class RouteDefs {
     Destiny: "Destiny",
     Direct: "Direct",
     Guide: "Guide",
-    Home: "Home",
     Legal: "Legal",
     News: "News",
     Pgcr: "Pgcr",
@@ -50,6 +50,19 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reports"),
         (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
         (area) => new ActionRoute(area, "MigrateNews"),
+      ],
+    }),
+    BungieTech: new Area({
+      name: RouteDefs.AreaNames.BungieTech,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/BungieTech/BungieTechArea" /* webpackChunkName: "BungieTech" */
+          )
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "index"),
+        (area) => new ActionRoute(area, "article", { path: "articleUrl?" }),
       ],
     }),
     Clans: new Area({
@@ -191,12 +204,6 @@ export class RouteDefs {
       indexParams: { path: ":guide" },
       routes: [(area) => new ActionRoute(area, "index", { path: ":guide" })],
     }),
-    Home: new Area({
-      name: RouteDefs.AreaNames.Home,
-      lazyComponent: createAsyncComponent(() => import("@Areas/Home/HomeArea")),
-      routes: [(area) => new ActionRoute(area, "index")],
-      webmasterSystem: SystemNames.CoreHomeandNews,
-    }),
     Legal: new Area({
       name: RouteDefs.AreaNames.Legal,
       indexParams: { path: ":url" },
@@ -225,13 +232,9 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "community"),
         (area) => new ActionRoute(area, "updates"),
         (area) => new ActionRoute(area, "tech"),
-        (area) =>
-          new ActionRoute(area, "TempNewsArticle", {
-            path: ":articleUrl",
-            isOverride: true,
-          }),
+        (area) => new ActionRoute(area, "article", { path: ":articleUrl?" }),
       ],
-      webmasterSystem: SystemNames.CoreHomeandNews,
+      webmasterSystem: SystemNames.CoreHomeAndNews,
     }),
     Pgcr: new Area({
       name: RouteDefs.AreaNames.Pgcr,

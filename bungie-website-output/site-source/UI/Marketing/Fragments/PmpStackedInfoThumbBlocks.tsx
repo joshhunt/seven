@@ -13,7 +13,7 @@ import {
 import ImagePaginationModal, {
   getScreenshotPaginationData,
 } from "@UIKit/Controls/Modal/ImagePaginationModal";
-import { bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackPmpStackedInfoThumbBlocks } from "../../../Generated/contentstack-types";

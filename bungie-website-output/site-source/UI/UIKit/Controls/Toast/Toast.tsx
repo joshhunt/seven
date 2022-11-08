@@ -37,6 +37,7 @@ interface DefaultProps {
   onClick: () => void;
   /** Optional classnames for the toast components */
   classes: IToastClassNames;
+  children?: React.ReactNode;
 }
 
 interface IToastProps {
@@ -48,6 +49,7 @@ interface IToastProps {
   url?: IMultiSiteLink;
   /** If provided, toast will disappear after the timeout expires (in milliseconds) */
   timeout?: number;
+  children?: React.ReactNode;
 }
 
 interface IToastState {
@@ -258,7 +260,7 @@ interface IHistoryListener extends RouteComponentProps {
   onHistoryChange: () => void;
 }
 
-const _HistoryListener: React.SFC<IHistoryListener> = ({
+const _HistoryListener: React.FC<IHistoryListener> = ({
   history,
   onHistoryChange,
 }) => {

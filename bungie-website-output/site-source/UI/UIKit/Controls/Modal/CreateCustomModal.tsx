@@ -5,6 +5,7 @@ import classNames from "classnames";
 interface IModalRefProps {
   /** Required in order to allow the custom modal to access methods on the parent */
   modalRef: React.RefObject<Modal>;
+  children?: React.ReactNode;
 }
 
 export type CustomModalProps = ModalProps & IModalRefProps;

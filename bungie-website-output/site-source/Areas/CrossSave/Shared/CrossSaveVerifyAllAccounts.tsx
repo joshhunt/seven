@@ -6,7 +6,6 @@ import { CrossSaveAccountLinkItem } from "../Activate/Components/CrossSaveAccoun
 import { ICrossSaveFlowState } from "./CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "./CrossSaveUtils";
 import { Contract } from "@Platform";
-import { PlatformError } from "@CustomErrors";
 import styles from "./CrossSaveVerifyAllAccounts.module.scss";
 
 interface ICrossSaveVerifyAllAccountsProps {

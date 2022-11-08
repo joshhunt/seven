@@ -11,6 +11,7 @@ import { Localizer } from "@bungie/localization/Localizer";
 
 interface IInnerErrorBoundaryProps extends RouteComponentProps {
   error?: Error;
+  children?: React.ReactNode;
 }
 
 interface IInnerErrorBoundaryState {

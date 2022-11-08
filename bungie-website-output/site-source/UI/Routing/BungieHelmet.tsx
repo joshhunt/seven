@@ -14,6 +14,7 @@ interface IBungieHelmetProps {
 interface DefaultProps {
   /** Sets og:image and twitter:image (defaults to Bungie logo) */
   image: string;
+  children?: React.ReactNode;
 }
 
 interface IBungieHelmetState {}

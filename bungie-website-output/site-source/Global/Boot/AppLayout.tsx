@@ -11,20 +11,21 @@ import {
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { Environment } from "@Helpers";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
-import { SeoDataError } from "@UI/Errors/CustomErrors";
 import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
+import { GlobalAlerts } from "@UI/GlobalAlerts/GlobalAlerts";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import {
+  Spinner,
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
+import { NavVisibilityListener } from "@UIKit/Controls/NavVisibilityListener";
 import { AnalyticsUtils } from "@Utilities/AnalyticsUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
@@ -33,16 +34,20 @@ import {
   FirehoseDebuggerDataStore,
   IFirehoseDebuggerItemData,
 } from "Platform/FirehoseDebuggerDataStore";
-import * as React from "react";
+import React, { Suspense } from "react";
 import Helmet from "react-helmet";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 // @ts-ignore
 import ScrollMemory from "react-router-scroll-memory";
-import { ErrorBnetOffline } from "../../UI/Errors/ErrorBnetOffline";
+import { ErrorBnetOffline } from "@UI/Errors/ErrorBnetOffline";
 import "./AppLayout.scss";
 import { CookieConsent } from "./CookieConsent";
 import { Footer } from "./Footer";
 import { Responsive } from "./Responsive";
+
+interface AppLayoutProps extends RouteComponentProps<ILocaleParams> {
+  children?: React.ReactNode;
+}
 
 interface IInternalAppLayoutState {
   currentPath: string;
@@ -53,6 +58,7 @@ interface IInternalAppLayoutState {
   definitionsLoading: boolean;
   firehoseContentItems: IFirehoseDebuggerItemData[];
   globalError: string[];
+  hideNavigation: boolean;
 }
 
 interface ILocaleParams {
@@ -60,16 +66,14 @@ interface ILocaleParams {
 }
 
 class AppLayout extends React.Component<
-  RouteComponentProps<ILocaleParams>,
+  AppLayoutProps,
   IInternalAppLayoutState
 > {
   private readonly unsubscribers: DestroyCallback[] = [];
   private readonly rendererCoreSystemName = "WebRendererCore";
   private initTracking = false;
-  private metaTagTimer: number = null;
-  private readonly modalRef = React.createRef<Modal>();
 
-  constructor(props: RouteComponentProps<ILocaleParams>) {
+  constructor(props: AppLayoutProps) {
     super(props);
 
     this.state = {
@@ -81,6 +85,7 @@ class AppLayout extends React.Component<
       definitionsLoading: false,
       firehoseContentItems: FirehoseDebuggerDataStore.state.contentItems,
       globalError: GlobalFatalDataStore.state.error,
+      hideNavigation: false,
     };
   }
 
@@ -120,7 +125,6 @@ class AppLayout extends React.Component<
       }),
       this.props.history.listen(() => {
         this.onHistoryUpdate();
-        //this.checkMetaTags(3000);
       }),
       DestinyDefinitions.observe(
         ({ isLoading: definitionsLoading }: ManifestPayload) =>
@@ -146,6 +150,10 @@ class AppLayout extends React.Component<
         noWebP: !supportsWebp,
       });
     });
+
+    // The mobile app and any sources that might embed one of our pages can provide this query param to hide the header, footer, global alerts -- anything applied globally to the website that navigates you away from the current page.
+    const queryParams = new URLSearchParams(this.props.location?.search);
+    this.setState({ hideNavigation: queryParams.get("hidenav") === "true" });
   }
 
   private initTrackingOnce() {
@@ -156,8 +164,6 @@ class AppLayout extends React.Component<
     this.initTracking = true;
 
     this.onHistoryUpdate();
-
-    // this.checkMetaTags(3000);
   }
 
   public componentWillUnmount() {
@@ -196,52 +202,6 @@ class AppLayout extends React.Component<
     AnalyticsUtils.trackPage();
   }
 
-  /**
-   * Check for pages that need meta tags and error if not
-   * @param timeout
-   */
-  private checkMetaTags(timeout = 1000) {
-    clearTimeout(this.metaTagTimer);
-
-    const defaultImage = "/img/theme/bungienet/logo-share-large.png";
-    this.metaTagTimer = setTimeout(() => {
-      const helmet = Helmet.peek();
-      const metaTags = (helmet as any).metaTags as {
-        content: string;
-        property: string;
-      }[];
-      const ogImage = metaTags.find((a) => a.property === "og:image");
-      const ogTitle = metaTags.find((a) => a.property === "og:title");
-
-      const missingProperties = [];
-
-      if (
-        !ogImage ||
-        ogImage.content === defaultImage ||
-        ogImage.content === ""
-      ) {
-        if (ConfigUtils.EnvironmentIsLocal) {
-          console.log(
-            "%c Hey, add an 'image' attribute to BungieHelmet for this page!",
-            "color: red; font-size:22px;"
-          );
-          const message = "This page needs an image attribute on BungieHelmet!";
-          Toast.show(message, { type: "error" });
-        } else {
-          missingProperties.push("og:image");
-        }
-      }
-
-      if (!ogTitle || ogTitle.content === "") {
-        missingProperties.push("og:title");
-      }
-
-      if (missingProperties.length > 0) {
-        throw new SeoDataError(missingProperties);
-      }
-    }, timeout);
-  }
-
   public render() {
     if (this.settingsLoaded && !this.systemEnabled) {
       if (
@@ -253,6 +213,10 @@ class AppLayout extends React.Component<
       }
     }
 
+    const useContentstackGlobalAlerts =
+      this.settingsLoaded &&
+      this.state.globalState &&
+      ConfigUtils?.SystemStatus(SystemNames.ContentstackGlobalAlerts);
     const responsiveClasses =
       this.state.globalState && this.state.globalState.responsive
         ? Responsive.getResponsiveClasses()
@@ -332,7 +296,9 @@ class AppLayout extends React.Component<
 
         <div id={`app-layout`}>
           {/** Bug #796153:  https://github.com/ipatate/react-router-scroll-memory - Keeps track of scroll position per-page */}
-          <ScrollMemory />
+          <Suspense fallback={<div />}>
+            <ScrollMemory />
+          </Suspense>
 
           {this.state.definitionsLoading && (
             <SpinnerContainer
@@ -342,11 +308,18 @@ class AppLayout extends React.Component<
             />
           )}
 
-          <EmailValidationGlobalBar />
-          <MainNavigation
-            history={this.props.history}
-            currentPath={this.state.currentPath}
-          />
+          {!this.state.hideNavigation && (
+            <>
+              <Suspense fallback={<div />}>
+                <EmailValidationGlobalBar />
+              </Suspense>
+              <NavVisibilityListener />
+              <MainNavigation
+                history={this.props.history}
+                currentPath={this.state.currentPath}
+              />
+            </>
+          )}
 
           <div id={`main-content`}>
             {globalError.length > 0 && (
@@ -354,14 +327,29 @@ class AppLayout extends React.Component<
             )}
             <BasicErrorBoundary>{this.props.children}</BasicErrorBoundary>
           </div>
-          {showDebugger && (
-            <FirehoseDebugger contentItems={this.state.firehoseContentItems} />
-          )}
-          <div className={`service-alert`}>
-            <ServiceAlertBar />
-          </div>
 
-          <Footer coreSettings={this.state.globalState.coreSettings} />
+          {showDebugger && (
+            <Suspense fallback={<div />}>
+              <FirehoseDebugger
+                contentItems={this.state.firehoseContentItems}
+              />
+            </Suspense>
+          )}
+
+          {!this.state.hideNavigation && (
+            <>
+              <div className={`service-alert`}>
+                {useContentstackGlobalAlerts ? (
+                  <ServiceAlertBar />
+                ) : (
+                  <GlobalAlerts />
+                )}
+              </div>
+              <Suspense fallback={<Spinner on={true} />}>
+                <Footer coreSettings={this.state.globalState.coreSettings} />
+              </Suspense>
+            </>
+          )}
         </div>
 
         <CookieConsent history={this.props.history} />

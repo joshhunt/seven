@@ -8,7 +8,7 @@ import {
 import { Responsive } from "@Boot/Responsive";
 import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { WithContentTypeUids } from "@Utilities/GraphQLUtils";
+import { WithContentTypeUids } from "@Utilities/ContentStackUtils";
 import React from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";
 import styles from "./S16ProceduralEventSection.module.scss";

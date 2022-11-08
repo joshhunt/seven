@@ -646,6 +646,7 @@ export declare namespace DestinyDefinitions {
     Popular = 65536,
     Free = 131072,
     Locked = 262144,
+    Paracausal = 524288,
   }
 
   enum DestinySocketCategoryStyle {

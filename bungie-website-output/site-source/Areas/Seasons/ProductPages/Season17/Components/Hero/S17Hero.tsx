@@ -7,7 +7,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { ImageAnchor, ImageVideoThumb } from "@UI/Marketing/ImageThumb";
-import { bgImage } from "@Utilities/GraphQLUtils";
+import { bgImage } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import { BnetStackSeasonOfTheHaunted } from "../../../../../../Generated/contentstack-types";

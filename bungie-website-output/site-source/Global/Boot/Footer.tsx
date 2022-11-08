@@ -1,3 +1,4 @@
+import { FooterLink } from "@Boot/FooterLink";
 import { Localizer } from "@bungie/localization";
 import { IMultiSiteLink, RouteHelper } from "@Global/Routes/RouteHelper";
 import { SystemNames } from "@Global/SystemNames";
@@ -7,13 +8,11 @@ import {
   sanitizeHTML,
 } from "@UI/Content/SafelySetInnerHTML";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { Button } from "@UIKit/Controls/Button/Button";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import moment from "moment";
 import * as React from "react";
-import { IoIosArrowDropupCircle } from "react-icons/all";
+import { IoIosArrowDropupCircle } from "@react-icons/all-files/io/IoIosArrowDropupCircle";
 import styles from "./Footer.module.scss";
 
 interface IFooterProps {
@@ -160,57 +159,70 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.GuideDestiny(), navLoc.Guides)}
               {this.renderLink(RouteHelper.Help(), navLoc.faq)}
 
-              {this.renderLink(RouteHelper.LegalSLA(), navLoc.Legal)}
-              {this.renderLink(RouteHelper.LegalTermsOfUse(), navLoc.Terms)}
-              {this.renderLink(
-                RouteHelper.LegalPrivacyPolicy(),
-                navLoc.Privacy
-              )}
+              <FooterLink url={RouteHelper.LegalSLA()} label={navLoc.Legal} />
+              <FooterLink
+                url={RouteHelper.LegalTermsOfUse()}
+                label={navLoc.Terms}
+              />
+              <FooterLink
+                url={RouteHelper.LegalPrivacyPolicy()}
+                label={navLoc.Privacy}
+              />
               {(Localizer.CurrentCultureName === "en" ||
-                Localizer.CurrentCultureName === "ja") &&
-                this.renderLink(
-                  RouteHelper.LegalPaymentServicesAct(),
-                  navLoc.paymentServicesAct
+                Localizer.CurrentCultureName === "ja") && (
+                <FooterLink
+                  url={RouteHelper.LegalPaymentServicesAct()}
+                  label={navLoc.paymentServicesAct}
+                />
+              )}
+              <FooterLink
+                url={RouteHelper.HelpStep(48626)}
+                label={navLoc.DoNotSellMyInfo}
+              />
+            </ul>
+          </div>
+          <div className={styles.column}>
+            <ul>
+              <FooterLink
+                url={RouteHelper.Careers().concat(
+                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
                 )}
-              {this.renderLink(
-                RouteHelper.HelpStep(48626),
-                navLoc.DoNotSellMyInfo
-              )}
+                label={navLoc.Bungie}
+              />
+              <FooterLink
+                url={RouteHelper.Careers("jobs")}
+                label={navLoc.Careers}
+              />
+              <FooterLink
+                url={RouteHelper.BungieNewsRoom}
+                label={navLoc.BungieNewsRoom}
+              />
+              <FooterLink
+                url={RouteHelper.BungieTechBlog}
+                label={navLoc.TechBlog}
+              />
+              <FooterLink
+                url={RouteHelper.PressKits()}
+                label={navLoc.PressKit}
+              />
             </ul>
           </div>
           <div className={styles.column}>
             <ul>
-              {this.renderLink(
-                RouteHelper.Careers().concat(
+              <FooterLink
+                url={RouteHelper.BungieStore().concat(
                   "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
-                ),
-                navLoc.Bungie
-              )}
-              {this.renderLink(RouteHelper.Careers("jobs"), navLoc.Careers)}
-              {this.renderLink(
-                RouteHelper.BungieNewsRoom,
-                navLoc.BungieNewsRoom
-              )}
-              {this.renderLink(RouteHelper.BungieTechBlog, navLoc.TechBlog)}
-              {this.renderLink(RouteHelper.PressKits(), navLoc.PressKit)}
-            </ul>
-          </div>
-          <div className={styles.column}>
-            <ul>
-              {this.renderLink(
-                RouteHelper.BungieStore().concat(
-                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
-                ),
-                navLoc.store
-              )}
-              {this.renderLink(
-                RouteHelper.BungieStore("collections/whats-new"),
-                navLoc.WhatSNew
-              )}
-              {this.renderLink(
-                RouteHelper.BungieStore("merchandise"),
-                navLoc.Merchandise
-              )}
+                )}
+                label={navLoc.store}
+              />
+              <FooterLink
+                url={RouteHelper.BungieStore("collections/whats-new")}
+                label={navLoc.WhatSNew}
+              />
+              <FooterLink
+                url={RouteHelper.BungieStore("merchandise")}
+                label={navLoc.Merchandise}
+              />
               {this.renderLink(
                 RouteHelper.BungieStore("collections/soundtracks"),
                 navLoc.Soundtracks

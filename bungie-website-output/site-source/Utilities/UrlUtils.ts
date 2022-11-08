@@ -1,6 +1,7 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Query } from "contentstack";
+// @ts-ignore
 import * as H from "history";
 import * as pathToRegexp from "ptr620";
 import React from "react";
@@ -30,7 +31,7 @@ export class UrlUtils {
   ): { [key: string]: string } {
     const output: { [key: string]: string } = {};
 
-    const query = q.startsWith("?") ? q.substr(1) : q;
+    const query = q.startsWith("?") ? q.slice(1) : q;
 
     if (query.indexOf("=") > -1) {
       query
@@ -293,7 +294,7 @@ export class UrlUtils {
       let path = anchor.pathname;
 
       if (path.startsWith("/7/")) {
-        path = anchor.pathname.substr(2);
+        path = anchor.pathname.slice(2);
       }
 
       resolved = path + anchor.search + anchor.hash;

@@ -1228,6 +1228,8 @@ export enum PlatformErrorCodes {
   TwitchNoPlatformChosen = 2506,
   TwitchDropHistoryPermissionFailure = 2507,
   TwitchDropsRepairPartialFailure = 2508,
+  TwitchNotAuthorized = 2509,
+  TwitchUnknownAuthorizationFailure = 2510,
   TrendingCategoryNotFound = 2600,
   TrendingEntryTypeNotSupported = 2601,
   ReportOffenderNotInPgcr = 2700,
@@ -2679,6 +2681,10 @@ export enum DestinyVendorItemState {
 		This indicates that the sale item is locked.
 		*/
   Locked = 262144,
+  /**
+		This indicates that the sale item is paracausal.
+		*/
+  Paracausal = 524288,
 }
 
 /**

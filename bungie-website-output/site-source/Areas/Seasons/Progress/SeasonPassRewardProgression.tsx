@@ -187,6 +187,8 @@ class SeasonPassRewardProgression extends React.Component<
       </div>
     ));
 
+    // @ts-ignore
+    // @ts-ignore
     return (
       <div className={styles.stepWrapper}>
         <SeasonCarousel

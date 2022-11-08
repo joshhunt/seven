@@ -15,13 +15,13 @@ export const BeyondLightArgSelfTyper: React.FC<Props> = ({
   onComplete,
 }) => {
   const normalizedChildren =
-    typeof children === "string" ? [children] : (children as string[]);
+    typeof children === "string" ? [children] : children;
   const joinedChildren = [...normalizedChildren].join("");
   const [typed, setTyped] = useState("");
 
   const typeNext = () => {
     const newLength = Math.min(typed.length + 1, joinedChildren.length);
-    setTyped(joinedChildren.substr(0, newLength));
+    setTyped(joinedChildren.slice(0, newLength));
   };
 
   useEffect(() => {

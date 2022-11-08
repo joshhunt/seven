@@ -1,103 +1,108 @@
 // Created by jlauer, 2021
 // Copyright Bungie, Inc.
 
-import { BasicNodeType } from "@bungie/contentstack/JsonRteMap/DefaultMapping";
-import { RteMap } from "@bungie/contentstack/JsonRteMap/RteRenderer";
-import {
-  ContentTypeDataPair,
-  ReferencedDataWithContentType,
-} from "@bungie/contentstack/ReferenceMap/ReferenceMap";
+import { Responsive } from "@Boot/Responsive";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { useRteMap } from "@bungie/contentstack";
 import { NotFoundError } from "@CustomErrors";
+import { FaCaretDown } from "@react-icons/all-files/fa/FaCaretDown";
+import { FaCaretRight } from "@react-icons/all-files/fa/FaCaretRight";
 import { NewsParams } from "@Routes/RouteParams";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import { TwitterAPI, TwitterScript } from "@UI/Content/TwitterFeed";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { DateTime, Duration } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { BnetStackNewsArticle } from "Generated/contentstack-types";
-import { Logger } from "../../Global/Logger";
-import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
+import { Logger } from "@Global/Logger";
+import { RendererLogLevel } from "@Enum";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { BodyClasses, SpecialBodyClasses } from "../../UI/HelmetUtils";
-import { Grid, GridCol } from "../../UI/UIKit/Layout/Grid/Grid";
-import { ParallaxContainer } from "../../UI/UIKit/Layout/ParallaxContainer";
-import { WithUids } from "../../Utilities/GraphQLUtils";
-import { useAsyncError } from "../../Utilities/ReactUtils";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { ParallaxContainer } from "@UIKit/Layout/ParallaxContainer";
 import styles from "./NewsArticle.module.scss";
 
-interface NewsArticleProps {}
+declare global {
+  interface Window {
+    twttr: TwitterAPI;
+  }
+}
 
 /**
  * Show the details of the article in question
  */
-const NewsArticle: React.FC<NewsArticleProps> = (props) => {
+const NewsArticle = () => {
   const params = useParams<NewsParams>();
   const url = `/${params.articleUrl}`;
-  const [renderable, setRenderable] = useState(null);
   const [articleData, setArticleData] = useState(null);
-  const throwError = useAsyncError();
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-
-  const PmpCallToAction: React.FC<ReferencedDataWithContentType<
-    "pmp_call_to_action"
-  >> = ({ data, children }) => {
-    return (
-      <div {...data?.attrs}>
-        {data?.title}
-        <>{children}</>
-      </div>
-    );
-  };
+  const { mobile } = useDataStore(Responsive);
 
   useEffect(() => {
     ContentStackClient()
       .ContentType("news_article")
       .Query()
-      .where("url", url)
+      .where("url.hosted_url", url)
       .where("locale", locale)
-      .includeEmbeddedItems()
       .toJSON()
-      .find()
-      .then((res): void => {
+      .findOne()
+      .then((matchingArticle: BnetStackNewsArticle): void => {
         // Assume there's only one match because otherwise we have a URL collision
-        const matchingArticle = res?.[0]?.[0];
-        setArticleData(matchingArticle);
-
         if (!matchingArticle) {
           throw new NotFoundError();
         }
 
-        const referenceMetas = matchingArticle._embedded_items?.content?.map(
-          (ref: any) => {
-            return {
-              contentTypeUid: ref._content_type_uid,
-              data: ref,
-            };
-          }
-        );
-
-        const { RenderedComponent } = useRteMap({
-          meta: {
-            contentTypeUid: matchingArticle.content.type as BasicNodeType,
-            data: matchingArticle.content,
-          },
-          map: {} as RteMap<BasicNodeType>,
-          referenceMap: { pmp_call_to_action: PmpCallToAction },
-          referenceMetas: referenceMetas,
-        });
-
-        setRenderable(RenderedComponent);
+        setArticleData(matchingArticle);
       })
       .catch((error: Error) => {
         Logger.logToServer(error, RendererLogLevel.Error);
-        throwError(error);
+
+        throw new NotFoundError();
       });
   }, [url, locale]);
 
-  const { title, subtitle, date, image, content, author, uid } =
+  window.twttr?.ready?.(function (twttr: any) {
+    window.twttr?.widgets?.load();
+  });
+
+  const { title, subtitle, date, image, mobile_image, html_content, author } =
     articleData || {};
+
+  const startSubstring = "<pre";
+  const endSubstring = "/pre>";
+
+  const separateCodeContentRecursive = (
+    content: string,
+    compoundedContent: string[]
+  ) => {
+    let finalArray: any[] = [];
+
+    if (content?.length > 0) {
+      const nextCodeStart = content.indexOf(startSubstring);
+      const nextCodeEnd = content.indexOf(endSubstring) + endSubstring.length;
+
+      if (nextCodeStart !== -1) {
+        compoundedContent.push(content.slice(0, nextCodeStart));
+        compoundedContent.push(content.slice(nextCodeStart, nextCodeEnd));
+      } else {
+        compoundedContent.push(content);
+      }
+
+      finalArray =
+        nextCodeEnd - endSubstring.length !== -1
+          ? finalArray.concat(
+              separateCodeContentRecursive(
+                content.slice(nextCodeEnd),
+                finalArray
+              )
+            )
+          : finalArray.concat(compoundedContent, finalArray);
+    }
+
+    return finalArray;
+  };
 
   const now = DateTime.now();
   const creationDate = DateTime.fromISO(date);
@@ -109,13 +114,14 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
       year: creationDate.year,
     });
   } else {
-    timeString = Localizer.format(Localizer.time.timehago, {
-      hoursAgo: DateTime.now().diff(creationDate).hours,
+    timeString = Localizer.format(Localizer.time.timehourssince, {
+      hours: DateTime.now().diff(creationDate).hours,
     });
   }
 
   return (
     <>
+      <TwitterScript />
       <BungieHelmet title={title} description={subtitle} image={image?.url}>
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
@@ -125,7 +131,12 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
         isFadeEnabled={true}
         fadeOutSpeed={1000}
         backgroundOffset={0}
-        style={{ backgroundImage: `url(${image?.url})` }}
+        style={{
+          backgroundImage:
+            mobile && mobile_image?.url
+              ? `url(${mobile_image?.url})`
+              : `url(${image?.url})`,
+        }}
       />
       <Grid isTextContainer={true}>
         <GridCol cols={12}>
@@ -133,10 +144,65 @@ const NewsArticle: React.FC<NewsArticleProps> = (props) => {
           <h3 className={styles.subtitle}>
             <span>{`${timeString} - ${author}`}</span>
           </h3>
-          <div className={styles.articleContainer}>{renderable}</div>
+          <div className={styles.articleContainer}>
+            {separateCodeContentRecursive(html_content, []) &&
+              separateCodeContentRecursive(html_content, []).map(
+                (contentString: string, index: number) => {
+                  if (contentString.startsWith(startSubstring)) {
+                    return (
+                      <CollapsibleCodeBlock
+                        codeContent={contentString}
+                        startSubstring={startSubstring}
+                        key={index}
+                      />
+                    );
+                  }
+
+                  return (
+                    <div
+                      dangerouslySetInnerHTML={{ __html: contentString }}
+                      key={index}
+                    />
+                  );
+                }
+              )}
+          </div>
         </GridCol>
       </Grid>
     </>
+  );
+};
+
+interface CollapsibleCodeBlockProps {
+  codeContent: string;
+  startSubstring: string;
+}
+
+const CollapsibleCodeBlock: React.FC<CollapsibleCodeBlockProps> = ({
+  codeContent,
+  startSubstring,
+}) => {
+  const [open, setOpen] = useState(false);
+  const withOpenClass = `${codeContent.slice(
+    0,
+    startSubstring?.length
+  )} class="${styles.open}" ${codeContent.slice(startSubstring?.length)}`;
+
+  return (
+    <div
+      onClick={() => {
+        setOpen(!open);
+      }}
+      className={styles.codeExpander}
+    >
+      {open ? <FaCaretDown /> : <FaCaretRight />}
+      {Localizer.News.Code}
+      {open && (
+        <div>
+          <div dangerouslySetInnerHTML={{ __html: withOpenClass }} />
+        </div>
+      )}
+    </div>
   );
 };
 

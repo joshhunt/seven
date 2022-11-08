@@ -4,20 +4,14 @@ import * as React from "react";
 import { Platform, Content } from "@Platform";
 import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
 import styles from "./DirectVideo.module.scss";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import YouTube, { Options } from "react-youtube";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
+import YouTube from "react-youtube";
+import type { Options } from "youtube-player/dist/types";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
 import moment from "moment";
 import classNames from "classnames";
-import { DestinyNewsCallout } from "@Areas/Destiny/Shared/DestinyNewsCallout";
 
 interface IDirectVideoRouterParams {
   title: string;
@@ -90,7 +84,7 @@ class DirectVideoInternal extends React.Component<
       const thumbnailTwoSubtitle = content.LinkThumbnailTwoSubtitle;
       const thumbnailTwoLink = content.LinkThumbnailTwoLink;
 
-      const opts: Options = {
+      const opts: any = {
         height: "100%",
         width: "100%",
         playerVars: {
@@ -123,7 +117,7 @@ class DirectVideoInternal extends React.Component<
 
                     {/* Video */}
                     <YouTube
-                      containerClassName={styles.youtubeWrapper}
+                      className={styles.youtubeWrapper}
                       videoId={videoId}
                       opts={opts}
                     />

@@ -10,6 +10,7 @@ import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React from "react";
+import { useHistory } from "react-router";
 import { Route, RouteComponentProps, withRouter } from "react-router-dom";
 
 export interface TabData {
@@ -26,7 +27,7 @@ export interface TabSystemClasses extends ISubNavClasses {
   contentContainer?: string;
 }
 
-export interface TabSystemProps extends RouteComponentProps<any> {
+export interface TabSystemProps {
   tabDataArray: TabData[];
   tabClasses?: TabSystemClasses;
   /**
@@ -44,82 +45,72 @@ export interface TabSystemProps extends RouteComponentProps<any> {
   contentOnly?: boolean;
 
   verticalTabs?: boolean;
+
+  children?: React.ReactNode;
 }
 
-interface TabSystemState {
-  /*	currentTab: TabData;*/
-}
+export const TabSystem: React.FC<TabSystemProps> = (props) => {
+  const {
+    tabDataArray,
+    tabClasses,
+    mobileDropdownBreakpoint,
+    children,
+    defaultRouteComponent,
+  } = props;
 
-class TabSystemInner extends React.Component<TabSystemProps, TabSystemState> {
-  constructor(props: TabSystemProps) {
-    super(props);
-  }
+  const history = useHistory();
+  const routes = tabDataArray.filter((td) => !!td.pathName);
 
-  public render() {
-    const {
-      tabDataArray,
-      tabClasses,
-      mobileDropdownBreakpoint,
-      children,
-      defaultRouteComponent,
-      history,
-    } = this.props;
-
-    const routes = tabDataArray.filter((td) => !!td.pathName);
-
-    const subNavLinks: ISubNavLink[] = tabDataArray.map((td) => {
-      const tabPath = UrlUtils.getHrefAsLocation(td.tabTo?.url)?.pathname;
-      const pathMatches = StringUtils.equals(
-        tabPath,
-        history.location.pathname,
-        StringCompareOptions.IgnoreCase
-      );
-
-      return {
-        label: td?.tabLabel,
-        to: td?.tabTo,
-        current: pathMatches,
-        render: td.tabRender,
-      };
-    });
-
-    return (
-      <InnerErrorBoundary>
-        <div className={tabClasses?.container}>
-          <Grid className={tabClasses?.list}>
-            <GridCol cols={12}>
-              <SubNav
-                history={this.props.history}
-                links={subNavLinks}
-                vertical={true}
-                classes={tabClasses}
-                mobileDropdownBreakpoint={mobileDropdownBreakpoint}
-              />
-            </GridCol>
-          </Grid>
-          <Grid className={tabClasses?.contentContainer}>
-            <GridCol cols={12}>
-              {children}
-              <AnimatedRouter>
-                {routes
-                  .filter((r) => !!r.pathName)
-                  .map((td, i) => {
-                    return (
-                      <Route key={i} path={td.pathName}>
-                        {td.contentComponent}
-                      </Route>
-                    );
-                  })}
-                {defaultRouteComponent && (
-                  <Route path={"*"}>{defaultRouteComponent}</Route>
-                )}
-              </AnimatedRouter>
-            </GridCol>
-          </Grid>
-        </div>
-      </InnerErrorBoundary>
+  const subNavLinks: ISubNavLink[] = tabDataArray.map((td) => {
+    const tabPath = UrlUtils.getHrefAsLocation(td.tabTo?.url)?.pathname;
+    const pathMatches = StringUtils.equals(
+      tabPath,
+      history.location.pathname,
+      StringCompareOptions.IgnoreCase
     );
-  }
-}
 
-export default withRouter(TabSystemInner);
+    return {
+      label: td?.tabLabel,
+      to: td?.tabTo,
+      current: pathMatches,
+      render: td.tabRender,
+    };
+  });
+
+  return (
+    <InnerErrorBoundary>
+      <div className={tabClasses?.container}>
+        <Grid className={tabClasses?.list}>
+          <GridCol cols={12}>
+            <SubNav
+              history={history}
+              links={subNavLinks}
+              vertical={true}
+              classes={tabClasses}
+              mobileDropdownBreakpoint={mobileDropdownBreakpoint}
+            />
+          </GridCol>
+        </Grid>
+        <Grid className={tabClasses?.contentContainer}>
+          <GridCol cols={12}>
+            {children}
+            <AnimatedRouter>
+              {routes
+                .filter((r) => !!r.pathName)
+                .map((td, i) => {
+                  return (
+                    <Route key={i} path={td.pathName}>
+                      {td.contentComponent}
+                    </Route>
+                  );
+                })}
+              {defaultRouteComponent && (
+                <Route path={"*"}>{defaultRouteComponent}</Route>
+              )}
+            </AnimatedRouter>
+          </GridCol>
+        </Grid>
+      </div>
+    </InnerErrorBoundary>
+  );
+};

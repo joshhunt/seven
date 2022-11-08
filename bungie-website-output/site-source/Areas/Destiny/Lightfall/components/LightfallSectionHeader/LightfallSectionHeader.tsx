@@ -6,7 +6,7 @@ import {
   bgImage,
   bgImageFromStackFile,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
 import styles from "./LightfallSectionHeader.module.scss";

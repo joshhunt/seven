@@ -1,6 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
+import { DateTime } from "luxon";
 import * as React from "react";
 import styles from "./Reveal.module.scss";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -21,7 +22,6 @@ import {
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { UserUtils } from "@Utilities/UserUtils";
-import moment from "moment";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { GridCol, Grid } from "@UI/UIKit/Layout/Grid/Grid";
 import classNames from "classnames";
@@ -202,7 +202,7 @@ class Reveal extends React.Component<Props, IRevealState> {
           <div className={styles.postReveal}>
             <div className={styles.postRevealHeader}>
               <h2 className={styles.destinyLogo}>{destinyLogo}</h2>
-              <p className={styles.nextStep}>{destinyNextStep}</p>
+              <p>{destinyNextStep}</p>
             </div>
             <div className={styles.streamContainer}>
               <iframe
@@ -312,9 +312,9 @@ class Reveal extends React.Component<Props, IRevealState> {
   }
 
   private checkDateTime() {
-    const revealDateTime = moment(this.revealTime);
+    const revealDateTime = DateTime.fromISO(this.revealTime);
 
-    if (!this.state.postReveal && moment().isAfter(revealDateTime)) {
+    if (!this.state.postReveal && DateTime.now() > revealDateTime) {
       this.setState({
         postReveal: true,
       });

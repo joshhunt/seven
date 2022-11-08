@@ -100,7 +100,7 @@ export const SystemNames = {
   CrossSaveEntitlementTables: "CrossSaveEntitlementTables",
   UseGlobalBungieDisplayNames: "UseGlobalBungieDisplayNames",
   WorldsFirstStream: "WorldsFirstStream",
-  CoreHomeandNews: "CoreHomeandNews",
+  CoreHomeAndNews: "CoreHomeAndNews",
   Tools: "Tools",
   D2Rewards: "D2Rewards",
   D2RewardsStoreMigration: "D2RewardsStoreMigration",
@@ -114,6 +114,7 @@ export const SystemNames = {
   ExactMatchClanSearchOnly: "ExactMatchClanSearchOnly",
   CoreAreaCollections: "CoreAreaCollections",
   CoreAreaTriumphs: "CoreAreaTriumphs",
+  ContentstackGlobalAlerts: "ContentstackGlobalAlerts",
   FirehoseNewsMigrator: "FirehoseNewsMigrator",
   DirectVideoCS: "DirectVideoCS",
 } as const;

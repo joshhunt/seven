@@ -13,7 +13,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
-import { IoIosArrowForward } from "react-icons/all";
+import { IoIosArrowForward } from "@react-icons/all-files/io/IoIosArrowForward";
 
 interface SuggestedProps {}
 

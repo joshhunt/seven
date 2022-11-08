@@ -9,7 +9,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import {
   bgImageFromStackFile,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { LegacyRef } from "react";
 import { BnetStackSeasonOfTheRisen } from "../../../../../Generated/contentstack-types";

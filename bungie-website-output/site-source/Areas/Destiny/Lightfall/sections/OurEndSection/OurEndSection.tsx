@@ -5,7 +5,7 @@ import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/Ligh
 import { LightfallTripleImageSet } from "@Areas/Destiny/Lightfall/components/LightfallTripleImageSet/LightfallTripleImageSet";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { responsiveBgImage } from "@Utilities/GraphQLUtils";
+import { responsiveBgImage } from "@Utilities/ContentStackUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
 import React from "react";

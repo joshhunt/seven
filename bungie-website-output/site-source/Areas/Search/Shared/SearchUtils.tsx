@@ -41,7 +41,7 @@ export class SearchUtils {
         );
 
         return {
-          url: RouteHelper.NewsArticle(parseInt(item.contentId, 10)),
+          url: RouteHelper.NewsArticle({ articleUrl: item.contentId }),
           title: item.properties["Title"],
           subtitle: <SafelySetInnerHTML html={item.properties["Subtitle"]} />,
           icon: <IconCoin iconImageUrl={item.properties["ArticleBanner"]} />,

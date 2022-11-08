@@ -5,6 +5,7 @@ import styles from "../OneLineItem.module.scss";
 export interface IIconCoinProps {
   iconImageUrl?: string;
   icon?: IIconProps;
+  children?: React.ReactNode;
 }
 
 export class IconCoin extends React.Component<IIconCoinProps> {

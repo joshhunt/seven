@@ -260,10 +260,7 @@ const CarouselSlot = (props: ICarouselSlotProps) => {
   const margin = responsive.mobile ? "0 0.04%" : "0 0.5rem";
 
   return (
-    <div
-      style={{ order: adjustedOrder, width: width, margin: margin }}
-      className={styles.carouselSlot}
-    >
+    <div style={{ order: adjustedOrder, width: width, margin: margin }}>
       {props.children}
     </div>
   );

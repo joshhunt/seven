@@ -62,13 +62,12 @@ export const StoreSkuButton = ({
       {children}
     </Anchor>
   ) : (
-    <div
-      {...props}
-      onKeyDown={props.onKeyDown}
+    <button
+      className={classes}
+      disabled={disabled}
       data-analytics-id={analyticsId}
-      role={"button"}
     >
       {children}
-    </div>
+    </button>
   );
 };

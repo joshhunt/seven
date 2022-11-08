@@ -20,6 +20,7 @@ interface IContentItemProps {
 interface DefaultProps {
   hideTitle: boolean;
   ignoreStyles: boolean;
+  children?: React.ReactNode;
 }
 
 interface IContentItemState {

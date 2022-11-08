@@ -19079,6 +19079,13 @@ export declare namespace CrossSave {
         typeof Globals.BungieMembershipType
       >]?: Platforms.BungiePlatformMembership;
     };
+
+    /**
+		This is a list of all membership ids (keyed by type) that are not overridden.
+		*/
+    membershipsMissingOverrides: {
+      [K in EnumStrings<typeof Globals.BungieMembershipType>]?: string;
+    };
   }
 
   export interface CrossSaveOverriddenProfile {

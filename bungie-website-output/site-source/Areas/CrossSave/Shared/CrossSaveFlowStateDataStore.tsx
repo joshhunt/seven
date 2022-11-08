@@ -43,7 +43,6 @@ export const CrossSaveValidGameVersions: DestinyGameVersions[] = [
   DestinyGameVersions.BeyondLight,
   DestinyGameVersions.TheWitchQueen,
   DestinyGameVersions.Anniversary30th,
-  DestinyGameVersions.Lightfall,
 ];
 
 class CrossSaveFlowStateDataStoreInternal extends DataStore<
@@ -102,9 +101,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
      * @param acknowledged
      */
     updateAcknowledged: (state, acknowledged: boolean) => {
-      CrossSaveFlowStateDataStoreInternal.updateAckStorage(
-        this.state.acknowledged
-      );
+      CrossSaveFlowStateDataStoreInternal.updateAckStorage(acknowledged);
 
       return {
         acknowledged,
@@ -121,14 +118,12 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
       membershipId: string
     ) => {
       try {
-        const isActive = CrossSaveFlowStateDataStoreInternal.isActive(
-          pairingStatus
-        );
+        const isActive = state.isActive;
 
         const stateIdentifier =
-          this.state.stateIdentifier || Math.ceil(Math.random() * 1000000);
+          state.stateIdentifier || Math.ceil(Math.random() * 1000000);
 
-        const userClansPromise = !this.state.userClans
+        const userClansPromise = !state.userClans
           ? Platform.GroupV2Service.GetGroupsForMember(
               BungieMembershipType.BungieNext,
               membershipId,
@@ -153,7 +148,7 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
 
         const includedMembershipTypes = CrossSaveUtils.getPresetPairingDecision(
           pairingStatus,
-          this.state.mode
+          state.mode
         );
         const primaryMembershipType =
           pairingStatus.primaryMembershipType !== undefined
@@ -173,8 +168,8 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
           includedMembershipTypes,
           primaryMembershipType,
           validation,
-          userClans: this.state.userClans || userClans.results,
-          acknowledged: this.state.acknowledged || isActive,
+          userClans: state.userClans || userClans.results,
+          acknowledged: state.acknowledged || isActive,
           loaded: true,
         };
       } catch (e) {
@@ -270,10 +265,6 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
     return this.loadUserData();
   };
 }
-
-export const CrossSaveFlowStateContext = React.createContext<
-  ICrossSaveFlowState
->(null);
 
 export const CrossSaveFlowStateDataStore =
   CrossSaveFlowStateDataStoreInternal.Instance;

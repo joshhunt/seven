@@ -12,7 +12,7 @@ import {
 } from "@UI/UIKit/Controls/Spinner";
 import { BungieMembershipType } from "@Enum";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { TiVendorMicrosoft } from "react-icons/ti";
+import { TiVendorMicrosoft } from "@react-icons/all-files/ti/TiVendorMicrosoft";
 
 interface ICrossSaveCardProps extends React.HTMLProps<HTMLDivElement> {
   membershipType: BungieMembershipType;

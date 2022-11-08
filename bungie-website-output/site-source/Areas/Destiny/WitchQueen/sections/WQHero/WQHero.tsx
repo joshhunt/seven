@@ -2,8 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
-import { WQHeroQuery } from "@Areas/Destiny/WitchQueen/sections/WQHero/__generated__/WQHeroQuery.graphql";
-import { WQImgUrlFromQueryProp } from "@Areas/Destiny/WitchQueen/WitchQueen";
+import { BnetStackNovaProductPage } from "../../../../../Generated/contentstack-types";
+import { bgImageFromStackFile } from "../../../../../Utilities/ContentStackUtils";
 import { Responsive } from "@Boot/Responsive";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -14,105 +14,39 @@ import { Icon } from "@UIKit/Controls/Icon";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
-import React, { Dispatch, SetStateAction, useEffect } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import styles from "./WQHero.module.scss";
 
 interface WQHeroProps {
-  setHasLoaded: Dispatch<SetStateAction<boolean>>;
+  heroContent: BnetStackNovaProductPage["hero"];
 }
 
 const WQHero: React.FC<WQHeroProps> = (props) => {
   const responsive = useDataStore(Responsive);
-
-  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const data = useLazyLoadQuery<WQHeroQuery>(
-    graphql`
-      query WQHeroQuery($locale: String!) {
-        nova_product_page(uid: "blt6927482d223d0222", locale: $locale) {
-          hero {
-            hero_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_trailer_btn_bgConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_logo_imgConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_pre_order_btn_bgConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_pre_order_btn_text
-            hero_trailer_btn_text
-            hero_trailer_id
-            hero_date_text
-            hero_bg_desktop_videoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    { locale }
-  );
-
-  useEffect(() => {
-    props.setHasLoaded(!!data);
-  }, [data]);
+  const data = props.heroContent;
 
   const {
-    hero_bg_desktopConnection,
-    hero_bg_mobileConnection,
-    hero_trailer_btn_bgConnection,
-    hero_logo_imgConnection,
-    hero_pre_order_btn_bgConnection,
+    hero_bg_desktop,
+    hero_bg_mobile,
+    hero_trailer_btn_bg,
+    hero_logo_img,
+    hero_pre_order_btn_bg,
     hero_pre_order_btn_text,
     hero_trailer_btn_text,
     hero_date_text,
     hero_trailer_id,
-    hero_bg_desktop_videoConnection,
-  } = data?.nova_product_page?.hero ?? {};
+    hero_bg_desktop_video,
+  } = data ?? {};
 
-  const heroBgImage =
-    hero_bg_mobileConnection &&
-    responsive.mobile &&
-    `url(${WQImgUrlFromQueryProp(hero_bg_mobileConnection)})`;
-  const heroVideo = WQImgUrlFromQueryProp(hero_bg_desktop_videoConnection);
+  const heroBgImage = bgImageFromStackFile(hero_bg_mobile);
+  const heroVideo = hero_bg_desktop_video?.url;
 
   return (
     <div className={styles.hero} style={{ backgroundImage: heroBgImage }}>
       {heroVideo && !responsive.mobile && (
         <video
           className={styles.heroVideo}
-          poster={WQImgUrlFromQueryProp(hero_bg_desktopConnection)}
+          poster={bgImageFromStackFile(hero_bg_desktop)}
           autoPlay={true}
           loop={true}
           playsInline={true}
@@ -121,18 +55,15 @@ const WQHero: React.FC<WQHeroProps> = (props) => {
           <source src={heroVideo} type={"video/mp4"} />
         </video>
       )}
-      <img
-        src={WQImgUrlFromQueryProp(hero_logo_imgConnection)}
-        className={styles.titleImg}
-      />
+      <img src={hero_logo_img?.url} className={styles.titleImg} />
       <div className={styles.flexBtns}>
         <WatchTrailerBtn
           trailerId={hero_trailer_id}
-          bgImage={WQImgUrlFromQueryProp(hero_trailer_btn_bgConnection)}
+          bgImage={bgImageFromStackFile(hero_trailer_btn_bg)}
           btnText={hero_trailer_btn_text}
         />
         <PreOrderBtn
-          bgImage={WQImgUrlFromQueryProp(hero_pre_order_btn_bgConnection)}
+          bgImage={bgImageFromStackFile(hero_pre_order_btn_bg)}
           btnText={hero_pre_order_btn_text}
         />
       </div>
@@ -151,24 +82,22 @@ interface IWatchTrailerBtn extends IWQHeroBtn {
 }
 
 const WatchTrailerBtn: React.FC<IWatchTrailerBtn> = (props) => {
-  const bgImage = props.bgImage ? `url(${props.bgImage})` : undefined;
   const btnAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.WitchQueen,
     "HeroTrailerAnalyticsId",
     ""
   );
-
   const showVideo = () => YoutubeModal.show({ videoId: props.trailerId });
 
   return (
     <div
-      className={classNames(styles.trailerBtn, styles.heroBtn)}
+      className={styles.heroBtn}
       onClick={showVideo}
       data-analytics-id={btnAnalyticsId}
     >
       <div
-        className={classNames(styles.trailerBtnBg, styles.heroBtnBg)}
-        style={{ backgroundImage: bgImage }}
+        className={styles.heroBtnBg}
+        style={{ backgroundImage: props.bgImage }}
       />
       <div className={styles.heroBtnContent}>
         <Icon
@@ -183,7 +112,6 @@ const WatchTrailerBtn: React.FC<IWatchTrailerBtn> = (props) => {
 };
 
 const PreOrderBtn: React.FC<IWQHeroBtn> = (props) => {
-  const bgImage = props.bgImage ? `url(${props.bgImage})` : undefined;
   const btnAnalyticsId = ConfigUtils.GetParameter(
     SystemNames.WitchQueen,
     "HeroPreOrderAnalyticsId",
@@ -197,8 +125,8 @@ const PreOrderBtn: React.FC<IWQHeroBtn> = (props) => {
       data-analytics-id={btnAnalyticsId}
     >
       <div
-        className={classNames(styles.preOrderBtnBg, styles.heroBtnBg)}
-        style={{ backgroundImage: bgImage }}
+        className={styles.heroBtnBg}
+        style={{ backgroundImage: props.bgImage }}
       />
       <div className={styles.heroBtnContent}>
         <div className={styles.arrowsTextWrapper}>

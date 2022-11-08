@@ -1,14 +1,12 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
 import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
-import { Responsive } from "@Boot/Responsive";
-import { DataStore } from "@bungie/datastore";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { PlatformError } from "@CustomErrors";
 import * as Globals from "@Enum";
-import { GlobalStateComponentProps } from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { EnumKey } from "@Helpers";
 import { CrossSave, Platform } from "@Platform";
@@ -20,19 +18,15 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Spinner } from "@UI/UIKit/Controls/Spinner";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import posed from "react-pose";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory } from "react-router";
 import { CrossSaveCardHeader } from "../Shared/CrossSaveCardHeader";
 import { CrossSaveClanCard } from "../Shared/CrossSaveClanCard";
-import {
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-} from "../Shared/CrossSaveFlowStateDataStore";
+import { CrossSaveFlowStateDataStore } from "../Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveStaggerPose } from "../Shared/CrossSaveStaggerPose";
 import { CrossSaveUtils } from "../Shared/CrossSaveUtils";
 import { CrossSaveAccountCard } from "./Components/CrossSaveAccountCard";
@@ -40,20 +34,8 @@ import { CrossSaveActivateStepInfo } from "./Components/CrossSaveActivateStepInf
 import { CrossSaveValidationError } from "./Components/CrossSaveValidationError";
 import styles from "./CrossSaveCommit.module.scss";
 
-interface ICrossSaveReviewProps
-  extends RouteComponentProps,
-    GlobalStateComponentProps<
-      "loggedInUser" | "responsive" | "loggedInUserClans"
-    > {
-  flowState: ICrossSaveFlowState;
+interface ICrossSaveReviewProps {
   onAccountLinked: (isVerify: boolean) => Promise<any | PlatformError>;
-}
-
-interface ICrossSaveReviewState {
-  show: boolean;
-  commitLoading: boolean;
-  showSilverWarning: boolean;
-  responsive: IResponsiveState;
 }
 
 const transition = {
@@ -97,51 +79,28 @@ const StaggerItem = posed.div({
  * @param {ICrossSaveReviewProps} props
  * @returns
  */
-class CrossSaveCommit extends React.Component<
-  ICrossSaveReviewProps,
-  ICrossSaveReviewState
-> {
-  constructor(props: ICrossSaveReviewProps) {
-    super(props);
+const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
+  const [show, setShow] = useState(false);
+  const [commitLoading, setCommitLoading] = useState(false);
+  const [showSilverWarning, setShowSilverWarning] = useState(false);
+  const globalState = useDataStore(GlobalStateDataStore, [
+    "loggedInUser",
+    "responsive",
+  ]);
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
+  const history = useHistory();
 
-    this.state = {
-      show: false,
-      commitLoading: false,
-      showSilverWarning: false,
-      responsive: Responsive.state,
-    };
-  }
+  useEffect(() => {
+    setShowSilverWarning(doShowSilverWarning);
+    setTimeout(() => setShow(true), 250);
+  }, []);
 
-  private readonly destroys: DestroyCallback[] = [];
-
-  public componentDidMount() {
-    this.destroys.push(
-      Responsive.observe((responsive) => this.setState({ responsive }))
-    );
-
-    this.setState({
-      showSilverWarning: this.showSilverWarning(),
-    });
-
-    setTimeout(
-      () =>
-        this.setState({
-          show: true,
-        }),
-      250
-    );
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.destroys);
-  }
-
-  private readonly showSilverWarning = () => {
-    return this.props.flowState.linkedDestinyProfiles.profiles
+  const doShowSilverWarning = () => {
+    return flowState.linkedDestinyProfiles.profiles
       .filter((p) => !p.isCrossSavePrimary)
       .some((profile) => {
         const flowStateForMembership = CrossSaveUtils.getFlowStateInfoForMembership(
-          this.props.flowState,
+          flowState,
           profile.membershipType
         );
         const userInfo = flowStateForMembership.userInfo;
@@ -155,11 +114,11 @@ class CrossSaveCommit extends React.Component<
       });
   };
 
-  private readonly commitCrossSave = () => {
-    this.setCommitLoading(true);
+  const commitCrossSave = () => {
+    setCommitLoading(true);
 
-    const primaryMembershipType = this.props.flowState.primaryMembershipType;
-    const overriddenMembershipTypes = this.props.flowState.includedMembershipTypes.filter(
+    const primaryMembershipType = flowState.primaryMembershipType;
+    const overriddenMembershipTypes = flowState.includedMembershipTypes.filter(
       (a) => a !== primaryMembershipType
     );
 
@@ -171,23 +130,23 @@ class CrossSaveCommit extends React.Component<
     setTimeout(() => {
       Platform.CrosssaveService.SetCrossSavePairing(
         input,
-        this.props.flowState.stateIdentifier
+        flowState.stateIdentifier
       )
-        .then(this.onPairChanged)
+        .then(onPairChanged)
         .catch(ConvertToPlatformError)
         .catch((e: PlatformError) => Modal.error(e))
-        .finally(() => this.setCommitLoading(false));
+        .finally(() => setCommitLoading(false));
     }, 1500);
   };
 
-  private readonly confirmCommitCrossSave = () => {
+  const confirmCommitCrossSave = () => {
     const helpStepId = ConfigUtils.GetParameter(
       SystemNames.CrossSave,
       "CrossSaveHelpStepId",
       0
     );
     const stadiaIsPrimary =
-      this.props.flowState.primaryMembershipType ===
+      flowState.primaryMembershipType ===
       Globals.BungieMembershipType.TigerStadia;
     const showStadiaWarning =
       ConfigUtils.SystemStatus(SystemNames.CrossSaveStadiaException) &&
@@ -195,8 +154,7 @@ class CrossSaveCommit extends React.Component<
 
     const ackList = [
       `${Localizer.Format(Localizer.Crosssave.CrossSaveLockoutWarning, {
-        timeLimit: this.props.flowState.validation.settings
-          .repairThrottleDurationFragment,
+        timeLimit: flowState.validation.settings.repairThrottleDurationFragment,
       })} <a href="${RouteHelper.HelpStep(helpStepId).url}" target="__blank">${
         Localizer.Crosssave.IDonTUnderstandHelp
       }</a>`,
@@ -206,7 +164,7 @@ class CrossSaveCommit extends React.Component<
       Localizer.Crosssave.AcknowledgementCheckboxText3,
     ];
 
-    if (!this.state.showSilverWarning) {
+    if (!showSilverWarning) {
       ackList.splice(1, 1);
     }
 
@@ -228,7 +186,7 @@ class CrossSaveCommit extends React.Component<
       confirmButtonProps: {
         labelOverride: Localizer.Crosssave.ConfirmModalConfirmButtonLabel,
         onClick: () => {
-          this.commitCrossSave();
+          commitCrossSave();
 
           return true;
         },
@@ -241,9 +199,7 @@ class CrossSaveCommit extends React.Component<
     });
   };
 
-  private readonly onPairChanged = (
-    data: CrossSave.CrossSavePairingResponse
-  ) => {
+  const onPairChanged = (data: CrossSave.CrossSavePairingResponse) => {
     const errorEntries = data.entries.filter(
       (a) => a.errorCode !== Globals.PlatformErrorCodes.Success
     );
@@ -259,37 +215,28 @@ class CrossSaveCommit extends React.Component<
 
       const confirmationPath = RouteDefs.Areas.CrossSave.resolve("Confirmation")
         .url;
-      this.props.history.push(confirmationPath);
+      history.push(confirmationPath);
 
       CrossSaveFlowStateDataStore.loadUserData();
     }
   };
 
-  private setCommitLoading(loading: boolean) {
-    this.setState({
-      commitLoading: loading,
-    });
-  }
-
-  private entitlementOwned(
+  const entitlementOwned = (
     membershipType: Globals.BungieMembershipType,
     gameVersion: Globals.DestinyGameVersions
-  ) {
+  ) => {
     const memberShipTypeString = Globals.BungieMembershipType[
       membershipType
     ] as EnumStrings<typeof Globals.BungieMembershipType>;
-    const entitlements = this.props.flowState.entitlements.platformEntitlements[
-      memberShipTypeString
-    ];
+    const entitlements =
+      flowState.entitlements.platformEntitlements[memberShipTypeString];
 
     return (
       entitlements && EnumUtils.hasFlag(gameVersion, entitlements.gameVersions)
     );
-  }
+  };
 
-  private renderPairReview() {
-    const flowState = this.props.flowState;
-
+  const renderPairReview = () => {
     const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
       flowState
     );
@@ -320,7 +267,7 @@ class CrossSaveCommit extends React.Component<
       }
 
       const entitlementsOwned = gameVersionsForCommitPage.filter((gv) =>
-        this.entitlementOwned(membershipType, gv)
+        entitlementOwned(membershipType, gv)
       );
       const hasEntitlements = entitlementsOwned.length > 0;
 
@@ -358,12 +305,6 @@ class CrossSaveCommit extends React.Component<
         );
       }
 
-      const noSeasonsRendered = (
-        <div className={classNames(styles.none, styles.entitlementTag)}>
-          {Localizer.Crosssave.NoSeasons}
-        </div>
-      );
-
       return (
         <div key={membershipType} className={styles.resultItemWrapper}>
           <CrossSaveAccountCard
@@ -380,201 +321,194 @@ class CrossSaveCommit extends React.Component<
     });
 
     return includedPlatforms;
-  }
+  };
 
-  public render() {
-    // Flatten all the errors into one big list
-    const errors = Object.values(
-      this.props.flowState.validation.profileSpecificErrors
-    ).reduce((flattened, errorSet) => flattened.concat(errorSet), []);
+  // Flatten all the errors into one big list
+  const errors = Object.values(
+    flowState.validation.profileSpecificErrors
+  ).reduce((flattened, errorSet) => flattened.concat(errorSet), []);
 
-    // We don't want to allow users to set their Cross Save status if they have errors
-    // unless they have already committed it and are trying to fix issues
-    const canCommit = errors.length === 0 && !this.props.flowState.isActive;
+  // We don't want to allow users to set their Cross Save status if they have errors
+  // unless they have already committed it and are trying to fix issues
+  const canCommit = errors.length === 0 && !flowState.isActive;
 
-    const settingsMessage = Localizer.FormatReact(
-      Localizer.Crosssave.ReviewSettingsMessage,
-      {
+  const settingsMessage = (
+    <>
+      {Localizer.FormatReact(Localizer.Crosssave.ReviewSettingsMessage, {
         accountLinkingSettingsLink: (
           <Anchor url={RouteHelper.Settings({ category: "Accounts" })}>
             {Localizer.Crosssave.SettingsLinkLabel}
           </Anchor>
         ),
-      }
-    );
-    const { globalState, flowState } = this.props;
-    const userClans = globalState.loggedInUserClans
-      ? globalState.loggedInUserClans.results
-      : [];
-    const clan = userClans.filter(
-      (myClan) =>
-        myClan.member.destinyUserInfo.membershipType ===
-          flowState.primaryMembershipType && myClan.group.groupType === 1
-    )[0];
+      })}
+    </>
+  );
 
-    const nextPrevSteps = CrossSaveUtils.getNextPrevStepPaths(
-      flowState,
-      "Commit"
-    );
+  const userClans = globalState.loggedInUserClans
+    ? globalState.loggedInUserClans.results
+    : [];
+  const clan = userClans.filter(
+    (myClan) =>
+      myClan.member.destinyUserInfo.membershipType ===
+        flowState.primaryMembershipType && myClan.group.groupType === 1
+  )[0];
 
-    const stepDesc = (
-      <React.Fragment>
-        {Localizer.Crosssave.ReviewStepDescription1}
-      </React.Fragment>
-    );
+  const nextPrevSteps = CrossSaveUtils.getNextPrevStepPaths(
+    flowState,
+    "Commit"
+  );
 
-    const frictionWindowLabel = Localizer.Format(
-      Localizer.Crosssave.CommitLockWarning2,
-      {
-        crossSaveFrictionWindow:
-          flowState.validation.settings.repairThrottleDurationFragment,
-      }
-    );
+  const stepDesc = (
+    <React.Fragment>
+      {Localizer.Crosssave.ReviewStepDescription1}
+    </React.Fragment>
+  );
 
-    const commitLabel = this.state.commitLoading ? (
-      Localizer.Crosssave.ActivatingCrossSave
-    ) : (
-      <React.Fragment>
-        {Localizer.Crosssave.CommitButtonLabel}{" "}
-        <Icon iconType={"material"} iconName={`arrow_forward`} />
-      </React.Fragment>
-    );
+  const frictionWindowLabel = Localizer.Format(
+    Localizer.Crosssave.CommitLockWarning2,
+    {
+      crossSaveFrictionWindow:
+        flowState.validation.settings.repairThrottleDurationFragment,
+    }
+  );
 
-    return (
-      <div
-        className={classNames({
-          [styles.commitLoading]: this.state.commitLoading,
-        })}
-      >
-        <div className={styles.commitDetails}>
-          {this.state.commitLoading && !this.state.responsive.medium && (
-            <div className={styles.spinnerOverlay}>
-              <h2>{Localizer.Crosssave.ActivatingCrossSave}</h2>
-              <Spinner />
-            </div>
-          )}
-          <div className={styles.hideDuringLoading}>
-            <CrossSaveStaggerPose index={0}>
-              <CrossSaveActivateStepInfo
-                title={Localizer.Crosssave.ReviewStepTitle}
-                desc={stepDesc}
-              />
-            </CrossSaveStaggerPose>
+  const commitLabel = commitLoading ? (
+    Localizer.Crosssave.ActivatingCrossSave
+  ) : (
+    <React.Fragment>
+      {Localizer.Crosssave.CommitButtonLabel}{" "}
+      <Icon iconType={"material"} iconName={`arrow_forward`} />
+    </React.Fragment>
+  );
 
-            <CrossSaveStaggerPose index={1}>
-              {errors.length > 0 && (
-                <div className={styles.reviewErrors}>
-                  {errors.map((error, i) => (
-                    <CrossSaveValidationError
-                      key={i}
-                      error={error}
-                      includeMembershipType={true}
-                    />
-                  ))}
-                </div>
-              )}
-              <StaggerWrapper
-                className={styles.reviewSummary}
-                pose={this.state.show ? "show" : "hide"}
-              >
-                <StaggerItem
-                  className={classNames(
-                    styles.characterReview,
-                    styles.reviewBlock
-                  )}
-                >
-                  <div className={styles.ellipsesText}>
-                    {Localizer.Crosssave.SetUpPrimary}
-                  </div>
-                  <CrossSaveAccountCard
-                    className={styles.reviewCard}
-                    membershipType={flowState.primaryMembershipType}
-                    flowState={flowState}
-                    hideAccountInfo={true}
-                  />
-                  {clan && (
-                    <CrossSaveAccountCard
-                      className={styles.clan}
-                      flowState={flowState}
-                      membershipType={flowState.primaryMembershipType}
-                      hideAccountInfo={true}
-                      hideCharacters={true}
-                      headerOverride={<CrossSaveCardHeader />}
-                    >
-                      <CrossSaveClanCard clan={clan} />
-                    </CrossSaveAccountCard>
-                  )}
-                </StaggerItem>
-                <StaggerItem className={styles.dottedLine}>
-                  <div />
-                </StaggerItem>
-                <StaggerItem className={styles.platforms}>
-                  <div className={styles.ellipsesText}>
-                    {Localizer.Crosssave.SetUpAllPlatforms}
-                  </div>
-                  <div
-                    className={classNames(styles.result, styles.reviewBlock)}
-                  >
-                    {this.renderPairReview()}
-                  </div>
-                </StaggerItem>
-              </StaggerWrapper>
-            </CrossSaveStaggerPose>
-          </div>
-        </div>
-        {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
-          <div className={styles.entitlementTables}>
-            <EntitlementsTable flowState={flowState} />
-            <hr />
-            <SeasonsTable flowState={flowState} />
+  return (
+    <div className={classNames({ [styles.commitLoading]: commitLoading })}>
+      <div className={styles.commitDetails}>
+        {commitLoading && !globalState.responsive.medium && (
+          <div className={styles.spinnerOverlay}>
+            <h2>{Localizer.Crosssave.ActivatingCrossSave}</h2>
+            <Spinner />
           </div>
         )}
-        <CrossSaveStaggerPose index={2}>
-          <StaggerWrapper>
-            <StaggerItem>
-              <div className={styles.buttonDisabledDesc}>
-                {Localizer.Crosssave.CommitLockWarning1}
-                <br />
-                {frictionWindowLabel}
+        <div className={styles.hideDuringLoading}>
+          <CrossSaveStaggerPose index={0}>
+            <CrossSaveActivateStepInfo
+              title={Localizer.Crosssave.ReviewStepTitle}
+              desc={stepDesc}
+            />
+          </CrossSaveStaggerPose>
+
+          <CrossSaveStaggerPose index={1}>
+            {errors.length > 0 && (
+              <div className={styles.reviewErrors}>
+                {errors.map((error, i) => (
+                  <CrossSaveValidationError
+                    key={i}
+                    error={error}
+                    includeMembershipType={true}
+                  />
+                ))}
               </div>
-            </StaggerItem>
-            <StaggerItem>
-              <div className={styles.buttonContainer}>
-                {canCommit && (
-                  <React.Fragment>
-                    <Button
-                      className={styles.buttonBack}
-                      buttonType={"white"}
-                      url={nextPrevSteps.prevPath}
-                      caps={true}
-                    >
-                      <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
-                      {Localizer.Crosssave.Back}
-                    </Button>
-                    <Button
-                      className={classNames(styles.buttonNext)}
-                      buttonType={"gold"}
-                      loading={this.state.commitLoading}
-                      onClick={this.confirmCommitCrossSave}
-                      caps={true}
-                    >
-                      {commitLabel}
-                    </Button>
-                  </React.Fragment>
+            )}
+            <StaggerWrapper
+              className={styles.reviewSummary}
+              pose={show ? "show" : "hide"}
+            >
+              <StaggerItem
+                className={classNames(
+                  styles.characterReview,
+                  styles.reviewBlock
                 )}
-              </div>
-
-              {this.props.flowState.isActive && (
-                <div className={styles.reviewSettingsMessage}>
-                  {settingsMessage}
+              >
+                <div className={styles.ellipsesText}>
+                  {Localizer.Crosssave.SetUpPrimary}
                 </div>
-              )}
-            </StaggerItem>
-          </StaggerWrapper>
-        </CrossSaveStaggerPose>
+                <CrossSaveAccountCard
+                  className={styles.reviewCard}
+                  membershipType={flowState.primaryMembershipType}
+                  flowState={flowState}
+                  hideAccountInfo={true}
+                />
+                {clan && (
+                  <CrossSaveAccountCard
+                    className={styles.clan}
+                    flowState={flowState}
+                    membershipType={flowState.primaryMembershipType}
+                    hideAccountInfo={true}
+                    hideCharacters={true}
+                    headerOverride={<CrossSaveCardHeader />}
+                  >
+                    <CrossSaveClanCard clan={clan} />
+                  </CrossSaveAccountCard>
+                )}
+              </StaggerItem>
+              <StaggerItem className={styles.dottedLine}>
+                <div />
+              </StaggerItem>
+              <StaggerItem className={styles.platforms}>
+                <div className={styles.ellipsesText}>
+                  {Localizer.Crosssave.SetUpAllPlatforms}
+                </div>
+                <div className={classNames(styles.result, styles.reviewBlock)}>
+                  {renderPairReview()}
+                </div>
+              </StaggerItem>
+            </StaggerWrapper>
+          </CrossSaveStaggerPose>
+        </div>
       </div>
-    );
-  }
-}
+      {ConfigUtils.SystemStatus("CrossSaveEntitlementTables") && (
+        <div className={styles.entitlementTables}>
+          <EntitlementsTable flowState={flowState} />
+          <hr />
+          <SeasonsTable flowState={flowState} />
+        </div>
+      )}
+      <CrossSaveStaggerPose index={2}>
+        <StaggerWrapper>
+          <StaggerItem>
+            <div className={styles.buttonDisabledDesc}>
+              {Localizer.Crosssave.CommitLockWarning1}
+              <br />
+              {frictionWindowLabel}
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <div className={styles.buttonContainer}>
+              {canCommit && (
+                <React.Fragment>
+                  <Button
+                    className={styles.buttonBack}
+                    buttonType={"white"}
+                    url={nextPrevSteps.prevPath}
+                    caps={true}
+                  >
+                    <Icon iconType={"material"} iconName={`arrow_back`} />{" "}
+                    {Localizer.Crosssave.Back}
+                  </Button>
+                  <Button
+                    className={classNames(styles.buttonNext)}
+                    buttonType={"gold"}
+                    loading={commitLoading}
+                    onClick={confirmCommitCrossSave}
+                    caps={true}
+                  >
+                    {commitLabel}
+                  </Button>
+                </React.Fragment>
+              )}
+            </div>
 
-export default withRouter(CrossSaveCommit);
+            {flowState.isActive && (
+              <div className={styles.reviewSettingsMessage}>
+                {settingsMessage}
+              </div>
+            )}
+          </StaggerItem>
+        </StaggerWrapper>
+      </CrossSaveStaggerPose>
+    </div>
+  );
+};
+
+export default CrossSaveCommit;

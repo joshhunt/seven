@@ -20,7 +20,7 @@ export type BungieFriendsSectionType =
 
 interface BungieFriendsSectionProps {
   header: string;
-  subtitle: React.ReactNode;
+  subtitle: (friend: Friends.BungieFriend) => React.ReactNode;
   bungieFriendsSectionType: BungieFriendsSectionType;
   emptyStateString: string;
 }

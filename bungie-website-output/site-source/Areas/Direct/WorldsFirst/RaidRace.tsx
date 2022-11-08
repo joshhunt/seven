@@ -15,7 +15,7 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import {
   bgImageFromStackFile,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import React, { useEffect, useRef, useState } from "react";

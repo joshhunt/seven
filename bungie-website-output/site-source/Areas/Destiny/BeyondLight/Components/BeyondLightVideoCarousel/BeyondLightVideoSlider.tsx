@@ -69,7 +69,7 @@ export class VideoSlider extends React.Component<
 
   private readonly renderPips = (
     currentIndex: number,
-    children: Exclude<ReactNode, boolean | null | undefined>[]
+    children: ReactNode[]
   ) => {
     return this.validChildren.map((_, index) => {
       if (_ !== null) {

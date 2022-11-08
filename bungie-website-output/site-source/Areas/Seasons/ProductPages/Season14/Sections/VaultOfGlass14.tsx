@@ -15,7 +15,6 @@ import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
-import moment from "moment";
 import React, { LegacyRef, useEffect, useState } from "react";
 import styles from "./VaultOfGlass14.module.scss";
 

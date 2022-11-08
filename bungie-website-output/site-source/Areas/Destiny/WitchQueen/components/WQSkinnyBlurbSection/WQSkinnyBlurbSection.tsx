@@ -32,6 +32,7 @@ interface WQSkinnyBlurbSectionProps {
   headingSmallWQText: string;
   headingSectionName: string;
   imgAboveHeading?: string;
+  children?: React.ReactNode;
 }
 
 /**
@@ -52,7 +53,7 @@ const WQSkinnyBlurbSection: React.FC<WQSkinnyBlurbSectionProps> = (props) => {
     >
       <div
         className={classNames(styles.sectionBg, props.classes?.sectionBg)}
-        style={{ backgroundImage: `url(${sectionBg})` }}
+        style={{ backgroundImage: sectionBg }}
       />
       <div
         className={classNames(

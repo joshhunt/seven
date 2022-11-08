@@ -4,8 +4,8 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { DateTime } from "luxon";
 import React from "react";
-import { RouteHelper } from "../../Global/Routes/RouteHelper";
-import { Anchor } from "../../UI/Navigation/Anchor";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { Anchor } from "@UI/Navigation/Anchor";
 import styles from "./NewsPreview.module.scss";
 
 interface NewsPreviewItemProps {
@@ -35,10 +35,10 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
   return (
     <Anchor
       className={styles.previewContainer}
-      url={RouteHelper.TemporaryNewsArticle({ articleUrl: url.slice(1) })}
+      url={RouteHelper.NewsArticle({ articleUrl: url?.hosted_url?.slice(1) })}
     >
       <div
-        style={{ backgroundImage: `url(${image.url}` }}
+        style={{ backgroundImage: `url(${image?.url}` }}
         className={styles.thumbnail}
       />
       <div className={styles.text}>

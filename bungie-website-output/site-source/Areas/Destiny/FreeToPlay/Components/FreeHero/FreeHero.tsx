@@ -9,7 +9,7 @@ import { useCSWebpImages } from "@Utilities/CSUtils";
 import {
   bgImage,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import React, { useMemo } from "react";
 import { BnetStackFreeToPlayProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./FreeHero.module.scss";

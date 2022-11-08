@@ -14,15 +14,14 @@ import {
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
 import { Button } from "@UIKit/Controls/Button/Button";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
-import { BungieAnniversaryQuery } from "./__generated__/BungieAnniversaryQuery.graphql";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Icon } from "@UIKit/Controls/Icon";
 import classNames from "classnames";
-import React from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import React, { useEffect, useState } from "react";
 import styles from "./BungieAnniversary.module.scss";
 
 interface BungieAnniversaryProps {}
@@ -31,301 +30,17 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
   const responsive = useDataStore(Responsive);
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const data = useLazyLoadQuery<BungieAnniversaryQuery>(
-    graphql`
-      query BungieAnniversaryQuery($locale: String!) {
-        bungie_30th_anniversary_v2(
-          uid: "blt94f096071905697b"
-          locale: $locale
-        ) {
-          title
-          meta_imageConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          subnav_btn_text
-          hero {
-            hero_logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_logo_alt_text
-            hero_bg_image_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            hero_bg_image_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            trailer_btn {
-              title
-              trailer_id
-            }
-            buy_btn {
-              title
-              url
-            }
-            availability_text
-          }
-          dungeon_section {
-            subnav_detail {
-              subnav_label
-              section_id
-            }
-            small_title
-            section_title
-            section_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            section_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            main_blurb
-            info_block {
-              imgConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              title
-              blurb
-            }
-          }
-          bungie_logoConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          requirement_headline
-          gjallarhorn_section {
-            subnav_detail {
-              section_label
-              section_id
-            }
-            bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            gjallarhorn_logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            blurb
-            weapon_imgConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-          rewards_section {
-            section_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            section_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            small_title
-            section_title
-            blurb
-            text_image_group {
-              ... on Bungie30thAnniversaryV2RewardsSectionTextImageGroup {
-                imgConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                blurb_heading
-                blurb
-              }
-            }
-          }
-          free_to_play_section {
-            subnav_detail {
-              subnav_label
-              section_id
-            }
-            top_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            top_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            small_title
-            section_title
-            secondary_heading
-            text_image_group {
-              ... on Bungie30thAnniversaryV2FreeToPlaySectionTextImageGroup {
-                imgConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                blurb_heading
-                blurb
-              }
-            }
-            bottom_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            bottom_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-          rewards_list_section {
-            section_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            section_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            crestConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            pack_owners_heading
-            free_heading
-            disclaimer
-            rewards_table {
-              reward_group {
-                ... on Bungie30thAnniversaryV2RewardsListSectionRewardsTableRewardGroup {
-                  group_name
-                  is_free
-                  rows {
-                    ... on Bungie30thAnniversaryV2RewardsListSectionRewardsTableRewardGroupRows {
-                      reward_name
-                      is_free
-                    }
-                  }
-                }
-              }
-            }
-          }
-          celebration_section {
-            subnav_detail {
-              subnav_label
-              section_id
-            }
-            section_bg_desktopConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            section_bg_mobileConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            trailer_id
-            section_title
-            blurb
-          }
-          editions_section_title
-          editions_section_bg_desktopConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          editions_section_bg_mobileConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          bundle_edition_tab
-          pack_edition_tab
-          media_section_small_title_one
-          media_section_small_title_two
-        }
-      }
-    `,
-    { locale }
-  );
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("bungie_30th_anniversary_v2")
+      .Entry("blt94f096071905697b")
+      .language(locale)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
 
   // returns either the mobile or desktop url of an image based on the screen size
   const getResponsiveBgImage = (
@@ -348,7 +63,7 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
 
   const {
     title,
-    meta_imageConnection,
+    meta_image,
     hero,
     celebration_section,
     dungeon_section,
@@ -358,14 +73,14 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
     requirement_headline,
     rewards_list_section,
     rewards_section,
-    bungie_logoConnection,
+    bungie_logo,
     editions_section_title,
     bundle_edition_tab,
     pack_edition_tab,
-    editions_section_bg_desktopConnection,
+    editions_section_bg_desktop,
     media_section_small_title_one,
     subnav_btn_text,
-  } = data?.bungie_30th_anniversary_v2 ?? {};
+  } = data ?? {};
 
   const subnavLinks = [
     {
@@ -387,45 +102,45 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
   ];
 
   const heroBgImage = getResponsiveBgImage(
-    hero?.hero_bg_image_desktopConnection,
-    hero?.hero_bg_image_mobileConnection
+    hero?.hero_bg_image_desktop,
+    hero?.hero_bg_image_mobile
   );
-  const heroLogoImage = annivImgUrlFromQueryProp(hero?.hero_logoConnection);
+  const heroLogoImage = annivImgUrlFromQueryProp(hero?.hero_logo);
   const dungeonBg = getResponsiveBgImage(
-    dungeon_section?.section_bg_desktopConnection,
-    dungeon_section?.section_bg_mobileConnection
+    dungeon_section?.section_bg_desktop,
+    dungeon_section?.section_bg_mobile
   );
   const celebrationBg = getResponsiveBgImage(
-    celebration_section?.section_bg_desktopConnection,
-    celebration_section?.section_bg_mobileConnection
+    celebration_section?.section_bg_desktop,
+    celebration_section?.section_bg_mobile
   );
   const gallySectionBg = getResponsiveBgImage(
-    gjallarhorn_section?.bg_desktopConnection,
-    gjallarhorn_section?.bg_mobileConnection
+    gjallarhorn_section?.bg_desktop,
+    gjallarhorn_section?.bg_mobile
   );
   const rewardsSectionBg = getResponsiveBgImage(
-    rewards_section?.section_bg_desktopConnection,
-    rewards_section?.section_bg_mobileConnection
+    rewards_section?.section_bg_desktop,
+    rewards_section?.section_bg_mobile
   );
   const rewardsListSectionBg = getResponsiveBgImage(
-    rewards_list_section?.section_bg_desktopConnection,
-    rewards_list_section?.section_bg_mobileConnection
+    rewards_list_section?.section_bg_desktop,
+    rewards_list_section?.section_bg_mobile
   );
   const freeToPlaySectionTopBg = getResponsiveBgImage(
-    free_to_play_section?.top_bg_desktopConnection,
-    free_to_play_section?.top_bg_mobileConnection
+    free_to_play_section?.top_bg_desktop,
+    free_to_play_section?.top_bg_mobile
   );
   const freeToPlaySectionBottomBg = getResponsiveBgImage(
-    free_to_play_section?.bottom_bg_desktopConnection,
-    free_to_play_section?.bottom_bg_mobileConnection
+    free_to_play_section?.bottom_bg_desktop,
+    free_to_play_section?.bottom_bg_mobile
   );
   const editionsSectionBg = annivImgUrlFromQueryProp(
-    editions_section_bg_desktopConnection
+    editions_section_bg_desktop
   );
 
   return (
     <div className={styles.anniversaryContent}>
-      <AnniversaryHelmet title={title} img={meta_imageConnection} />
+      <AnniversaryHelmet title={title} img={meta_image} />
 
       <div className={styles.hero}>
         <div
@@ -485,20 +200,20 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
           <p className={styles.blurb}>{dungeon_section?.main_blurb}</p>
 
           <Requires30thBanner
-            crest={annivImgUrlFromQueryProp(bungie_logoConnection)}
+            crest={annivImgUrlFromQueryProp(bungie_logo)}
             text={requirement_headline}
           />
 
           <div className={styles.thumbnailsWrapper}>
-            {dungeon_section?.info_block.map((b, i) => {
+            {dungeon_section?.info_block.map((b: any, i: number) => {
               return (
                 <div className={styles.flexBlock} key={i}>
                   <ClickableMediaThumbnail
                     screenshotIndex={i}
                     singleOrAllScreenshots={dungeon_section?.info_block.map(
-                      (block) => annivImgUrlFromQueryProp(block.imgConnection)
+                      (block: any) => annivImgUrlFromQueryProp(block.img)
                     )}
-                    thumbnail={annivImgUrlFromQueryProp(b.imgConnection, 500)}
+                    thumbnail={annivImgUrlFromQueryProp(b.img, 500)}
                     classes={{ btnWrapper: styles.thumbnail }}
                     showBottomShade
                   />
@@ -518,9 +233,7 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
         />
         <img
           className={styles.logo}
-          src={annivImgUrlFromQueryProp(
-            gjallarhorn_section?.gjallarhorn_logoConnection
-          )}
+          src={annivImgUrlFromQueryProp(gjallarhorn_section?.gjallarhorn_logo)}
         />
         <p className={styles.blurb}>{gjallarhorn_section?.blurb}</p>
       </div>
@@ -537,7 +250,7 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
             className={styles.img}
             style={{
               backgroundImage: `url(${annivImgUrlFromQueryProp(
-                gjallarhorn_section?.weapon_imgConnection
+                gjallarhorn_section?.weapon_img
               )})`,
             }}
           />
@@ -553,20 +266,20 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
           <p className={styles.blurb}>{rewards_section?.blurb}</p>
 
           <Requires30thBanner
-            crest={annivImgUrlFromQueryProp(bungie_logoConnection)}
+            crest={annivImgUrlFromQueryProp(bungie_logo)}
             text={requirement_headline}
           />
 
-          {rewards_section?.text_image_group.map((group, i) => {
+          {rewards_section?.text_image_group.map((group: any, i: number) => {
             const flexDirection = i % 2 === 0 ? "normal" : "reverse";
 
             return (
               <AnnivFlexInfoImgBlock
                 screenshotIndex={i}
                 singleOrAllScreenshots={rewards_section?.text_image_group.map(
-                  (g) => annivImgUrlFromQueryProp(g.imgConnection)
+                  (g: any) => annivImgUrlFromQueryProp(g.img)
                 )}
-                thumbnail={annivImgUrlFromQueryProp(group.imgConnection, 700)}
+                thumbnail={annivImgUrlFromQueryProp(group.img, 700)}
                 blurbHeading={group.blurb_heading}
                 blurb={group.blurb}
                 direction={flexDirection}
@@ -601,23 +314,25 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
             {free_to_play_section?.secondary_heading}
           </p>
 
-          {free_to_play_section?.text_image_group.map((group, i) => {
-            const flexDirection = i % 2 === 0 ? "normal" : "reverse";
+          {free_to_play_section?.text_image_group.map(
+            (group: any, i: number) => {
+              const flexDirection = i % 2 === 0 ? "normal" : "reverse";
 
-            return (
-              <AnnivFlexInfoImgBlock
-                screenshotIndex={i}
-                singleOrAllScreenshots={free_to_play_section?.text_image_group.map(
-                  (g) => annivImgUrlFromQueryProp(g.imgConnection)
-                )}
-                thumbnail={annivImgUrlFromQueryProp(group.imgConnection, 700)}
-                blurbHeading={group.blurb_heading}
-                blurb={group.blurb}
-                direction={flexDirection}
-                key={i}
-              />
-            );
-          })}
+              return (
+                <AnnivFlexInfoImgBlock
+                  screenshotIndex={i}
+                  singleOrAllScreenshots={free_to_play_section?.text_image_group.map(
+                    (g: any) => annivImgUrlFromQueryProp(g.img)
+                  )}
+                  thumbnail={annivImgUrlFromQueryProp(group.img, 700)}
+                  blurbHeading={group.blurb_heading}
+                  blurb={group.blurb}
+                  direction={flexDirection}
+                  key={i}
+                />
+              );
+            }
+          )}
         </div>
       </div>
 
@@ -631,15 +346,13 @@ const BungieAnniversary: React.FC<BungieAnniversaryProps> = (props) => {
           <AnnivRewardsList
             oddRowBgColor={"red"}
             evenRowBgColor={"blue"}
-            logo={annivImgUrlFromQueryProp(
-              rewards_list_section?.crestConnection
-            )}
+            logo={annivImgUrlFromQueryProp(rewards_list_section?.crest)}
             rewardGroups={rewards_list_section?.rewards_table.reward_group.map(
-              (rg) => {
+              (rg: any) => {
                 return {
                   groupName: rg.group_name,
                   isFree: rg.is_free,
-                  rows: rg.rows.map((row) => {
+                  rows: rg.rows.map((row: any) => {
                     return {
                       isFree: row.is_free,
                       reward: row.reward_name,
@@ -815,7 +528,7 @@ const Requires30thBanner = (props: { crest: string; text: string }) => {
 };
 
 const annivImgUrlFromQueryProp = (property: any, width?: number) => {
-  const img = property?.edges?.[0]?.node?.url;
+  const img = property?.url;
 
   return `${img}${width ? `?width=${width}` : ""}`;
 };

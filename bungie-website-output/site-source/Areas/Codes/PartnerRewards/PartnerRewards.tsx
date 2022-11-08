@@ -30,7 +30,7 @@ import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps, useParams } from "react-router";
 import styles from "./PartnerRewards.module.scss";
-import { FaTwitch } from "react-icons/fa";
+import { FaTwitch } from "@react-icons/all-files/fa/FaTwitch";
 
 interface IPartnerRewardsRouteParams {
   membershipId: string;

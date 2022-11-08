@@ -4,7 +4,7 @@
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
-import { bgImage, bgImageFromStackFile } from "@Utilities/GraphQLUtils";
+import { bgImage, bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";

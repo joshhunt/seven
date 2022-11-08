@@ -1,19 +1,17 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
-import { BeyondLightQuery } from "../../__generated__/BeyondLightQuery.graphql";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UIKit/Controls/Button/Button";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
-import { imageFromConnection } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
 import React, { LegacyRef } from "react";
 import styles from "./BeyondLightHero.module.scss";
 
 interface BeyondLightHeroProps {
-  data: BeyondLightQuery["response"]["beyond_light"]["hero"];
+  data: any;
   inputRef: LegacyRef<HTMLDivElement>;
 }
 
@@ -22,11 +20,9 @@ export const BeyondLightHero: React.FC<BeyondLightHeroProps> = (props) => {
 
   const data = props?.data;
 
-  const bgImg = imageFromConnection(
-    mobile
-      ? data?.background.mobileConnection
-      : data?.background.desktopConnection
-  )?.url;
+  const bgImg = mobile
+    ? data?.background.mobile
+    : data?.background.desktop?.url;
   const heroBg = bgImg ? `url(${bgImg})` : undefined;
 
   const showTrailer = () => {
@@ -39,10 +35,7 @@ export const BeyondLightHero: React.FC<BeyondLightHeroProps> = (props) => {
       style={{ backgroundImage: heroBg }}
       ref={props.inputRef}
     >
-      <img
-        src={imageFromConnection(data?.logoConnection)?.url}
-        className={styles.logo}
-      />
+      <img src={data?.logo?.url} className={styles.logo} />
       <div className={styles.btns}>
         <Button
           onClick={showTrailer}

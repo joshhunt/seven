@@ -9,7 +9,7 @@ import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import {
   bgImage,
   responsiveBgImageFromStackFile,
-} from "@Utilities/GraphQLUtils";
+} from "@Utilities/ContentStackUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React, { useCallback, useEffect, useRef } from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";

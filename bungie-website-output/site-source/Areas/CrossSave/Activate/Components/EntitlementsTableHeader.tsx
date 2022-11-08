@@ -9,8 +9,11 @@ import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
-import { SiEpicgames, SiStadia } from "react-icons/si";
-import { FaPlaystation, FaSteam, FaXbox } from "react-icons/fa";
+import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
+import { SiStadia } from "@react-icons/all-files/si/SiStadia";
+import { SiPlaystation } from "@react-icons/all-files/si/SiPlaystation";
+import { FaSteam } from "@react-icons/all-files/fa/FaSteam";
+import { FaXbox } from "@react-icons/all-files/fa/FaXbox";
 import { PlatformStatus } from "./EntitlementsTable";
 import styles from "./EntitlementsTable.module.scss";
 
@@ -22,12 +25,7 @@ interface EntitlementsTableHeaderProps {
 export const EntitlementsTableHeader: React.FC<EntitlementsTableHeaderProps> = (
   props
 ) => {
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-
   const crosssaveLoc = Localizer.Crosssave;
-
-  const entitlementsResponse = props.flowState.entitlements;
-  const linkedProfiles = props.flowState.linkedDestinyProfiles;
   const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
     props.flowState
   );
@@ -67,7 +65,7 @@ export const EntitlementsTableHeader: React.FC<EntitlementsTableHeaderProps> = (
       case BungieMembershipType.TigerPsn:
         return (
           <th className={styles[platformStatus]} key={key}>
-            <FaPlaystation />
+            <SiPlaystation />
             {crosssaveLoc.PlaystationHeader} {statusString}
           </th>
         );

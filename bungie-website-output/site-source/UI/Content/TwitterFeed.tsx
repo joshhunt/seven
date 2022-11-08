@@ -8,9 +8,9 @@ import * as React from "react";
 import { BungieHelmet } from "../Routing/BungieHelmet";
 import styles from "./TwitterFeed.module.scss";
 
-interface TwitterAPI {
+export interface TwitterAPI {
   _e?: (() => void)[];
-  ready?: (f: () => void) => void;
+  ready?: (f: (twttr: any) => void) => void;
   widgets?: {
     load?: () => void;
     createTweet?: (
@@ -69,7 +69,7 @@ export class TwitterFeed extends React.Component {
             this.twitterLoadingTries = 0;
             this.setState({ visible: true });
           }
-        }, 300);
+        }, 30);
       });
 
       tryLoadTwitter.then(() => window.twttr.widgets.load());
@@ -80,7 +80,7 @@ export class TwitterFeed extends React.Component {
 
   public render() {
     return (
-      <div>
+      <>
         <TwitterScript />
         <a
           className={classNames(
@@ -100,7 +100,7 @@ export class TwitterFeed extends React.Component {
         >
           {Localizer.News.ViewMore}
         </Anchor>
-      </div>
+      </>
     );
   }
 }

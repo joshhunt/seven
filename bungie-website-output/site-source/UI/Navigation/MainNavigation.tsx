@@ -1,12 +1,7 @@
 import { Respond } from "@Boot/Respond";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ResponsiveSize } from "@bungie/responsive";
-import {
-  GlobalState,
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Global/Routes/RouteHelper";
 import { AccountSidebar } from "@UI/Navigation/AccountSidebar";
@@ -17,8 +12,17 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import classNames from "classnames";
-import * as H from "history";
-import * as React from "react";
+import React, {
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  Suspense,
+} from "react";
+// @ts-ignore
+import * as h from "history";
+import { useHistory } from "react-router";
 import { Anchor } from "./Anchor";
 import styles from "./MainNavigation.module.scss";
 import { NotificationSidebar } from "./NotificationSidebar";
@@ -71,23 +75,9 @@ export type IMenuParentItem = INavigationTopLink;
 
 export type INavigationConfig = IMenuParentItem[];
 
-interface IMainNavigationProps
-  extends GlobalStateComponentProps<
-    "loggedInUser" | "responsive" | "loggedInUserClans"
-  > {
+interface IMainNavigationProps {
   currentPath: string;
-  history: H.History;
-}
-
-interface IMainNavigationState {
-  menuExpanded: boolean;
-  accountSidebarOpen: boolean;
-  notificationSidebarOpen: boolean;
-  transparentMode: boolean;
-  /**
-   * Prevents flash of navigation while waiting for chunks to load
-   */
-  mountDelayFinished: boolean;
+  history: h.History;
 }
 
 /**
@@ -96,275 +86,217 @@ interface IMainNavigationState {
  * @param {IMainNavigationProps} props
  * @returns
  */
-class MainNavigationInternal extends React.Component<
-  IMainNavigationProps,
-  IMainNavigationState
-> {
-  private wrapperRef: HTMLHeadElement = null;
-  private destroyHistory: DestroyCallback = null;
+export const MainNavigation: React.FC<PropsWithChildren<
+  IMainNavigationProps
+>> = (props) => {
+  const [menuExpanded, setMenuExpanded] = useState(false);
+  const [accountSidebarOpen, setAccountSidebarOpen] = useState(false);
+  const [notificationSidebarOpen, setNotificationSidebarOpen] = useState(false);
+  const [transparentMode, setTransparentMode] = useState(true);
+  const [mountDelayFinished, setMountDelayFinished] = useState(true);
+  const globalState = useDataStore(GlobalStateDataStore, [
+    "loggedInUser",
+    "responsive",
+    "loggedInUserClans",
+  ]);
+  const history = useHistory();
+  const navWrapperRef = useRef(null);
+  const navConfig = useMemo(() => NavigationConfig, NavigationConfig);
 
-  constructor(props: IMainNavigationProps) {
-    super(props);
-
-    this.state = {
-      menuExpanded: false,
-      accountSidebarOpen: false,
-      notificationSidebarOpen: false,
-      transparentMode: true,
-      mountDelayFinished: false,
-    };
-  }
-
-  public componentDidMount() {
-    document.addEventListener("scroll", this.onScroll);
-
-    this.destroyHistory = this.props.history.listen(() => this.closeMenu());
-
-    setTimeout(
-      () =>
-        this.setState({
-          mountDelayFinished: true,
-        }),
-      500
-    );
-  }
-
-  public componentWillUnmount() {
-    document.removeEventListener("scroll", this.onScroll);
-
-    this.destroyHistory();
-  }
-
-  public componentDidUpdate() {
-    if (this.state.menuExpanded) {
-      BrowserUtils.lockScroll(this.wrapperRef);
-      document.addEventListener("click", this.onBodyClick);
-    } else if (!this.state.menuExpanded) {
-      BrowserUtils.unlockScroll(this.wrapperRef);
-      document.removeEventListener("click", this.onBodyClick);
-    }
-  }
-
-  private readonly onBodyClick = (e: MouseEvent) => {
-    if (this.wrapperRef && this.wrapperRef.contains(e.target as Node)) {
-      return;
-    }
-
-    this.state.menuExpanded &&
-      this.setState({
-        menuExpanded: false,
-      });
-  };
-
-  private readonly onSignInClick = () => {
-    const signInModal = Modal.signIn(() => {
-      signInModal.current.close();
-    });
-
-    this.toggleMenuExpanded();
-  };
-
-  private readonly onJoinClick = () => {
-    BrowserUtils.openWindow(RouteHelper.Join().url, "loginui", () =>
-      GlobalStateDataStore.refreshUserAndRelatedData()
-    );
-  };
-
-  public render() {
-    const headerClasses = classNames(styles.mainNav, {
-      [styles.solid]: !this.state.transparentMode,
-      [styles.navOpen]: this.state.menuExpanded,
-    });
-
-    const links = this.getLinksToRender();
-    const loggedInUser = this.props.globalState.loggedInUser;
-    const responsive = this.props.globalState.responsive;
-    const menuItems = links.map((link, i) => (
-      <MenuItem
-        link={link}
-        key={i}
-        responsive={responsive}
-        onSelected={this.closeMenu}
-      />
-    ));
-
-    let environment = "live";
-    if (
-      this.props.globalState &&
-      this.props.globalState.coreSettings &&
-      this.props.globalState.coreSettings.environment
-    ) {
-      environment = this.props.globalState.coreSettings.environment;
-    }
-
-    const buyButtonSize: BasicSize = this.props.globalState.responsive.medium
-      ? BasicSize.Medium
-      : BasicSize.Small;
-
-    if (!this.state.mountDelayFinished) {
-      return null;
-    }
-
-    return (
-      <header
-        id={`main-navigation`}
-        className={headerClasses}
-        ref={(ref) => (this.wrapperRef = ref)}
-      >
-        <div className={styles.headerContents}>
-          <Respond at={ResponsiveSize.medium} responsive={responsive}>
-            <Anchor id={styles.topLogo} url={RouteHelper.Home} />
-          </Respond>
-
-          <div className={styles.smallMenu} onClick={this.toggleMenuExpanded} />
-          <div className={styles.mainNavigationLinks}>
-            {
-              // environment !== "live" && <span className={styles.environment}>{environment}</span>
-            }
-
-            <Anchor id={styles.logo} url={RouteHelper.Home} />
-            <Respond at={ResponsiveSize.medium} responsive={responsive}>
-              {!loggedInUser && (
-                <LoggedOutUserButtons
-                  globalState={this.props.globalState}
-                  onSignInClick={this.onSignInClick}
-                  onJoinClick={this.onJoinClick}
-                />
-              )}
-            </Respond>
-
-            {menuItems}
-
-            <Button
-              buttonType={"gold"}
-              url={RouteHelper.DestinyBuy()}
-              className={styles.buyButton}
-              size={buyButtonSize}
-            >
-              {Localizer.Nav.BuyDestiny2}
-            </Button>
-          </div>
-
-          <div className={styles.signIn}>
-            <UserMenu
-              globalState={this.props.globalState}
-              onToggleUserMenu={() => this.toggleAccountSidebar()}
-              onToggleNotifications={() => this.toggleNotificationSidebar()}
-            />
-          </div>
-
-          <AccountSidebar
-            globalState={this.props.globalState}
-            open={this.state.accountSidebarOpen}
-            onClickOutside={() => this.toggleAccountSidebar(false)}
-          />
-
-          <NotificationSidebar
-            open={this.state.notificationSidebarOpen}
-            onClickOutside={() => this.toggleNotificationSidebar(false)}
-          />
-        </div>
-      </header>
-    );
-  }
-
-  private readonly onScroll = () => {
-    const scroll = window.scrollY;
-
-    let newTransparentMode = this.state.transparentMode;
-    if (scroll > 60 && this.state.transparentMode) {
-      newTransparentMode = false;
-    } else if (scroll < 60 && !this.state.transparentMode) {
-      newTransparentMode = true;
-    }
-
-    if (newTransparentMode !== this.state.transparentMode) {
-      this.setState({
-        transparentMode: newTransparentMode,
-      });
-    }
-  };
-
-  private readonly toggleAccountSidebar = (override: boolean = undefined) => {
-    this.setState({
-      accountSidebarOpen:
-        override !== undefined ? override : !this.state.accountSidebarOpen,
-      notificationSidebarOpen: false,
-      menuExpanded: false,
-    });
-  };
-
-  private readonly toggleNotificationSidebar = (
-    override: boolean = undefined
-  ) => {
-    this.setState({
-      accountSidebarOpen: false,
-      menuExpanded: false,
-      notificationSidebarOpen:
-        override !== undefined ? override : !this.state.notificationSidebarOpen,
-    });
-  };
-
-  private getLinksToRender(): IMenuParentItem[] {
-    const linksToShow: IMenuParentItem[] = [];
-    const navConfig = NavigationConfig;
+  const linksToShow = useMemo(() => {
+    const linksList: IMenuParentItem[] = [];
 
     if (navConfig) {
       navConfig.forEach((linkItem) => {
-        const shouldShow = linkItem.Enabled;
-
-        if (linkItem.Enabled && shouldShow) {
-          linksToShow.push(linkItem);
+        if (linkItem.Enabled) {
+          linksList.push(linkItem);
         }
       });
     }
 
-    return linksToShow;
+    return linksList;
+  }, [navConfig]);
+
+  useEffect(() => {
+    history.listen(() => {
+      setMenuExpanded(false);
+      setAccountSidebarOpen(false);
+      setNotificationSidebarOpen(false);
+    });
+    setTimeout(() => setMountDelayFinished(true), 200);
+
+    return () => {
+      document.removeEventListener("click", onBodyClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    setMenuExpanded(false);
+    setNotificationSidebarOpen(false);
+    setAccountSidebarOpen(accountSidebarOpen);
+  }, [accountSidebarOpen]);
+
+  useEffect(() => {
+    setMenuExpanded(menuExpanded);
+    setNotificationSidebarOpen(false);
+    setAccountSidebarOpen(false);
+  }, [menuExpanded]);
+
+  useEffect(() => {
+    setMenuExpanded(false);
+    setNotificationSidebarOpen(notificationSidebarOpen);
+    setAccountSidebarOpen(false);
+  }, [notificationSidebarOpen]);
+
+  useEffect(() => {
+    if (menuExpanded) {
+      BrowserUtils.lockScroll(navWrapperRef.current);
+      document.addEventListener("click", onBodyClick);
+    } else {
+      BrowserUtils.unlockScroll(navWrapperRef.current);
+      document.removeEventListener("click", onBodyClick);
+    }
+  }, [menuExpanded]);
+
+  const onBodyClick = (e: MouseEvent) => {
+    if (
+      !document.getElementsByTagName("header")[0]?.contains(e.target as Node) &&
+      menuExpanded
+    ) {
+      setMenuExpanded(false);
+    }
+  };
+
+  const onSignInClick = () => {
+    const signInModal = Modal.signIn(() => {
+      signInModal.current.close();
+    });
+
+    setMenuExpanded(!menuExpanded);
+  };
+
+  const onJoinClick = () => {
+    BrowserUtils.openWindow(RouteHelper.Join().url, "loginui");
+  };
+
+  const headerClasses = classNames(styles.mainNav, {
+    [styles.solid]: !transparentMode,
+    [styles.navOpen]: menuExpanded,
+  });
+
+  const LoggedOutUserButtons = () => {
+    return (
+      <React.Fragment>
+        <div className={styles.loggedOutButtons}>
+          <Button
+            className={styles.loButton}
+            buttonType="gold"
+            onClick={onJoinClick}
+          >
+            {Localizer.Nav.JoinUp}
+          </Button>
+          <Button
+            className={styles.loButton}
+            buttonType="white"
+            onClick={onSignInClick}
+          >
+            {Localizer.Nav.SignIn}
+          </Button>
+        </div>
+      </React.Fragment>
+    );
+  };
+
+  const loggedInUser = globalState.loggedInUser;
+  const responsive = globalState.responsive;
+  const MenuItems = () => {
+    return (
+      <>
+        {linksToShow.map((link: any, i: number) => (
+          <MenuItem
+            link={link}
+            key={i}
+            responsive={responsive}
+            onSelected={() => {
+              setMenuExpanded(false);
+              setAccountSidebarOpen(false);
+              setNotificationSidebarOpen(false);
+            }}
+          />
+        ))}
+      </>
+    );
+  };
+
+  const buyButtonSize: BasicSize = globalState.responsive.medium
+    ? BasicSize.Medium
+    : BasicSize.Small;
+
+  if (!mountDelayFinished) {
+    return null;
   }
 
-  private readonly toggleMenuExpanded = () => {
-    this.setState({
-      menuExpanded: !this.state.menuExpanded,
-    });
-  };
-
-  private readonly closeMenu = () => {
-    this.setState({
-      accountSidebarOpen: false,
-      menuExpanded: false,
-    });
-  };
-}
-
-const LoggedOutUserButtons = (props: {
-  globalState: GlobalState<"loggedInUser" | "responsive" | "loggedInUserClans">;
-  onSignInClick: () => void;
-  onJoinClick: () => void;
-}) => {
   return (
-    <React.Fragment>
-      <div className={styles.loggedOutButtons}>
-        <Button
-          className={styles.loButton}
-          buttonType="gold"
-          onClick={props.onJoinClick}
-        >
-          {Localizer.Nav.JoinUp}
-        </Button>
-        <Button
-          className={styles.loButton}
-          buttonType="white"
-          onClick={props.onSignInClick}
-        >
-          {Localizer.Nav.SignIn}
-        </Button>
+    <header
+      id={`main-navigation`}
+      className={headerClasses}
+      ref={navWrapperRef}
+    >
+      <div className={styles.headerContents}>
+        <Respond at={ResponsiveSize.medium} responsive={responsive}>
+          <Anchor id={styles.topLogo} url={RouteHelper.Home} />
+        </Respond>
+
+        <div
+          className={styles.smallMenu}
+          onClick={(e) => {
+            e.preventDefault();
+            setMenuExpanded(!menuExpanded);
+          }}
+        />
+        <div className={styles.mainNavigationLinks}>
+          <Anchor id={styles.logo} url={RouteHelper.Home} />
+          <Respond at={ResponsiveSize.medium} responsive={responsive}>
+            {!loggedInUser && <LoggedOutUserButtons />}
+          </Respond>
+
+          <MenuItems />
+
+          <Button
+            buttonType={"gold"}
+            url={RouteHelper.DestinyBuy()}
+            className={styles.buyButton}
+            size={buyButtonSize}
+          >
+            {Localizer.Nav.BuyDestiny2}
+          </Button>
+        </div>
+
+        <div className={styles.signIn}>
+          <UserMenu
+            globalState={globalState}
+            onToggleUserMenu={() => setAccountSidebarOpen(!accountSidebarOpen)}
+            onToggleNotifications={() =>
+              setNotificationSidebarOpen(!notificationSidebarOpen)
+            }
+          />
+        </div>
+
+        <Suspense fallback={<div />}>
+          <AccountSidebar
+            globalState={globalState}
+            open={accountSidebarOpen}
+            onClickOutside={() => setAccountSidebarOpen(false)}
+          />
+        </Suspense>
+
+        <Suspense fallback={<div />}>
+          <NotificationSidebar
+            open={notificationSidebarOpen}
+            onClickOutside={() => setNotificationSidebarOpen(false)}
+          />
+        </Suspense>
       </div>
-    </React.Fragment>
+    </header>
   );
 };
-
-export const MainNavigation = withGlobalState(MainNavigationInternal, [
-  "loggedInUser",
-  "responsive",
-  "loggedInUserClans",
-]);

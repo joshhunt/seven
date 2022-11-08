@@ -7,10 +7,11 @@ import styles from "./ProfileErrorBoundary.module.scss";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
 import React, { ReactElement } from "react";
-import { BiError } from "react-icons/bi";
+import { BiError } from "@react-icons/all-files/bi/BiError";
 
 interface ProfileErrorBoundaryProps {
   message?: string | ReactElement;
+  children?: React.ReactNode;
 }
 
 interface ProfileErrorBoundaryState {

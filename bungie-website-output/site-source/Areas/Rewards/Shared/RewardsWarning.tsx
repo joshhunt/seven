@@ -51,9 +51,12 @@ export const RewardsWarning: React.FC<RewardsWarningProps> = (props) => {
         </Anchor>
       );
 
-      const migrationAlertDesc = Localizer.FormatReact(
-        rewardLoc.ComingSoonInJuly2021Purchases,
-        { helpArticleLink: helpArticleLink }
+      const migrationAlertDesc = (
+        <>
+          {Localizer.FormatReact(rewardLoc.ComingSoonInJuly2021Purchases, {
+            helpArticleLink: helpArticleLink,
+          })}
+        </>
       );
 
       return (
@@ -74,9 +77,14 @@ export const RewardsWarning: React.FC<RewardsWarningProps> = (props) => {
           {rewardLoc.triggerToSignInOrCreate}
         </span>
       );
-      const signInDesc = Localizer.FormatReact(rewardLoc.Signintoearnrewards, {
-        triggerToSignInOrCreate: signInActionTrigger,
-      });
+      const signInDesc = (
+        <>
+          {" "}
+          {Localizer.FormatReact(rewardLoc.Signintoearnrewards, {
+            triggerToSignInOrCreate: signInActionTrigger,
+          })}
+        </>
+      );
 
       return (
         <RewardsWarningFragment
@@ -129,10 +137,13 @@ export const RewardsWarning: React.FC<RewardsWarningProps> = (props) => {
       return (
         <RewardsWarningFragment
           title={rewardLoc.MarketingRequiredHeader}
-          description={Localizer.FormatReact(
-            rewardLoc.ToParticipateInTheBungie,
-            { yourEmailSettingsLink: updateMarketingSettingsLink }
-          )}
+          description={
+            <>
+              {Localizer.FormatReact(rewardLoc.ToParticipateInTheBungie, {
+                yourEmailSettingsLink: updateMarketingSettingsLink,
+              })}
+            </>
+          }
           className={styles.marketing}
         />
       );
@@ -156,12 +167,13 @@ export const RewardsWarning: React.FC<RewardsWarningProps> = (props) => {
         <Anchor url={helpArticle}>{rewardLoc.verifiedHelpPageLink}</Anchor>
       );
 
-      const verifiedSuccessDesc = Localizer.FormatReact(
-        rewardLoc.VerificationSuccessBodyReact,
-        {
-          verifiedEmailSettingsLink: verifiedEmailSettingsLink,
-          verifiedHelpPageLink: helpArticleLink,
-        }
+      const verifiedSuccessDesc = (
+        <>
+          {Localizer.FormatReact(rewardLoc.VerificationSuccessBodyReact, {
+            verifiedEmailSettingsLink: verifiedEmailSettingsLink,
+            verifiedHelpPageLink: helpArticleLink,
+          })}
+        </>
       );
 
       return (

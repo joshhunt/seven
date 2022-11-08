@@ -10,7 +10,7 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import classNames from "classnames";
 import React from "react";
-import { FiMail } from "react-icons/fi";
+import { FiMail } from "@react-icons/all-files/fi/FiMail";
 import styles from "./EmailVerified.module.scss";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 
@@ -42,15 +42,19 @@ export const EmailVerified: React.FC<EmailVerifiedProps> = (props) => {
     classes.push(props.className);
   }
 
-  const subtitle = props.hideSubtitle
-    ? ""
-    : Localizer.FormatReact(registrationLoc.EmailVerifiedDesc, {
+  const subtitle = props.hideSubtitle ? (
+    ""
+  ) : (
+    <>
+      {Localizer.FormatReact(registrationLoc.EmailVerifiedDesc, {
         emailSettingsLink: (
           <Anchor url={RouteHelper.EmailAndSms()}>
             {registrationLoc.UpdateItHere}
           </Anchor>
         ),
-      });
+      })}
+    </>
+  );
 
   return (
     <TwoLineItem

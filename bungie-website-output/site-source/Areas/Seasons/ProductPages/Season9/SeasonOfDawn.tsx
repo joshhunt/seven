@@ -229,7 +229,7 @@ class SeasonOfDawnInternal extends React.Component<
     const lore: any[] = [];
     this.state.lore &&
       this.state.lore.forEach((li) => {
-        const lorePath = RouteHelper.NewsArticle(Number(li.contentId));
+        const lorePath = RouteHelper.NewsArticle({ articleUrl: li.contentId });
 
         lore.push({
           isVideo: false,
@@ -812,7 +812,7 @@ class SeasonOfDawnInternal extends React.Component<
           <div className={styles.buyButton}>
             <Button
               className={styles.seasonsButtonMore}
-              url={RouteHelper.NewsArticle(48105)}
+              url={RouteHelper.NewsArticle({ articleUrl: "48105" })}
               buttonType="teal"
             >
               {Localizer.Seasons.SeasonsButtonMore}

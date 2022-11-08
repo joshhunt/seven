@@ -1,10 +1,6 @@
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { DataStore } from "@bungie/datastore";
-import {
-  GlobalStateComponentProps,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer, StringFetcher } from "@bungie/localization";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Localizer } from "@bungie/localization";
 import { Logger } from "@Global/Logger";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
@@ -19,23 +15,16 @@ import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import * as React from "react";
-import posed, { PoseGroup } from "react-pose";
-import { Redirect, Route, RouteComponentProps, Switch } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams } from "react-router";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { CrossSaveAccountLink } from "./Activate/CrossSaveAccountLink";
 import { CrossSaveAcknowledge } from "./Activate/CrossSaveAcknowledge";
 import { CrossSaveCharacters } from "./Activate/CrossSaveCharacters";
 import CrossSaveCommit from "./Activate/CrossSaveCommit";
 import styles from "./CrossSaveActivate.module.scss";
 import { CrossSaveIndexDefinitions } from "./CrossSaveIndexDefinitions";
-import {
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-} from "./Shared/CrossSaveFlowStateDataStore";
-import {
-  PoseDirection,
-  PoseDirectionContext,
-} from "./Shared/CrossSaveStaggerPose";
+import { CrossSaveFlowStateDataStore } from "./Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 
 export type CrossSaveActivateSteps =
@@ -44,7 +33,6 @@ export type CrossSaveActivateSteps =
   | "Pair"
   | "Characters"
   | "Commit";
-type CrossSaveActivateExitPoses = "exitLeft" | "exitRight";
 
 export interface ICrossSaveStepDefinition {
   step: CrossSaveActivateSteps;
@@ -55,153 +43,27 @@ export interface ICrossSaveActivateParams {
   step?: CrossSaveActivateSteps;
 }
 
-interface ICrossSaveActivateState {
-  exitPose: CrossSaveActivateExitPoses;
-  preEnterPose: CrossSaveActivateExitPoses;
-  lastStep: CrossSaveActivateSteps;
-  flowState: ICrossSaveFlowState;
-  poseDirection: PoseDirection;
-}
-
-interface ICrossSaveActivateProps
-  extends RouteComponentProps<ICrossSaveActivateParams>,
-    GlobalStateComponentProps<
-      "loggedInUser" | "responsive" | "loggedInUserClans"
-    > {}
-
-const RouteContainer = posed.div({
-  enter: {
-    x: 0,
-    opacity: 1,
-    delay: 100,
-    transition: {
-      ease: "easeInOut",
-      duration: 0,
-    },
-  },
-  exitLeft: {
-    x: -75,
-    opacity: 0,
-    transition: {
-      ease: "easeInOut",
-      duration: 400,
-    },
-  },
-  exitRight: {
-    x: 75,
-    opacity: 0,
-    transition: {
-      ease: "easeInOut",
-      duration: 400,
-    },
-  },
-});
-
 const eq = (string1: string, string2: string) =>
   StringUtils.equals(string1, string2, StringCompareOptions.IgnoreCase);
 
 /**
  * Cross-Save's activation page
  *  *
- * @param {ICrossSaveActivateProps} props
  * @returns
  */
-class CrossSaveActivate extends React.Component<
-  ICrossSaveActivateProps,
-  ICrossSaveActivateState
-> {
-  private readonly subs: DestroyCallback[] = [];
+const CrossSaveActivate = () => {
+  const globalState = useDataStore(GlobalStateDataStore, [
+    "loggedInUser",
+    "responsive",
+    "loggedInUserClans",
+  ]);
+  const params = useParams<ICrossSaveActivateParams>();
+  const flowState = useDataStore(CrossSaveFlowStateDataStore);
+  const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(flowState);
 
-  constructor(props: ICrossSaveActivateProps) {
-    super(props);
-
-    this.state = {
-      lastStep: props.match.params.step,
-      exitPose: "exitRight",
-      preEnterPose: "exitLeft",
-      poseDirection: "left",
-      flowState: CrossSaveFlowStateDataStore.state,
-    };
-  }
-
-  public componentDidMount() {
-    this.subs.push(
-      CrossSaveFlowStateDataStore.observe((flowState) => {
-        this.setState({
-          flowState,
-        });
-      })
-    );
-
-    this.subs.push(
-      StringFetcher.observe((stringFletcherPayload) => {
-        if (!stringFletcherPayload?.loaded) {
-          //there are new strings and definitions - reload the page completely
-          window.location.reload();
-        }
-      })
-    );
-  }
-
-  public componentWillUnmount() {
-    DataStore.destroyAll(...this.subs);
-    window.onbeforeunload = null;
-  }
-
-  // Since we conditionally show some of the steps based on the flow state,
-  public static getDerivedStateFromProps(
-    props: ICrossSaveActivateProps,
-    state: ICrossSaveActivateState
-  ): ICrossSaveActivateState {
-    const currentStep = state.lastStep;
-    const nextStep = props.match.params.step;
-
-    const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
-      state.flowState
-    );
-
-    const currentStepDef = stepDefs.find((stepDef) =>
-      eq(stepDef.step, currentStep)
-    );
-    const nextStepDef = stepDefs.find((stepDef) => eq(stepDef.step, nextStep));
-    const currentStepIndex = stepDefs.indexOf(currentStepDef);
-    const nextStepIndex = stepDefs.indexOf(nextStepDef);
-
-    // Compare the next step and previous step to determine the direction to animate
-    let poseDirection: PoseDirection = "left";
-    let exitPose: CrossSaveActivateExitPoses = "exitLeft";
-    let preEnterPose: CrossSaveActivateExitPoses = "exitRight";
-    if (nextStepIndex < currentStepIndex) {
-      exitPose = "exitRight";
-      preEnterPose = "exitLeft";
-      poseDirection = "right";
-    }
-
-    // We don't animate between these two particular steps
-    if (
-      (currentStep === "Pair" && nextStep === "Characters") ||
-      (currentStep === "Characters" && nextStep === "Pair")
-    ) {
-      exitPose = undefined;
-      preEnterPose = undefined;
-    }
-
-    return {
-      ...state,
-      exitPose,
-      preEnterPose,
-      poseDirection,
-      lastStep: props.match.params.step,
-    };
-  }
-
-  private renderSteps() {
-    const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
-      this.state.flowState
-    );
-
+  const renderStepsBreadcrumb = () => {
     const activeStepDef = stepDefs.find((stepDef) =>
-      eq(stepDef.step, this.props?.match?.params?.step)
+      eq(stepDef.step, params.step)
     );
     const activeIndex = stepDefs.indexOf(activeStepDef);
 
@@ -210,7 +72,6 @@ class CrossSaveActivate extends React.Component<
       const classes = classNames(styles.step, {
         [styles.activeStep]: active,
         [styles.prevStep]: i < activeIndex,
-        [styles.nextStep]: i > activeIndex,
       });
 
       return (
@@ -220,15 +81,11 @@ class CrossSaveActivate extends React.Component<
         </div>
       );
     });
-  }
+  };
 
-  private redirectForBadFlowState(flowState: ICrossSaveFlowState) {
+  const redirectForBadFlowState = () => {
     let redirectPath: string = null;
-
-    const stepDefs = CrossSaveUtils.getActivateStepDefsFromFlowState(
-      this.state.flowState
-    );
-    const currentStep = this.props.match.params.step;
+    const currentStep = params.step;
     const stepIndex = stepDefs.findIndex((a) => a.step === currentStep);
     const pairStepIndex = stepDefs.findIndex((a) => a.step === "Pair");
     const linkStepIndex = stepDefs.findIndex((a) => a.step === "Link");
@@ -242,7 +99,7 @@ class CrossSaveActivate extends React.Component<
       currentStep
     );
     const authComplete = CrossSaveUtils.allAccountsAuthVerified(
-      this.props.globalState.loggedInUser,
+      globalState.loggedInUser,
       flowState
     );
 
@@ -255,8 +112,7 @@ class CrossSaveActivate extends React.Component<
     const skippedChoices =
       flowState.includedMembershipTypes.length === 0 &&
       stepIndex > earliestStepIndex &&
-      earliestStep &&
-      earliestStep.step !== currentStep;
+      earliestStep?.step !== currentStep;
     const invalidReview =
       flowState.primaryMembershipType === null &&
       currentStep === "Commit" &&
@@ -264,8 +120,7 @@ class CrossSaveActivate extends React.Component<
     const alreadyActivated = flowState.isActive;
     const requiresAuth =
       stepIndex > linkStepIndex && !flowState.isActive && !authComplete;
-    const noStepSpecified =
-      this.props.match.params.step === undefined && !redirectPath;
+    const noStepSpecified = params.step === undefined;
 
     // If you didn't acknowledge, you can't go further
     if (mustAcknowledge) {
@@ -313,134 +168,97 @@ class CrossSaveActivate extends React.Component<
     }
 
     return redirectPath ? <Redirect to={redirectPath} /> : undefined;
-  }
+  };
 
-  public render() {
-    const flowState = this.state.flowState;
+  const activateAction = RouteDefs.Areas.CrossSave.getAction("Activate");
+  const crossSaveLoc = Localizer.Crosssave;
 
-    const activateAction = RouteDefs.Areas.CrossSave.getAction("Activate");
-    const crossSaveLoc = Localizer.Crosssave;
-    const currentStep = this.props.match.params.step;
+  const acknowledgeStepPath = activateAction.resolve<ICrossSaveActivateParams>({
+    step: "Acknowledge",
+  }).url;
+  const linkStepPath = activateAction.resolve<ICrossSaveActivateParams>({
+    step: "Link",
+  }).url;
+  const charactersStepPath = activateAction.resolve<ICrossSaveActivateParams>({
+    step: "Characters",
+  }).url;
+  const reviewStepPath = activateAction.resolve<ICrossSaveActivateParams>({
+    step: "Commit",
+  }).url;
 
-    const acknowledgeStep = activateAction.resolve<ICrossSaveActivateParams>({
-      step: "Acknowledge",
-    }).url;
-    const linkStep = activateAction.resolve<ICrossSaveActivateParams>({
-      step: "Link",
-    }).url;
-    const charactersStep = activateAction.resolve<ICrossSaveActivateParams>({
-      step: "Characters",
-    }).url;
-    const reviewStep = activateAction.resolve<ICrossSaveActivateParams>({
-      step: "Commit",
-    }).url;
+  const stepsRendered = (
+    <div className={styles.stepWrapper}>{renderStepsBreadcrumb()}</div>
+  );
 
-    const stepsRendered = (
-      <div className={styles.stepWrapper}>{this.renderSteps()}</div>
-    );
-
-    if (
-      !this.state.flowState.validation &&
-      UserUtils.isAuthenticated(this.props.globalState)
-    ) {
-      return (
-        <SpinnerContainer
-          loading={true}
-          mode={SpinnerDisplayMode.fullPage}
-          loadingLabel={Localizer.Crosssave.LoadingCrossSaveData}
-        />
-      );
-    }
-
-    const badFlowStateRedirect = this.redirectForBadFlowState(
-      this.state.flowState
-    );
-    if (badFlowStateRedirect) {
-      return badFlowStateRedirect;
-    }
-
-    window.onbeforeunload = () => Localizer.Crosssave.BeforeLeaveMessage;
-
-    // Not 100% sure why this location thing is required, but if it isn't there, Posed won't work
+  if (!flowState.validation && UserUtils.isAuthenticated(globalState)) {
     return (
-      <React.Fragment>
-        <BungieHelmet
-          title={Localizer.Crosssave.ActivateCrossSaveTitle}
-          image={CrossSaveIndexDefinitions.MetaImage}
-        />
-        <Route
-          render={({ location }) => (
-            <Grid className={styles.wrapperGrid}>
-              <GridCol cols={12}>
-                {!this.state.flowState.isActive && (
-                  <DestinyHeader
-                    separator="//"
-                    breadcrumbs={[
-                      crossSaveLoc.ActivateCrossSaveHeader,
-                      Localizer.Crosssave.ActivateLower,
-                    ]}
-                    textTransform={"lowercase"}
-                    title={currentStep !== "Acknowledge" ? stepsRendered : null}
-                  />
-                )}
-                <div>
-                  <RequiresAuth>
-                    <PoseDirectionContext.Provider
-                      value={this.state.poseDirection}
-                    >
-                      <PoseGroup
-                        exitPose={this.state.exitPose}
-                        preEnterPose={this.state.preEnterPose}
-                        animateOnMount={false}
-                      >
-                        <RouteContainer key={this.props.match.params.step}>
-                          <Switch location={location}>
-                            <Route path={acknowledgeStep}>
-                              <CrossSaveAcknowledge
-                                flowState={this.state.flowState}
-                              />
-                            </Route>
-                            <Route path={linkStep}>
-                              <CrossSaveAccountLink
-                                deactivating={false}
-                                globalState={this.props.globalState}
-                                flowState={this.state.flowState}
-                                onAccountLinked={
-                                  CrossSaveFlowStateDataStore.onAccountLinked
-                                }
-                              />
-                            </Route>
-                            <Route path={charactersStep}>
-                              <CrossSaveCharacters
-                                flowState={this.state.flowState}
-                              />
-                            </Route>
-                            <Route path={reviewStep}>
-                              <CrossSaveCommit
-                                onAccountLinked={
-                                  CrossSaveFlowStateDataStore.onAccountLinked
-                                }
-                                globalState={this.props.globalState}
-                                flowState={this.state.flowState}
-                              />
-                            </Route>
-                          </Switch>
-                        </RouteContainer>
-                      </PoseGroup>
-                    </PoseDirectionContext.Provider>
-                  </RequiresAuth>
-                </div>
-              </GridCol>
-            </Grid>
-          )}
-        />
-      </React.Fragment>
+      <SpinnerContainer
+        loading={true}
+        mode={SpinnerDisplayMode.fullPage}
+        loadingLabel={Localizer.Crosssave.LoadingCrossSaveData}
+      />
     );
   }
-}
 
-export default withGlobalState(CrossSaveActivate, [
-  "loggedInUser",
-  "responsive",
-  "loggedInUserClans",
-]);
+  const badFlowStateRedirect = redirectForBadFlowState();
+  if (badFlowStateRedirect) {
+    return badFlowStateRedirect;
+  }
+
+  return (
+    <React.Fragment>
+      <BungieHelmet
+        title={Localizer.Crosssave.ActivateCrossSaveTitle}
+        image={CrossSaveIndexDefinitions.MetaImage}
+      />
+      <Route
+        render={({ location }) => (
+          <Grid className={styles.wrapperGrid}>
+            <GridCol cols={12}>
+              {!flowState.isActive && (
+                <DestinyHeader
+                  separator="//"
+                  breadcrumbs={[
+                    crossSaveLoc.ActivateCrossSaveHeader,
+                    Localizer.Crosssave.ActivateLower,
+                  ]}
+                  textTransform={"lowercase"}
+                  title={params.step !== "Acknowledge" ? stepsRendered : null}
+                />
+              )}
+              <div>
+                <RequiresAuth>
+                  <Switch location={location}>
+                    <Route path={acknowledgeStepPath}>
+                      <CrossSaveAcknowledge />
+                    </Route>
+                    <Route path={linkStepPath}>
+                      <CrossSaveAccountLink
+                        deactivating={false}
+                        onAccountLinked={
+                          CrossSaveFlowStateDataStore.onAccountLinked
+                        }
+                      />
+                    </Route>
+                    <Route path={charactersStepPath}>
+                      <CrossSaveCharacters />
+                    </Route>
+                    <Route path={reviewStepPath}>
+                      <CrossSaveCommit
+                        onAccountLinked={
+                          CrossSaveFlowStateDataStore.onAccountLinked
+                        }
+                      />
+                    </Route>
+                  </Switch>
+                </RequiresAuth>
+              </div>
+            </GridCol>
+          </Grid>
+        )}
+      />
+    </React.Fragment>
+  );
+};
+
+export default CrossSaveActivate;

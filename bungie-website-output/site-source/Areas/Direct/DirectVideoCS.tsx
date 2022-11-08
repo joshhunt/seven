@@ -9,7 +9,7 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import YouTube, { Options } from "react-youtube";
+import YouTube from "react-youtube";
 import { BnetStackDirectVideoLandingPage } from "../../Generated/contentstack-types";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
 import styles from "./DirectVideo.module.scss";
@@ -17,6 +17,8 @@ import styles from "./DirectVideo.module.scss";
 interface DirectVideoRouteParams {
   title: string;
 }
+
+type onOff = 1 | 0;
 
 /**
  * Renders a content item either by ID or tag and type
@@ -64,11 +66,11 @@ const DirectVideoCS: React.FC = () => {
     return null;
   }
 
-  const opts: Options = {
+  const opts: any = {
     height: "100%",
     width: "100%",
     playerVars: {
-      autoplay: autoplay ? 1 : 0,
+      autoplay: autoplay ? 1 : (0 as onOff),
     },
   };
 
@@ -100,7 +102,7 @@ const DirectVideoCS: React.FC = () => {
 
                 {/* Video */}
                 <YouTube
-                  containerClassName={styles.youtubeWrapper}
+                  className={styles.youtubeWrapper}
                   videoId={youtube_video_id}
                   opts={opts}
                 />

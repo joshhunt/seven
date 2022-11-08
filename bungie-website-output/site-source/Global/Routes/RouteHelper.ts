@@ -280,12 +280,10 @@ export class RouteHelper {
    * Destiny Links
    *
    * */
-  public static News = LegacyPathWithQuery("/News");
-  public static TemporaryNewsArticle = BasicReactPath<NewsParams>(
-    RouteDefs.Areas.News.getAction("TempNewsArticle")
+  public static News = BasicReactPath(RouteDefs.Areas.News.getAction("Index"));
+  public static NewsArticle = BasicReactPath<NewsParams>(
+    RouteDefs.Areas.News.getAction("Article")
   );
-  public static NewsArticle = (articleId: number) =>
-    LegacyPath(`/Explore/Detail/News/${articleId}`);
   public static AboutDestiny = LegacyPathWithQuery("/pub/AboutDestiny");
   public static Companion = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Companion")
@@ -384,14 +382,9 @@ export class RouteHelper {
   public static PurchaseHistory = LegacyPathWithQuery(
     "/Profile/PurchaseHistory"
   );
-  public static ApplicationHistory = (appId: string) => {
-    const resolved = BasicReactPath(
-      RouteDefs.AreaGroups.User.areas.Account.getAction("AppHistory")
-    )();
-    resolved.url += appId ? `?app=${appId}` : "";
-
-    return resolved;
-  };
+  public static ApplicationHistory = LegacyPathWithQuery(
+    "/Profile/ApplicationHistory"
+  );
 
   //Seasons
   public static SeasonOfDrifterLink = LegacyPath("/pub/SeasonOfTheDrifter");

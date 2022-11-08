@@ -1,9 +1,7 @@
 // Created by a-bphillips, 2021
 // Copyright Bungie, Inc.
 
-import { WitchQueenSkuComparisonTestQuery } from "@Areas/Destiny/WitchQueen/__generated__/WitchQueenSkuComparisonTestQuery.graphql";
 import WQHero from "@Areas/Destiny/WitchQueen/sections/WQHero/WQHero";
-import { WQImgUrlFromQueryProp } from "@Areas/Destiny/WitchQueen/WitchQueen";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Content, Platform } from "@Platform";
@@ -17,9 +15,10 @@ import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { bgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./WitchQueenSkuComparisonTest.module.scss";
 
 const WitchQueenSkuComparisonTest: React.FC = () => {
@@ -29,23 +28,18 @@ const WitchQueenSkuComparisonTest: React.FC = () => {
   const [skuConfig, setSkuConfig] = useState(DestinySkuConfigDataStore.state);
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const data = useLazyLoadQuery<WitchQueenSkuComparisonTestQuery>(
-    graphql`
-      query WitchQueenSkuComparisonTestQuery($locale: String!) {
-        nova_product_page(uid: "blt6927482d223d0222", locale: $locale) {
-          title
-          meta_imageConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-        }
-      }
-    `,
-    { locale }
-  );
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("nova_product_page")
+      .Entry("blt6927482d223d0222")
+      .only(["title", "meta_img"])
+      .language(locale)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
 
   useEffect(() => {
     loadSkuContent();
@@ -112,16 +106,13 @@ const WitchQueenSkuComparisonTest: React.FC = () => {
       });
   };
 
-  const { title, meta_imageConnection } = data?.nova_product_page ?? {};
+  const { title, meta_img } = data ?? {};
 
   return (
     <SpinnerContainer loading={!hasHeroLoaded || !haveSkusLoaded}>
-      <WitchQueenHelmet
-        title={title}
-        img={WQImgUrlFromQueryProp(meta_imageConnection)}
-      />
+      <WitchQueenHelmet title={title} img={bgImageFromStackFile(meta_img)} />
       <div className={styles.witchQueenContent}>
-        <WQHero setHasLoaded={setHasHeroLoaded} />
+        <WQHero heroContent={data?.hero} />
         <div className={styles.skusSection}>
           <WQComparisonSkus skuItems={skuItems} />
         </div>

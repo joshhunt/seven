@@ -32,6 +32,7 @@ interface MarketingOptInButtonProps {
    */
   analyticsIdOverride?: string;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const aggregateEmailSetting =
@@ -130,13 +131,20 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
     if (!emailValid) {
       Modal.open(
         <div>
-          {Localizer.FormatReact(Localizer.Destinyreveal.InvalidEmailMessage, {
-            updateEmailLink: (
-              <Anchor url={RouteHelper.Settings({ category: "Notifications" })}>
-                {Localizer.Destinyreveal.ValidateEmailLink}
-              </Anchor>
-            ),
-          })}
+          <>
+            {Localizer.FormatReact(
+              Localizer.Destinyreveal.InvalidEmailMessage,
+              {
+                updateEmailLink: (
+                  <Anchor
+                    url={RouteHelper.Settings({ category: "Notifications" })}
+                  >
+                    {Localizer.Destinyreveal.ValidateEmailLink}
+                  </Anchor>
+                ),
+              }
+            )}
+          </>
         </div>
       );
 

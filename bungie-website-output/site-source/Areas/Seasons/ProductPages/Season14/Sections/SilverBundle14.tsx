@@ -13,7 +13,6 @@ import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import classNames from "classnames";
-import moment from "moment";
 import React, { LegacyRef, useEffect, useState } from "react";
 import styles from "./SilverBundle14.module.scss";
 

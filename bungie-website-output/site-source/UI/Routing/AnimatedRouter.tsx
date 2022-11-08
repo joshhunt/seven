@@ -6,7 +6,9 @@ import posed, { PoseGroup } from "react-pose";
 import { Route, Switch } from "react-router-dom";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 
-interface IAnimatedRouterProps {}
+interface IAnimatedRouterProps {
+  children?: React.ReactNode;
+}
 
 interface IAnimatedRouterState {}
 
@@ -50,11 +52,9 @@ export class AnimatedRouter extends React.Component<
     return (
       <Route
         render={({ location }) => (
-          <PoseGroup preEnterPose={"exit"}>
-            <RoutesContainer key={location.pathname}>
-              <SwitchWithErrors>{this.props.children}</SwitchWithErrors>
-            </RoutesContainer>
-          </PoseGroup>
+          <RoutesContainer key={location.pathname}>
+            <SwitchWithErrors>{this.props.children}</SwitchWithErrors>
+          </RoutesContainer>
         )}
       />
     );

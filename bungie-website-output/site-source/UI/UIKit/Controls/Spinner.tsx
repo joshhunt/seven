@@ -23,6 +23,7 @@ interface ISpinnerContainerProps {
   className?: string;
   /** Optional styles */
   style?: React.CSSProperties;
+  children?: React.ReactNode;
 }
 
 interface ISpinnerContainerState {}

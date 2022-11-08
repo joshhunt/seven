@@ -45,7 +45,7 @@ export class AreaGroup<TKeys extends {}> {
 
     // Loop through the areas in the parameters and create IAreas for them
     const areas = areaNames.reduce((areasAcc, areaName) => {
-      const urlPrefix = `${areaGroupName}/${areaName}`;
+      const urlPrefix = `${areaGroupName}/${String(areaName)}`;
 
       const { lazyComponent, routes, webmasterSystem } = children[areaName];
 

@@ -2,8 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { MarketingSubNav } from "@UI/Marketing/MarketingSubNav";
-import React, { useRef, useState } from "react";
-import { BeyondLightQuery } from "./__generated__/BeyondLightQuery.graphql";
+import React, { useEffect, useRef, useState } from "react";
 import {
   BeyondLightAccordion,
   InteractiveSection,
@@ -22,250 +21,48 @@ import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { imageFromConnection } from "@Utilities/GraphQLUtils";
 import classNames from "classnames";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { BnetStackBeyondLight } from "../../../Generated/contentstack-types";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./BeyondLight.module.scss";
 
 interface BeyondLightProps {}
-
-const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
 
 const BeyondLight: React.FC<BeyondLightProps> = (props) => {
   const { mobile, medium } = useDataStore(Responsive);
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const data = useLazyLoadQuery<BeyondLightQuery>(
-    graphql`
-      query BeyondLightQuery($locale: String!) {
-        beyond_light(uid: "bltfb9ac20b6ec799ea", locale: $locale) {
-          title
-          meta_imageConnection {
-            edges {
-              node {
-                url
-              }
-            }
-          }
-          subnav {
-            btn_text
-            labels {
-              ... on BeyondLightSubnavLabels {
-                label
-                label_id
-              }
-            }
-          }
-          hero {
-            background {
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-            buy_btn {
-              btn_title
-              btn_url
-            }
-            trailer_btn {
-              btn_title
-              video_id
-            }
-            logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-          }
-          interactive_section {
-            header {
-              backgroundConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              heading
-            }
-            ... on BeyondLightInteractiveSection {
-              interactive_guardian {
-                modal_body
-                modal_eyebrow
-                modal_first_caption
-                modal_first_subheading
-                modal_second_caption
-                modal_second_subheading
-                modal_title
-                subtitle
-                title
-              }
-            }
-            mobile_accordion {
-              ... on BeyondLightInteractiveSectionMobileAccordion {
-                caption_one
-                caption_two
-                eyebrow
-                subheading_one
-                subheading_two
-                summary
-                title
-              }
-            }
-          }
-          sections {
-            ... on BeyondLightSectionsPageSection {
-              page_section {
-                background {
-                  desktopConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                  mobileConnection {
-                    edges {
-                      node {
-                        url
-                      }
-                    }
-                  }
-                }
-                section_id
-                blurb
-                section_title
-                small_title
-                info_blocks {
-                  ... on BeyondLightSectionsPageSectionBlockInfoBlocksImageTextInfoBlock {
-                    image_text_info_block {
-                      blurb
-                      heading
-                      screenshotConnection {
-                        edges {
-                          node {
-                            url
-                          }
-                        }
-                      }
-                      thumbnailConnection {
-                        edges {
-                          node {
-                            url
-                          }
-                        }
-                      }
-                      video_id
-                    }
-                  }
-                }
-              }
-            }
-          }
-          cta {
-            logoConnection {
-              edges {
-                node {
-                  url
-                }
-              }
-            }
-            btn_text
-            background {
-              desktopConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-              mobileConnection {
-                edges {
-                  node {
-                    url
-                  }
-                }
-              }
-            }
-          }
-          media {
-            ... on BeyondLightMediaScreenshot {
-              screenshot {
-                imageConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-            ... on BeyondLightMediaVideo {
-              video {
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                video_id
-              }
-            }
-            ... on BeyondLightMediaWallpaper {
-              wallpaper {
-                thumbnailConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-                wallpaperConnection {
-                  edges {
-                    node {
-                      url
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    { locale }
-  );
+  const [data, setData] = useState<BnetStackBeyondLight>(null);
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("beyond_light")
+      .Entry("bltfb9ac20b6ec799ea")
+      .language(locale)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
 
   const {
     subnav,
     title,
-    meta_imageConnection,
+    meta_image,
     hero,
     sections,
     cta,
     interactive_section,
     media,
-  } = data?.beyond_light ?? {};
+  } = data ?? {};
+
+  const sectionIdArray = sections?.map((sec) => sec.page_section.section_id);
+  const ids = sectionIdArray ? ["stasis", ...sectionIdArray, "media"] : [];
+  const elementRefs: HTMLDivElement[] = [];
+  const idToElementsMapping: { [key: string]: HTMLDivElement } = {};
+
+  useEffect(() => {
+    ids.forEach((id, i) => (idToElementsMapping[id] = elementRefs[i]));
+  }, [elementRefs]);
 
   const sectionStyles = [
     { section: styles.topRaidSection, bg: styles.sectionBg },
@@ -284,41 +81,36 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
 
   const [heroRef, setHeroRef] = useState(null);
 
-  const metaImg = imageFromConnection(meta_imageConnection)?.url;
-  const stasisHeaderBg = imageFromConnection(
-    interactive_section?.header.backgroundConnection
-  ).url;
-  const ctaBgImg = imageFromConnection(
-    mobile
-      ? cta?.background?.mobileConnection
-      : cta?.background?.desktopConnection
-  )?.url;
+  const metaImg = meta_image?.url;
+  const stasisHeaderBg = interactive_section?.header?.background?.url;
+  const ctaBgImg = mobile
+    ? cta?.background?.mobile
+    : cta?.background?.desktop?.url;
   const ctaBg = ctaBgImg ? `url(${ctaBgImg})` : undefined;
 
   const mediaScreenshots: IDestinyNewsMedia[] = media
     ?.filter((m) => m.screenshot)
-    .map((s) => ({
+    ?.map((s) => ({
       isVideo: false,
       thumbnail:
-        imageFromConnection(s.screenshot?.thumbnailConnection)?.url ||
-        `${imageFromConnection(s.screenshot?.imageConnection)?.url}?width=500`,
-      detail: imageFromConnection(s.screenshot?.imageConnection)?.url,
+        s.screenshot?.thumbnail?.url || `${s.screenshot?.image?.url}?width=500`,
+      detail: s.screenshot?.image?.url,
     }));
 
   const mediaVideos: IDestinyNewsMedia[] = media
     ?.filter((m) => m.video)
-    .map((v) => ({
+    ?.map((vid) => ({
       isVideo: true,
-      thumbnail: imageFromConnection(v.video?.thumbnailConnection)?.url,
-      detail: v.video?.video_id,
+      thumbnail: vid?.video.thumbnail?.url,
+      detail: vid?.video?.video_id,
     }));
 
   const mediaWallpapers: IDestinyNewsMedia[] = media
     ?.filter((m) => m.wallpaper)
-    .map((w) => ({
+    .map((wall) => ({
       isVideo: false,
-      thumbnail: imageFromConnection(w.wallpaper?.thumbnailConnection).url,
-      detail: imageFromConnection(w.wallpaper?.wallpaperConnection)?.url,
+      thumbnail: wall?.wallpaper?.thumbnail?.url,
+      detail: wall?.wallpaper?.wallpaper?.url,
     }));
 
   return (
@@ -333,10 +125,10 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
         <BeyondLightHero inputRef={(ref) => setHeroRef(ref)} data={hero} />
 
         <MarketingSubNav
-          ids={Object.keys(idToElementsMapping)}
+          ids={ids}
           renderLabel={(id, index) => {
-            const label = subnav?.labels.find(
-              (l) => l.label_id === `${id}_nav_label`
+            const label = subnav?.labels?.find(
+              (l: any) => l.label_id === `${id.toLowerCase()}_nav_label`
             );
 
             return label?.label;
@@ -355,7 +147,7 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
 
         <div
           className={styles.stasisHeader}
-          ref={(ref) => (idToElementsMapping["stasis"] = ref)}
+          ref={(ref) => (elementRefs[0] = ref)}
           id={"stasis"}
           style={{
             backgroundImage: stasisHeaderBg
@@ -611,13 +403,11 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
           />
         )}
 
-        {sections?.map(({ page_section: section }, i) => {
+        {sections?.map((sectionInstance, i: number) => {
+          const section = sectionInstance?.page_section;
           const sectionScreenshots = section.info_blocks
-            ?.filter(({ image_text_info_block: b }) => !b.video_id)
-            .map(
-              ({ image_text_info_block: b }) =>
-                imageFromConnection(b.screenshotConnection).url
-            );
+            ?.filter((block) => !block?.image_text_info_block?.video_id)
+            .map((block) => block?.image_text_info_block?.screenshot?.url);
 
           return (
             <BeyondLightSection
@@ -626,52 +416,40 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
               sectionTitle={section.section_title}
               blurb={section.blurb}
               sectionId={section.section_id}
-              inputRef={(ref) =>
-                (idToElementsMapping[section.section_id] = ref)
-              }
+              inputRef={(ref) => (elementRefs[i + 1] = ref)}
               bg={{
-                desktop: imageFromConnection(
-                  section.background.desktopConnection
-                ).url,
-                mobile: imageFromConnection(section.background.mobileConnection)
-                  .url,
+                desktop: section.background?.desktop?.url,
+                mobile: section.background?.mobile?.url,
               }}
               classes={{
                 section: sectionStyles[i]?.section,
                 bg: sectionStyles[i]?.bg,
                 bgGradient: sectionStyles[i]?.bgGradient,
               }}
-              flexInfoBlocks={section.info_blocks?.map(
-                ({ image_text_info_block: block }) => {
-                  let screenshotIndex = sectionScreenshots.findIndex(
-                    (s) =>
-                      s === imageFromConnection(block.screenshotConnection)?.url
-                  );
+              flexInfoBlocks={section.info_blocks?.map((block) => {
+                let screenshotIndex = sectionScreenshots?.findIndex(
+                  (s) => s === block?.image_text_info_block.screenshot?.url
+                );
 
-                  if (screenshotIndex === -1) {
-                    screenshotIndex = undefined;
-                  }
-
-                  return {
-                    blurb: block.blurb,
-                    blurbHeading: block.heading,
-                    singleOrAllScreenshots: sectionScreenshots,
-                    screenshotIndex,
-                    thumbnail: imageFromConnection(block.thumbnailConnection)
-                      .url,
-                    videoId: block.video_id || undefined,
-                  };
+                if (screenshotIndex === -1) {
+                  screenshotIndex = undefined;
                 }
-              )}
+
+                return {
+                  blurb: block?.image_text_info_block?.blurb,
+                  blurbHeading: block?.image_text_info_block?.heading,
+                  singleOrAllScreenshots: sectionScreenshots,
+                  screenshotIndex,
+                  thumbnail: block?.image_text_info_block?.thumbnail?.url,
+                  videoId: block?.image_text_info_block?.video_id || undefined,
+                };
+              })}
             />
           );
         })}
 
         <div className={styles.cta} style={{ backgroundImage: ctaBg }}>
-          <img
-            className={styles.logo}
-            src={imageFromConnection(cta?.logoConnection)?.url ?? ""}
-          />
+          <img className={styles.logo} src={cta?.logo?.url ?? ""} />
           <Button
             url={RouteHelper.DestinyBuyDetail({
               productFamilyTag: "BeyondLight",
@@ -685,7 +463,7 @@ const BeyondLight: React.FC<BeyondLightProps> = (props) => {
 
         <div
           className={styles.mediaSection}
-          ref={(ref) => (idToElementsMapping["media"] = ref)}
+          ref={(ref) => (elementRefs[sections?.length + 1] = ref)}
           id={"media"}
         >
           <div className={styles.mediaContent}>

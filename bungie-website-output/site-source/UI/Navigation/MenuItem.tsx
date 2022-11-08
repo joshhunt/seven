@@ -29,6 +29,7 @@ interface IMenuItemProps {
   /** Global State */
   responsive?: IResponsiveState;
   onSelected?: () => void;
+  children?: React.ReactNode;
 }
 
 interface ILinkProps {

@@ -1,6 +1,8 @@
 import * as React from "react";
 
-export interface IFlairCoinProps {}
+export interface IFlairCoinProps {
+  children?: React.ReactNode;
+}
 
 export class FlairCoin extends React.Component<IFlairCoinProps> {
   public render() {
