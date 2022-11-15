@@ -6,7 +6,6 @@ import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import * as React from "react";
-import { Route } from "react-router";
 import styles from "./Sidebar.module.scss";
 import { AuthTrigger } from "./AuthTrigger";
 import { Localizer } from "@bungie/localization";

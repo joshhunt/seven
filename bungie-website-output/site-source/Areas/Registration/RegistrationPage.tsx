@@ -159,6 +159,7 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
           <h2>{joinUp}</h2>
           <p>{joinUpDesc}</p>
           <JoinUpButton
+            className={styles.joinButton}
             targetCredential={this.state.platform}
             buttonType={"gold"}
             size={BasicSize.Large}

@@ -1,4 +1,5 @@
 import { Localizer } from "@bungie/localization";
+import { SystemNames } from "@Global/SystemNames";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { RouteDefs } from "./RouteDefs";
@@ -56,6 +57,31 @@ const BasicReactPath = <T, U = any>(action: ActionRoute) => (
   extra?: U
 ): IMultiSiteLink => {
   return action.resolve<T>(params, extra);
+};
+
+export const ZendeskHelpArticleUrl = (articleId: string) => {
+  const articleTemplateUrl: string | null = ConfigUtils.GetParameter(
+    SystemNames.ZendeskHelpArticleUrl,
+    "TemplateUrl",
+    ""
+  );
+
+  if (!articleTemplateUrl) {
+    return null;
+  }
+
+  const currentLoc = Localizer.CurrentCultureName;
+  // if zendesk locale is different from bnet locale, get it from webmaster, else current locale is same as zendesk's
+  const zendeskLoc = ConfigUtils.GetParameter(
+    SystemNames.ZendeskArticleLocales,
+    currentLoc,
+    currentLoc
+  );
+
+  // return article url with replaced locale and article id
+  return articleTemplateUrl
+    .replace("{locale}", zendeskLoc)
+    .replace("{articleId}", articleId);
 };
 
 export class RouteHelper {
@@ -314,8 +340,9 @@ export class RouteHelper {
     LegacyPath(`/Community/Detail?itemId=${creationId}`);
   public static DestinyCredits = LegacyPathWithQuery("/Destiny/Credits");
   public static Help = LegacyPathWithQuery("/Support");
-  public static HelpArticle = (articleId: number) =>
-    LegacyPath(`/Help/Article/${articleId}`);
+  public static HelpArticle = (articleId: number | string) => {
+    return ZendeskHelpArticleUrl(articleId.toString());
+  };
   public static HelpStep = (helpStepId: number) =>
     LegacyPath(`/Help/Troubleshoot?oid=${helpStepId}`);
   public static GuideDestiny = LegacyPathWithQuery("/Guide/Destiny2");

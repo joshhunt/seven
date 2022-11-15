@@ -184,10 +184,10 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                 </div>
                 <GridCol cols={2} medium={0} />
                 <GridCol cols={10} medium={12}>
-                  {!emailVerified ? (
+                  {emailVerified ? (
                     <div className={styles.emailSettings}>
                       <hr />
-                      {/*<EmailToRewardsBanner/>*/}
+                      <EmailToRewardsBanner />
                       <div className={styles.checkboxContainer}>
                         {Object.keys(emailOptInValues).map((flag: string) => {
                           return (

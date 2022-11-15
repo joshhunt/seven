@@ -28,7 +28,6 @@ export const GlobalErrorModal: React.FC<IGlobalErrorModalProps> = ({
     "BrowserSupportHelpArticleID",
     0
   );
-  const modalRef = useRef();
 
   return (
     <ConfirmationModalInline
@@ -47,7 +46,7 @@ export const GlobalErrorModal: React.FC<IGlobalErrorModalProps> = ({
         labelOverride: Localizer.Errors.FatalErrorCancelAction,
         buttonType: "white",
         onClick: () => {
-          window.location.href = RouteHelper.HelpArticle(supportId).url;
+          window.location.href = RouteHelper.HelpArticle(supportId);
 
           return false;
         },

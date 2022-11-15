@@ -467,7 +467,6 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     <div className={styles.windows} />
                     <div className={styles.playstation} />
                     <div className={styles.steam} />
-                    <div className={styles.stadia} />
                     <SiEpicgames className={styles.epic} />
                   </div>
                 </div>

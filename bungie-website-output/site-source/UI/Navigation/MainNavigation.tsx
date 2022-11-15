@@ -92,7 +92,6 @@ export const MainNavigation: React.FC<PropsWithChildren<
   const [menuExpanded, setMenuExpanded] = useState(false);
   const [accountSidebarOpen, setAccountSidebarOpen] = useState(false);
   const [notificationSidebarOpen, setNotificationSidebarOpen] = useState(false);
-  const [transparentMode, setTransparentMode] = useState(true);
   const [mountDelayFinished, setMountDelayFinished] = useState(true);
   const globalState = useDataStore(GlobalStateDataStore, [
     "loggedInUser",
@@ -116,6 +115,12 @@ export const MainNavigation: React.FC<PropsWithChildren<
 
     return linksList;
   }, [navConfig]);
+
+  if (
+    document.getElementById("main-content")?.getBoundingClientRect()?.top < 0
+  ) {
+    document.getElementsByTagName("body")[0]?.classList?.add("solid-main-nav");
+  }
 
   useEffect(() => {
     history.listen(() => {
@@ -180,7 +185,6 @@ export const MainNavigation: React.FC<PropsWithChildren<
   };
 
   const headerClasses = classNames(styles.mainNav, {
-    [styles.solid]: !transparentMode,
     [styles.navOpen]: menuExpanded,
   });
 

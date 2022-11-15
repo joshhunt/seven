@@ -35,6 +35,7 @@ import { Timestamp } from "@UI/Utility/Timestamp";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
@@ -173,12 +174,21 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
         }
 
         if (
-          activityModeDefinition?.activityModeCategory ===
-            DestinyActivityModeCategory.PvE &&
-          (activityModeDefinition?.modeType ===
-            DestinyActivityModeType.ScoredHeroicNightfall ||
-            activityModeDefinition?.modeType ===
-              DestinyActivityModeType.ScoredNightfall)
+          EnumUtils.looseEquals(
+            activityModeDefinition?.activityModeCategory,
+            DestinyActivityModeCategory.PvE,
+            DestinyActivityModeCategory
+          ) &&
+          (EnumUtils.looseEquals(
+            activityModeDefinition?.modeType,
+            DestinyActivityModeType.ScoredHeroicNightfall,
+            DestinyActivityModeType
+          ) ||
+            EnumUtils.looseEquals(
+              activityModeDefinition?.modeType,
+              DestinyActivityModeType.ScoredNightfall,
+              DestinyActivityModeType
+            ))
         ) {
           newActivityData.isScoredPvE = true;
         }
@@ -196,7 +206,11 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
           newActivityData.isCrucible =
             newActivityData.isCrucible ||
-            parent?.modeType === DestinyActivityModeType.AllPvP;
+            EnumUtils.looseEquals(
+              parent?.modeType,
+              DestinyActivityModeType.AllPvP,
+              DestinyActivityModeType
+            );
 
           parent.parentHashes?.forEach((parentOfParentHash) => {
             const parentOfParent = props.definitions.DestinyActivityModeDefinition.get(
@@ -205,22 +219,25 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
             if (parentOfParent) {
               newActivityData.isCrucible =
                 newActivityData.isCrucible ||
-                parentOfParent?.modeType === DestinyActivityModeType.AllPvP;
+                EnumUtils.looseEquals(
+                  parent?.modeType,
+                  DestinyActivityModeType.AllPvP,
+                  DestinyActivityModeType
+                );
             }
           });
         });
 
         if (!activityDefinition && !activityTypeDefinition) {
           PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
-
-          throw new Error(
-            "activityDefinition or activityTypeDefinition are undefined"
-          );
         }
 
         if (
-          activityModeDefinition?.activityModeCategory ===
-          DestinyActivityModeCategory.PvECompetitive
+          EnumUtils.looseEquals(
+            activityModeDefinition?.activityModeCategory,
+            DestinyActivityModeCategory.PvECompetitive,
+            DestinyActivityModeCategory
+          )
         ) {
           newActivityData.isGambit = true;
         }
@@ -281,10 +298,14 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
         setBasicActivityData({
           icon: activityModeDisplayProperties?.icon,
-          activityName: activityModeDisplayProperties?.name,
-          location: activityDisplayProperties.name,
+          activityName:
+            activityModeDisplayProperties?.name ||
+            Localizer.destiny.CLASSIFIED_UNAVAILABLE_SOURCE,
+          location:
+            activityDisplayProperties?.name ||
+            Localizer.destiny.CLASSIFIED_UNAVAILABLE_SOURCE,
           timestamp: pgcr?.period,
-          standing: characterEntry?.values.standing,
+          standing: characterEntry?.values?.standing,
         });
 
         PgcrDataStore.actions.updateStats(

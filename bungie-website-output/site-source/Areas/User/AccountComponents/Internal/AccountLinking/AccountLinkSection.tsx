@@ -22,6 +22,7 @@ import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
 import { AccountLinkItem } from "./AccountLinkItem";
+import { GoAlert } from "@react-icons/all-files/go/GoAlert";
 
 export enum AccountLinkingFlags {
   None = 0,
@@ -287,9 +288,12 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
           showSteamDisplayNamePublic: checked,
         });
         break;
-      // case BungieCredentialType.EgsId:
-      // 	setCurrentRequestObject({...currentRequestObject, showEgsDisplayNamePublic: checked})
-      // 	break;
+      case BungieCredentialType.EgsId:
+        setCurrentRequestObject({
+          ...currentRequestObject,
+          showEgsDisplayNamePublic: checked,
+        });
+        break;
       case BungieCredentialType.TwitchId:
         setCurrentRequestObject({
           ...currentRequestObject,
@@ -351,6 +355,16 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
                       ]
                     }
                   />
+                  {EnumUtils.looseEquals(
+                    credential,
+                    BungieCredentialType.StadiaId,
+                    BungieCredentialType
+                  ) && (
+                    <div className={styles.stadiaSunsetAlert}>
+                      <GoAlert />
+                      <span>{Localizer.userPages.StadiaSunsetAlert}</span>
+                    </div>
+                  )}
                   {i < validCredentialTypes.length - 1 && (
                     <GridDivider cols={12} />
                   )}

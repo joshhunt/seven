@@ -70,8 +70,8 @@ const NewsArticle = () => {
   const { title, subtitle, date, image, mobile_image, html_content, author } =
     articleData || {};
 
-  const startSubstring = "<pre";
-  const endSubstring = "/pre>";
+  const codeSectionStart = "<pre";
+  const codeSectionEnd = "/pre>";
 
   const separateCodeContentRecursive = (
     content: string,
@@ -80,25 +80,26 @@ const NewsArticle = () => {
     let finalArray: any[] = [];
 
     if (content?.length > 0) {
-      const nextCodeStart = content.indexOf(startSubstring);
-      const nextCodeEnd = content.indexOf(endSubstring) + endSubstring.length;
+      const nextCodeStart = content.indexOf(codeSectionStart);
+      const nextCodeEnd =
+        content.indexOf(codeSectionEnd) + codeSectionEnd.length;
 
       if (nextCodeStart !== -1) {
-        compoundedContent.push(content.slice(0, nextCodeStart));
-        compoundedContent.push(content.slice(nextCodeStart, nextCodeEnd));
+        finalArray.push(content.slice(0, nextCodeStart));
+        finalArray.push(content.slice(nextCodeStart, nextCodeEnd));
       } else {
-        compoundedContent.push(content);
+        finalArray.push(content);
       }
 
       finalArray =
-        nextCodeEnd - endSubstring.length !== -1
+        nextCodeEnd - codeSectionEnd.length !== -1
           ? finalArray.concat(
               separateCodeContentRecursive(
                 content.slice(nextCodeEnd),
                 finalArray
               )
             )
-          : finalArray.concat(compoundedContent, finalArray);
+          : finalArray;
     }
 
     return finalArray;
@@ -139,35 +140,37 @@ const NewsArticle = () => {
         }}
       />
       <Grid isTextContainer={true}>
-        <GridCol cols={12}>
-          <h1 className={styles.title}>{title}</h1>
-          <h3 className={styles.subtitle}>
-            <span>{`${timeString} - ${author}`}</span>
-          </h3>
-          <div className={styles.articleContainer}>
-            {separateCodeContentRecursive(html_content, []) &&
-              separateCodeContentRecursive(html_content, []).map(
-                (contentString: string, index: number) => {
-                  if (contentString.startsWith(startSubstring)) {
+        {html_content && (
+          <GridCol cols={12}>
+            <h1 className={styles.title}>{title}</h1>
+            <h3 className={styles.subtitle}>
+              <span>{`${timeString} - ${author}`}</span>
+            </h3>
+            <div className={styles.articleContainer}>
+              {separateCodeContentRecursive(html_content, []) &&
+                separateCodeContentRecursive(html_content, []).map(
+                  (contentString: string, index: number) => {
+                    if (contentString.startsWith(codeSectionStart)) {
+                      return (
+                        <CollapsibleCodeBlock
+                          codeContent={contentString}
+                          codeSectionStart={codeSectionStart}
+                          key={index}
+                        />
+                      );
+                    }
+
                     return (
-                      <CollapsibleCodeBlock
-                        codeContent={contentString}
-                        startSubstring={startSubstring}
+                      <div
+                        dangerouslySetInnerHTML={{ __html: contentString }}
                         key={index}
                       />
                     );
                   }
-
-                  return (
-                    <div
-                      dangerouslySetInnerHTML={{ __html: contentString }}
-                      key={index}
-                    />
-                  );
-                }
-              )}
-          </div>
-        </GridCol>
+                )}
+            </div>
+          </GridCol>
+        )}
       </Grid>
     </>
   );
@@ -175,28 +178,30 @@ const NewsArticle = () => {
 
 interface CollapsibleCodeBlockProps {
   codeContent: string;
-  startSubstring: string;
+  codeSectionStart: string;
 }
 
 const CollapsibleCodeBlock: React.FC<CollapsibleCodeBlockProps> = ({
   codeContent,
-  startSubstring,
+  codeSectionStart,
 }) => {
   const [open, setOpen] = useState(false);
   const withOpenClass = `${codeContent.slice(
     0,
-    startSubstring?.length
-  )} class="${styles.open}" ${codeContent.slice(startSubstring?.length)}`;
+    codeSectionStart?.length
+  )} class="${styles.open}" ${codeContent.slice(codeSectionStart?.length)}`;
 
   return (
-    <div
-      onClick={() => {
-        setOpen(!open);
-      }}
-      className={styles.codeExpander}
-    >
-      {open ? <FaCaretDown /> : <FaCaretRight />}
-      {Localizer.News.Code}
+    <div>
+      <div
+        className={styles.codeExpander}
+        onClick={() => {
+          setOpen(!open);
+        }}
+      >
+        {open ? <FaCaretDown /> : <FaCaretRight />}
+        {Localizer.News.Code}
+      </div>
       {open && (
         <div>
           <div dangerouslySetInnerHTML={{ __html: withOpenClass }} />

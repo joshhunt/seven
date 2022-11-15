@@ -19,7 +19,7 @@ import { useReferenceMap } from "@bungie/contentstack/ReferenceMap/ReferenceMap"
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { HelpArticle } from "@Helpers";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -113,8 +113,12 @@ const SeasonOfTheRisen: React.FC<SeasonOfTheRisenProps> = (props) => {
     eventSectionRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const supportUrl = HelpArticle(links_section?.link_btn[0]?.help_article_id);
-  const faqUrl = HelpArticle(links_section?.link_btn[1]?.help_article_id);
+  const supportUrl = RouteHelper.HelpArticle(
+    links_section?.link_btn[0]?.help_article_id
+  );
+  const faqUrl = RouteHelper.HelpArticle(
+    links_section?.link_btn[1]?.help_article_id
+  );
 
   return (
     <div className={styles.all}>

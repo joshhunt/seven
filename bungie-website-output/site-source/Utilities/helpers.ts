@@ -31,31 +31,6 @@ export const Img = (path: string) => {
   return `${UrlUtils.AppBaseUrl}/ca/${path}`;
 };
 
-export const HelpArticle = (articleId: string) => {
-  const articleTemplateUrl: string | null = ConfigUtils.GetParameter(
-    SystemNames.ZendeskHelpArticleUrl,
-    "TemplateUrl",
-    ""
-  );
-
-  if (!articleTemplateUrl) {
-    return null;
-  }
-
-  const currentLoc = Localizer.CurrentCultureName;
-  // if zendesk locale is different from bnet locale, get it from webmaster, else current locale is same as zendesk's
-  const zendeskLoc = ConfigUtils.GetParameter(
-    SystemNames.ZendeskArticleLocales,
-    currentLoc,
-    currentLoc
-  );
-
-  // return article url with replaced locale and article id
-  return articleTemplateUrl
-    .replace("{locale}", zendeskLoc)
-    .replace("{articleId}", articleId);
-};
-
 /**
  * Takes in an ordered array of filters and returns values array sorted in order of matching those filter
  * @param filters Array of callback functions that should filter the values array in order

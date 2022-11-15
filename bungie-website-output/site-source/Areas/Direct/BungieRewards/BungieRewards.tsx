@@ -5,7 +5,6 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
-import { HelpArticle } from "@Helpers";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { IconActionCard } from "@UI/Marketing/IconActionCard";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -167,7 +166,7 @@ const BungieRewards: React.FC<BungieRewardsProps> = (props) => {
             <IconActionCard
               cardTitle={Localizer.Destiny.LearnMoreSupportBtnTitle}
               backgroundImage={rewardsImgPathString("rewards_support_bg.jpg")}
-              action={HelpArticle("360048721172")}
+              action={RouteHelper.HelpArticle("360048721172")}
               classes={{ root: styles.learnMoreBtn }}
             />
           </div>

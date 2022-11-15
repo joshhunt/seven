@@ -166,7 +166,7 @@ const SubCategories: React.FC<SubCategoriesProps> = (props) => {
         <>
           <div className={styles.subcategoryList}>
             {subListItems
-              ?.filter((sl) => sl)
+              ?.filter((sl) => !!sl)
               .map((sl) => {
                 const iconCoin = sl.iconPath ? (
                   <IconCoin iconImageUrl={sl.iconPath} />
@@ -226,7 +226,10 @@ const SubCategories: React.FC<SubCategoriesProps> = (props) => {
           </div>
           <Dropdown
             className={styles.categoriesDropdown}
-            selectedValue={subListItems.find((sl) => sl.isActive)?.url?.url}
+            selectedValue={
+              subListItems?.filter((sl) => !!sl).find((sl) => sl.isActive)?.url
+                ?.url
+            }
             onChange={(newValue) => history.push(newValue)}
             options={subListItems
               .filter((sl) => sl)

@@ -105,7 +105,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
               history.push({ search: `?page=${selectedItem.selected + 1}` })
             }
             pageCount={totalPages}
-            pageRangeDisplayed={5}
+            pageRangeDisplayed={responsive.mobile ? 1 : 5}
             marginPagesDisplayed={1}
             pageLinkClassName={styles.pagerButton}
             previousLabel={Localizer.usertools.previousPage}

@@ -5405,6 +5405,12 @@ export declare namespace Content {
     UniqueIdentifier: string;
 
     Description: string;
+
+    HtmlContent: string;
+
+    ImagePath: string;
+
+    OptionalMobileImagePath: string;
   }
 }
 
@@ -22000,17 +22006,19 @@ class ContentServiceInternal {
   /**
    * Returns a JSON string response that is the RSS feed for news articles.
    * @param pageToken Zero-based pagination token for paging through result sets.
+   * @param includebody Optionally include full content body for each news item.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static RssNewsArticles = (
     pageToken: string,
+    includebody: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Content.NewsArticleRssResponse> =>
     ApiIntermediary.doGetRequest(
       `/Content/Rss/NewsArticles/${e(pageToken)}/`,
-      [],
+      [["includebody", includebody]],
       optionalQueryAppend,
       "Content",
       "RssNewsArticles",

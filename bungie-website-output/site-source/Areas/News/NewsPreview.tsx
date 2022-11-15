@@ -2,8 +2,9 @@
 // Copyright Bungie, Inc.
 
 import { Localizer } from "@bungie/localization/Localizer";
+import { useCSWebpImages } from "@Utilities/CSUtils";
 import { DateTime } from "luxon";
-import React from "react";
+import React, { useMemo } from "react";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import styles from "./NewsPreview.module.scss";
@@ -16,6 +17,15 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
   articleData,
 }) => {
   const { image, subtitle, date, title, url } = articleData;
+
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        previewImg: image?.url,
+      }),
+      [articleData]
+    )
+  );
 
   const luxonDate = DateTime?.fromISO(date.toString());
   const timeSince = luxonDate?.diffNow();
@@ -38,7 +48,7 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
       url={RouteHelper.NewsArticle({ articleUrl: url?.hosted_url?.slice(1) })}
     >
       <div
-        style={{ backgroundImage: `url(${image?.url}` }}
+        style={{ backgroundImage: `url(${images?.previewImg}` }}
         className={styles.thumbnail}
       />
       <div className={styles.text}>

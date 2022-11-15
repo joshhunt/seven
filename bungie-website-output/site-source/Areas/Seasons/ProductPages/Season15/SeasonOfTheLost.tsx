@@ -14,7 +14,6 @@ import { SilverBundle15 } from "@Areas/Seasons/ProductPages/Season15/Sections/Si
 import ExoticQuest15 from "@Areas/Seasons/ProductPages/Season15/Sections/ExoticQuest15";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
-import { HelpArticle } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { FirehoseNewsAndMedia } from "@UI/Content/FirehoseNewsAndMedia";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -72,7 +71,7 @@ const SeasonOfTheLost: React.FC<SeasonOfTheLostProps> = (props) => {
     faqParamString,
     "https://help.bungie.net/hc/en-us/articles/360060130092-FAQ-for-Season-Pass-Purchases"
   );
-  const supportUrl = HelpArticle("4404573128596");
+  const supportUrl = RouteHelper.HelpArticle(4404573128596);
 
   return (
     <div className={styles.all}>

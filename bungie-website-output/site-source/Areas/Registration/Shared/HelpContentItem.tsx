@@ -61,7 +61,7 @@ export const HelpArticlesContentSet: React.FC<IRegistrationContentItemProps> = (
   };
 
   const helpArticleLink = (id: number): string => {
-    return RouteHelper.HelpArticle(id).url;
+    return RouteHelper.HelpArticle(id);
   };
 
   if (helpArticlesList === null) {

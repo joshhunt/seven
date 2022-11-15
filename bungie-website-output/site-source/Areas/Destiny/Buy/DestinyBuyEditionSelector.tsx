@@ -84,41 +84,45 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
           </div>
         </div>
         {props.skus.length > 1
-          ? props.skus.map((sku, i) => {
-              const productIsOnSale =
-                skuConfig &&
-                DestinySkuUtils.isProductOnSale(sku.skuTag, skuConfig);
+          ? props.skus
+              // Temporarily omit "lightfallcollectors" without breaking the page
+              .filter((sku) => sku?.skuTag !== "lightfallcollectors")
+              .map((sku, i) => {
+                const productIsOnSale =
+                  skuConfig &&
+                  DestinySkuUtils.isProductOnSale(sku.skuTag, skuConfig);
 
-              return (
-                <div
-                  key={i}
-                  className={classNames(styles.expansionLine, {
-                    [styles.selected]: sku.skuTag === selectedSkuTag,
-                  })}
-                  role="button"
-                  onClick={() => {
-                    setSelectedSkuTag(sku.skuTag);
-                    DestinyBuyDataStore.actions.setSelectedSkuIndex(i);
-                  }}
-                >
-                  <img src={sku.imagePath} alt="" role="presentation" />
-                  <div className={styles.expansionLineContent}>
-                    {productIsOnSale && (
-                      <div
-                        className={classNames(styles.saleTag, {
-                          [styles.selectedSale]: sku.skuTag === selectedSkuTag,
-                        })}
-                      >
-                        {Localizer.Sales[sku.skuTag]}
+                return (
+                  <div
+                    key={i}
+                    className={classNames(styles.expansionLine, {
+                      [styles.selected]: sku.skuTag === selectedSkuTag,
+                    })}
+                    role="button"
+                    onClick={() => {
+                      setSelectedSkuTag(sku.skuTag);
+                      DestinyBuyDataStore.actions.setSelectedSkuIndex(i);
+                    }}
+                  >
+                    <img src={sku.imagePath} alt="" role="presentation" />
+                    <div className={styles.expansionLineContent}>
+                      {productIsOnSale && (
+                        <div
+                          className={classNames(styles.saleTag, {
+                            [styles.selectedSale]:
+                              sku.skuTag === selectedSkuTag,
+                          })}
+                        >
+                          {Localizer.Sales[sku.skuTag]}
+                        </div>
+                      )}
+                      <div className={styles.subtitle}>
+                        {sku.edition || sku.subtitle}
                       </div>
-                    )}
-                    <div className={styles.subtitle}>
-                      {sku.edition || sku.subtitle}
                     </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })
           : props.skus.length === 1 && (
               <>
                 <div className={styles.underline} />

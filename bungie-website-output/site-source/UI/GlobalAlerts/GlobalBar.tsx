@@ -14,7 +14,7 @@ import { IMultiSiteLink } from "@Routes/RouteHelper";
 // Required props
 interface IGlobalBarProps {
   initiallyVisible: boolean;
-  message: string;
+  message: React.ReactNode;
   url: string | IMultiSiteLink;
   dismissible: boolean;
   localStorageKey: string;
@@ -44,6 +44,7 @@ export const GlobalBar: React.FC<IGlobalBarProps> = (props) => {
   } = props;
 
   const [childShow, setChildShow] = useState(initiallyVisible);
+  let appLayout: HTMLElement;
 
   const removeBar = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -52,9 +53,16 @@ export const GlobalBar: React.FC<IGlobalBarProps> = (props) => {
   };
 
   useEffect(() => {
+    appLayout = document.getElementById("app-layout");
+
+    if (!dismissible) {
+      appLayout?.classList.add("global-bar-shown");
+    }
+  }, []);
+
+  useEffect(() => {
     window.localStorage.setItem(localStorageKey, childShow.toString());
-    const appLayout = document.getElementById("app-layout");
-    appLayout.classList.toggle("global-bar-shown", childShow);
+    appLayout?.classList.toggle("global-bar-shown", childShow);
   }, [childShow]);
 
   return childShow ? (
