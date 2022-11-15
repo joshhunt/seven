@@ -118,7 +118,9 @@ class CrossSaveFlowStateDataStoreInternal extends DataStore<
       membershipId: string
     ) => {
       try {
-        const isActive = state.isActive;
+        const isActive = CrossSaveFlowStateDataStoreInternal.isActive(
+          pairingStatus
+        );
 
         const stateIdentifier =
           state.stateIdentifier || Math.ceil(Math.random() * 1000000);
