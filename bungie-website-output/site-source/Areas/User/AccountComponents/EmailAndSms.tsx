@@ -226,17 +226,6 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                   )}
                 </GridCol>
               </GridCol>
-
-              <GridCol className={styles.smsContainer} cols={12}>
-                <h3>{Localizer.sms.VerifyYourSms}</h3>
-              </GridCol>
-              <GridDivider cols={12} className={accountStyles.mainDivider} />
-              <GridCol cols={12}>
-                <div>
-                  <h4 className={styles.subtitle}>{Localizer.sms.subtitle}</h4>
-                  <SmsPage accountView={true} />
-                </div>
-              </GridCol>
               <SaveButtonBar
                 saveButton={
                   <button
@@ -262,6 +251,17 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
           </>
         )}
       </Formik>
+
+      <GridCol className={styles.smsContainer} cols={12}>
+        <h3>{Localizer.sms.VerifyYourSms}</h3>
+      </GridCol>
+      <GridDivider cols={12} className={accountStyles.mainDivider} />
+      <GridCol cols={12}>
+        <div>
+          <h4 className={styles.subtitle}>{Localizer.sms.subtitle}</h4>
+          <SmsPage accountView={true} />
+        </div>
+      </GridCol>
     </div>
   );
 };

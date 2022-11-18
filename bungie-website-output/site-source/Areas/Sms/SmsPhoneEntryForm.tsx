@@ -10,7 +10,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import classNames from "classnames";
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
@@ -28,7 +28,9 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const smsDataStorePayload = useDataStore(SmsDataStore);
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+
     setLoading(true);
     setError("");
 
@@ -37,6 +39,9 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
     Platform.UserService.AddPhoneNumber(phone)
       .then((response) => {
         if (response) {
+          SmsDataStore.actions.updateLastDigits(
+            phone.slice(phone.length - 3, phone.length - 1)
+          );
           sendCode();
         } else {
           setLoading(false);
@@ -76,7 +81,7 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
   const submitStatus = enableSubmit ? "gold" : "disabled";
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={(e) => handleSubmit(e)}>
       <SpinnerContainer loading={loading}>
         <div className={styles.phoneTitle}>
           {Localizer.Sms.EnterPhoneNumber}
@@ -100,17 +105,13 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
               required: true,
             }}
             onKeyDown={(e) =>
-              e.key === "Enter" && enableSubmit && handleSubmit()
+              e.key === "Enter" && enableSubmit && handleSubmit(null)
             }
           />
         </div>
         {error !== "" && <SmsError errorMessage={error} />}
         <div className={styles.submit}>
-          <Button
-            buttonType={submitStatus}
-            onClick={handleSubmit}
-            size={BasicSize.Small}
-          >
+          <Button buttonType={submitStatus} size={BasicSize.Small}>
             {Localizer.Sms.SendCode}
           </Button>
           {smsDataStorePayload.lastDigits && (
