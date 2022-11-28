@@ -310,6 +310,8 @@ export class RouteHelper {
   public static NewsArticle = BasicReactPath<NewsParams>(
     RouteDefs.Areas.News.getAction("Article")
   );
+  public static NewsArticleLegacy = (articleUrl: string) =>
+    LegacyPath(`Explore/Detail/News/${articleUrl}`);
   public static AboutDestiny = LegacyPathWithQuery("/pub/AboutDestiny");
   public static Companion = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Companion")

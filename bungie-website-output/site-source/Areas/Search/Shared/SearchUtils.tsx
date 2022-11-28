@@ -41,7 +41,7 @@ export class SearchUtils {
         );
 
         return {
-          url: RouteHelper.NewsArticle({ articleUrl: item.contentId }),
+          url: RouteHelper.NewsArticleLegacy(item.contentId),
           title: item.properties["Title"],
           subtitle: <SafelySetInnerHTML html={item.properties["Subtitle"]} />,
           icon: <IconCoin iconImageUrl={item.properties["ArticleBanner"]} />,
