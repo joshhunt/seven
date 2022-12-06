@@ -27,7 +27,6 @@ import {
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
 import { NavVisibilityListener } from "@UIKit/Controls/NavVisibilityListener";
-import { AnalyticsUtils } from "@Utilities/AnalyticsUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
@@ -190,18 +189,8 @@ class AppLayout extends React.Component<
   }
 
   private readonly onHistoryUpdate = () => {
-    this.trackPage();
-
     FirehoseDebuggerDataStore.actions.clear();
   };
-
-  private trackPage() {
-    if (!this.initTracking) {
-      return;
-    }
-
-    AnalyticsUtils.trackPage();
-  }
 
   public render() {
     if (this.settingsLoaded && !this.systemEnabled) {
@@ -218,6 +207,10 @@ class AppLayout extends React.Component<
       this.settingsLoaded &&
       this.state.globalState &&
       ConfigUtils?.SystemStatus(SystemNames.ContentstackGlobalAlerts);
+    const stadiaSunsetCampaignLive =
+      this.settingsLoaded &&
+      this.state.globalState &&
+      ConfigUtils.SystemStatus(SystemNames.StadiaSunsetAlerts);
     const responsiveClasses =
       this.state.globalState && this.state.globalState.responsive
         ? Responsive.getResponsiveClasses()
@@ -313,7 +306,7 @@ class AppLayout extends React.Component<
             <>
               <Suspense fallback={<div />}>
                 <EmailValidationGlobalBar />
-                <StadiaSunsetGlobalBar />
+                {stadiaSunsetCampaignLive && <StadiaSunsetGlobalBar />}
               </Suspense>
               <NavVisibilityListener />
               <MainNavigation

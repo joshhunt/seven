@@ -4,33 +4,29 @@
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import classNames from "classnames";
-import { Responsive } from "../../Global/Boot/Responsive";
+import { Responsive } from "@Boot/Responsive";
+import { BnetStackNewsArticle } from "../../Generated/contentstack-types";
 import styles from "./Recent.module.scss";
 import React, { useEffect, useState } from "react";
 import { Logger } from "../../Global/Logger";
 import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
 import { TwitterFeed, TwitterScript } from "../../UI/Content/TwitterFeed";
 import { Grid, GridCol, IGridColProps } from "../../UI/UIKit/Layout/Grid/Grid";
-
 import { BasicNewsQuery } from "../../Utilities/ContentUtils";
 import { NewsPreview } from "../News/NewsPreview";
 
-interface RecentProps {}
-
-export const Recent: React.FC<RecentProps> = (props) => {
+export const Recent = () => {
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const [articles, setArticles] = useState(null);
   const { medium } = useDataStore(Responsive);
-  const recentArticleLimit = 7;
-
-  const testMultipleArticles = new Array(8).fill(articles?.[0]);
+  const recentArticleLimit = 10;
 
   useEffect(() => {
     BasicNewsQuery(locale, recentArticleLimit)
+      .toJSON()
       .find()
       .then((response) => {
-        const [entries, count] = response || [];
+        const entries: BnetStackNewsArticle[] = response[0];
         setArticles(entries);
       })
       .catch((error: Error) => {
@@ -48,8 +44,8 @@ export const Recent: React.FC<RecentProps> = (props) => {
           </div>
         </GridCol>
         <ArticleSection
-          articleList={testMultipleArticles.slice(0, 4)}
-          cols={9}
+          articleList={articles?.slice(0, 4)}
+          cols={8}
           medium={12}
         />
         {!medium && (
@@ -58,12 +54,12 @@ export const Recent: React.FC<RecentProps> = (props) => {
           </GridCol>
         )}
         <ArticleSection
-          articleList={testMultipleArticles.slice(4, 6)}
+          articleList={articles?.slice(4, 6)}
           cols={6}
           mobile={12}
         />
         <ArticleSection
-          articleList={testMultipleArticles.slice(6, 8)}
+          articleList={articles?.slice(6, 8)}
           className={styles.right}
           cols={6}
           mobile={12}
@@ -84,10 +80,12 @@ const ArticleSection = (props: IArticleSectionProps) => {
 
   return (
     <GridCol {...rest}>
-      {articleList.map((article, i) => {
-        if (article) {
-          return <NewsPreview key={i} articleData={article} />;
+      {articleList?.map((article, i) => {
+        if (!article) {
+          return null;
         }
+
+        return <NewsPreview key={i} articleData={article} />;
       })}
     </GridCol>
   );

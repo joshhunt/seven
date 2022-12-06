@@ -44,7 +44,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
     return ContentStackClient()
       .ContentType("news_article")
       .Query()
-      .only(["image", "subtitle", "date", "title", "url"])
+      .only(["image", "mobile_image", "subtitle", "date", "title", "url"])
       .language(locale)
       .descending("date")
       .includeCount()

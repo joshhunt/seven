@@ -1,6 +1,7 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
+import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Button } from "@UIKit/Controls/Button/Button";
 import classNames from "classnames";
@@ -10,14 +11,14 @@ import {
   BnetStackLink,
 } from "../../Generated/contentstack-types";
 import styles from "./Hero.module.scss";
-import { Responsive } from "@Boot/Responsive";
 
 interface HeroProps {
   heroData: {
-    hero_image: BnetStackFile;
+    hero_image: string;
+    mobile_hero_image: string;
     hero_video: BnetStackFile;
     title: string;
-    title_as_image: BnetStackFile;
+    title_as_image: string;
     subtitle: string;
     button_one: {
       label: string;
@@ -31,21 +32,9 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = (props) => {
-  const responsive = useDataStore(Responsive);
-
   if (!props) {
     return null;
   }
-
-  const backgroundCSS = {
-    backgroundImage: `url(${props.heroData?.hero_image?.url}`,
-  };
-
-  const titleImageBackgroundCSS = props.heroData?.title_as_image
-    ? {
-        backgroundImage: `url(${props.heroData?.title_as_image?.url})`,
-      }
-    : {};
 
   //for animation
   const [initialized, setInitialized] = useState(false);
@@ -57,16 +46,37 @@ export const Hero: React.FC<HeroProps> = (props) => {
     }, 400);
   }, []);
 
+  const responsive = useDataStore(Responsive);
+
+  const bgImageUrl = responsive.mobile
+    ? props.heroData?.mobile_hero_image
+    : props.heroData?.hero_image;
+
   return (
     <div className={styles.hero}>
-      <div className={styles.heroBg} style={backgroundCSS} />
+      <div
+        className={styles.heroBg}
+        style={{
+          backgroundImage: `url(${bgImageUrl})`,
+        }}
+        title={props.heroData?.title}
+      >
+        {props.heroData?.hero_video && !responsive.mobile && (
+          <video autoPlay loop muted>
+            <source src={props.heroData?.hero_video.url} type={"video/mp4"} />
+          </video>
+        )}
+      </div>
       <div
         className={classNames(styles.textContent, {
           [styles.initialized]: initialized,
         })}
       >
         {props.heroData?.title_as_image ? (
-          <div className={styles.titleImage} style={titleImageBackgroundCSS} />
+          <img
+            className={styles.titleImage}
+            src={props.heroData?.title_as_image}
+          />
         ) : (
           <div className={styles.title}>{props.heroData?.title}</div>
         )}

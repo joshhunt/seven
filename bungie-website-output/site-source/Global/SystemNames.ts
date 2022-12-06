@@ -117,4 +117,5 @@ export const SystemNames = {
   ContentstackGlobalAlerts: "ContentstackGlobalAlerts",
   FirehoseNewsMigrator: "FirehoseNewsMigrator",
   DirectVideoCS: "DirectVideoCS",
+  StadiaSunsetAlerts: "StadiaSunsetAlerts",
 } as const;

@@ -1,6 +1,7 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { GoogleTagManagerLoader } from "@Boot/GoogleTagManagerLoader";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -8,13 +9,11 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import inEU from "@segment/in-eu";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Icon } from "@UI/UIKit/Controls/Icon";
 import { CookieConsentValidity, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import * as React from "react";
 // @ts-ignore
 import * as h from "history";
-import { EnumUtils } from "../../Utilities/EnumUtils";
+import * as React from "react";
 import styles from "./CookieConsent.module.scss";
 
 interface ICookieConsentProps {
@@ -37,7 +36,6 @@ export class CookieConsent extends React.Component<
   ICookieConsentState
 > {
   private destroyHistory: DestroyCallback;
-  private autoSetCookieFlag = false;
 
   constructor(props: ICookieConsentProps) {
     super(props);
@@ -52,13 +50,7 @@ export class CookieConsent extends React.Component<
 
   public componentDidMount() {
     this.destroyHistory = this.props.history.listen(() => {
-      if (
-        !EnumUtils.looseEquals(
-          this.state.consentValidity,
-          CookieConsentValidity.Current,
-          CookieConsentValidity
-        )
-      ) {
+      if (!UserUtils.CookieConsentIsCurrent()) {
         this.hide();
         this.destroyHistory();
       }
@@ -67,75 +59,36 @@ export class CookieConsent extends React.Component<
     setTimeout(() => this.setState({ on: true }), 100);
   }
 
-  public shouldComponentUpdate(
-    nextProps: ICookieConsentProps,
-    nextState: ICookieConsentState
-  ) {
-    if (nextState.consentValidity !== CookieConsentValidity.Current) {
-      this.autoSetCookie();
-    }
-
-    return true;
-  }
-
   public componentWillUnmount() {
-    this.setState({
-      consentValidity: CookieConsentValidity.Current,
-    });
     this.destroyHistory();
   }
 
   private readonly hide = () => {
     this.setState({
-      consentValidity: CookieConsentValidity.Current,
+      on: false,
     });
   };
 
   private acceptCookies() {
     UserUtils.SetConsentCookie();
-
-    this.setState({
-      consentValidity: CookieConsentValidity.Current,
-    });
-  }
-
-  private autoSetCookie() {
-    if (this.autoSetCookieFlag) {
-      return;
-    }
-
-    if (!inEU()) {
-      this.autoSetCookieFlag = true;
-
-      setTimeout(() => {
-        UserUtils.SetConsentCookie();
-      }, 2000);
-    }
+    this.setState({ consentValidity: CookieConsentValidity.Current });
+    this.hide();
   }
 
   public render() {
     if (
-      EnumUtils.looseEquals(
-        this.state.consentValidity,
-        CookieConsentValidity.Current,
-        CookieConsentValidity
-      )
+      UserUtils.CookieConsentIsEnabled() &&
+      UserUtils.CookieConsentIsCurrent()
     ) {
-      return null;
+      return <GoogleTagManagerLoader />;
     }
 
     const expired =
-      this.state.consentValidity === CookieConsentValidity.Expired;
+      UserUtils.CookieConsentValidity() === CookieConsentValidity.Expired;
 
-    let baseString = expired
+    const baseString = expired
       ? Localizer.Messages.CookieConsentUpdateMessage
       : Localizer.Messages.CookieConsentMessage;
-
-    if (!inEU()) {
-      baseString = expired
-        ? Localizer.Messages.CookieConsentUpdateMessagePassive
-        : Localizer.Messages.CookieConsentMessagePassive;
-    }
 
     const consentText = (
       <>
@@ -158,26 +111,17 @@ export class CookieConsent extends React.Component<
       [styles.on]: this.state.on,
     });
 
-    const isInEu = inEU();
-
     return (
       <div className={classes}>
         <div className={styles.content}>
           <span>{consentText}</span>
-          {isInEu && (
-            <Button
-              buttonType={"gold"}
-              className={styles.accept_button}
-              onClick={this.acceptCookies}
-            >
-              {Localizer.Messages.UserAcceptTitle}
-            </Button>
-          )}
-          {!isInEu && (
-            <div className={styles.closeMe} onClick={this.hide}>
-              <Icon iconType="material" iconName="close" />
-            </div>
-          )}
+          <Button
+            buttonType={"gold"}
+            className={styles.accept_button}
+            onClick={this.acceptCookies}
+          >
+            {Localizer.Messages.UserAcceptTitle}
+          </Button>
         </div>
       </div>
     );

@@ -1,159 +1,305 @@
-const {
-  hasOwnProperty,
-  setPrototypeOf,
-  isFrozen,
-  getPrototypeOf,
-  getOwnPropertyDescriptor,
-} = Object;
+﻿export var keys = Object.keys;
+export var isArray = Array.isArray;
+export var _global =
+  typeof self !== "undefined"
+    ? self
+    : typeof window !== "undefined"
+    ? window
+    : global;
 
-let { freeze, seal, create } = Object; // eslint-disable-line import/no-mutable-exports
-let { apply, construct } = typeof Reflect !== "undefined" && Reflect;
+export function extend(obj, extension) {
+  if (typeof extension !== "object") return obj;
+  keys(extension).forEach(function (key) {
+    obj[key] = extension[key];
+  });
+  return obj;
+}
 
-if (!apply) {
-  apply = function (fun, thisValue, args) {
-    return fun.apply(thisValue, args);
+export const getProto = Object.getPrototypeOf;
+export const _hasOwn = {}.hasOwnProperty;
+export function hasOwn(obj, prop) {
+  return _hasOwn.call(obj, prop);
+}
+
+export function props(proto, extension) {
+  if (typeof extension === "function") extension = extension(getProto(proto));
+  keys(extension).forEach((key) => {
+    setProp(proto, key, extension[key]);
+  });
+}
+
+export const defineProperty = Object.defineProperty;
+
+export function setProp(obj, prop, functionOrGetSet, options) {
+  defineProperty(
+    obj,
+    prop,
+    extend(
+      functionOrGetSet &&
+        hasOwn(functionOrGetSet, "get") &&
+        typeof functionOrGetSet.get === "function"
+        ? {
+            get: functionOrGetSet.get,
+            set: functionOrGetSet.set,
+            configurable: true,
+          }
+        : { value: functionOrGetSet, configurable: true, writable: true },
+      options
+    )
+  );
+}
+
+export function derive(Child) {
+  return {
+    from: function (Parent) {
+      Child.prototype = Object.create(Parent.prototype);
+      setProp(Child.prototype, "constructor", Child);
+      return {
+        extend: props.bind(null, Child.prototype),
+      };
+    },
   };
 }
 
-if (!freeze) {
-  freeze = function (x) {
-    return x;
+export const getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+
+export function getPropertyDescriptor(obj, prop) {
+  var pd = getOwnPropertyDescriptor(obj, prop),
+    proto;
+  return pd || ((proto = getProto(obj)) && getPropertyDescriptor(proto, prop));
+}
+
+var _slice = [].slice;
+export function slice(args, start, end) {
+  return _slice.call(args, start, end);
+}
+
+export function override(origFunc, overridedFactory) {
+  return overridedFactory(origFunc);
+}
+
+export function assert(b) {
+  if (!b) throw new Error("Assertion Failed");
+}
+
+export function asap(fn) {
+  if (_global.setImmediate) setImmediate(fn);
+  else setTimeout(fn, 0);
+}
+
+export function getUniqueArray(a) {
+  return a.filter((value, index, self) => self.indexOf(value) === index);
+}
+
+/** Generate an object (hash map) based on given array.
+ * @param extractor Function taking an array item and its index and returning an array of 2 items ([key, value]) to
+ *        instert on the resulting object for each item in the array. If this function returns a falsy value, the
+ *        current item wont affect the resulting object.
+ */
+export function arrayToObject(array, extractor) {
+  return array.reduce((result, item, i) => {
+    var nameAndValue = extractor(item, i);
+    if (nameAndValue) result[nameAndValue[0]] = nameAndValue[1];
+    return result;
+  }, {});
+}
+
+export function trycatcher(fn, reject) {
+  return function () {
+    try {
+      fn.apply(this, arguments);
+    } catch (e) {
+      reject(e);
+    }
   };
 }
 
-if (!seal) {
-  seal = function (x) {
-    return x;
-  };
-}
-
-if (!construct) {
-  construct = function (Func, args) {
-    return new Func(...args);
-  };
-}
-
-const arrayForEach = unapply(Array.prototype.forEach);
-const arrayIndexOf = unapply(Array.prototype.indexOf);
-const arrayPop = unapply(Array.prototype.pop);
-const arrayPush = unapply(Array.prototype.push);
-const arraySlice = unapply(Array.prototype.slice);
-
-const stringToLowerCase = unapply(String.prototype.toLowerCase);
-const stringMatch = unapply(String.prototype.match);
-const stringReplace = unapply(String.prototype.replace);
-const stringIndexOf = unapply(String.prototype.indexOf);
-const stringTrim = unapply(String.prototype.trim);
-
-const regExpTest = unapply(RegExp.prototype.test);
-
-const typeErrorCreate = unconstruct(TypeError);
-
-export function unapply(func) {
-  return (thisArg, ...args) => apply(func, thisArg, args);
-}
-
-export function unconstruct(func) {
-  return (...args) => construct(func, args);
-}
-
-/* Add properties to a lookup table */
-export function addToSet(set, array) {
-  if (setPrototypeOf) {
-    // Make 'in' and truthy checks like Boolean(set.constructor)
-    // independent of any properties defined on Object.prototype.
-    // Prevent prototype setters from intercepting set as a this value.
-    setPrototypeOf(set, null);
+export function tryCatch(fn, onerror, args) {
+  try {
+    fn.apply(null, args);
+  } catch (ex) {
+    onerror && onerror(ex);
   }
+}
 
-  let l = array.length;
-  while (l--) {
-    let element = array[l];
-    if (typeof element === "string") {
-      const lcElement = stringToLowerCase(element);
-      if (lcElement !== element) {
-        // Config presets (e.g. tags.js, attrs.js) are immutable.
-        if (!isFrozen(array)) {
-          array[l] = lcElement;
-        }
+export function getByKeyPath(obj, keyPath) {
+  // http://www.w3.org/TR/IndexedDB/#steps-for-extracting-a-key-from-a-value-using-a-key-path
+  if (hasOwn(obj, keyPath)) return obj[keyPath]; // This line is moved from last to first for optimization purpose.
+  if (!keyPath) return obj;
+  if (typeof keyPath !== "string") {
+    var rv = [];
+    for (var i = 0, l = keyPath.length; i < l; ++i) {
+      var val = getByKeyPath(obj, keyPath[i]);
+      rv.push(val);
+    }
+    return rv;
+  }
+  var period = keyPath.indexOf(".");
+  if (period !== -1) {
+    var innerObj = obj[keyPath.substr(0, period)];
+    return innerObj === undefined
+      ? undefined
+      : getByKeyPath(innerObj, keyPath.substr(period + 1));
+  }
+  return undefined;
+}
 
-        element = lcElement;
+export function setByKeyPath(obj, keyPath, value) {
+  if (!obj || keyPath === undefined) return;
+  if ("isFrozen" in Object && Object.isFrozen(obj)) return;
+  if (typeof keyPath !== "string" && "length" in keyPath) {
+    assert(typeof value !== "string" && "length" in value);
+    for (var i = 0, l = keyPath.length; i < l; ++i) {
+      setByKeyPath(obj, keyPath[i], value[i]);
+    }
+  } else {
+    var period = keyPath.indexOf(".");
+    if (period !== -1) {
+      var currentKeyPath = keyPath.substr(0, period);
+      var remainingKeyPath = keyPath.substr(period + 1);
+      if (remainingKeyPath === "")
+        if (value === undefined) delete obj[currentKeyPath];
+        else obj[currentKeyPath] = value;
+      else {
+        var innerObj = obj[currentKeyPath];
+        if (!innerObj) innerObj = obj[currentKeyPath] = {};
+        setByKeyPath(innerObj, remainingKeyPath, value);
+      }
+    } else {
+      if (value === undefined) delete obj[keyPath];
+      else obj[keyPath] = value;
+    }
+  }
+}
+
+export function delByKeyPath(obj, keyPath) {
+  if (typeof keyPath === "string") setByKeyPath(obj, keyPath, undefined);
+  else if ("length" in keyPath)
+    [].map.call(keyPath, function (kp) {
+      setByKeyPath(obj, kp, undefined);
+    });
+}
+
+export function shallowClone(obj) {
+  var rv = {};
+  for (var m in obj) {
+    if (hasOwn(obj, m)) rv[m] = obj[m];
+  }
+  return rv;
+}
+
+const concat = [].concat;
+export function flatten(a) {
+  return concat.apply([], a);
+}
+
+//https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+var intrinsicTypes = "Boolean,String,Date,RegExp,Blob,File,FileList,ArrayBuffer,DataView,Uint8ClampedArray,ImageData,Map,Set"
+  .split(",")
+  .concat(
+    flatten(
+      [8, 16, 32, 64].map((num) =>
+        ["Int", "Uint", "Float"].map((t) => t + num + "Array")
+      )
+    )
+  )
+  .filter((t) => _global[t])
+  .map((t) => _global[t]);
+
+export function deepClone(any) {
+  if (!any || typeof any !== "object") return any;
+  var rv;
+  if (isArray(any)) {
+    rv = [];
+    for (var i = 0, l = any.length; i < l; ++i) {
+      rv.push(deepClone(any[i]));
+    }
+  } else if (intrinsicTypes.indexOf(any.constructor) >= 0) {
+    rv = any;
+  } else {
+    rv = any.constructor ? Object.create(any.constructor.prototype) : {};
+    for (var prop in any) {
+      if (hasOwn(any, prop)) {
+        rv[prop] = deepClone(any[prop]);
       }
     }
-
-    set[element] = true;
   }
-
-  return set;
+  return rv;
 }
 
-/* Shallow clone an object */
-export function clone(object) {
-  const newObject = create(null);
-
-  let property;
-  for (property in object) {
-    if (apply(hasOwnProperty, object, [property])) {
-      newObject[property] = object[property];
+export function getObjectDiff(a, b, rv, prfx) {
+  // Compares objects a and b and produces a diff object.
+  rv = rv || {};
+  prfx = prfx || "";
+  keys(a).forEach((prop) => {
+    if (!hasOwn(b, prop)) rv[prfx + prop] = undefined;
+    // Property removed
+    else {
+      var ap = a[prop],
+        bp = b[prop];
+      if (
+        typeof ap === "object" &&
+        typeof bp === "object" &&
+        ap &&
+        bp &&
+        // Now compare constructors are same (not equal because wont work in Safari)
+        "" + ap.constructor === "" + bp.constructor
+      )
+        // Same type of object but its properties may have changed
+        getObjectDiff(ap, bp, rv, prfx + prop + ".");
+      else if (ap !== bp) rv[prfx + prop] = b[prop]; // Primitive value changed
     }
-  }
-
-  return newObject;
-}
-
-/* IE10 doesn't support __lookupGetter__ so lets'
- * simulate it. It also automatically checks
- * if the prop is function or getter and behaves
- * accordingly. */
-function lookupGetter(object, prop) {
-  while (object !== null) {
-    const desc = getOwnPropertyDescriptor(object, prop);
-    if (desc) {
-      if (desc.get) {
-        return unapply(desc.get);
-      }
-
-      if (typeof desc.value === "function") {
-        return unapply(desc.value);
-      }
+  });
+  keys(b).forEach((prop) => {
+    if (!hasOwn(a, prop)) {
+      rv[prfx + prop] = b[prop]; // Property added
     }
-
-    object = getPrototypeOf(object);
-  }
-
-  function fallbackValue(element) {
-    console.warn("fallback value for", element);
-    return null;
-  }
-
-  return fallbackValue;
+  });
+  return rv;
 }
 
-export {
-  // Array
-  arrayForEach,
-  arrayIndexOf,
-  arrayPop,
-  arrayPush,
-  arraySlice,
-  // Object
-  freeze,
-  getPrototypeOf,
-  getOwnPropertyDescriptor,
-  hasOwnProperty,
-  isFrozen,
-  setPrototypeOf,
-  seal,
-  // RegExp
-  regExpTest,
-  // String
-  stringIndexOf,
-  stringMatch,
-  stringReplace,
-  stringToLowerCase,
-  stringTrim,
-  // Errors
-  typeErrorCreate,
-  // Other
-  lookupGetter,
-};
+// If first argument is iterable or array-like, return it as an array
+export const iteratorSymbol = typeof Symbol !== "undefined" && Symbol.iterator;
+export const getIteratorOf = iteratorSymbol
+  ? function (x) {
+      var i;
+      return x != null && (i = x[iteratorSymbol]) && i.apply(x);
+    }
+  : function () {
+      return null;
+    };
+
+export const NO_CHAR_ARRAY = {};
+// Takes one or several arguments and returns an array based on the following criteras:
+// * If several arguments provided, return arguments converted to an array in a way that
+//   still allows javascript engine to optimize the code.
+// * If single argument is an array, return a clone of it.
+// * If this-pointer equals NO_CHAR_ARRAY, don't accept strings as valid iterables as a special
+//   case to the two bullets below.
+// * If single argument is an iterable, convert it to an array and return the resulting array.
+// * If single argument is array-like (has length of type number), convert it to an array.
+export function getArrayOf(arrayLike) {
+  var i, a, x, it;
+  if (arguments.length === 1) {
+    if (isArray(arrayLike)) return arrayLike.slice();
+    if (this === NO_CHAR_ARRAY && typeof arrayLike === "string")
+      return [arrayLike];
+    if ((it = getIteratorOf(arrayLike))) {
+      a = [];
+      while (((x = it.next()), !x.done)) a.push(x.value);
+      return a;
+    }
+    if (arrayLike == null) return [arrayLike];
+    i = arrayLike.length;
+    if (typeof i === "number") {
+      a = new Array(i);
+      while (i--) a[i] = arrayLike[i];
+      return a;
+    }
+    return [arrayLike];
+  }
+  i = arguments.length;
+  a = new Array(i);
+  while (i--) a[i] = arguments[i];
+  return a;
+}

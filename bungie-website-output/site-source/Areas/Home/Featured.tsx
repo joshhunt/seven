@@ -4,11 +4,8 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import React from "react";
-import {
-  BnetStackHomePage,
-  BnetStackNewsArticle,
-} from "../../Generated/contentstack-types";
+import { useCSWebpImages } from "@Utilities/CSUtils";
+import React, { useMemo } from "react";
 import styles from "./Featured.module.scss";
 
 interface FeaturedProps {
@@ -39,15 +36,24 @@ interface FeaturedBlockProps {
 export const FeaturedBlock: React.FC<FeaturedBlockProps> = (props) => {
   const featuredItem = props.item;
   const useNewsArticle = featuredItem?.news_article;
+
+  const images = useCSWebpImages(
+    useMemo(
+      () => ({
+        featuredImg: useNewsArticle
+          ? featuredItem?.news_article?.reference?.[0]?.image?.url
+          : featuredItem?.link?.image?.url,
+      }),
+      [featuredItem?.news_article?.reference, featuredItem?.link]
+    )
+  );
+
   const url = useNewsArticle
-    ? featuredItem?.news_article?.reference?.[0]?.url || ""
-    : featuredItem?.link?.link?.href || "";
+    ? `/7/${Localizer.CurrentCultureName}/news/article${featuredItem?.news_article?.reference?.[0]?.url?.hosted_url}` ??
+      ""
+    : featuredItem?.link?.link?.href ?? "";
   const css = {
-    backgroundImage: `url(${
-      useNewsArticle
-        ? featuredItem?.news_article?.reference?.[0]?.image?.url || ""
-        : featuredItem?.link?.image?.url || ""
-    })`,
+    backgroundImage: `url(${images?.featuredImg})`,
   };
   const title = useNewsArticle
     ? featuredItem?.news_article?.reference?.[0]?.title
@@ -60,8 +66,8 @@ export const FeaturedBlock: React.FC<FeaturedBlockProps> = (props) => {
     <Anchor className={styles.pinnedItem} url={url}>
       <div className={styles.background} style={css} />
       <div className={styles.featuredTextContent}>
-        <div className={styles.featuredTitle}>{title}</div>
         <div className={styles.featuredSubtitle}>{subtitle}</div>
+        <div className={styles.featuredTitle}>{title}</div>
       </div>
     </Anchor>
   );

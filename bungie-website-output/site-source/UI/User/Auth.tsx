@@ -312,6 +312,11 @@ class AuthInternal extends React.Component<Props, IAuthState> {
                       }}
                     />
                     {Localizer.Registration.networksigninoptionstadia}
+                    {stadiaSystem && (
+                      <div className={styles.twoLine}>
+                        <span>{Localizer.Registration.stadiaauthleaving}</span>
+                      </div>
+                    )}
                   </Button>
                 </AuthTrigger>
               )}

@@ -30,7 +30,6 @@ import classNames from "classnames";
 import * as React from "react";
 import { Anchor } from "./Anchor";
 import LocaleSwitcher from "./LocaleSwitcher";
-import stylesMenuItem from "./MenuItem.module.scss";
 import styles from "./UserMenu.module.scss";
 
 interface ISignInOutProps
@@ -180,6 +179,7 @@ class SignInTriggers extends React.Component<{
   public render() {
     const globalState = this.props.globalState;
     const auth = globalState.coreSettings.systems.Authentication;
+    const stadiaSystem = globalState.coreSettings.systems.StadiaIdAuth;
 
     const useAltVersion = ConfigUtils.SystemStatus("RegistrationNavVersion2");
 
@@ -234,7 +234,12 @@ class SignInTriggers extends React.Component<{
             key={BungieCredentialType.StadiaId}
             credential={BungieCredentialType.StadiaId}
           >
-            {Localizer.Registration.networksigninoptionstadia}
+            <div className={styles.twoLine}>
+              {Localizer.Registration.networksigninoptionstadia}
+              {stadiaSystem && (
+                <span>{Localizer.Registration.stadiaauthleaving}</span>
+              )}
+            </div>
           </AuthTrigger>
         )}
         {ConfigUtils.SystemStatus(SystemNames.Twitch) && (

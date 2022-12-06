@@ -54,7 +54,7 @@ export const ImportMutedUsersBanner: React.FC<ImportMutedUsersBannerProps> = (
           <p
             dangerouslySetInnerHTML={sanitizeHTML(
               Localizer.Format(Localizer.Friends.ImportBlocked, {
-                crossplayHelpPageUrl: RouteHelper.Help(),
+                crossplayHelpPageUrl: RouteHelper.Help().url,
               })
             )}
           />

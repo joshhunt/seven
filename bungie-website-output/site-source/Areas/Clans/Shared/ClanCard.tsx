@@ -8,11 +8,11 @@ import { GroupsV2 } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { ReportClan } from "@UI/Report/ReportClan";
+import { ReportItem } from "@UI/Report/ReportItem";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { ConfirmationModalInline } from "@UIKit/Controls/Modal/ConfirmationModal";
 import { BasicSize } from "@UIKit/UIKitUtils";
-import React, { useState } from "react";
+import React from "react";
 import styles from "./ClanCard.module.scss";
 
 interface ClanCardProps {
@@ -23,9 +23,6 @@ interface ClanCardProps {
 export const ClanCard: React.FC<ClanCardProps> = (props) => {
   const clansLoc = Localizer.Clans;
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [confirmSendReport, setConfirmSendReport] = useState(false);
-
   const membershipOption = () => {
     switch (props.clan.membershipOption) {
       case MembershipOption.Reviewed:
@@ -35,6 +32,17 @@ export const ClanCard: React.FC<ClanCardProps> = (props) => {
       case MembershipOption.Open:
         return clansLoc.OpenToNewMembers;
     }
+  };
+
+  const reportClan = (itemId: string) => {
+    const modal = Modal.open(
+      <ReportItem
+        ignoredItemId={itemId}
+        reportType={IgnoredItemType.GroupProfile}
+        title={clansLoc.ReportClanProfile}
+        onReset={() => modal.current.close()}
+      />
+    );
   };
 
   return (
@@ -57,7 +65,8 @@ export const ClanCard: React.FC<ClanCardProps> = (props) => {
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      setModalOpen(true);
+
+                      reportClan(props.clan.groupId);
                     }}
                   >{`[${clansLoc.ClanReport}]`}</Button>
                 </>
@@ -83,26 +92,6 @@ export const ClanCard: React.FC<ClanCardProps> = (props) => {
           <p>{membershipOption()}</p>
         </div>
       </Anchor>
-      <ConfirmationModalInline
-        type={"none"}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        confirmButtonProps={{
-          labelOverride: clansLoc.ReportClanProfile,
-          onClick: () => {
-            setConfirmSendReport(true);
-
-            return true;
-          },
-        }}
-      >
-        <ReportClan
-          sendReport={confirmSendReport}
-          sentReport={() => setModalOpen(false)}
-          ignoredItemId={props.clan.groupId}
-          reportType={IgnoredItemType.GroupProfile}
-        />
-      </ConfirmationModalInline>
     </li>
   );
 };

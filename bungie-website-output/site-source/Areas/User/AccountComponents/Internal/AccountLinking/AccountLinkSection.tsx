@@ -11,12 +11,14 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { sortUsingFilterArray } from "@Helpers";
 import { Contract, Platform, User } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
@@ -319,6 +321,10 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
       .catch((e) => Modal.error(e));
   };
 
+  const stadiaSunsetCampaignLive = ConfigUtils.SystemStatus(
+    SystemNames.StadiaSunsetAlerts
+  );
+
   return (
     <>
       <GridCol
@@ -355,16 +361,17 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
                       ]
                     }
                   />
-                  {EnumUtils.looseEquals(
-                    credential,
-                    BungieCredentialType.StadiaId,
-                    BungieCredentialType
-                  ) && (
-                    <div className={styles.stadiaSunsetAlert}>
-                      <GoAlert />
-                      <span>{Localizer.userPages.StadiaSunsetAlert}</span>
-                    </div>
-                  )}
+                  {stadiaSunsetCampaignLive &&
+                    EnumUtils.looseEquals(
+                      credential,
+                      BungieCredentialType.StadiaId,
+                      BungieCredentialType
+                    ) && (
+                      <div className={styles.stadiaSunsetAlert}>
+                        <GoAlert />
+                        <span>{Localizer.userPages.StadiaSunsetAlert}</span>
+                      </div>
+                    )}
                   {i < validCredentialTypes.length - 1 && (
                     <GridDivider cols={12} />
                   )}

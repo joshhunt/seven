@@ -1,35 +1,39 @@
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import { UserUtils } from "@Utilities/UserUtils";
-import * as React from "react";
-import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { Localizer } from "@bungie/localization";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import {
-  withGlobalState,
-  GlobalStateComponentProps,
-} from "@Global/DataStore/GlobalStateDataStore";
-import { Platform } from "@Platform";
-import { RouteComponentProps } from "react-router";
-import { RouteDefs } from "@Routes/RouteDefs";
-import {
-  CrossSaveFlowStateDataStore,
-  ICrossSaveFlowState,
-} from "./Shared/CrossSaveFlowStateDataStore";
-import styles from "./CrossSaveDeactivate.module.scss";
-import classNames from "classnames";
-import { DataStore } from "@bungie/datastore";
-import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
+import { CrossSaveWarning } from "@Areas/CrossSave/Shared/CrossSaveWarning";
+import { DataStore } from "@bungie/datastore";
+import { DestroyCallback } from "@bungie/datastore/Broadcaster";
+import { Localizer } from "@bungie/localization";
+import { BungieMembershipType } from "@Enum";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
+import { Logger } from "@Global/Logger";
+import { Platform } from "@Platform";
+import { RouteDefs } from "@Routes/RouteDefs";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
+import { Button } from "@UI/UIKit/Controls/Button/Button";
+import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import {
   SpinnerContainer,
   SpinnerDisplayMode,
 } from "@UI/UIKit/Controls/Spinner";
-import { CrossSaveVerifyAllAccounts } from "./Shared/CrossSaveVerifyAllAccounts";
-import { CrossSaveActivateStepInfo } from "./Activate/Components/CrossSaveActivateStepInfo";
-import { Logger } from "@Global/Logger";
+import { GoAlert } from "@react-icons/all-files/go/GoAlert";
+import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import classNames from "classnames";
+import * as React from "react";
+import { RouteComponentProps } from "react-router";
+import { CrossSaveActivateStepInfo } from "./Activate/Components/CrossSaveActivateStepInfo";
+import styles from "./CrossSaveDeactivate.module.scss";
+import {
+  CrossSaveFlowStateDataStore,
+  ICrossSaveFlowState,
+} from "./Shared/CrossSaveFlowStateDataStore";
+import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
+import { CrossSaveVerifyAllAccounts } from "./Shared/CrossSaveVerifyAllAccounts";
 
 interface ICrossSaveDeactivateProps
   extends RouteComponentProps,
@@ -40,6 +44,7 @@ interface ICrossSaveDeactivateState {
   clearPairingLoading: boolean;
   confirmationInputValue: string;
   confirmationInputFocused: boolean;
+  stadiaNeedsAcknowledge: boolean;
 }
 
 /**
@@ -63,6 +68,7 @@ class CrossSaveDeactivate extends React.Component<
       clearPairingLoading: false,
       confirmationInputValue: "",
       confirmationInputFocused: false,
+      stadiaNeedsAcknowledge: false,
     };
   }
 
@@ -73,7 +79,7 @@ class CrossSaveDeactivate extends React.Component<
     )?.bungieGlobalName;
 
     this.setState({
-      confirmationInputValue: e.currentTarget.value.substr(
+      confirmationInputValue: e.currentTarget.value.slice(
         0,
         displayName.length
       ),
@@ -81,6 +87,16 @@ class CrossSaveDeactivate extends React.Component<
   };
 
   public componentDidMount() {
+    if (
+      EnumUtils.looseEquals(
+        this.state.flowState.primaryMembershipType,
+        BungieMembershipType.TigerStadia,
+        BungieMembershipType
+      )
+    ) {
+      this.setState({ stadiaNeedsAcknowledge: true });
+    }
+
     this.subs.push(
       CrossSaveFlowStateDataStore.observe((flowState) => {
         this.setState({
@@ -195,9 +211,10 @@ class CrossSaveDeactivate extends React.Component<
     const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
       gs?.loggedInUser?.user
     )?.bungieGlobalName;
+    const CrossSaveLoc = Localizer.crosssave;
 
     const confirmationPhraseLabel = Localizer.Format(
-      Localizer.Crosssave.DeactivateTypeConfirmation,
+      CrossSaveLoc.DeactivateTypeConfirmation,
       {
         confirmationPhrase: displayName,
       }
@@ -213,7 +230,7 @@ class CrossSaveDeactivate extends React.Component<
     );
 
     const frictionWindowLabel = Localizer.Format(
-      Localizer.Crosssave.CommitLockWarning2,
+      CrossSaveLoc.CommitLockWarning2,
       {
         crossSaveFrictionWindow: this.state.flowState.validation.settings
           .repairThrottleDurationFragment,
@@ -225,24 +242,102 @@ class CrossSaveDeactivate extends React.Component<
       this.state.flowState
     );
 
+    const normalDeactivateConfirmationFlow = () => {
+      return (
+        <GridCol cols={12}>
+          <p>{confirmationPhraseLabel}</p>
+          <input
+            ref={(r) => (this.inputRef = r)}
+            autoFocus={true}
+            className={styles.confirmationInput}
+            value={this.state.confirmationInputValue}
+            onChange={this.onInputChange}
+            onFocus={this.onInputFocused}
+            onBlur={this.onInputBlur}
+          />
+
+          <div className={prettyConfirmationClasses} onClick={this.focusInput}>
+            {this.renderPrettyConfirmationInput()}
+          </div>
+
+          <Button
+            buttonType={"red"}
+            disabled={buttonDisabled}
+            onClick={this.disableCrossSave}
+            loading={this.state.clearPairingLoading}
+            caps={true}
+          >
+            {CrossSaveLoc.DeactivateConfirmationLabel}
+          </Button>
+        </GridCol>
+      );
+    };
+
+    const stadiaPrimaryDeactivateConfirmationFlow = () => {
+      // When Stadia auth is discontinued, players won't be able to log in
+      // to reconnect their Stadia account to cross save, so we need to make sure they understand the consequences before they deactivate cross save
+
+      return (
+        <GridCol cols={12}>
+          <div className={styles.narrow}>
+            <CrossSaveWarning>
+              <div className={styles.warningTitleSection}>
+                <GoAlert />
+                <h2 className={styles.warning}>
+                  {CrossSaveLoc.DeactivateTitle}
+                </h2>
+              </div>
+              <p>{CrossSaveLoc.StadiaDeactivateDetails}</p>
+            </CrossSaveWarning>
+          </div>
+          <p>{CrossSaveLoc.StadiaTypeUsername}</p>
+          <input
+            ref={(r) => (this.inputRef = r)}
+            autoFocus={true}
+            className={styles.confirmationInput}
+            value={this.state.confirmationInputValue}
+            onChange={this.onInputChange}
+            onFocus={this.onInputFocused}
+            onBlur={this.onInputBlur}
+          />
+
+          <div className={prettyConfirmationClasses} onClick={this.focusInput}>
+            {this.renderPrettyConfirmationInput()}
+          </div>
+
+          <Button
+            buttonType={"red"}
+            disabled={buttonDisabled}
+            onClick={(e) => {
+              e.preventDefault();
+              this.setState({ stadiaNeedsAcknowledge: false });
+            }}
+            caps={true}
+          >
+            {CrossSaveLoc.StadiaButtonDescription}
+          </Button>
+        </GridCol>
+      );
+    };
+
     return (
       <Grid>
         <GridCol cols={12}>
           <DestinyHeader
             title={null}
             breadcrumbs={[
-              Localizer.Crosssave.ActivateCrossSaveHeader,
-              Localizer.Crosssave.DeactivateCrossSaveHeader,
+              CrossSaveLoc.ActivateCrossSaveHeader,
+              CrossSaveLoc.DeactivateCrossSaveHeader,
             ]}
-            separator={Localizer.Crosssave.Separator}
+            separator={CrossSaveLoc.Separator}
           />
           <p className={styles.description}>{frictionWindowLabel}</p>
         </GridCol>
         {!canProceed && (
           <GridCol cols={12}>
             <CrossSaveActivateStepInfo
-              title={Localizer.Crosssave.AuthenticateToDeactivate}
-              desc={Localizer.Crosssave.DeactivateMajorSubtitle}
+              title={CrossSaveLoc.AuthenticateToDeactivate}
+              desc={CrossSaveLoc.DeactivateMajorSubtitle}
             />
             <CrossSaveVerifyAllAccounts
               flowState={this.state.flowState}
@@ -252,35 +347,11 @@ class CrossSaveDeactivate extends React.Component<
           </GridCol>
         )}
         {canProceed && (
-          <GridCol cols={12}>
-            <p>{confirmationPhraseLabel}</p>
-            <input
-              ref={(r) => (this.inputRef = r)}
-              autoFocus={true}
-              className={styles.confirmationInput}
-              value={this.state.confirmationInputValue}
-              onChange={this.onInputChange}
-              onFocus={this.onInputFocused}
-              onBlur={this.onInputBlur}
-            />
-
-            <div
-              className={prettyConfirmationClasses}
-              onClick={this.focusInput}
-            >
-              {this.renderPrettyConfirmationInput()}
-            </div>
-
-            <Button
-              buttonType={"red"}
-              disabled={buttonDisabled}
-              onClick={this.disableCrossSave}
-              loading={this.state.clearPairingLoading}
-              caps={true}
-            >
-              {Localizer.Crosssave.DeactivateConfirmationLabel}
-            </Button>
-          </GridCol>
+          <>
+            {this.state.stadiaNeedsAcknowledge
+              ? stadiaPrimaryDeactivateConfirmationFlow()
+              : normalDeactivateConfirmationFlow()}
+          </>
         )}
       </Grid>
     );

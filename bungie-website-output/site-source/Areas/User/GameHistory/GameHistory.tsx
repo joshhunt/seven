@@ -152,18 +152,20 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
           <div>{Localizer.Profile.NoGamesFound}</div>
         )}
       </div>
-      <div className={styles.pagerButtons}>
-        {currentPage > 1 && (
-          <Button onClick={() => setCurrentPage(currentPage - 1)}>
-            {Localizer.Actions.Previous}
-          </Button>
-        )}
-        {!isLastPage && (
-          <Button onClick={() => setCurrentPage(currentPage + 1)}>
-            {Localizer.Actions.Next}
-          </Button>
-        )}
-      </div>
+      {hasHistory && (
+        <div className={styles.pagerButtons}>
+          {currentPage > 1 && (
+            <Button onClick={() => setCurrentPage(currentPage - 1)}>
+              {Localizer.Actions.Previous}
+            </Button>
+          )}
+          {!isLastPage && (
+            <Button onClick={() => setCurrentPage(currentPage + 1)}>
+              {Localizer.Actions.Next}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

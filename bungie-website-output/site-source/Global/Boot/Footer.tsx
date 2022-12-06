@@ -194,11 +194,11 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 label={navLoc.Careers}
               />
               <FooterLink
-                url={RouteHelper.BungieNewsRoom}
+                url={RouteHelper.BungieNewsRoom()}
                 label={navLoc.BungieNewsRoom}
               />
               <FooterLink
-                url={RouteHelper.BungieTechBlog}
+                url={RouteHelper.BungieTechBlog()}
                 label={navLoc.TechBlog}
               />
               <FooterLink

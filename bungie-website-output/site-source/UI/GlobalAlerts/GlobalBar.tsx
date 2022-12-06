@@ -44,7 +44,6 @@ export const GlobalBar: React.FC<IGlobalBarProps> = (props) => {
   } = props;
 
   const [childShow, setChildShow] = useState(initiallyVisible);
-  let appLayout: HTMLElement;
 
   const removeBar = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
@@ -53,16 +52,14 @@ export const GlobalBar: React.FC<IGlobalBarProps> = (props) => {
   };
 
   useEffect(() => {
-    appLayout = document.getElementById("app-layout");
+    const appLayout = document.getElementById("app-layout");
 
-    if (!dismissible) {
-      appLayout?.classList.add("global-bar-shown");
-    }
-  }, []);
-
-  useEffect(() => {
     window.localStorage.setItem(localStorageKey, childShow.toString());
     appLayout?.classList.toggle("global-bar-shown", childShow);
+
+    if (document.getElementsByClassName(styles.globalAlertsBar).length > 0) {
+      appLayout?.classList.add("global-bar-shown");
+    }
   }, [childShow]);
 
   return childShow ? (

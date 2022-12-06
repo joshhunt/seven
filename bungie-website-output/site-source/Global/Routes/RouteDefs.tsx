@@ -28,6 +28,7 @@ export class RouteDefs {
     Guide: "Guide",
     Legal: "Legal",
     News: "News",
+    Newsroom: "Newsroom",
     Pgcr: "Pgcr",
     Registration: "Registration",
     Rewards: "Rewards",
@@ -235,6 +236,19 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "article", { path: ":articleUrl?" }),
       ],
       webmasterSystem: SystemNames.CoreHomeAndNews,
+    }),
+    Newsroom: new Area({
+      name: RouteDefs.AreaNames.Newsroom,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Newsroom/NewsroomArea" /* webpackChunkName: "Newsroom" */
+          )
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "index"),
+        (area) => new ActionRoute(area, "article", { path: "articleUrl?" }),
+      ],
     }),
     Pgcr: new Area({
       name: RouteDefs.AreaNames.Pgcr,

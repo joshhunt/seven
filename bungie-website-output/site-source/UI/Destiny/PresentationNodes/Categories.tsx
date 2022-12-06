@@ -170,7 +170,7 @@ const Categories: React.FC<CategoriesProps> = (props) => {
                   className={classNames(
                     styles.nodeSubcategoryTrigger,
                     styles.badgeSubcategory,
-                    { [styles.active]: cat.isActive }
+                    { [styles.active]: cat?.isActive }
                   )}
                   url={cat.url}
                 >
@@ -189,7 +189,7 @@ const Categories: React.FC<CategoriesProps> = (props) => {
               <Anchor
                 key={cat.presentationNodeHash}
                 className={classNames(styles.nodeSubcategoryTrigger, {
-                  [styles.active]: cat.isActive,
+                  [styles.active]: cat?.isActive,
                 })}
                 url={cat.url}
                 title={cat.name}

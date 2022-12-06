@@ -9,7 +9,6 @@ import { NotFoundError } from "@CustomErrors";
 import { FaCaretDown } from "@react-icons/all-files/fa/FaCaretDown";
 import { FaCaretRight } from "@react-icons/all-files/fa/FaCaretRight";
 import { NewsParams } from "@Routes/RouteParams";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { TwitterAPI, TwitterScript } from "@UI/Content/TwitterFeed";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { DateTime, Duration } from "luxon";
@@ -150,6 +149,28 @@ const NewsArticle = () => {
               {separateCodeContentRecursive(html_content, []) &&
                 separateCodeContentRecursive(html_content, []).map(
                   (contentString: string, index: number) => {
+                    if (contentString.indexOf(`class="collapsible"`) > -1) {
+                      return (
+                        <div
+                          onClick={(e) => {
+                            const targetElement: HTMLElement = e.target as HTMLElement;
+
+                            if (
+                              targetElement.className.indexOf(
+                                "collapsible-trigger"
+                              ) > -1
+                            ) {
+                              targetElement.classList.toggle("open");
+                            }
+                          }}
+                        >
+                          <div
+                            dangerouslySetInnerHTML={{ __html: contentString }}
+                          />
+                        </div>
+                      );
+                    }
+
                     if (contentString.startsWith(codeSectionStart)) {
                       return (
                         <CollapsibleCodeBlock

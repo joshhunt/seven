@@ -27,6 +27,7 @@ interface ILocaleSwitcherProps extends RouteComponentProps {
 interface ILocaleSwitcherState {
   open: boolean;
   reloads: number; // purely exists so I can update state and force a re-render without using forceUpdate()
+  selectedLocale: string;
 }
 
 /**
@@ -47,6 +48,8 @@ class LocaleSwitcher extends React.Component<
     this.state = {
       reloads: 0,
       open: false,
+      selectedLocale:
+        LocalizationState.cookieLocale ?? LocalizationState.currentCultureName,
     };
   }
 
@@ -168,6 +171,17 @@ class LocaleSwitcher extends React.Component<
     this.toggleOpen(false);
 
     LocalizationState.setLocale(value);
+
+    const localeChanged = value !== this.state.selectedLocale;
+
+    //If you are on the homepage, which does not have a locale in the url, you'll need to force a refresh
+    if (
+      this.props.match.path === "/" &&
+      this.props.match.isExact &&
+      localeChanged
+    ) {
+      window.location.reload();
+    }
 
     // Rather than set the locale here, we set another property. That way, we can compare the current cookie value to the dropdown's value.
     // If they are different, we reload/redirect.

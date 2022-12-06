@@ -521,6 +521,24 @@
     "path": "/7/en/News/updates"
   },
   {
+    "areaName": "Newsroom",
+    "areaObjectName": "Newsroom",
+    "componentImportPath": "@Areas/Newsroom/NewsroomArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Newsroom"
+  },
+  {
+    "areaName": "Newsroom",
+    "areaObjectName": "Newsroom",
+    "componentImportPath": "@Areas/Newsroom/NewsroomArea",
+    "action": "article",
+    "params": {
+      "path": "articleUrl?"
+    },
+    "path": "/7/en/Newsroom/article/articleUrl?"
+  },
+  {
     "areaName": "Registration",
     "areaObjectName": "Registration",
     "componentImportPath": "@Areas/Registration/RegistrationArea",

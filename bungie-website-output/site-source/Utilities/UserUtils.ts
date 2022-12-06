@@ -19,7 +19,7 @@ import Cookies from "js-cookie";
 // @ts-ignore
 import * as h from "history";
 import { DateTime } from "luxon";
-import { AnalyticsUtils } from "./AnalyticsUtils";
+
 import { ConfigUtils } from "./ConfigUtils";
 import { EnumUtils } from "./EnumUtils";
 
@@ -536,9 +536,6 @@ export class UserUtils {
       }
 
       Cookies.set(cookieName, currentVersion, opts);
-
-      // Track page at this point because it wasn't tracked when the user first hit the page
-      AnalyticsUtils.trackPage();
     }
   }
 

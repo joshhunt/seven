@@ -147,7 +147,7 @@ export class UrlUtils {
     const parsed = pathToRegexp.parse(path);
     const regExp = pathToRegexp.tokensToRegexp(parsed, undefined, options);
     const actualPathname = location.pathname.startsWith(this.AppBaseUrl)
-      ? location.pathname.substr(this.AppBaseUrl.length)
+      ? location.pathname.slice(this.AppBaseUrl.length)
       : location.pathname;
 
     return !!actualPathname.match(regExp);
@@ -161,7 +161,7 @@ export class UrlUtils {
   public static GetUrlForLocale(path: string, localeOverride: string = null) {
     const locale =
       localeOverride !== null ? localeOverride : Localizer.CurrentCultureName;
-    const fixedPath = path.substr(0, 1) === "/" ? path : `/${path}`;
+    const fixedPath = path.slice(0, 1) === "/" ? path : `/${path}`;
 
     return `/${locale}${fixedPath}`;
   }

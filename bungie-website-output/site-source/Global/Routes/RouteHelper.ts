@@ -310,8 +310,6 @@ export class RouteHelper {
   public static NewsArticle = BasicReactPath<NewsParams>(
     RouteDefs.Areas.News.getAction("Article")
   );
-  public static NewsArticleLegacy = (articleUrl: string) =>
-    LegacyPath(`Explore/Detail/News/${articleUrl}`);
   public static AboutDestiny = LegacyPathWithQuery("/pub/AboutDestiny");
   public static Companion = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Companion")
@@ -506,8 +504,12 @@ export class RouteHelper {
   public static PlayTests = BasicReactPath(
     RouteDefs.Areas.UserResearch.getAction()
   );
-  public static BungieNewsRoom = LegacyPath("/Newsroom");
-  public static BungieTechBlog = LegacyPath("/BungieTech");
+  public static BungieNewsRoom = BasicReactPath(
+    RouteDefs.Areas.Newsroom.getAction("Index")
+  );
+  public static BungieTechBlog = BasicReactPath(
+    RouteDefs.Areas.BungieTech.getAction("Index")
+  );
 
   public static pressKitLocale =
     Localizer.CurrentCultureName !== "en"

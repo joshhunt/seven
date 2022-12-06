@@ -16,21 +16,21 @@ interface NewsPreviewItemProps {
 export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
   articleData,
 }) => {
-  const { image, subtitle, date, title, url } = articleData;
+  const { image, mobile_image, subtitle, date, title, url } = articleData;
 
   const images = useCSWebpImages(
     useMemo(
       () => ({
-        previewImg: image?.url,
+        previewImg: mobile_image?.url ?? image?.url,
       }),
       [articleData]
     )
   );
 
-  const luxonDate = DateTime?.fromISO(date.toString());
+  const luxonDate = DateTime?.fromISO(date?.toString());
   const timeSince = luxonDate?.diffNow();
   const timeString =
-    Math.abs(timeSince.as("hours")) > 24
+    Math.abs(timeSince?.as("hours")) > 24
       ? Localizer.time.CompactMonthDayYear
       : Localizer.time.TimeHoursSince;
 
@@ -39,7 +39,7 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
     month: luxonDate?.month,
     day: luxonDate?.day,
     year: luxonDate?.year,
-    hours: Math.ceil(timeSince.as("hours")),
+    hours: Math.ceil(timeSince?.as("hours")),
   });
 
   return (

@@ -205,17 +205,22 @@ const MenuLink = (props: ILinkProps) => {
     ? Localizer.Nav[link.SecondaryStringKey]
     : null;
   const url = urlString.replace("{locale}", Localizer.CurrentCultureName);
+  const isExpandable =
+    "NavLinks" in link &&
+    link.NavLinks &&
+    link.NavLinks.length > 0 &&
+    responsive.medium;
 
   if (link.Url === null) {
     return <span className={styles.menuItem}>{label}</span>;
   }
 
-  let onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    return props.onChildSelected(e);
-  };
+  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isExpandable) {
+      return false;
+    }
 
-  if (isAuthTrigger) {
-    onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isAuthTrigger) {
       e.preventDefault();
       BrowserUtils.openWindow(url, "loginui", () =>
         GlobalStateDataStore.refreshUserAndRelatedData()
@@ -223,8 +228,10 @@ const MenuLink = (props: ILinkProps) => {
       props.onChildSelected(e);
 
       return false;
-    };
-  }
+    }
+
+    return props.onChildSelected(e);
+  };
 
   if (UserUtils.isAuthenticated(GlobalStateDataStore.state)) {
     const uniqueLoggedInClans = UserUtils.getUsersUniqueClanMemberships(
@@ -280,12 +287,7 @@ const MenuLink = (props: ILinkProps) => {
   const classes = classNames(styles.menuItem, className);
 
   let expandIcon = null;
-  if (
-    "NavLinks" in link &&
-    link.NavLinks &&
-    link.NavLinks.length > 0 &&
-    responsive.medium
-  ) {
+  if (isExpandable) {
     const iconName =
       isOpen && responsive.medium ? "expand_less" : "expand_more";
 

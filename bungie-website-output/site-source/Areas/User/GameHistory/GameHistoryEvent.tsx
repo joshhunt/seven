@@ -70,7 +70,7 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
   };
 
   useEffect(() => {
-    return () => modalRef?.current.close;
+    return () => modalRef?.current?.close;
   });
 
   return (

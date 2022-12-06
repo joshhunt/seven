@@ -10,6 +10,7 @@ import { PlatformError } from "@CustomErrors";
 import { IgnoredItemType, ModeratorRequestedPunishment } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Platform } from "@Platform";
+import { ReportItem } from "@UI/Report/ReportItem";
 import { PermissionsGate } from "@UI/User/PermissionGate";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { ConfirmationModalInline } from "@UIKit/Controls/Modal/ConfirmationModal";
@@ -30,42 +31,26 @@ export const ReportButton: React.FC<ReportButtonProps> = ({
   itemContextType,
 }) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [confirmSendReport, setConfirmSendReport] = useState(false);
 
   if (!UserUtils.isAuthenticated(globalState)) {
     return null;
   }
 
   return (
-    <>
-      <Button
-        buttonType={"red"}
-        className={classNames(styles.button, styles.btnBlock, styles.btnReport)}
-        onClick={() => setModalOpen(true)}
-      >
-        {Localizer.actions.ReportProfile}
-      </Button>
-
-      <ConfirmationModalInline
-        type={"none"}
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        confirmButtonProps={{
-          labelOverride: Localizer.actions.ReportProfile,
-          onClick: () => {
-            setConfirmSendReport(true);
-
-            return true;
-          },
-        }}
-      >
-        <ReportUser
-          sendReport={confirmSendReport}
-          sentReport={() => setModalOpen(false)}
-          ignoredItemId={ignoredItemId}
-        />
-      </ConfirmationModalInline>
-    </>
+    <Button
+      buttonType={"red"}
+      className={classNames(styles.button, styles.btnBlock, styles.btnReport)}
+      onClick={() => {
+        const modal = Modal.open(
+          <ReportItem
+            ignoredItemId={ignoredItemId}
+            reportType={itemContextType}
+            onReset={() => modal.current.close()}
+          />
+        );
+      }}
+    >
+      {Localizer.actions.ReportProfile}
+    </Button>
   );
 };

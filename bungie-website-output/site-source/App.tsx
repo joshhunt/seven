@@ -12,7 +12,7 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { ToastContent } from "@UI/UIKit/Controls/Toast/Toast";
 import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Helmet from "react-helmet";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
@@ -39,6 +39,9 @@ export const App: React.FC = () => {
               <React.Fragment>
                 <FullPageLoadingBar />
                 <SwitchWithErrors>
+                  <Route exact={true} path="/">
+                    <Home />
+                  </Route>
                   <Route exact={true} path="/version">
                     {
                       /* tslint:disable-next-line: jsx-use-translation-function */
