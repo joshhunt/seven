@@ -686,6 +686,14 @@
     "areaName": "Seasons",
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheSeraph",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheSeraph"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "SeasonOfTheSplicer",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheSplicer"

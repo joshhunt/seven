@@ -277,9 +277,33 @@ class SeasonOfPlunder extends SeasonDefinition {
   public smallIcon = "/7/ca/destiny/bgs/season18/seasonicon_18.png";
 }
 
+class SeasonOfTheSeraph extends SeasonDefinition {
+  public static instance = new SeasonOfTheSeraph();
+
+  public get title(): string {
+    return Localizer.Seasons.SeasonOfTheSeraph;
+  }
+
+  public image =
+    "/7/ca/destiny/bgs/season19/season_of_the_seraph_key_art_16x9_web.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season19/seasonbackground_19.jpg";
+  public productPageLink = RouteHelper.SeasonOfTheSeraph();
+  public calendarContentItem: string;
+  public calendarBackgroundImage = "";
+  public seasonNumber = 19;
+  public actionRouteString = "SeasonOfTheSeraph";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreSeasonOfTheSeraph;
+  }
+
+  public smallIcon = "/7/ca/destiny/bgs/season19/seasonicon_19.png";
+}
+
 export class SeasonsDefinitions {
-  public static previousSeason = SeasonOfTheHaunted.instance;
-  public static currentSeason = SeasonOfPlunder.instance;
+  public static previousSeason = SeasonOfPlunder.instance;
+  public static currentSeason = SeasonOfTheSeraph.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -292,9 +316,11 @@ export class SeasonsDefinitions {
   public static seasonOfTheRisen = SeasonOfTheRisen.instance;
   public static seasonOfTheHaunted = SeasonOfTheHaunted.instance;
   public static seasonOfPlunder = SeasonOfPlunder.instance;
+  public static seasonOfTheSeraph = SeasonOfTheSeraph.instance;
 }
 
 export const SeasonsArray = [
+  SeasonOfTheSeraph.instance,
   SeasonOfPlunder.instance,
   SeasonOfTheHaunted.instance,
   SeasonOfTheRisen.instance,

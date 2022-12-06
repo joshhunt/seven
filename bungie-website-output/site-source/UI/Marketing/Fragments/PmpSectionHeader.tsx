@@ -18,6 +18,7 @@ type PmpSectionHeaderProps = DataReference<
 > & {
   classes?: {
     root?: string;
+    headingsFlexWrapper?: string;
     heading?: string;
     secondaryHeading?: string;
     smallTitle?: string;
@@ -55,15 +56,22 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
       style={{ backgroundImage: bgImage }}
     >
       <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
-        <div className={styles.headingsFlexWrapper}>
+        <div
+          className={classNames(
+            styles.headingsFlexWrapper,
+            classes?.headingsFlexWrapper
+          )}
+        >
           <div className={styles.leftHeadings}>
-            <h3
-              className={classNames(
-                styles.smallHeading,
-                classes?.secondaryHeading
-              )}
-              dangerouslySetInnerHTML={sanitizeHTML(secondary_heading)}
-            />
+            {secondary_heading ? (
+              <h3
+                className={classNames(
+                  styles.smallHeading,
+                  classes?.secondaryHeading
+                )}
+                dangerouslySetInnerHTML={sanitizeHTML(secondary_heading)}
+              />
+            ) : null}
             <h2
               className={classNames(styles.heading, classes?.heading)}
               dangerouslySetInnerHTML={sanitizeHTML(heading)}
@@ -80,33 +88,37 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
             </div>
           )}
         </div>
-        <div
-          className={classNames(styles.lowerContent, {
-            [styles.withVideo]: !!video_btn?.youtube_url,
-          })}
-        >
-          <p
-            className={classNames(styles.blurb, classes?.blurb)}
-            dangerouslySetInnerHTML={sanitizeHTML(blurb)}
-          />
-          {video_btn?.youtube_url && (
-            <div className={styles.videoBtn}>
-              <ImageVideoThumb
-                youtubeUrl={video_btn?.youtube_url}
-                image={video_btn?.thumbnail?.url}
-                classes={{
-                  imageContainer: classNames(
-                    styles.btnWrapper,
-                    classes?.btnWrapper
-                  ),
-                  image: styles.bg,
-                  playIcon: styles.playIcon,
-                }}
+        {blurb || video_btn ? (
+          <div
+            className={classNames(styles.lowerContent, {
+              [styles.withVideo]: !!video_btn?.youtube_url,
+            })}
+          >
+            {blurb ? (
+              <p
+                className={classNames(styles.blurb, classes?.blurb)}
+                dangerouslySetInnerHTML={sanitizeHTML(blurb)}
               />
-              <p className={styles.caption}>{video_btn?.caption}</p>
-            </div>
-          )}
-        </div>
+            ) : null}
+            {video_btn?.youtube_url ? (
+              <div className={styles.videoBtn}>
+                <ImageVideoThumb
+                  youtubeUrl={video_btn?.youtube_url}
+                  image={video_btn?.thumbnail?.url}
+                  classes={{
+                    imageContainer: classNames(
+                      styles.btnWrapper,
+                      classes?.btnWrapper
+                    ),
+                    image: styles.bg,
+                    playIcon: styles.playIcon,
+                  }}
+                />
+                <p className={styles.caption}>{video_btn?.caption}</p>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

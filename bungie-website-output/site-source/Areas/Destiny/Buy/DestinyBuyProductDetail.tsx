@@ -47,6 +47,12 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
+import BuyFlow1 from "./ABTests/BuyFlow1";
+import BuyFlow2 from "./ABTests/BuyFlow2";
+import BuyFlow3 from "./ABTests/BuyFlow3";
+import { BnetStackS18ProductPage } from "../../../Generated/contentstack-types";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 
 export interface IDestinyBuyProductDetailProps
   extends GlobalStateComponentProps<"responsive"> {
@@ -56,6 +62,7 @@ export interface IDestinyBuyProductDetailProps
 
 interface IDestinyBuyProductDetailState {
   destinyProductFamily: IDestinyProductFamilyDefinition;
+  data: any;
   skuItems: IDestinyProductDefinition[];
   editionSelectorSkus: IDestinyProductDefinition[];
   skuConfig: IDestinySkuConfig;
@@ -85,6 +92,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
     this.state = {
       destinyProductFamily: null,
+      data: null,
       skuItems: [],
       editionSelectorSkus: [],
       skuConfig: DestinySkuConfigDataStore.state,
@@ -118,6 +126,22 @@ class DestinyBuyProductDetailInternal extends React.Component<
         true
       )
     );
+
+    // const contentReferences: (`${keyof BnetStackS18ProductPage}.content` | keyof BnetStackS18ProductPage | string)[] = [
+    const contentReferences: string[] = [];
+
+    ContentStackClient()
+      .ContentType("buy_flow_nov_2022")
+      .Entry("bltbc734184ad768806")
+      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .includeReference(contentReferences)
+      .toJSON()
+      .fetch()
+      .then((data) => {
+        this.setState({
+          data,
+        });
+      });
 
     Platform.ContentService.GetContentByTagAndType(
       this.props.productFamilyTag,
@@ -268,9 +292,12 @@ class DestinyBuyProductDetailInternal extends React.Component<
       const {
         destinyProductFamily,
         skuItems,
+        skuConfig,
         selectedSkuIndex,
         showStickyNav,
+        data,
       } = this.state;
+      const { version_1, version_2, version_3 } = data || {};
       const mobileSize = this.props.globalState.responsive.mobile;
 
       /* Convert content items stored in the Product Family firehose item into the types each component is expecting */
@@ -314,10 +341,12 @@ class DestinyBuyProductDetailInternal extends React.Component<
         : destinyProductFamily.heroBackground;
       const collectorsIsSelected =
         editionSelectorSkus[selectedSkuIndex] === collectorsEdition;
-
       const icon = "keyboard_arrow_up";
 
       const includeButtons = UrlUtils.QueryToObject()?.t_nov9_btns === "true";
+
+      const params = new URLSearchParams(location.search);
+      const buyflow = params.get("buyflow");
 
       return (
         <SystemDisabledHandler systems={["BuyFlow"]}>
@@ -334,6 +363,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     styles.buyDetail
                   )}
                 />
+                <link
+                  href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap"
+                  rel="stylesheet"
+                />
               </BungieHelmet>
               <Anchor
                 className={classNames(styles.backButton, {
@@ -348,243 +381,257 @@ class DestinyBuyProductDetailInternal extends React.Component<
                 />
                 <p> {Localizer.crosssave.back} </p>
               </Anchor>
-              <div ref={this.heroRef} id={"hero"}>
-                <ParallaxContainer
-                  parallaxSpeed={2}
-                  isFadeEnabled={false}
-                  fadeOutSpeed={700}
-                  backgroundOffset={0}
-                  className={styles.hero}
-                  style={{
-                    backgroundImage: `${backgroundGradient} url(${backgroundImage})`,
-                    paddingTop: mobileSize
-                      ? `calc(549px + (74px * ${editionSelectorSkus.length}))`
-                      : "unset",
-                  }}
-                >
-                  <div className={styles.heroContent}>
-                    <div
-                      className={styles.heroLogo}
-                      style={{
-                        backgroundImage: `url(${destinyProductFamily.heroLogo})`,
-                      }}
-                    />
-                    <DestinyBuyEditionSelector
-                      skus={editionSelectorSkus}
-                      title={destinyProductFamily.coverTitle}
-                      subtitle={destinyProductFamily.smallCoverTitle}
-                      buttonLabel={
-                        destinyProductFamily.expansionSelectorButtonLabel
-                      }
-                      disclaimer={
-                        destinyProductFamily.expansionSelectorDisclaimer
-                      }
-                      collectorsEdition={collectorsEdition}
-                      productFamily={destinyProductFamily.productFamilyTag}
-                    />
-                  </div>
-                </ParallaxContainer>
-              </div>
 
-              {showStickyNav && (
-                <StickySubNav
-                  onFixedChange={this.onMenuLock}
-                  relockUnder={this.heroRef}
-                  backgroundColor={"rgb(18, 23, 28)"}
-                >
-                  <div className={styles.stickyNavContent}>
-                    <div
-                      className={styles.heroLogo}
-                      style={{
-                        backgroundImage: `url(${destinyProductFamily.heroLogo})`,
-                      }}
-                    />
-                    <div className={styles.rightNavContent}>
-                      {editionSelectorSkus.length > 1 && (
-                        <div
-                          className={styles.toTopClickable}
-                          onClick={this.scrollToTop}
-                          role={"button"}
-                        >
-                          <div className={styles.scrollToTop}>
-                            <Icon iconType={"material"} iconName={icon} />
-                          </div>
-                          <div className={styles.editionBox}>
-                            <div className={styles.identifier}>
-                              {Localizer.BuyFlow.Edition}
-                            </div>
-                            <div className={styles.selectedSku}>
-                              {selectedSkuName}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <PotentialSkuButton
-                        className={styles.CTAButton}
-                        url={
-                          collectorsIsSelected
-                            ? collectorsEdition.relatedPage
-                            : null
-                        }
-                        sku={
-                          !collectorsIsSelected
-                            ? editionSelectorSkus[selectedSkuIndex].skuTag
-                            : null
-                        }
-                        buttonType={"gold"}
-                        size={BasicSize.Medium}
-                      >
-                        {destinyProductFamily.expansionSelectorButtonLabel}
-                      </PotentialSkuButton>
-                    </div>
-                  </div>
-                </StickySubNav>
-              )}
-
-              <div className={styles.banner}>
-                <div className={styles.contentFrame}>
-                  {destinyProductFamily.bannerText && (
-                    <div
-                      className={styles.bannerText}
-                      dangerouslySetInnerHTML={sanitizeHTML(
-                        destinyProductFamily.bannerText
-                      )}
-                    />
-                  )}
-                  {mobileSize && (
-                    <p className={styles.platformText}>
-                      {Localizer.Buyflow.AvailableOn}
-                    </p>
-                  )}
-                  <div className={styles.platforms}>
-                    {!mobileSize && (
-                      <p className={styles.platformText}>
-                        {Localizer.Buyflow.AvailableOn}
-                      </p>
-                    )}
-                    <div className={styles.xboxSeriesX} />
-                    <div className={styles.xboxOne} />
-                    <div className={styles.windows} />
-                    <div className={styles.playstation} />
-                    <div className={styles.steam} />
-                    <SiEpicgames className={styles.epic} />
-                  </div>
-                </div>
-              </div>
-
-              <Grid
-                className={styles.contentFrame}
-                noPadding={true}
-                strictMode={true}
-              >
-                {destinyProductFamily.preorderBanner && (
-                  <GridCol
-                    cols={12}
-                    className={styles.preorderBanner}
+              {!buyflow ? (
+                <div ref={this.heroRef} id={"hero"}>
+                  <ParallaxContainer
+                    parallaxSpeed={2}
+                    isFadeEnabled={false}
+                    fadeOutSpeed={700}
+                    backgroundOffset={0}
+                    className={styles.hero}
                     style={{
-                      backgroundImage: `url(${destinyProductFamily.preorderBanner})`,
+                      backgroundImage: `${backgroundGradient} url(${backgroundImage})`,
+                      paddingTop: mobileSize
+                        ? `calc(549px + (74px * ${editionSelectorSkus.length}))`
+                        : "unset",
                     }}
                   >
-                    <div
-                      className={styles.preorderText}
-                      dangerouslySetInnerHTML={sanitizeHTML(
-                        destinyProductFamily.preorderText
-                      )}
-                    />
-                  </GridCol>
-                )}
-
-                <GridCol cols={12}>
-                  <DestinyBuyDetailItem
-                    imagesForPagination={
-                      mediaDetailItem?.largeImage ||
-                      mediaDetailItem?.imageThumbnail ||
-                      mediaDetailItem?.videoThumbnail
-                    }
-                    orientation={"textblock-media"}
-                    item={mediaDetailItem}
-                  />
-                </GridCol>
-
-                <div className={styles.borderTop}>
-                  <div className={styles.sectionTitle}>
-                    {destinyProductFamily.detailSectionTitle}
-                  </div>
+                    <div className={styles.heroContent}>
+                      <div
+                        className={styles.heroLogo}
+                        style={{
+                          backgroundImage: `url(${destinyProductFamily.heroLogo})`,
+                        }}
+                      />
+                      <DestinyBuyEditionSelector
+                        skus={editionSelectorSkus}
+                        title={destinyProductFamily.coverTitle}
+                        subtitle={destinyProductFamily.smallCoverTitle}
+                        buttonLabel={
+                          destinyProductFamily.expansionSelectorButtonLabel
+                        }
+                        disclaimer={
+                          destinyProductFamily.expansionSelectorDisclaimer
+                        }
+                        collectorsEdition={collectorsEdition}
+                        productFamily={destinyProductFamily.productFamilyTag}
+                      />
+                    </div>
+                  </ParallaxContainer>
                 </div>
+              ) : null}
 
-                {detailItems.map((mma, i) => {
-                  return (
-                    mma && (
-                      <GridCol
-                        cols={detailItems.length === 4 ? 3 : 4}
-                        mobile={12}
-                        key={i}
-                      >
-                        <DestinyBuyDetailItem
-                          imagesForPagination={detailItems?.map(
-                            (item) => item.largeImage || item.imageThumbnail
-                          )}
-                          imgIndexInPagination={i}
-                          orientation={"vertical"}
-                          item={mma}
-                          key={i}
+              {buyflow === "1" ? <BuyFlow1 data={version_1} /> : null}
+
+              {buyflow === "2" ? <BuyFlow2 data={version_2} /> : null}
+
+              {buyflow === "3" ? <BuyFlow3 data={version_3} /> : null}
+
+              {buyflow !== "3" ? (
+                <>
+                  {showStickyNav && (
+                    <StickySubNav
+                      onFixedChange={this.onMenuLock}
+                      relockUnder={this.heroRef}
+                      backgroundColor={"rgb(18, 23, 28)"}
+                    >
+                      <div className={styles.stickyNavContent}>
+                        <div
+                          className={styles.heroLogo}
+                          style={{
+                            backgroundImage: `url(${destinyProductFamily.heroLogo})`,
+                          }}
                         />
-                      </GridCol>
-                    )
-                  );
-                })}
+                        <div className={styles.rightNavContent}>
+                          {editionSelectorSkus.length > 1 && (
+                            <div
+                              className={styles.toTopClickable}
+                              onClick={this.scrollToTop}
+                              role={"button"}
+                            >
+                              <div className={styles.scrollToTop}>
+                                <Icon iconType={"material"} iconName={icon} />
+                              </div>
+                              <div className={styles.editionBox}>
+                                <div className={styles.identifier}>
+                                  {Localizer.BuyFlow.Edition}
+                                </div>
+                                <div className={styles.selectedSku}>
+                                  {selectedSkuName}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          <PotentialSkuButton
+                            className={styles.CTAButton}
+                            url={
+                              collectorsIsSelected
+                                ? collectorsEdition.relatedPage
+                                : null
+                            }
+                            sku={
+                              !collectorsIsSelected
+                                ? editionSelectorSkus[selectedSkuIndex].skuTag
+                                : null
+                            }
+                            buttonType={"gold"}
+                            size={BasicSize.Medium}
+                          >
+                            {destinyProductFamily.expansionSelectorButtonLabel}
+                          </PotentialSkuButton>
+                        </div>
+                      </div>
+                    </StickySubNav>
+                  )}
 
-                {comparisonSkus.length > 0 && (
-                  <>
-                    <div className={styles.borderTop}>
-                      <div className={styles.sectionTitle}>
-                        {destinyProductFamily.comparisonSectionTitle}
+                  <div className={styles.banner}>
+                    <div className={styles.contentFrame}>
+                      {destinyProductFamily.bannerText && (
+                        <div
+                          className={styles.bannerText}
+                          dangerouslySetInnerHTML={sanitizeHTML(
+                            destinyProductFamily.bannerText
+                          )}
+                        />
+                      )}
+                      {mobileSize && (
+                        <p className={styles.platformText}>
+                          {Localizer.Buyflow.AvailableOn}
+                        </p>
+                      )}
+                      <div className={styles.platforms}>
+                        {!mobileSize && (
+                          <p className={styles.platformText}>
+                            {Localizer.Buyflow.AvailableOn}
+                          </p>
+                        )}
+                        <div className={styles.xboxSeriesX} />
+                        <div className={styles.xboxOne} />
+                        <div className={styles.windows} />
+                        <div className={styles.playstation} />
+                        <div className={styles.steam} />
+                        <div className={styles.stadia} />
+                        <SiEpicgames className={styles.epic} />
                       </div>
                     </div>
-                    {comparisonSkus.map(
-                      (a, i) =>
-                        a && (
+                  </div>
+
+                  <Grid
+                    className={styles.contentFrame}
+                    noPadding={true}
+                    strictMode={true}
+                  >
+                    {destinyProductFamily.preorderBanner && (
+                      <GridCol
+                        cols={12}
+                        className={styles.preorderBanner}
+                        style={{
+                          backgroundImage: `url(${destinyProductFamily.preorderBanner})`,
+                        }}
+                      >
+                        <div
+                          className={styles.preorderText}
+                          dangerouslySetInnerHTML={sanitizeHTML(
+                            destinyProductFamily.preorderText
+                          )}
+                        />
+                      </GridCol>
+                    )}
+
+                    <GridCol cols={12}>
+                      <DestinyBuyDetailItem
+                        imagesForPagination={
+                          mediaDetailItem?.largeImage ||
+                          mediaDetailItem?.imageThumbnail ||
+                          mediaDetailItem?.videoThumbnail
+                        }
+                        orientation={"textblock-media"}
+                        item={mediaDetailItem}
+                      />
+                    </GridCol>
+
+                    <div className={styles.borderTop}>
+                      <div className={styles.sectionTitle}>
+                        {destinyProductFamily.detailSectionTitle}
+                      </div>
+                    </div>
+
+                    {detailItems.map((mma, i) => {
+                      return (
+                        mma && (
                           <GridCol
                             cols={detailItems.length === 4 ? 3 : 4}
                             mobile={12}
                             key={i}
                           >
                             <DestinyBuyDetailItem
-                              imagesForPagination={comparisonSkus.map(
-                                (sku) => sku.imagePath
+                              imagesForPagination={detailItems?.map(
+                                (item) => item.largeImage || item.imageThumbnail
                               )}
                               imgIndexInPagination={i}
                               orientation={"vertical"}
-                              skuItem={a}
-                              showSkuBtn={includeButtons}
+                              item={mma}
+                              key={i}
                             />
                           </GridCol>
                         )
-                    )}
-                  </>
-                )}
+                      );
+                    })}
 
-                {collectorsEdition && (
-                  <>
-                    <div className={styles.borderTop}>
-                      <div className={styles.sectionTitle}>
-                        {destinyProductFamily.collectorsEditionSectionTitle}
-                      </div>
-                    </div>
-                    <GridCol
-                      cols={12}
-                      className={styles.collectorsEditionSection}
-                    >
-                      <DestinyBuyDetailItem
-                        imagesForPagination={collectorsEdition.imagePath}
-                        orientation={"textblock-media"}
-                        skuItem={collectorsEdition}
-                        collectorsEdition={true}
-                      />
-                    </GridCol>
-                  </>
-                )}
-              </Grid>
+                    {comparisonSkus.length > 0 && (
+                      <>
+                        <div className={styles.borderTop}>
+                          <div className={styles.sectionTitle}>
+                            {destinyProductFamily.comparisonSectionTitle}
+                          </div>
+                        </div>
+                        {comparisonSkus.map(
+                          (a, i) =>
+                            a && (
+                              <GridCol
+                                cols={detailItems.length === 4 ? 3 : 4}
+                                mobile={12}
+                                key={i}
+                              >
+                                <DestinyBuyDetailItem
+                                  imagesForPagination={comparisonSkus.map(
+                                    (sku) => sku.imagePath
+                                  )}
+                                  imgIndexInPagination={i}
+                                  orientation={"vertical"}
+                                  skuItem={a}
+                                  showSkuBtn={includeButtons}
+                                />
+                              </GridCol>
+                            )
+                        )}
+                      </>
+                    )}
+
+                    {collectorsEdition && (
+                      <>
+                        <div className={styles.borderTop}>
+                          <div className={styles.sectionTitle}>
+                            {destinyProductFamily.collectorsEditionSectionTitle}
+                          </div>
+                        </div>
+                        <GridCol
+                          cols={12}
+                          className={styles.collectorsEditionSection}
+                        >
+                          <DestinyBuyDetailItem
+                            imagesForPagination={collectorsEdition.imagePath}
+                            orientation={"textblock-media"}
+                            skuItem={collectorsEdition}
+                            collectorsEdition={true}
+                          />
+                        </GridCol>
+                      </>
+                    )}
+                  </Grid>
+                </>
+              ) : null}
             </div>
           </SpinnerContainer>
         </SystemDisabledHandler>

@@ -21,6 +21,12 @@ interface IDropdownProps {
   /** Triggered when dropdown is changed */
   onChange?: (value: string) => void;
   className?: string;
+  isOpenClassName?: string;
+  selectBoxClassName?: string;
+  currentOptionClassName?: string;
+  optionItemClassName?: string;
+  optionsClassName?: string;
+  childrenClassName?: string;
 }
 
 export interface IDropdownOption<T = any> {
@@ -70,7 +76,10 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
   public render() {
     const name = this.props.name || "";
 
-    const classes = classNames(styles.dropdownItem, this.props.className);
+    const classes = classNames(styles.dropdownItem, this.props.className, {
+      [styles.open]: this.state.isOpen,
+      [this.props.isOpenClassName]: this.state.isOpen,
+    });
 
     return (
       <div className={classes} ref={this.containerRef}>
@@ -92,12 +101,21 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
           ))}
         </select>
         <div
-          className={styles.selectBox}
+          className={classNames([
+            styles.selectBox,
+            this.props.selectBoxClassName,
+          ])}
           onClick={() => this.toggle()}
           role={"presentation"}
         >
-          <div className={styles.currentOption}>
+          <div
+            className={classNames([
+              styles.currentOption,
+              this.props.currentOptionClassName,
+            ])}
+          >
             <DropdownPrettyOptionItem
+              className={this.props.optionItemClassName}
               option={this.selectedOption}
               onClick={null}
               selected={true}
@@ -106,6 +124,9 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
         </div>
         {this.containerRef.current && (
           <DropdownPrettyOptions
+            className={this.props.optionsClassName}
+            childrenClassName={this.props.childrenClassName}
+            optionItemClassName={this.props.optionItemClassName}
             open={this.state.isOpen}
             currentValue={this.state.currentValue}
             triggerClientRect={this.containerRef.current.getBoundingClientRect()}

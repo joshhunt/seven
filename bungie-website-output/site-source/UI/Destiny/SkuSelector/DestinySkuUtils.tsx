@@ -285,7 +285,7 @@ export class DestinySkuUtils {
     // Go back to the non-conversion URL to avoid accidentally tracking conversions when they aren't real
     rcp.history.replace({
       pathname: rcp.location.pathname,
-      search: null,
+      search: q,
     });
 
     if (

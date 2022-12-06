@@ -451,6 +451,9 @@ export class RouteHelper {
   public static SeasonOfPlunder = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfPlunder")
   );
+  public static SeasonOfTheSeraph = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheSeraph")
+  );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")
