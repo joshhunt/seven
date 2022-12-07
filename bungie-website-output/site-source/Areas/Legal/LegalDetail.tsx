@@ -35,16 +35,16 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
       .ContentType("legal_page")
       .Query()
       .where("url", `/${params.url.toLowerCase()}`)
-      .where("locale", locale)
+      .language(locale)
       .toJSON()
-      .findOne()
+      .find()
       .then(setData);
   }, [params]);
 
   // Assume there's only one match because otherwise we have a URL collision
-  const legalPageDetail = data;
+  const legalPageDetail = data?.[0]?.[0];
 
-  if (!data) {
+  if (!legalPageDetail) {
     return null;
   }
 

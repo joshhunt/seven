@@ -87,7 +87,7 @@ export const ProceduralMarketingPageFallback: React.FC<Props> = (props) => {
       .ContentType("procedural_marketing_page")
       .Query()
       .where("url", "/" + params.slug)
-      .where("locale", BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
       .includeReference("content")
       .toJSON()
       .find()

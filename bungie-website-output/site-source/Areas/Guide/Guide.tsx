@@ -11,6 +11,7 @@ import {
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
+import { NotFoundError } from "@CustomErrors";
 import { RendererLogLevel } from "@Enum";
 import { Logger } from "@Global/Logger";
 import { ScrollToAnchorTags } from "@UI/Navigation/ScrollToAnchorTags";
@@ -74,9 +75,15 @@ export const Guide: React.FC<any> = (props) => {
       .where("url", guideUrl)
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
       .toJSON()
-      .findOne()
+      .find()
       .then((res): void => {
-        setData(res);
+        const matchingEntry = res[0][0];
+        // Assume there's only one match because otherwise we have a URL collision
+        if (!matchingEntry) {
+          throw new NotFoundError();
+        }
+
+        setData(matchingEntry);
       })
       .catch((error: Error) => {
         Logger.logToServer(error, RendererLogLevel.Error);

@@ -44,10 +44,11 @@ const NewsArticle = () => {
       .ContentType("news_article")
       .Query()
       .where("url.hosted_url", url)
-      .where("locale", locale)
+      .language(locale)
       .toJSON()
-      .findOne()
-      .then((matchingArticle: BnetStackNewsArticle): void => {
+      .find()
+      .then((matchingArticles: BnetStackNewsArticle[][]): void => {
+        const matchingArticle = matchingArticles[0][0];
         // Assume there's only one match because otherwise we have a URL collision
         if (!matchingArticle) {
           throw new NotFoundError();

@@ -23,7 +23,7 @@ export const LegalSubnav: React.FC = () => {
       .ContentType("legal_page")
       .Query()
       .only(["title", "url", "order", "last_updated_date"])
-      .where("locale", locale)
+      .language(locale)
       .toJSON()
       .find()
       .then((response) => {
