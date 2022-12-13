@@ -23,6 +23,7 @@ interface WQSkinnyBlurbSectionProps {
     sectionTopBorder?: string;
     imgAboveHeading?: string;
   };
+  id?: string;
   heading: string;
   desktopBgImage: string;
   mobileBgImage: string;
@@ -49,6 +50,7 @@ const WQSkinnyBlurbSection: React.FC<WQSkinnyBlurbSectionProps> = (props) => {
 
   return (
     <section
+      id={props.id}
       className={classNames(styles.skinnyBlurbSection, props.classes?.root)}
     >
       <div

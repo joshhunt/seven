@@ -48,6 +48,7 @@ import { S19Hero } from "@Areas/Seasons/ProductPages/Season19/Components/Hero/S1
 import { S19StorySectionHeader } from "@Areas/Seasons/ProductPages/Season19/Components/StorySectionHeader/S19StorySectionHeader";
 import { S19SeasonPassBlock } from "@Areas/Seasons/ProductPages/Season19/Components/SeasonPassBlock/S19SeasonPassBlock";
 import RewardsAndCalendar19 from "@Areas/Seasons/ProductPages/Season19/Components/SeasonPassRewards/S19SeasonPassRewards";
+import S19FestivalRewards from "@Areas/Seasons/ProductPages/Season19/Components/FestivalRewards/S19FestivalRewards";
 
 interface SeasonOfTheSeraphProps {}
 
@@ -89,7 +90,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
   const [data, setData] = useState<null | any>(null);
   const responsive = useDataStore(Responsive);
 
-  const festivalSectionRef = useRef<HTMLDivElement | null>(null);
+  const eventRef = useRef<HTMLDivElement | null>(null);
 
   // To be reconnected
   // const contentReferences: (`${keyof BnetStackS18ProductPage}.content` | keyof BnetStackS18ProductPage | string)[] = [
@@ -98,10 +99,8 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
     "story_section.content",
     "gear_section.content",
     "season_pass_section.content",
-    "festival.content",
     "rewards_section.content",
-    "light_section.content",
-    "events_section.content",
+    "event_section.content",
     "bundle_section.content",
     "cta_section.content",
     "cta_section.content.buttons",
@@ -120,8 +119,8 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
       .then(setData);
   }, []);
 
-  const scrollToFestivalSection = () => {
-    festivalSectionRef?.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollToEventSection = () => {
+    eventRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   type TResponsiveBg = BnetStackS18ProductPage["story_section"]["top_bg"];
@@ -144,11 +143,9 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
     sub_nav_btn_text,
     story_section,
     gear_section,
-    festival,
     season_pass_section,
     rewards_section,
-    light_section,
-    events_section,
+    event_section,
     bundle_section,
     cta_section,
     media_section,
@@ -158,10 +155,6 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
   const openBuyModal = () => {
     DestinySkuSelectorModal.show({ skuTag: DestinySkuTags.SilverBundle });
   };
-
-  // const images = useCSWebpImages(useMemo(() => ({
-  // 	screenshots: props.thumbnails?.map(t => t.image),
-  // }), [props.thumbnails]));
 
   return (
     <div className={styles.seasonOfSeraph}>
@@ -177,7 +170,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
 
       <div className={styles.pageFixedContent}>
         {/* HERO */}
-        <S19Hero data={hero} scrollToEvent={scrollToFestivalSection} />
+        <S19Hero data={hero} scrollToEvent={scrollToEventSection} />
 
         {/* SUB NAV */}
         <PmpNavigationBar
@@ -247,10 +240,68 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
           }}
         />
 
+        {/* EVENT: THE DAWNING */}
+        {event_section?.display_section ? (
+          <div
+            className={styles.event}
+            style={{
+              backgroundImage: [
+                getResponsiveBg(event_section?.top_bg),
+                getResponsiveBg(event_section?.bottom_bg),
+              ]
+                .filter(Boolean)
+                .join(", "),
+            }}
+          >
+            <div ref={eventRef} id={"the-dawning"} className={styles.anchor} />
+            <S19ProceduralContent
+              content={event_section?.content}
+              pmpComponents={{
+                ...pmpComponentOverrides,
+                pmp_section_header: (ref) => (
+                  <PmpSectionHeader
+                    data={ref?.data}
+                    classes={{
+                      root: styles.eventSectionHeader,
+                      heading: styles.eventSectionHeaderHeading,
+                      btnWrapper: styles.eventSectionBtnWrapper,
+                    }}
+                  />
+                ),
+                pmp_callout: (ref) => (
+                  <PmpCallout
+                    data={{
+                      ...ref?.data,
+                      blurb: `${ref?.data?.blurb} <img class="${styles.eventCalloutImg}" src="${event_section?.pmp_callout_image?.url}" alt="" />`,
+                    }}
+                    classes={{
+                      root: styles.eventCallout,
+                      upperContent: styles.eventCalloutUpperContent,
+                      heading: styles.eventCalloutHeading,
+                      textWrapper: styles.eventCalloutTextWrapper,
+                      asideImg: styles.eventCalloutAsideImg,
+                    }}
+                  />
+                ),
+                pmp_info_thumbnail_group: (ref) => (
+                  <PmpInfoThumbnailGroup
+                    data={ref?.data}
+                    classes={{
+                      root: styles.eventInfoRoot,
+                    }}
+                  />
+                ),
+              }}
+            />
+
+            <S19FestivalRewards data={event_section?.bungie_rewards} />
+          </div>
+        ) : null}
+
         {/* GEAR */}
         <div id={"gear"} className={styles.anchor} />
         <div className={classNames(styles.section, styles.gear)}>
-          <S18ProceduralContent
+          <S19ProceduralContent
             content={gear_section?.content}
             pmpComponents={{
               ...pmpComponentOverrides,
@@ -308,19 +359,9 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
           {/* SEASON PASS */}
           <div id={"season-pass"} className={styles.anchor} />
           <div className={styles.seasonPassInner}>
-            <S18ProceduralContent
+            <S19ProceduralContent
               content={season_pass_section?.content}
-              pmpComponents={{
-                ...pmpComponentOverrides,
-                pmp_section_header: (ref) => (
-                  <PmpSectionHeader
-                    data={ref?.data}
-                    classes={{
-                      root: styles.seasonPassSectionHeader,
-                    }}
-                  />
-                ),
-              }}
+              pmpComponents={pmpComponentOverrides}
             />
           </div>
         </div>
@@ -344,7 +385,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
             )}
             className={styles.rewardsTitle}
           />
-          <S18ProceduralContent
+          <S19ProceduralContent
             content={rewards_section?.content}
             pmpComponents={pmpComponentOverrides}
           />
@@ -356,7 +397,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
           className={classNames(styles.section, styles.bundle)}
           style={{ backgroundImage: getResponsiveBg(bundle_section?.bg) }}
         >
-          <S18ProceduralContent
+          <S19ProceduralContent
             content={bundle_section?.content}
             pmpComponents={{
               ...pmpComponentOverrides,
@@ -400,7 +441,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
         {/* MEDIA */}
         <div id={"media"} className={styles.anchor} />
         <div className={classNames(styles.section, styles.media)}>
-          <S18ProceduralContent
+          <S19ProceduralContent
             content={media_section?.content}
             pmpComponents={{
               ...pmpComponentOverrides,
@@ -421,7 +462,7 @@ const SeasonOfTheSeraph = (props: SeasonOfTheSeraphProps) => {
         {/* LEARN MORE */}
         <div id={"learn-more"} className={styles.anchor} />
         <div className={classNames(styles.section, styles.learnMore)}>
-          <S18ProceduralContent
+          <S19ProceduralContent
             content={learn_more_section?.content}
             pmpComponents={{
               ...pmpComponentOverrides,
@@ -453,13 +494,13 @@ type DefaultComponentParameters = {
 Used for type checking of content passed in to procedural content component */
 type TPmpComponentData = DefaultComponentParameters[keyof DefaultComponentParameters]["data"];
 
-interface S18ProceduralContentProps {
+interface S19ProceduralContentProps {
   pmpComponents?: PartialPmpReferenceMap;
   content: TPmpComponentData[];
 }
 
 /* Renders group of content using useReferenceMap */
-const S18ProceduralContent = (props: S18ProceduralContentProps) => {
+const S19ProceduralContent = (props: S19ProceduralContentProps) => {
   const { pmpComponents, content } = props;
 
   const { ReferenceMappedList } = useReferenceMap(

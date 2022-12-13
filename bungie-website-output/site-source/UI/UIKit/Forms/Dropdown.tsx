@@ -16,6 +16,8 @@ interface IDropdownProps {
   selectedValue?: string;
   /** If you want to set an initial value but have the dropdown control updating the selected value, populate this prop */
   initialValue?: string;
+  /** If you want to show a placeholder value that isn't an option, populate this prop */
+  placeholderValue?: string;
   /** If you need access to the name of the inner <select> (like for form data submission), set this */
   name?: string;
   /** Triggered when dropdown is changed */
@@ -65,7 +67,9 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
 
     this.state = {
       isOpen: false,
-      currentValue: props.selectedValue || props.options[0].value,
+      currentValue: props.placeholderValue
+        ? null
+        : props.selectedValue || props.options[0].value,
     };
   }
 
@@ -114,12 +118,24 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
               this.props.currentOptionClassName,
             ])}
           >
-            <DropdownPrettyOptionItem
-              className={this.props.optionItemClassName}
-              option={this.selectedOption}
-              onClick={null}
-              selected={true}
-            />
+            {this.props.placeholderValue && !this.state.currentValue ? (
+              <DropdownPrettyOptionItem
+                className={this.props.optionItemClassName}
+                option={{
+                  label: this.props.placeholderValue,
+                  value: "",
+                }}
+                onClick={null}
+                selected={true}
+              />
+            ) : (
+              <DropdownPrettyOptionItem
+                className={this.props.optionItemClassName}
+                option={this.selectedOption}
+                onClick={null}
+                selected={true}
+              />
+            )}
           </div>
         </div>
         {this.containerRef.current && (

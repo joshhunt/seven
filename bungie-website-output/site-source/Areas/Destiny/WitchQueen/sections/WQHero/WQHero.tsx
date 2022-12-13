@@ -38,7 +38,9 @@ const WQHero: React.FC<WQHeroProps> = (props) => {
     hero_bg_desktop_video,
   } = data ?? {};
 
-  const heroBgImage = bgImageFromStackFile(hero_bg_mobile);
+  const heroBgImage = responsive.mobile
+    ? bgImageFromStackFile(hero_bg_mobile)
+    : null;
   const heroVideo = hero_bg_desktop_video?.url;
 
   return (
@@ -46,7 +48,7 @@ const WQHero: React.FC<WQHeroProps> = (props) => {
       {heroVideo && !responsive.mobile && (
         <video
           className={styles.heroVideo}
-          poster={bgImageFromStackFile(hero_bg_desktop)}
+          poster={hero_bg_desktop?.url}
           autoPlay={true}
           loop={true}
           playsInline={true}

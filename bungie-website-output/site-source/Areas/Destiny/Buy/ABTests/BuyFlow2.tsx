@@ -35,14 +35,12 @@ const BuyFlow2 = (props: BuyFlowProps) => {
     [responsive]
   );
 
-  const annualStores = DestinySkuUtils.getStoresForProduct(
-    annual_pass?.sku,
-    skuConfig
-  );
-  const standardStores = DestinySkuUtils.getStoresForProduct(
-    standard?.sku,
-    skuConfig
-  );
+  const annualStores = annual_pass
+    ? DestinySkuUtils.getStoresForProduct(annual_pass?.sku, skuConfig)
+    : null;
+  const standardStores = standard
+    ? DestinySkuUtils.getStoresForProduct(standard?.sku, skuConfig)
+    : null;
 
   return (
     <div
@@ -64,24 +62,28 @@ const BuyFlow2 = (props: BuyFlowProps) => {
       />
 
       <div className={styles.editions}>
-        <div className={styles.edition}>
-          <BuyFlowEditionDropdown
-            stores={annualStores}
-            placeholder={annual_pass.title}
-            skuTag={annual_pass.sku}
-            currentOptionClassName={styles.annualOption}
-            optionItemClassName={styles.optionItem}
-          />
-        </div>
-        <div className={styles.edition}>
-          <BuyFlowEditionDropdown
-            stores={standardStores}
-            placeholder={standard.title}
-            skuTag={standard.sku}
-            currentOptionClassName={styles.standardOption}
-            optionItemClassName={styles.optionItem}
-          />
-        </div>
+        {annualStores ? (
+          <div className={styles.edition}>
+            <BuyFlowEditionDropdown
+              stores={annualStores}
+              placeholder={annual_pass.title}
+              skuTag={annual_pass.sku}
+              currentOptionClassName={styles.annualOption}
+              optionItemClassName={styles.optionItem}
+            />
+          </div>
+        ) : null}
+        {standardStores ? (
+          <div className={styles.edition}>
+            <BuyFlowEditionDropdown
+              stores={standardStores}
+              placeholder={standard.title}
+              skuTag={standard.sku}
+              currentOptionClassName={styles.standardOption}
+              optionItemClassName={styles.optionItem}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

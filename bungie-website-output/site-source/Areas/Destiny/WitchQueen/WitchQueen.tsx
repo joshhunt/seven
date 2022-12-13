@@ -20,6 +20,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import styles from "./WitchQueen.module.scss";
+import { ScrollToAnchorTags } from "@UI/Navigation/ScrollToAnchorTags";
 
 const WitchQueen: React.FC = () => {
   const responsive = useDataStore(Responsive);
@@ -40,17 +41,6 @@ const WitchQueen: React.FC = () => {
       .fetch()
       .then(setData);
   }, []);
-
-  // if user provided a hash of 'editions' in the url, scroll to the corresponding element if the editions selector has loaded
-  if (
-    editionsRef &&
-    window.location.hash === "#editions" &&
-    !hasCheckedForHash
-  ) {
-    editionsRef.scrollIntoView();
-    // update state to prevent this block from being executed again
-    setHasCheckedForHash(true);
-  }
 
   const {
     title,
@@ -74,6 +64,7 @@ const WitchQueen: React.FC = () => {
   return (
     <SpinnerContainer loading={!data}>
       <WitchQueenHelmet title={title} img={bgImageFromStackFile(meta_image)} />
+      <ScrollToAnchorTags animate={true} />
       <div className={styles.witchQueenContent}>
         <div ref={heroRef}>
           <WQHero heroContent={data?.hero} />
@@ -98,6 +89,7 @@ const WitchQueen: React.FC = () => {
           {/* map over modular blocks from contentStack for each section of the page */}
           {section_blocks?.map((sectionObj: any, i: number) => {
             const {
+              identifier,
               section_class,
               section_bg_desktop,
               section_bg_mobile,
@@ -112,6 +104,7 @@ const WitchQueen: React.FC = () => {
             return (
               <WQSkinnyBlurbSection
                 key={i}
+                id={identifier}
                 classes={{
                   root: styles[section_class],
                   sectionBg: styles.sectionBg,

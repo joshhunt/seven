@@ -350,7 +350,7 @@ export class AccountSidebar extends React.Component<
     const date = DateTime.fromISO(
       this.props.globalState.loggedInUser.user.firstAccess
     );
-    const accountIsNew = DateTime.now().diff(date).days < 15;
+    const accountIsNew = DateTime.now().diff(date).as("days") < 15;
 
     if (!accountIsNew) {
       return null;

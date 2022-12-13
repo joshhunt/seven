@@ -68,6 +68,17 @@ const BuyFlow3 = (props: BuyFlowProps) => {
     });
   }, [annual_pass?.sku, standard?.sku]);
 
+  // Autoplay the carousel effect
+  React.useEffect(() => {
+    const slideTimer = window.setInterval(() => {
+      setCurrentHeroIndex((index) => index + 1);
+    }, 5000);
+
+    return () => {
+      clearInterval(slideTimer);
+    };
+  }, []);
+
   const getResponsiveBg = useCallback(
     (background: { mobile_bg?: BnetStackFile; desktop_bg?: BnetStackFile }) => {
       const img = responsive.mobile
@@ -114,38 +125,44 @@ const BuyFlow3 = (props: BuyFlowProps) => {
           <div className={styles.choose}>{choose_edition}</div>
 
           <div className={styles.editions}>
-            <div>
-              <img
-                className={styles.thumbnail}
-                src={annual_pass?.thumbnail?.url}
-                alt=""
-              />
-              <h3 className={styles.subtitle}>{annual_pass.title}</h3>
-              <Button
-                buttonType={"none"}
-                className={styles.annualButton}
-                onClick={() => DestinySkuUtils.showStoreModal(annual_pass.sku)}
-                analyticsId={annual_pass.sku}
-              >
-                {annualPassDefinition?.buttonLabel}
-              </Button>
-            </div>
-            <div>
-              <img
-                className={styles.thumbnail}
-                src={standard?.thumbnail?.url}
-                alt=""
-              />
-              <h3 className={styles.subtitle}>{standard.title}</h3>
-              <Button
-                buttonType={"none"}
-                className={styles.standardButton}
-                onClick={() => DestinySkuUtils.showStoreModal(standard.sku)}
-                analyticsId={standard.sku}
-              >
-                {standardDefinition?.buttonLabel}
-              </Button>
-            </div>
+            {annual_pass ? (
+              <div>
+                <img
+                  className={styles.thumbnail}
+                  src={annual_pass?.thumbnail?.url}
+                  alt=""
+                />
+                <h3 className={styles.subtitle}>{annual_pass.title}</h3>
+                <Button
+                  buttonType={"none"}
+                  className={styles.annualButton}
+                  onClick={() =>
+                    DestinySkuUtils.showStoreModal(annual_pass.sku)
+                  }
+                  analyticsId={annual_pass.sku}
+                >
+                  {annualPassDefinition?.buttonLabel}
+                </Button>
+              </div>
+            ) : null}
+            {standard ? (
+              <div>
+                <img
+                  className={styles.thumbnail}
+                  src={standard?.thumbnail?.url}
+                  alt=""
+                />
+                <h3 className={styles.subtitle}>{standard.title}</h3>
+                <Button
+                  buttonType={"none"}
+                  className={styles.standardButton}
+                  onClick={() => DestinySkuUtils.showStoreModal(standard.sku)}
+                  analyticsId={standard.sku}
+                >
+                  {standardDefinition?.buttonLabel}
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           <img className={styles.divider} src={divider?.url} alt="" />
@@ -153,7 +170,7 @@ const BuyFlow3 = (props: BuyFlowProps) => {
           <div>
             <img className={styles.smallLogo} src={small_logo?.url} alt="" />
             {learn_more ? (
-              <Button buttonType={"gold"} url={learn_more?.url}>
+              <Button buttonType={"gold"} url={learn_more?.href}>
                 {learn_more?.title}
               </Button>
             ) : null}

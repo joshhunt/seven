@@ -34,14 +34,12 @@ const BuyFlow1 = (props: BuyFlowProps) => {
     [responsive]
   );
 
-  const annualStores = DestinySkuUtils.getStoresForProduct(
-    annual_pass?.sku,
-    skuConfig
-  );
-  const standardStores = DestinySkuUtils.getStoresForProduct(
-    standard?.sku,
-    skuConfig
-  );
+  const annualStores = annual_pass
+    ? DestinySkuUtils.getStoresForProduct(annual_pass?.sku, skuConfig)
+    : null;
+  const standardStores = standard
+    ? DestinySkuUtils.getStoresForProduct(standard?.sku, skuConfig)
+    : null;
 
   return (
     <div
@@ -63,20 +61,24 @@ const BuyFlow1 = (props: BuyFlowProps) => {
       />
 
       <div className={styles.editions}>
-        <div className={styles.edition}>
-          <BuyFlowEditionList
-            {...annual_pass}
-            stores={annualStores}
-            skuTag={annual_pass?.sku}
-          />
-        </div>
-        <div className={styles.edition}>
-          <BuyFlowEditionList
-            {...standard}
-            stores={standardStores}
-            skuTag={standard?.sku}
-          />
-        </div>
+        {annualStores ? (
+          <div className={styles.edition}>
+            <BuyFlowEditionList
+              {...annual_pass}
+              stores={annualStores}
+              skuTag={annual_pass?.sku}
+            />
+          </div>
+        ) : null}
+        {standardStores ? (
+          <div className={styles.edition}>
+            <BuyFlowEditionList
+              {...standard}
+              stores={standardStores}
+              skuTag={standard?.sku}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

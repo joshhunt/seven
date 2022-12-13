@@ -4,21 +4,95 @@
 import { DestinyArrows } from "@Areas/Destiny/Shared/DestinyArrows";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
-import { ImageAnchor, ImageVideoThumb } from "@UI/Marketing/ImageThumb";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
-import { bgImage } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
-import {
-  BnetStackFile,
-  BnetStackS18ProductPage,
-} from "../../../../../../Generated/contentstack-types";
+import { BnetStackFile } from "../../../../../../Generated/contentstack-types";
 import styles from "./S19Hero.module.scss";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import parallax from "../../parallax";
+
+const parallaxConfig: {
+  style?: React.CSSProperties;
+  speed?: number;
+  centered?: boolean;
+  min?: number;
+  max?: number;
+}[] = [
+  // sky
+  {
+    speed: 1,
+    centered: true,
+    style: {
+      top: 0,
+      left: "50%",
+    },
+  },
+  // rsp
+  {
+    speed: 1.05,
+    centered: true,
+    max: 0,
+    style: {
+      top: 0,
+      left: "50%",
+    },
+  },
+  // earth
+  {
+    speed: 0.7,
+    centered: true,
+    style: {
+      bottom: 0,
+      left: "50%",
+    },
+  },
+  // tvr
+  {
+    centered: true,
+    speed: 0.88,
+    style: {
+      bottom: 117,
+      left: "50%",
+      marginLeft: -10,
+    },
+  },
+  // plt
+  {
+    centered: true,
+    speed: 0.61,
+    style: {
+      bottom: 0,
+      left: "50%",
+    },
+  },
+  // warlock
+  {
+    speed: 0.91,
+    style: {
+      bottom: 290,
+      left: `${(1112 / 1920) * 100}%`,
+    },
+  },
+  // hunter
+  {
+    speed: 0.65,
+    style: {
+      bottom: 9,
+      left: `${(938 / 1920) * 100}%`,
+    },
+  },
+  // titan
+  {
+    speed: 0.6,
+    style: {
+      bottom: 83,
+      left: `${(982 / 1920) * 100}%`,
+    },
+  },
+];
 
 type S19HeroProps = {
   data?: {
@@ -28,6 +102,11 @@ type S19HeroProps = {
       text?: string;
       video_id?: string;
     };
+    cta?: {
+      icon: BnetStackFile;
+      text: string;
+      display_cta: boolean;
+    };
     logo?: BnetStackFile;
     desktop_parallax_images?: BnetStackFile[];
     smg_label?: string;
@@ -36,7 +115,7 @@ type S19HeroProps = {
       mobile_bg?: BnetStackFile;
     };
   };
-  scrollToEvent: () => void;
+  scrollToEvent?: () => void;
 };
 
 export const S19Hero: React.FC<S19HeroProps> = (props) => {
@@ -53,99 +132,21 @@ export const S19Hero: React.FC<S19HeroProps> = (props) => {
     }
   }, [mobile, block.current]);
 
+  const { data, scrollToEvent } = props;
   const {
     desktop_parallax_images,
     date,
     bg_mobile,
     logo,
     trailer_btn,
+    cta,
     smg_bg,
     smg_label,
-  } = props.data ?? {};
+  } = data ?? {};
 
   const handleTrailerBtnClick = () => {
     YoutubeModal.show({ videoId: trailer_btn?.video_id });
   };
-
-  const parallaxConfig: {
-    style?: React.CSSProperties;
-    speed?: number;
-    centered?: boolean;
-    min?: number;
-    max?: number;
-  }[] = [
-    // sky
-    {
-      speed: 1,
-      centered: true,
-      style: {
-        top: 0,
-        left: "50%",
-      },
-    },
-    // rsp
-    {
-      speed: 1.05,
-      centered: true,
-      max: 0,
-      style: {
-        top: 0,
-        left: "50%",
-      },
-    },
-    // earth
-    {
-      speed: 0.7,
-      centered: true,
-      style: {
-        bottom: 0,
-        left: "50%",
-      },
-    },
-    // tvr
-    {
-      centered: true,
-      speed: 0.88,
-      style: {
-        bottom: 117,
-        left: "50%",
-        marginLeft: -10,
-      },
-    },
-    // plt
-    {
-      centered: true,
-      speed: 0.61,
-      style: {
-        bottom: 0,
-        left: "50%",
-      },
-    },
-    // warlock
-    {
-      speed: 0.91,
-      style: {
-        bottom: 290,
-        left: `${(1112 / 1920) * 100}%`,
-      },
-    },
-    // hunter
-    {
-      speed: 0.65,
-      style: {
-        bottom: 9,
-        left: `${(938 / 1920) * 100}%`,
-      },
-    },
-    // titan
-    {
-      speed: 0.6,
-      style: {
-        bottom: 83,
-        left: `${(982 / 1920) * 100}%`,
-      },
-    },
-  ];
 
   const params = new URLSearchParams(location.search);
   const heroVariant = params.get("hero") || "1";
@@ -202,6 +203,7 @@ export const S19Hero: React.FC<S19HeroProps> = (props) => {
           />
           <div className={styles.btns}>
             <Button
+              className={styles.trailerBtn}
               onClick={handleTrailerBtnClick}
               buttonType={"gold"}
               icon={
@@ -214,6 +216,7 @@ export const S19Hero: React.FC<S19HeroProps> = (props) => {
             >
               {trailer_btn?.text}
             </Button>
+            <EventCTA {...cta} scrollToEvent={scrollToEvent} />
           </div>
         </div>
       </div>
@@ -242,24 +245,23 @@ export const S19Hero: React.FC<S19HeroProps> = (props) => {
   );
 };
 
-const HeroBug: React.FC<
-  BnetStackS18ProductPage["hero"]["bug_group"] & { scrollToEvent: () => void }
-> = (props) => {
-  const { mobile } = useDataStore(Responsive);
+const EventCTA: React.FC<{
+  icon: BnetStackFile;
+  text: string;
+  display_cta: boolean;
+  scrollToEvent: () => void;
+}> = (props) => {
+  const { scrollToEvent, icon, display_cta, text } = props;
 
-  const { scrollToEvent, icon, label, bg } = props;
+  if (!display_cta) {
+    return null;
+  }
 
   return (
-    <div className={styles.bugWrapper}>
-      <button
-        className={styles.bugContent}
-        onClick={scrollToEvent}
-        style={{
-          backgroundImage: bg ? `url(${bg.url})` : undefined,
-        }}
-      >
-        <img src={icon?.url} alt={""} className={styles.bugIcon} />
-        <span dangerouslySetInnerHTML={sanitizeHTML(label)} />
+    <div className={styles.ctaWrapper}>
+      <button className={styles.ctaContent} onClick={scrollToEvent}>
+        <img src={icon?.url} alt={""} className={styles.ctaIcon} />
+        <span dangerouslySetInnerHTML={sanitizeHTML(text)} />
         <DestinyArrows
           classes={{
             root: styles.arrows,

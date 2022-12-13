@@ -32,6 +32,7 @@ type PmpCalloutProps = DataReference<"pmp_callout", BnetStackPmpCallout> & {
     thumbnail?: string;
     thumbnailWrapper?: string;
     upperContent?: string;
+    asideImg?: string;
   };
   children?: React.ReactNode;
 };
@@ -110,7 +111,11 @@ export const PmpCallout: React.FC<PmpCalloutProps> = (props) => {
           {children}
         </div>
         {asideImg && (
-          <img src={asideImg} className={styles.asideImg} loading={"lazy"} />
+          <img
+            src={asideImg}
+            className={classNames(styles.asideImg, classes?.asideImg)}
+            loading={"lazy"}
+          />
         )}
       </div>
       {thumbnails && thumbnails.length > 0 ? (

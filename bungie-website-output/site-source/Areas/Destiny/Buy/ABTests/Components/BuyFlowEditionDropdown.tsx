@@ -43,10 +43,6 @@ const BuyFlowEditionDropdown = (props: BuyFlowEditionListProps) => {
   const skuConfig = useDataStore(DestinySkuConfigDataStore);
 
   const storeOptions = [
-    {
-      label: placeholder,
-      value: "",
-    },
     ...stores.map(({ key, stringKey }) => ({
       label: getStoreName(stringKey),
       value: key,
@@ -56,6 +52,7 @@ const BuyFlowEditionDropdown = (props: BuyFlowEditionListProps) => {
   return (
     <Dropdown
       className={classNames([styles.dropdown, className])}
+      placeholderValue={placeholder}
       isOpenClassName={styles.isOpen}
       currentOptionClassName={classNames([
         styles.currentOption,
@@ -66,6 +63,10 @@ const BuyFlowEditionDropdown = (props: BuyFlowEditionListProps) => {
       optionItemClassName={classNames([styles.optionItem, optionItemClassName])}
       options={storeOptions}
       onChange={(key) => {
+        if (!key) {
+          return;
+        }
+
         const store = stores.find(({ key: k }) => k === key);
         const { validRegions } = store;
 
