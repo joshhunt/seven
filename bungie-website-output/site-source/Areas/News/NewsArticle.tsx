@@ -11,6 +11,7 @@ import { FaCaretRight } from "@react-icons/all-files/fa/FaCaretRight";
 import { NewsParams } from "@Routes/RouteParams";
 import { TwitterAPI, TwitterScript } from "@UI/Content/TwitterFeed";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { DateTime, Duration } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -162,6 +163,26 @@ const NewsArticle = () => {
                               ) > -1
                             ) {
                               targetElement.classList.toggle("open");
+                            }
+                          }}
+                        >
+                          <div
+                            dangerouslySetInnerHTML={{ __html: contentString }}
+                          />
+                        </div>
+                      );
+                    }
+
+                    if (contentString.indexOf(`<img`) > -1) {
+                      return (
+                        <div
+                          onClick={(e) => {
+                            const targetElement: HTMLImageElement = e.target as HTMLImageElement;
+
+                            if (contentString.indexOf(targetElement.src) > -1) {
+                              Modal.open(<img src={targetElement.src} />, {
+                                isFrameless: true,
+                              });
                             }
                           }}
                         >

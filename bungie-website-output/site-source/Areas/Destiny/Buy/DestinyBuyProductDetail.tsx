@@ -46,7 +46,6 @@ import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
 import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import BuyFlow1 from "./ABTests/BuyFlow1";
 import BuyFlow2 from "./ABTests/BuyFlow2";
@@ -511,8 +510,13 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         <div className={styles.windows} />
                         <div className={styles.playstation} />
                         <div className={styles.steam} />
-                        <div className={styles.stadia} />
-                        <SiEpicgames className={styles.epic} />
+                        <img
+                          className={styles.epic}
+                          width="62.35"
+                          height="26"
+                          src="https://images.contentstack.io/v3/assets/blte410e3b15535c144/blt210c92d632d525a6/63581c9fda572d57ecd24b5b/logo-epic.svg"
+                          alt=""
+                        />
                       </div>
                     </div>
                   </div>

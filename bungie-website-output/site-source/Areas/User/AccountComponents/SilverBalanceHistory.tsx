@@ -282,13 +282,17 @@ export const SilverBalanceHistory = () => {
                 profileLoc.Unavailable}
             </div>
           </div>
-          <Button
-            size={BasicSize.Small}
-            buttonType={"gold"}
-            url={getLinkToSilver(selectedMembership?.membershipType)}
-          >
-            {profileLoc.BuySilver}
-          </Button>
+          {selectedMembership &&
+            selectedMembership?.membershipType !==
+              BungieMembershipType.TigerStadia && (
+              <Button
+                size={BasicSize.Small}
+                buttonType={"gold"}
+                url={getLinkToSilver(selectedMembership?.membershipType)}
+              >
+                {profileLoc.BuySilver}
+              </Button>
+            )}
         </div>
         {cashout && (
           <div className={styles.cashoutRequests}>

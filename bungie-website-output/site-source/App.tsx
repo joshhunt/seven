@@ -12,7 +12,7 @@ import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { ToastContent } from "@UI/UIKit/Controls/Toast/Toast";
 import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Helmet from "react-helmet";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 

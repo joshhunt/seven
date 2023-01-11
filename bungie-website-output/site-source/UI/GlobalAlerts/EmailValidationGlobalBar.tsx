@@ -7,6 +7,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
 import styles from "@UI/GlobalAlerts/EmailValidationGlobalBar.module.scss";
 import { GlobalBar } from "@UI/GlobalAlerts/GlobalBar";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { EmailValidationState, UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 
@@ -27,16 +28,21 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
   // then defer to localStorage which is updated by GlobalBar itself
   // previously, once the localStorage value was set to not show, we never updated it again. Now it will update to show again if someone changes their email
   const isVisibleInitially = () => {
-    const isVerified =
-      getEmailValidationState() !== EmailValidationState.None &&
-      getEmailValidationState() !== EmailValidationState.Verifying;
+    const showEmailAlert = !EnumUtils.looseEquals(
+      getEmailValidationState(),
+      EmailValidationState.Verified,
+      EmailValidationState
+    );
 
     if (!!window.localStorage?.getItem(emailLocalStorageKey)) {
       return window.localStorage.getItem(emailLocalStorageKey) === "true";
     } else {
-      window.localStorage.setItem(emailLocalStorageKey, isVerified.toString());
+      window.localStorage.setItem(
+        emailLocalStorageKey,
+        showEmailAlert.toString()
+      );
 
-      return isVerified;
+      return showEmailAlert;
     }
   };
 

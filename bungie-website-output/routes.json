@@ -3,14 +3,6 @@
     "areaName": "Admin",
     "areaObjectName": "Admin",
     "componentImportPath": "@Areas/Admin/AdminArea",
-    "action": "MigrateNews",
-    "params": {},
-    "path": "/7/en/Admin/MigrateNews"
-  },
-  {
-    "areaName": "Admin",
-    "areaObjectName": "Admin",
-    "componentImportPath": "@Areas/Admin/AdminArea",
     "action": "Report",
     "params": {
       "path": ":reportId?"

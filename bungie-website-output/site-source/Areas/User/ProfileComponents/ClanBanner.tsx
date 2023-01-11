@@ -66,7 +66,6 @@ export const ClanBannerDisplay: React.FC<ClanBannerProps> = (props) => {
   const [selectedClanBannerValues, setSelectedClanBannerValues] = useState<
     ISelectedClanBannerValues
   >(null);
-  const [numImagesLoaded, addToReadyImages] = useState<number>(0);
   const [imagesReady, setImagesReady] = useState<boolean>(false);
 
   const [canvasIsReadyToShow, setCanvasIsReadyToShow] = useState<boolean>(
@@ -385,13 +384,13 @@ export const ClanBannerDisplay: React.FC<ClanBannerProps> = (props) => {
     }
   }, [imagesReady]);
 
-  const imageLoaded = () => {
-    const newValue = numImagesLoaded + 1;
+  let newNumber = 0;
 
-    addToReadyImages(newValue);
+  const imageLoaded = () => {
+    newNumber++;
 
     //there are 6 images that need to be loaded total
-    if (newValue === 6) {
+    if (newNumber === 5) {
       setImagesReady(true);
     }
   };
@@ -476,7 +475,6 @@ export const ClanBannerDisplay: React.FC<ClanBannerProps> = (props) => {
         />
         <canvas ref={staffCanvasRef} id="staff" width="496" height="1034" />
       </div>
-
       {canvasIsReadyToShow && (
         <div
           className={styles.clanBanner}

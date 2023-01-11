@@ -50,7 +50,6 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Reports"),
         (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
-        (area) => new ActionRoute(area, "MigrateNews"),
       ],
     }),
     BungieTech: new Area({
