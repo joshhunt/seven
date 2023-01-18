@@ -1,4 +1,4 @@
-// Created by v-ahipp, 2022
+// Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
 import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/LightfallSectionHeader/LightfallSectionHeader";
@@ -16,13 +16,13 @@ import DestinySkuSelectorModal from "../../../../../UI/Destiny/SkuSelector/Desti
 import styles from "./LightfallEditionsSection.module.scss";
 
 interface LightfallEditionsSectionProps {
-  data?: any;
+  data?: BnetStackNebulaProductPage["editions_section"];
 }
 
 export const LightfallEditionsSection: React.FC<LightfallEditionsSectionProps> = (
   props
 ) => {
-  const { edition_block, title, blurb, bg } = props.data ?? {};
+  const { edition_block, heading, blurb, bg } = props.data ?? {};
 
   const { mobile } = useDataStore(Responsive);
 
@@ -39,9 +39,9 @@ export const LightfallEditionsSection: React.FC<LightfallEditionsSectionProps> =
     >
       <div className={styles.sectionContent}>
         <LightfallSectionHeader
-          heading={title}
+          heading={heading}
           blurb={blurb}
-          classes={{ root: styles.root }}
+          alignment={"center"}
         />
         <div className={styles.editions}>
           <EditionBlock data={edition_block} isStandard />

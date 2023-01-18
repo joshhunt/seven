@@ -1,4 +1,4 @@
-// Created by v-ahipp, 2022
+// Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
 import { AnimatedStrandGuardians } from "@Areas/Destiny/Lightfall/components/AnimatedStrandGuardians/AnimatedStrandGuardians";
@@ -16,7 +16,7 @@ import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
 import classNames from "classnames";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BnetStackNebulaProductPage } from "../../../Generated/contentstack-types";
 import { Responsive } from "@Boot/Responsive";
 import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
@@ -25,39 +25,16 @@ import {
   responsiveBgImageFromStackFile,
 } from "@Utilities/ContentStackUtils";
 import styles from "./Lightfall.module.scss";
-import { CampaignSection } from "@Areas/Destiny/Lightfall/sections/CampaignSection/CampaignSection";
-import { LightfallGuardiansSection } from "@Areas/Destiny/Lightfall/sections/LightfallGuardiansSection/LightfallGuardiansSection";
-import { LightfallNeonSection } from "@Areas/Destiny/Lightfall/sections/LightfallNeonSection/LightfallNeonSection";
-import { LightfallQuicksilverSection } from "@Areas/Destiny/Lightfall/sections/LightfallQuicksilverSection/LightfallQuicksilverSection";
-import { LightfallGearSection } from "@Areas/Destiny/Lightfall/sections/LightfallGearSection/LightfallGearSection";
-import { useCSWebpImages } from "@Utilities/CSUtils";
-import { PmpButton } from "@UI/Marketing/FragmentComponents/PmpButton";
-import { ScrollToAnchorTags } from "@UI/Navigation/ScrollToAnchorTags";
-import { LightfallStrandSection } from "@Areas/Destiny/Lightfall/sections/LightfallStrandSection/LightfallStrandSection";
 
 const contentReferences: string[] = [
-  "hero.buy_btn",
-  "hero.trailer_btn",
-  "our_end_section",
-  "campaign_section.content",
-  "strand_section.button",
-  "neon_section.button",
-  "neon_section.content",
-  "quicksilver_section.button",
-  "gear_section.button",
-  "gear_section.content",
-  "outrun_section.content",
-  "editions_section",
-  "media.content",
-  "ce.buy_button",
+  "our_end_section.top_header.thumbnails",
+  "our_end_section.bottom_header.thumbnails",
+  "outrun_section.info_blocks",
+  "media",
 ];
 
 const Lightfall: React.FC = () => {
-  const [data, setData] = useState<any | null>(null);
-  const [
-    nebulaData,
-    setNebulaData,
-  ] = useState<BnetStackNebulaProductPage | null>(null);
+  const [data, setData] = useState<BnetStackNebulaProductPage | null>(null);
 
   const heroRef = useRef<HTMLDivElement | null>(null);
   const topContent = useRef<HTMLDivElement | null>(null);
@@ -67,62 +44,42 @@ const Lightfall: React.FC = () => {
 
   useEffect(() => {
     ContentStackClient()
-      .ContentType("lightfall_product_page")
-      .Entry("bltf3c80cd20d786d54")
+      .ContentType("nebula_product_page")
+      .Entry("blt1687fccada8d316b")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
       .includeReference(contentReferences)
       .toJSON()
       .fetch()
       .then(setData);
-
-    ContentStackClient()
-      .ContentType("nebula_product_page")
-      .Entry("blt1687fccada8d316b")
-      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference([])
-      .toJSON()
-      .fetch()
-      .then(setNebulaData);
   }, []);
 
   const {
-    meta,
-    hero,
-    sticky_nav_skus,
-    sticky_buy_nav,
-    our_end_section,
-    campaign_section,
     strand_section,
-    guardian_toasts,
-    neon_section,
-    quicksilver_section,
-    gear_section,
+    our_end_section,
     outrun_section,
     editions_section,
-    ce,
     media,
-    desktop_bg_bottom,
-    mobile_bg_bottom,
+    bottom_image,
+    hero,
+    bottom_img_mobile,
+    guardian_toasts,
+    ce,
+    sticky_nav_skus,
+    sticky_buy_nav,
+    img_swap_test,
+    meta,
   } = data ?? {};
-
-  const {
-    strand_section: oldStrandSection,
-    guardian_toasts: oldGuardianToasts,
-  } = nebulaData ?? {};
-
-  const imgs = useCSWebpImages(
-    useMemo(
-      () => ({
-        bg: mobile ? mobile_bg_bottom?.url : desktop_bg_bottom?.url,
-      }),
-      [mobile_bg_bottom, desktop_bg_bottom, mobile]
-    )
-  );
 
   return (
     <div
       className={styles.lightfallContent}
-      style={{ backgroundImage: `url(${imgs?.bg})` }}
+      style={{
+        backgroundImage: responsiveBgImageFromStackFile(
+          bottom_image,
+          bottom_img_mobile,
+          mobile
+        ),
+      }}
     >
       <BungieHelmet
         title={meta?.title}
@@ -137,17 +94,15 @@ const Lightfall: React.FC = () => {
         />
       </BungieHelmet>
 
-      <ScrollToAnchorTags animate={true} />
-
       <div className={styles.topContent} ref={topContent}>
         {/* HERO */}
         <div ref={heroRef}>
-          <LightfallHero data={hero} />
+          <LightfallHero data={hero} TestCData={img_swap_test} />
         </div>
 
         <LightfallStickyNav
           heroRef={heroRef}
-          skus={sticky_nav_skus?.map((s: any) => {
+          skus={sticky_nav_skus?.map((s) => {
             return { label: s.lf_sku.label, sku: s.lf_sku.sku_tag };
           })}
           logo={sticky_buy_nav?.lf_logo?.desktop_bg?.url}
@@ -157,50 +112,49 @@ const Lightfall: React.FC = () => {
         />
 
         {/* OUR END SECTION */}
-        <div id={"our-end"} className={styles.anchor} />
-        <OurEndSection data={our_end_section} />
+        <OurEndSection data={our_end_section} TestCData={img_swap_test} />
 
-        {/* CAMPAIGN SECTION */}
-        <div id={"campaign"} className={styles.anchor} />
-        <CampaignSection data={campaign_section} />
-
-        {/* STRAND SECTION */}
-        <div id={"strand"} className={styles.anchor} />
-        <LightfallStrandSection data={strand_section} />
+        {/* STRAND HEADER CONTENT */}
+        <div
+          className={classNames(styles.section, styles.strandHeader)}
+          style={{
+            backgroundImage: responsiveBgImage(
+              strand_section?.bg?.desktop_bg?.url,
+              strand_section?.bg?.mobile_bg?.url,
+              mobile
+            ),
+          }}
+        >
+          <div className={styles.sectionContent}>
+            <LightfallSectionHeader
+              heading={strand_section?.heading}
+              blurb={strand_section?.blurb}
+              largeHeading={strand_section?.large_heading}
+              textBg={strand_section?.text_bg?.url}
+              classes={{ largeHeading: styles.strandLargeHeading }}
+            />
+          </div>
+        </div>
       </div>
 
-      {strand_section?.legacy_strand_section ? (
-        <AnimatedStrandGuardians
-          data={oldStrandSection?.guardians_graphic}
-          toasts={oldGuardianToasts}
-          aboveContent={topContent}
-          belowContent={bottomContent}
-        />
-      ) : (
-        <LightfallGuardiansSection data={{ guardians: guardian_toasts }} />
-      )}
+      <AnimatedStrandGuardians
+        data={strand_section?.guardians_graphic}
+        toasts={guardian_toasts}
+        aboveContent={topContent}
+        belowContent={bottomContent}
+      />
 
       <div className={styles.bottomContent} ref={bottomContent}>
-        {/* NEON SECTION */}
-        <div id={"neon"} />
-        <LightfallNeonSection data={neon_section} />
-
-        {/* QUICKSILVER SECTION */}
-        <div id={"quicksilver"} />
-        <LightfallQuicksilverSection data={quicksilver_section} />
-
-        {/* GEAR SECTION */}
-        <div id={"gear"} />
-        <LightfallGearSection data={gear_section} />
-
-        <OutrunTheEndSection data={outrun_section} />
+        {/* OUTRUN THE END SECTION */}
+        <OutrunTheEndSection
+          data={outrun_section}
+          ctaBtnText={ce?.buy_btn_text}
+        />
 
         {/* EDITIONS SELECTOR */}
-        <div id={"editions"} className={styles.anchor} />
         <LightfallEditionsSection data={editions_section} />
 
         {/* CE */}
-        <div id={"collectors-edition"} />
         <div
           className={classNames(styles.section, styles.ce)}
           style={{
@@ -212,19 +166,20 @@ const Lightfall: React.FC = () => {
           }}
         >
           <div className={styles.sectionContent}>
-            <LightfallSectionHeader heading={ce?.heading} blurb={ce?.blurb} />
-            {ce?.buy_button.map((b: any) => (
-              <PmpButton key={b.uid} className={styles.buyBtn} {...b}>
-                {b.label}
-              </PmpButton>
-            ))}
+            <LightfallSectionHeader
+              heading={ce?.heading}
+              blurb={ce?.blurb}
+              alignment={"center"}
+            />
+            <Button url={ce?.buy_btn_url} className={styles.buyBtn}>
+              {ce?.buy_btn_text}
+            </Button>
           </div>
         </div>
 
         {/* MEDIA */}
-        <div id={"media"} className={styles.anchor} />
         <PmpMedia
-          data={media?.content?.[0]}
+          data={media?.[0]}
           classes={{
             tab: styles.mediaTab,
             selectedTab: styles.selected,

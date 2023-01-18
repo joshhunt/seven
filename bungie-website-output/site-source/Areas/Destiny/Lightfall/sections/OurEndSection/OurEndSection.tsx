@@ -8,58 +8,86 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { responsiveBgImage } from "@Utilities/ContentStackUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React, { useMemo } from "react";
+import React from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./OurEndSection.module.scss";
-import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
-import { useCSWebpImages } from "@Utilities/CSUtils";
 
 interface OurEndSectionProps {
-  data?: any;
+  data?: BnetStackNebulaProductPage["our_end_section"];
+  TestCData?: BnetStackNebulaProductPage["img_swap_test"];
 }
 
 export const OurEndSection: React.FC<OurEndSectionProps> = (props) => {
-  const { data } = props;
-  const { title, blurb, desktop_bg, desktop_video, mobile_bg } = data ?? {};
-  const { mobile } = useDataStore(Responsive);
+  const { top_header, bottom_header, top_bg, bottom_bg } = props.data ?? {};
 
-  const imgs = useCSWebpImages(
-    useMemo(
-      () => ({
-        background: mobile ? mobile_bg?.url : null,
-      }),
-      [data, mobile]
-    )
-  );
+  const { mobile } = useDataStore(Responsive);
+  const urlParams = UrlUtils.useQuery();
+
+  const TestC = urlParams.get("t_sept1_ourend") === "true";
+
+  const desktopBgTop = TestC
+    ? props.TestCData?.our_end_bg?.desktop_bg
+    : top_bg?.desktop_bg;
+  const mobileBgTop = TestC
+    ? props.TestCData?.our_end_bg?.mobile_bg
+    : top_bg?.mobile_bg;
 
   return (
     <div
       className={styles.section}
-      style={{ backgroundImage: imgs.background && `url(${imgs.background})` }}
+      style={{
+        backgroundImage: responsiveBgImage(
+          desktopBgTop?.url,
+          mobileBgTop?.url,
+          mobile
+        ),
+      }}
     >
-      {!mobile && desktop_video && (
-        <video
-          className={styles.heroVid}
-          poster={desktop_bg?.url}
-          autoPlay
-          muted
-          playsInline
-          loop
-          controls={false}
-        >
-          <source src={desktop_video?.url} type={"video/mp4"} />
-        </video>
-      )}
-      <div className={styles.container}>
+      <div className={styles.sectionContent}>
         <LightfallSectionHeader
-          heading={title}
-          blurb={blurb}
-          dividerColor="#D40066"
+          blurb={top_header?.blurb}
+          heading={top_header?.heading}
+          largeHeading={top_header?.large_heading}
+          textBg={top_header?.text_bg?.url}
+          classes={{ largeHeading: styles.largeHeading }}
+          withDivider
+        />
+        <LightfallTripleImageSet
+          data={top_header?.thumbnails?.[0]}
           classes={{
-            content: styles.content,
-            title: styles.title,
+            root: styles.topImgSet,
+            thumbWrapper: styles.topThumbWrapper,
           }}
         />
+      </div>
+
+      <div className={classNames(styles.section, styles.bottomSection)}>
+        <div
+          className={styles.sectionBg}
+          style={{
+            backgroundImage: responsiveBgImage(
+              bottom_bg?.desktop_bg?.url,
+              bottom_bg?.mobile_bg?.url,
+              mobile
+            ),
+          }}
+        />
+        <div className={styles.sectionContent}>
+          <LightfallSectionHeader
+            classes={{ root: styles.neonHeader }}
+            heading={bottom_header?.heading}
+            blurb={bottom_header?.blurb}
+            alignment={"right"}
+            withDivider
+          />
+          <LightfallTripleImageSet
+            data={bottom_header?.thumbnails?.[0]}
+            classes={{
+              root: styles.bottomImgSet,
+              thumbWrapper: styles.bottomThumbWrapper,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

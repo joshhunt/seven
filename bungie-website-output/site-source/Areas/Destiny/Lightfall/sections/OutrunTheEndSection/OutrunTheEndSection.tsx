@@ -13,58 +13,53 @@ import {
   bgImage,
   responsiveBgImageFromStackFile,
 } from "@Utilities/ContentStackUtils";
-import React, { useMemo } from "react";
+import React from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./OutrunTheEndSection.module.scss";
-import { useCSWebpImages } from "@Utilities/CSUtils";
 
 interface OutrunTheEndSectionProps {
-  data?: any;
+  data?: BnetStackNebulaProductPage["outrun_section"];
   ctaBtnText?: string;
 }
 
 export const OutrunTheEndSection: React.FC<OutrunTheEndSectionProps> = (
   props
 ) => {
-  const { data } = props;
   const {
     bottom_header,
-    desktop_bg,
-    mobile_bg,
-    heading,
-    blurb,
+    bottom_bg,
+    top_header,
+    top_bg,
     weapon_img,
-    content,
-  } = data ?? {};
+    info_blocks,
+  } = props.data ?? {};
 
   const { mobile } = useDataStore(Responsive);
 
-  const imgs = useCSWebpImages(
-    useMemo(
-      () => ({
-        background: mobile ? mobile_bg?.url : desktop_bg?.url,
-      }),
-      [data, mobile]
-    )
+  const topBg = responsiveBgImageFromStackFile(
+    top_bg?.desktop_bg,
+    top_bg?.mobile_bg,
+    mobile
+  );
+  const bottomBg = responsiveBgImageFromStackFile(
+    bottom_bg?.desktop_bg,
+    bottom_bg?.mobile_bg,
+    mobile
   );
 
   return (
     <div
       className={styles.section}
-      style={{ backgroundImage: `url(${imgs.background})` }}
+      style={{ backgroundImage: `${topBg}, ${bottomBg}` }}
     >
       <div className={styles.sectionContent}>
         <LightfallSectionHeader
-          heading={heading}
-          blurb={blurb}
-          classes={{
-            root: styles.header,
-            content: styles.content,
-          }}
+          heading={top_header?.heading}
+          blurb={top_header?.blurb}
+          alignment={"center"}
         />
-
         <PmpStackedInfoThumbBlocks
-          data={content?.[0]}
+          data={info_blocks?.[0]}
           classes={{
             root: styles.infoBlocks,
             heading: styles.heading,
@@ -76,6 +71,36 @@ export const OutrunTheEndSection: React.FC<OutrunTheEndSectionProps> = (
           }}
           reverseAlignment={true}
         />
+
+        <img src={weapon_img?.url} className={styles.weaponImg} />
+
+        <LightfallSectionHeader
+          heading={bottom_header?.heading}
+          blurb={bottom_header?.blurb}
+          largeHeading={bottom_header?.large_heading}
+          textBg={bottom_header?.text_bg?.url}
+          classes={{ largeHeading: styles.weaponLargeHeading }}
+          alignment={"center"}
+        >
+          <div className={styles.cta}>
+            <p className={styles.ctaHeading}>{bottom_header?.cta_heading}</p>
+            <Anchor
+              className={styles.ctaLink}
+              style={{ backgroundImage: bgImage(bottom_header?.cta_bg?.url) }}
+              url={RouteHelper.DestinyBuyDetail({
+                productFamilyTag: "Lightfall",
+              })}
+            >
+              {bottom_header?.cta_link_text}
+            </Anchor>
+          </div>
+        </LightfallSectionHeader>
+        <Button
+          url={RouteHelper.DestinyBuyDetail({ productFamilyTag: "Lightfall" })}
+          className={styles.buyBtn}
+        >
+          {props.ctaBtnText}
+        </Button>
       </div>
     </div>
   );
