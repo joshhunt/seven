@@ -22,7 +22,7 @@ import {
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
-import { GroupsV2, Platform, Responses } from "@Platform";
+import { Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IProfileParams } from "@Routes/RouteParams";
 import { Error404 } from "@UI/Errors/Error404";
@@ -422,7 +422,9 @@ const Profile: React.FC<ProfileProps> = (props) => {
                         );
                         if (
                           value.membershipType !==
-                          BungieMembershipType.BungieNext
+                            BungieMembershipType.BungieNext &&
+                          value.membershipType !==
+                            BungieMembershipType.TigerStadia
                         ) {
                           return (
                             <li

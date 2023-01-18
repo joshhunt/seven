@@ -1,14 +1,14 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import { EnumUtils } from "@Utilities/EnumUtils";
-import * as React from "react";
-import { UserUtils } from "@Utilities/UserUtils";
-import styles from "./DestinyPlatformSelector.module.scss";
-import { User, Platform } from "@Platform";
-import { IDropdownOption, Dropdown } from "@UI/UIKit/Forms/Dropdown";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
+import { Platform, User } from "@Platform";
+import { Dropdown, IDropdownOption } from "@UI/UIKit/Forms/Dropdown";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { UserUtils } from "@Utilities/UserUtils";
+import * as React from "react";
+import styles from "./DestinyPlatformSelector.module.scss";
 
 // Required props
 interface IDestinyPlatformSelectorProps {
@@ -146,25 +146,31 @@ export class DestinyPlatformSelector extends React.Component<
             ),
           },
         ]
-      : this.props.userMembershipData.destinyMemberships.map((value) => {
-          const bMembershipTypeString = EnumUtils.getStringValue(
-            value.membershipType,
-            BungieMembershipType
-          );
-          const bCredentialTypeString = EnumUtils.getStringValue(
-            UserUtils.getCredentialTypeFromMembershipType(value.membershipType),
-            BungieCredentialType
-          );
-          const sanitizedPlatformName = this.state.credentialNameMap?.[
-            bCredentialTypeString
-          ];
+      : this.props.userMembershipData.destinyMemberships
+          .filter(
+            (dm) => dm.membershipType !== BungieMembershipType.TigerStadia
+          )
+          .map((value) => {
+            const bMembershipTypeString = EnumUtils.getStringValue(
+              value.membershipType,
+              BungieMembershipType
+            );
+            const bCredentialTypeString = EnumUtils.getStringValue(
+              UserUtils.getCredentialTypeFromMembershipType(
+                value.membershipType
+              ),
+              BungieCredentialType
+            );
+            const sanitizedPlatformName = this.state.credentialNameMap?.[
+              bCredentialTypeString
+            ];
 
-          return {
-            iconPath: value.iconPath,
-            label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
-            value: bMembershipTypeString,
-          };
-        });
+            return {
+              iconPath: value.iconPath,
+              label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
+              value: bMembershipTypeString,
+            };
+          });
 
     return !!crossSavePlatform && this.props.showCrossSaveBanner ? (
       <div className={styles.crossSaveBanner}>
