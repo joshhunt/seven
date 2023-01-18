@@ -7,7 +7,6 @@ import DestinySkuConfigDataStore, {
 import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
-import { SiStadia } from "@react-icons/all-files/si/SiStadia";
 import { SiPlaystation } from "@react-icons/all-files/si/SiPlaystation";
 import { FaSteam } from "@react-icons/all-files/fa/FaSteam";
 import { FaXbox } from "@react-icons/all-files/fa/FaXbox";
@@ -29,7 +28,6 @@ const Icons: Record<IDestinySkuStore["key"], React.ElementType> = {
   Playstation: SiPlaystation,
   Xbox: FaXbox,
   Steam: FaSteam,
-  Stadia: SiStadia,
   MicrosoftPC: FaMicrosoft,
   Epic: SiEpicgames,
 };

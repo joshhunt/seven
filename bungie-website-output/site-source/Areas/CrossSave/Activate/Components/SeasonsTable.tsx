@@ -12,6 +12,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { BungieMembershipType, DestinyGameVersions } from "@Enum";
+import { SystemNames } from "@Global/SystemNames";
 import { Seasons } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -165,6 +166,13 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
 
     if (membershipType === BungieMembershipType.TigerXbox) {
       return msCell(seasonHash, platformStatus, key);
+    }
+
+    if (
+      !ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth) &&
+      membershipType === BungieMembershipType.TigerStadia
+    ) {
+      return null;
     }
 
     return (

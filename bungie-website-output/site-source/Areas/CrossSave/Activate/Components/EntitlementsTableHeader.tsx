@@ -3,14 +3,11 @@
 
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
 import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
-import { SiStadia } from "@react-icons/all-files/si/SiStadia";
 import { SiPlaystation } from "@react-icons/all-files/si/SiPlaystation";
 import { FaSteam } from "@react-icons/all-files/fa/FaSteam";
 import { FaXbox } from "@react-icons/all-files/fa/FaXbox";
@@ -46,14 +43,6 @@ export const EntitlementsTableHeader: React.FC<EntitlementsTableHeaderProps> = (
     )}`;
 
     switch (membershipType) {
-      case BungieMembershipType.TigerStadia:
-        return (
-          <th className={styles[platformStatus]} key={key}>
-            <SiStadia />
-            {crosssaveLoc.StadiaHeader} {statusString}
-          </th>
-        );
-
       case BungieMembershipType.TigerXbox:
         return (
           <th className={styles[platformStatus]} key={key}>

@@ -6,7 +6,6 @@ import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import StadiaRegister from "./StadiaRegister";
 import EventsRouter from "@Areas/Seasons/Events/EventsRouter";
 import Reveal from "./Reveal";
 import { Companion } from "./Companion/Companion";
@@ -122,7 +121,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           />
           <Route path={beyondLightPath} component={BeyondLight} />
           <Route path={companionPath} component={Companion} />
-          <Route path={stadiaRegister} component={StadiaRegister} />
           <Route path={infoFlowUrl} component={EventsRouter} />
           <Route path={revealPath} component={Reveal} />
           <Route path={indexPath}>

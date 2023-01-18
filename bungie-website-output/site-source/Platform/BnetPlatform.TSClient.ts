@@ -3550,6 +3550,22 @@ export declare namespace Responses {
 	*/
   export interface DestinyProfileResponse {
     /**
+		Records the timestamp of when most components were last generated from the world server source. Unless the component type is specified
+		in the documentation for secondaryComponentsMintedTimestamp, this value is sufficient to do data freshness.
+		*/
+    responseMintedTimestamp: string;
+
+    /**
+		Some secondary components are not tracked in the primary response timestamp and have their timestamp tracked here.  If your component is any of the following,
+		 this field is where you will find your timestamp value:
+		
+		 PresentationNodes, Records, Collectibles, Metrics, StringVariables, Craftables, Transitory
+		
+		 All other component types may use the primary timestamp property.
+		*/
+    secondaryComponentsMintedTimestamp: string;
+
+    /**
 		Recent, refundable purchases you have made from vendors.  When will you use it?  Couldn't say...
 		
 		COMPONENT TYPE: VendorReceipts
@@ -5393,6 +5409,8 @@ export declare namespace Content {
     NextPaginationToken?: number;
 
     ResultCountThisPage: number;
+
+    CategoryFilter: string;
   }
 
   export interface NewsArticleRssItem {
@@ -19214,6 +19232,11 @@ export declare namespace CrossSave {
 		consider it to be "fresh" enough of a login for Cross Save purposes.
 		*/
     expirationDate?: string;
+
+    /**
+		True if this membership is a legacy cross save and can no longer be created (will always show as authenticated = true)
+		*/
+    IsLegacy: boolean;
   }
 
   /**
@@ -22007,18 +22030,23 @@ class ContentServiceInternal {
    * Returns a JSON string response that is the RSS feed for news articles.
    * @param pageToken Zero-based pagination token for paging through result sets.
    * @param includebody Optionally include full content body for each news item.
+   * @param categoryfilter Optionally filter response to only include news items in a certain category.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static RssNewsArticles = (
     pageToken: string,
     includebody: boolean,
+    categoryfilter: string,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Content.NewsArticleRssResponse> =>
     ApiIntermediary.doGetRequest(
       `/Content/Rss/NewsArticles/${e(pageToken)}/`,
-      [["includebody", includebody]],
+      [
+        ["includebody", includebody],
+        ["categoryfilter", categoryfilter],
+      ],
       optionalQueryAppend,
       "Content",
       "RssNewsArticles",

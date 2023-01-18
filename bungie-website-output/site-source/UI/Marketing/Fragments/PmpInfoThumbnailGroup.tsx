@@ -24,6 +24,7 @@ type PmpInfoThumbnailGroupProps = DataReference<
     thumbBlockWrapper?: string;
     thumbnail?: string;
     thumbBg?: string;
+    caption?: string;
     heading?: string;
     blurb?: string;
   };
@@ -43,7 +44,9 @@ export const PmpInfoThumbnailGroup: React.FC<PmpInfoThumbnailGroupProps> = (
       {data && (
         <div className={classNames(styles.flexWrapper, classes?.root)}>
           {thumbnail_blocks?.map((t, i) => {
-            const { heading, blurb } = getThumbBlockItem(t);
+            // TODO: v-ahipp needs to update the types so caption is available
+            // @ts-ignore
+            const { heading, caption, blurb } = getThumbBlockItem(t);
 
             return (
               <div
@@ -53,16 +56,26 @@ export const PmpInfoThumbnailGroup: React.FC<PmpInfoThumbnailGroupProps> = (
                   classes?.thumbBlockWrapper
                 )}
               >
+                {caption ? (
+                  <p className={classNames(styles.caption, classes?.caption)}>
+                    {caption}
+                  </p>
+                ) : null}
                 <InfoBlockThumbnail
                   thumbItem={t}
                   allImageData={thumbnail_blocks}
+                  classes={{ thumbBg: classes?.thumbBg }}
                 />
-                <p className={classNames(styles.heading, classes?.heading)}>
-                  {heading}
-                </p>
-                <p className={classNames(styles.blurb, classes?.blurb)}>
-                  {blurb}
-                </p>
+                {heading ? (
+                  <p className={classNames(styles.heading, classes?.heading)}>
+                    {heading}
+                  </p>
+                ) : null}
+                {blurb ? (
+                  <p className={classNames(styles.blurb, classes?.blurb)}>
+                    {blurb}
+                  </p>
+                ) : null}
               </div>
             );
           })}
@@ -79,11 +92,14 @@ const getThumbBlockItem = (item: PmpInfoThumbnailGroupItem) => {
 type InfoBlockThumbnailProps = {
   thumbItem: PmpInfoThumbnailGroupItem;
   allImageData: PmpInfoThumbnailGroupItem[];
+  classes?: {
+    thumbBg?: string;
+  };
 };
 
 /* Renders appropriate thumbnail based on type of modal thumbnail opens on click */
 const InfoBlockThumbnail: React.FC<InfoBlockThumbnailProps> = (props) => {
-  const { thumbItem, allImageData } = props;
+  const { thumbItem, allImageData, classes } = props;
   const { screenshot_thumb, video_thumb } = thumbItem;
 
   const imgModalData = getScreenshotPaginationData(
@@ -98,7 +114,7 @@ const InfoBlockThumbnail: React.FC<InfoBlockThumbnailProps> = (props) => {
 
   const thumbProps: ImageThumbProps = {
     classes: {
-      image: styles.thumbBg,
+      image: classNames([styles.thumbBg, classes?.thumbBg]),
       imageContainer: styles.thumbnail,
     },
     image: getThumbBlockItem(thumbItem)?.thumbnail?.url,

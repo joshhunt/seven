@@ -3,15 +3,12 @@
 
 import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
 import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
+import { ConfirmPlatformLinkingModal } from "@Areas/User/AccountComponents/Internal/ConfirmPlatformLinkingModal";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { BungieMembershipType, DestinyGameVersions } from "@Enum";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
-import {
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
+import { BungieMembershipType, DestinyGameVersions } from "@Enum";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
@@ -24,7 +21,6 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import classNames from "classnames";
 import React, { PropsWithChildren, useEffect } from "react";
 import { CrossSaveAccountCard } from "./Activate/Components/CrossSaveAccountCard";
 import { CrossSaveAccountLinkItem } from "./Activate/Components/CrossSaveAccountLinkItem";
@@ -54,6 +50,10 @@ const CrossSaveRecap: React.FC<
     "loggedInUser",
     "loggedInUserClans",
   ]);
+
+  useEffect(() => {
+    CrossSaveFlowStateDataStore.loadUserData();
+  }, []);
 
   const entitlementOwned = (
     membershipType: BungieMembershipType,
@@ -112,12 +112,21 @@ const CrossSaveRecap: React.FC<
         flowState.primaryMembershipType && myClan.group.groupType === 1
   )[0];
   const linkedAccounts = flowState.includedMembershipTypes || [];
+
   const deactivateLink = RouteDefs.Areas.CrossSave.getAction(
     "Deactivate"
   ).resolve();
   const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
     flowState
+  ).sort((mt) => (linkedAccounts.includes(mt) ? -1 : 0));
+
+  const stadiaIsCrossSavePrimary = EnumUtils.looseEquals(
+    globalState?.crossSavePairingStatus?.primaryMembershipType,
+    BungieMembershipType.TigerStadia,
+    BungieMembershipType
   );
+  const stadiaIsOff = !ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth);
+  const stadiaIsPrimaryPostSunset = stadiaIsCrossSavePrimary && stadiaIsOff;
 
   return (
     <SpinnerContainer
@@ -150,6 +159,34 @@ const CrossSaveRecap: React.FC<
 
       <Grid strictMode={true}>
         <div className={styles.linkedAccounts}>
+          {stadiaIsPrimaryPostSunset && (
+            <div className={styles.accountLinkItem}>
+              <CrossSaveAccountCard
+                flowState={flowState}
+                membershipType={BungieMembershipType.TigerStadia}
+                hideCharacters={true}
+                hideAccountInfo={true}
+              >
+                <div className={styles.displayName}>
+                  {
+                    flowState.pairingStatus?.profiles?.[
+                      EnumUtils.getStringValue(
+                        BungieMembershipType.TigerStadia,
+                        BungieMembershipType
+                      )
+                    ].platformDisplayName
+                  }
+                </div>
+                <div className={styles.silverContainer}>
+                  <CrossSaveSilverBalance
+                    crossSaveActive={true}
+                    membershipType={BungieMembershipType.TigerStadia}
+                    flowState={flowState}
+                  />
+                </div>
+              </CrossSaveAccountCard>
+            </div>
+          )}
           {pairableMembershipTypes.map((mt, i) => (
             <div className={styles.accountLinkItem} key={i}>
               {linkedAccounts && linkedAccounts.includes(mt) ? (
@@ -161,7 +198,7 @@ const CrossSaveRecap: React.FC<
                 >
                   <div className={styles.displayName}>
                     {
-                      flowState.pairingStatus.profiles[
+                      flowState.pairingStatus?.profiles?.[
                         BungieMembershipType[mt] as EnumStrings<
                           typeof BungieMembershipType
                         >
@@ -174,42 +211,6 @@ const CrossSaveRecap: React.FC<
                       membershipType={mt}
                       flowState={flowState}
                     />
-                  </div>
-                  <div className={styles.entitlementsContainer}>
-                    {CrossSaveValidGameVersions.map((gv) =>
-                      entitlementOwned(mt, gv) ? (
-                        <div key={gv} className={styles.owned}>
-                          <Icon
-                            className={styles.ownedIcon}
-                            iconType={"fa"}
-                            iconName={"check"}
-                          />
-                          {Localizer.Format(Localizer.Crosssave.OwnedLabel, {
-                            platformName:
-                              Localizer.Crosssave[DestinyGameVersions[gv]],
-                          })}
-                        </div>
-                      ) : (
-                        <Button
-                          key={gv}
-                          size={BasicSize.Small}
-                          buttonType={"gold"}
-                          url={createBuyOrDownloadLink(gv)}
-                          className={styles.notOwnedButton}
-                          caps={true}
-                        >
-                          {DestinyGameVersions.Destiny2 === gv
-                            ? Localizer.Format(
-                                Localizer.Crosssave.DownloadLabel,
-                                { platformName: Localizer.Crosssave.Destiny2 }
-                              )
-                            : Localizer.Format(Localizer.Crosssave.BuyLabel, {
-                                platformName:
-                                  Localizer.Crosssave[DestinyGameVersions[gv]],
-                              })}
-                        </Button>
-                      )
-                    )}
                   </div>
                 </CrossSaveAccountCard>
               ) : (

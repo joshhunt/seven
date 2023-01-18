@@ -1,7 +1,10 @@
 // Created by a-bphillips, 2022
 // Copyright Bungie, Inc.
 
-import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import {
   bgImage,
   bgImageFromStackFile,
@@ -11,63 +14,41 @@ import classNames from "classnames";
 import React from "react";
 import styles from "./LightfallSectionHeader.module.scss";
 
-interface LightfallSectionHeaderProps {
-  largeHeading?: string;
+interface LightfallSectionHeaderProps extends React.HTMLProps<HTMLDivElement> {
   heading: string;
   blurb: string;
-  children?: React.ReactNode;
-  withDivider?: boolean;
-  /** Alignment of content, defaulting to 'left' */
-  alignment?: "left" | "center" | "right";
-  /** Image to use as background image for large heading */
-  textBg?: string;
+  dividerColor?: string;
   classes?: {
     largeHeading?: string;
+    title?: string;
     root?: string;
+    divider?: string;
+    content?: string;
   };
 }
 
 export const LightfallSectionHeader: React.FC<LightfallSectionHeaderProps> = (
   props
 ) => {
-  const {
-    largeHeading,
-    heading,
-    blurb,
-    alignment,
-    withDivider,
-    textBg,
-    classes,
-    children,
-  } = props;
-
-  const headingBg = textBg && bgImage(textBg);
+  const { heading, blurb, dividerColor, classes, children } = props;
 
   return (
-    <div
-      className={classNames(
-        styles.header,
-        styles[alignment ?? "left"],
-        classes?.root
-      )}
-    >
-      {largeHeading && textBg && (
-        <h2
-          className={classNames(styles.floatingHeading, classes?.largeHeading)}
-          style={{ backgroundImage: textBg ? `${headingBg}` : undefined }}
-        >
-          {largeHeading}
-        </h2>
-      )}
-      <div className={styles.textWrapper}>
-        <h2 className={styles.heading}>
-          <SafelySetInnerHTML html={heading} />
-        </h2>
-        {children}
-        {withDivider && <div className={styles.divider} />}
+    <div className={classNames([styles.root, classes?.root])}>
+      <h3
+        className={classNames([styles.title, classes?.title])}
+        dangerouslySetInnerHTML={sanitizeHTML(heading)}
+      />
+      {dividerColor ? (
+        <div
+          className={classNames([styles.divider, classes?.divider])}
+          style={{ backgroundColor: dividerColor }}
+        />
+      ) : null}
+      <div className={classNames([styles.content, classes?.content])}>
         <p className={styles.blurb}>
           <SafelySetInnerHTML html={blurb} />
         </p>
+        {children}
       </div>
     </div>
   );

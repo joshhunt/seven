@@ -26,7 +26,6 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
 
   // the specific global alert bar should not control its visibility status, but it should define the requirements for it to show initially and
   // then defer to localStorage which is updated by GlobalBar itself
-  // previously, once the localStorage value was set to not show, we never updated it again. Now it will update to show again if someone changes their email
   const isVisibleInitially = () => {
     const showEmailAlert = !EnumUtils.looseEquals(
       getEmailValidationState(),
@@ -34,15 +33,16 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
       EmailValidationState
     );
 
+    //never show the bar if users email is validated
+    if (!showEmailAlert) {
+      return false;
+    }
+
+    //use the localstorage as a fallback
     if (!!window.localStorage?.getItem(emailLocalStorageKey)) {
       return window.localStorage.getItem(emailLocalStorageKey) === "true";
     } else {
-      window.localStorage.setItem(
-        emailLocalStorageKey,
-        showEmailAlert.toString()
-      );
-
-      return showEmailAlert;
+      return true;
     }
   };
 

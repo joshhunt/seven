@@ -4,7 +4,6 @@ import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { Localizer } from "@bungie/localization";
-import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { CrossSave } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -32,6 +31,7 @@ interface ICrossSaveAccountLinkItemProps {
   hideAccountInfo?: boolean;
   onAccountLinked?: (shouldReset: boolean) => Promise<any>;
   resetAuth?: boolean;
+  isDeactivateFlow?: boolean;
 }
 
 /**
@@ -210,9 +210,11 @@ export const CrossSaveAccountLinkItem: React.FC<ICrossSaveAccountLinkItemProps> 
         </div>
       ) : (
         <div className={styles.actionWrapper}>
-          <div className={styles.text}>
-            {Localizer.Profile.PlatformLinkingOff}
-          </div>
+          {!props?.isDeactivateFlow && (
+            <div className={styles.text}>
+              {Localizer.Profile.PlatformLinkingOff}
+            </div>
+          )}
         </div>
       )}
     </CrossSaveAccountCard>

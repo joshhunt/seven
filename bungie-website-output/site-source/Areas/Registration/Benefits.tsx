@@ -123,17 +123,12 @@ class Benefits extends React.Component<Props, IBenefitsState> {
     const accountSettings = Localizer.Registrationbenefits.AccountSettings;
 
     const verifyYourEmail = Localizer.Registrationbenefits.VerifyYourEmail;
-    const verifyYourEmailDesc = Localizer.Format(
-      Localizer.Registrationbenefits.AVerifiedEmailIsRequired,
-      { email: this.props.globalState.loggedInUser.email }
-    );
     const resendEmail = Localizer.Registrationbenefits.ResendEmail;
     const emailSettings = Localizer.Registrationbenefits.EmailSettings;
     const emailVerified =
       (this.props.globalState.loggedInUser.emailStatus &
         EmailValidationStatus.VALID) ===
       EmailValidationStatus.VALID;
-
     const content = this.state.contentRenderable.properties;
 
     const pageHasContent = content["ContentItems"]?.length > 0;
@@ -185,7 +180,13 @@ class Benefits extends React.Component<Props, IBenefitsState> {
                     <Icon iconName={"exclamation-triangle"} iconType={"fa"} />
                     <div className={styles.text}>
                       <strong>{verifyYourEmail}</strong>
-                      <p>{verifyYourEmailDesc}</p>
+                      <p>
+                        {Localizer.Format(
+                          Localizer.Registrationbenefits
+                            .AVerifiedEmailIsRequired,
+                          { email: this.props.globalState.loggedInUser.email }
+                        )}
+                      </p>
                     </div>
                     <div className={styles.buttons}>
                       <Button

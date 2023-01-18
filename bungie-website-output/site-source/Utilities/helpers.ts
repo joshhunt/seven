@@ -40,13 +40,17 @@ export const sortUsingFilterArray = <T>(
   values: T[],
   filters: ((x: T) => boolean)[]
 ): T[] => {
-  return values.sort((a: any, b: any) => {
-    let aFirstMatch = filters.findIndex((filter) => filter(a));
-    let bFirstMatch = filters.findIndex((filter) => filter(b));
+  let unsortedValues = values;
+  const sortedValues: T[] = [];
 
-    aFirstMatch = aFirstMatch !== -1 ? aFirstMatch : filters.length;
-    bFirstMatch = bFirstMatch !== -1 ? bFirstMatch : filters.length;
-
-    return aFirstMatch - bFirstMatch;
+  filters.forEach((filter) => {
+    unsortedValues.forEach((value) => {
+      if (filter(value)) {
+        sortedValues.push(value);
+        unsortedValues = unsortedValues.filter((val) => val !== value);
+      }
+    });
   });
+
+  return sortedValues.concat(unsortedValues);
 };

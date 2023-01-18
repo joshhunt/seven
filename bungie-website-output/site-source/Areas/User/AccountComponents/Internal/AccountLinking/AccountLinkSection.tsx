@@ -11,20 +11,17 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { SystemNames } from "@Global/SystemNames";
 import { sortUsingFilterArray } from "@Helpers";
 import { Contract, Platform, User } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
 import { AccountLinkItem } from "./AccountLinkItem";
-import { GoAlert } from "@react-icons/all-files/go/GoAlert";
 
 export enum AccountLinkingFlags {
   None = 0,
@@ -66,7 +63,10 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
     // showEgsDisplayNamePublic: null
   };
 
-  const globalStateData = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const globalStateData = useDataStore(GlobalStateDataStore, [
+    "loggedInUser",
+    "crossSavePairingStatus",
+  ]);
   const [currentRequestObject, setCurrentRequestObject] = useState<
     Contract.UserEditRequest
   >(initialRequestObject);
@@ -90,6 +90,8 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
   );
 
   const onPageMembershipId = isSelf ? loggedInUserId : membershipIdFromQuery;
+
+  const stadiaSystem = globalStateData.coreSettings.systems.StadiaIdAuth;
 
   const getAccountLinkingFlagMap = (
     userCredentials: BungieCredentialType[],
@@ -321,9 +323,15 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
       .catch((e) => Modal.error(e));
   };
 
-  const stadiaSunsetCampaignLive = ConfigUtils.SystemStatus(
-    SystemNames.StadiaSunsetAlerts
+  const stadiaIsPrimaryCrossSaveMembership = EnumUtils.looseEquals(
+    BungieMembershipType[
+      globalStateData.crossSavePairingStatus?.primaryMembershipType
+    ],
+    BungieMembershipType.TigerStadia,
+    BungieMembershipType
   );
+
+  const showStadia = stadiaSystem.enabled || stadiaIsPrimaryCrossSaveMembership;
 
   return (
     <>
@@ -335,6 +343,10 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
         {accountLinkingFlagMap &&
           sortUsingFilterArray(validCredentialTypes, filterArray).map(
             (credential, i) => {
+              if (credential === BungieCredentialType.StadiaId && !showStadia) {
+                return null;
+              }
+
               return (
                 <div key={i} className={styles.accountLinkItem}>
                   <AccountLinkItem
@@ -360,18 +372,8 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
                         )
                       ]
                     }
+                    stadiaSystemOverride={stadiaIsPrimaryCrossSaveMembership}
                   />
-                  {stadiaSunsetCampaignLive &&
-                    EnumUtils.looseEquals(
-                      credential,
-                      BungieCredentialType.StadiaId,
-                      BungieCredentialType
-                    ) && (
-                      <div className={styles.stadiaSunsetAlert}>
-                        <GoAlert />
-                        <span>{Localizer.userPages.StadiaSunsetAlert}</span>
-                      </div>
-                    )}
                   {i < validCredentialTypes.length - 1 && (
                     <GridDivider cols={12} />
                   )}

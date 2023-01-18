@@ -4,22 +4,28 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ReportItem } from "@Areas/Admin/Shared/ReportItem";
 import { ReportsSidebar } from "@Areas/Admin/Shared/ReportsSidebar";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
+import { AclEnum } from "@Enum";
 import {
   GlobalStateComponentProps,
+  GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Contracts, Models, Platform } from "@Platform";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Dropdown, IDropdownOption } from "@UIKit/Forms/Dropdown";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import React, { useEffect, useState } from "react";
+import { Redirect } from "react-router-dom";
 import styles from "../Admin/Shared/ReportItem.module.scss";
 
 interface ReportsProps extends GlobalStateComponentProps<"loggedInUser"> {}
 
 const Reports: React.FC<ReportsProps> = (props) => {
+  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [reports, setReports] = useState(null);
   const [reportsFetchErrorString, setReportsFetchErrorString] = useState("");
   const [locale, setLocale] = useState(Localizer.CurrentCultureName);
@@ -76,7 +82,7 @@ const Reports: React.FC<ReportsProps> = (props) => {
     getReports(value);
   };
   if (!reports) {
-    return <div />;
+    return null;
   }
 
   const reportQueue = `Report Queue`;
@@ -95,10 +101,13 @@ never will.`;
   const refreshItemList = `Refresh your item list.`;
   const youHaveNum = `You have ${reports.length} items waiting for your review.`;
 
-  /*if (props.globalState?.loggedInUser?.userAcls.indexOf(AclEnum.BNextForumNinja) === -1)
-	{
-		return (<Redirect to={RouteHelper.Home.url} />);
-	}*/
+  if (
+    props.globalState?.loggedInUser?.userAcls.indexOf(
+      AclEnum.BNextForumNinja
+    ) === -1
+  ) {
+    return <Redirect to={RouteHelper.Home.url} />;
+  }
 
   return (
     <Grid className={styles.container_body}>
@@ -117,7 +126,7 @@ never will.`;
               <Dropdown
                 className={styles.langDropDown}
                 options={convertLangToOptions(
-                  props.globalState.coreSettings.userContentLocales
+                  globalState?.coreSettings?.userContentLocales
                 )}
                 onChange={(value) => updateLang(value)}
               />

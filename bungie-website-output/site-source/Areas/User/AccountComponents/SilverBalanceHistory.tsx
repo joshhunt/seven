@@ -124,7 +124,11 @@ export const SilverBalanceHistory = () => {
       currentPage
     )
       .then((response) => {
-        if (response?.results?.length > 0) {
+        //if Stadia is their only account, pretend like there are no results
+        if (
+          response?.results?.length > 0 &&
+          membership.membershipType !== BungieMembershipType.TigerStadia
+        ) {
           setHasMore(response?.hasMore);
           const bungieNameObject = useQueryMid
             ? UserUtils.getBungieNameFromUserInfoCard(selectedMembership)
@@ -236,35 +240,39 @@ export const SilverBalanceHistory = () => {
       </GridCol>
       <GridCol cols={12} className={styles.platformSilver}>
         <div>
-          {destinyMember?.memberships?.map((mem, i) => {
-            return (
-              <Button
-                key={i}
-                buttonType={
-                  EnumUtils.looseEquals(
-                    mem.membershipType,
-                    selectedMembership?.membershipType,
-                    BungieMembershipType
-                  )
-                    ? "white"
-                    : "clear"
-                }
-                onClick={() => {
-                  setCurrentPage(0);
-                  setSelectedMembership(mem);
-                }}
-                className={styles.platform}
-              >
-                <div
-                  className={styles.icon}
-                  style={{ backgroundImage: `url(${mem.iconPath})` }}
-                />
-                {LocalizerUtils.getPlatformNameFromMembershipType(
-                  mem.membershipType
-                )}
-              </Button>
-            );
-          })}
+          {destinyMember?.memberships
+            ?.filter(
+              (m) => m.membershipType !== BungieMembershipType.TigerStadia
+            )
+            .map((mem, i) => {
+              return (
+                <Button
+                  key={i}
+                  buttonType={
+                    EnumUtils.looseEquals(
+                      mem.membershipType,
+                      selectedMembership?.membershipType,
+                      BungieMembershipType
+                    )
+                      ? "white"
+                      : "clear"
+                  }
+                  onClick={() => {
+                    setCurrentPage(0);
+                    setSelectedMembership(mem);
+                  }}
+                  className={styles.platform}
+                >
+                  <div
+                    className={styles.icon}
+                    style={{ backgroundImage: `url(${mem.iconPath})` }}
+                  />
+                  {LocalizerUtils.getPlatformNameFromMembershipType(
+                    mem.membershipType
+                  )}
+                </Button>
+              );
+            })}
         </div>
         {/* Cross saved accounts will only show the balance of silver that is accessible through the account that is marked primary */}
         <div className={styles.silverBuy}>

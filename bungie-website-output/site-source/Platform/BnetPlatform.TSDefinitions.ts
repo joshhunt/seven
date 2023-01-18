@@ -85,6 +85,7 @@ export declare namespace DestinyDefinitions {
     Rift = 88,
     ZoneControl = 89,
     IronBannerRift = 90,
+    IronBannerZoneControl = 91,
   }
 
   enum DestinyTalentNodeStepWeaponPerformances {
@@ -647,6 +648,7 @@ export declare namespace DestinyDefinitions {
     Free = 131072,
     Locked = 262144,
     Paracausal = 524288,
+    Cryptarch = 1048576,
   }
 
   enum DestinySocketCategoryStyle {

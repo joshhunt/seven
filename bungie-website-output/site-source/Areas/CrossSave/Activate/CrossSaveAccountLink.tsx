@@ -1,4 +1,6 @@
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { BungieMembershipType } from "@Enum";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { useState } from "react";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Localizer } from "@bungie/localization";
@@ -32,8 +34,6 @@ interface ICrossSaveAccountLinkProps {
 export const CrossSaveAccountLink: React.FC<ICrossSaveAccountLinkProps> = (
   props
 ) => {
-  const [hoveredAccounts, setHoveredAccounts] = useState([]);
-  const [selectedAccounts, setSelectedAccounts] = useState([]);
   const flowState = useDataStore(CrossSaveFlowStateDataStore);
   const globalState = useDataStore(GlobalStateDataStore, [
     "loggedInUser",
@@ -45,6 +45,18 @@ export const CrossSaveAccountLink: React.FC<ICrossSaveAccountLinkProps> = (
   const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
     flowState
   );
+
+  if (!props.deactivating) {
+    pairableMembershipTypes.filter(
+      (mt) =>
+        !EnumUtils.looseEquals(
+          BungieMembershipType[mt],
+          BungieMembershipType.TigerStadia,
+          BungieMembershipType
+        )
+    );
+  }
+
   const canProceed =
     CrossSaveUtils.allAccountsAuthVerified(
       globalState.loggedInUser,
@@ -67,6 +79,7 @@ export const CrossSaveAccountLink: React.FC<ICrossSaveAccountLinkProps> = (
           flowState={flowState}
           loggedInUser={globalState.loggedInUser}
           onAccountLinked={props.onAccountLinked}
+          isDeactivateFlow={false}
         />
       </CrossSaveStaggerPose>
 

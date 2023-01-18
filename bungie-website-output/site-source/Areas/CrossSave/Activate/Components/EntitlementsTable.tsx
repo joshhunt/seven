@@ -10,6 +10,7 @@ import {
   BungieMembershipType,
   DestinyGameVersions,
 } from "@Enum";
+import { SystemNames } from "@Global/SystemNames";
 import { Responses } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
@@ -148,6 +149,13 @@ export const EntitlementsTable: React.FC<EntitlementsTableProps> = (props) => {
 
     if (membershipType === BungieMembershipType.TigerXbox) {
       return msCell(gameVersion, platformStatus, key);
+    }
+
+    if (
+      !ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth) &&
+      membershipType === BungieMembershipType.TigerStadia
+    ) {
+      return null;
     }
 
     const platformStatusClass = styles[platformStatus];

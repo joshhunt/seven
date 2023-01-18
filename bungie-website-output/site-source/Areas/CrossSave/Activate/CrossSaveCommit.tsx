@@ -3,9 +3,8 @@ import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/Entitlem
 import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { PlatformError } from "@CustomErrors";
-import * as Globals from "@Enum";
+import { BungieMembershipType, PlatformErrorCodes } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { EnumKey } from "@Helpers";
@@ -92,7 +91,9 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
 
   useEffect(() => {
     setShowSilverWarning(doShowSilverWarning);
-    setTimeout(() => setShow(true), 250);
+    setTimeout(() => {
+      setShow(true);
+    }, 250);
   }, []);
 
   const doShowSilverWarning = () => {
@@ -104,10 +105,7 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
           profile.membershipType
         );
         const userInfo = flowStateForMembership.userInfo;
-        const key = EnumKey(
-          profile.membershipType,
-          Globals.BungieMembershipType
-        );
+        const key = EnumKey(profile.membershipType, BungieMembershipType);
         const silver = userInfo.platformSilver.platformSilver[key];
 
         return silver && silver.quantity > 0;
@@ -119,7 +117,20 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
 
     const primaryMembershipType = flowState.primaryMembershipType;
     const overriddenMembershipTypes = flowState.includedMembershipTypes.filter(
-      (a) => a !== primaryMembershipType
+      (mt) => {
+        const isNotPrimary = !EnumUtils?.looseEquals(
+          BungieMembershipType[primaryMembershipType],
+          BungieMembershipType[mt],
+          BungieMembershipType
+        );
+        const isNotStadia = !EnumUtils?.looseEquals(
+          BungieMembershipType.TigerStadia,
+          BungieMembershipType[mt],
+          BungieMembershipType
+        );
+
+        return isNotPrimary && isNotStadia;
+      }
     );
 
     const input: CrossSave.CrossSavePairingRequest = {
@@ -145,12 +156,6 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
       "CrossSaveHelpStepId",
       0
     );
-    const stadiaIsPrimary =
-      flowState.primaryMembershipType ===
-      Globals.BungieMembershipType.TigerStadia;
-    const showStadiaWarning =
-      ConfigUtils.SystemStatus(SystemNames.CrossSaveStadiaException) &&
-      stadiaIsPrimary;
 
     const ackList = [
       `${Localizer.Format(Localizer.Crosssave.CrossSaveLockoutWarning, {
@@ -172,17 +177,6 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
       type: "info",
       title: Localizer.Crosssave.ConfirmationModalTitle,
       acknowledgements: ackList,
-      children: (
-        <div>
-          {showStadiaWarning && (
-            <div>
-              {Localizer.Crosssave.StadiaSeasonsWarning}
-              <br />
-              <br />
-            </div>
-          )}
-        </div>
-      ),
       confirmButtonProps: {
         labelOverride: Localizer.Crosssave.ConfirmModalConfirmButtonLabel,
         onClick: () => {
@@ -201,7 +195,7 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
 
   const onPairChanged = (data: CrossSave.CrossSavePairingResponse) => {
     const errorEntries = data.entries.filter(
-      (a) => a.errorCode !== Globals.PlatformErrorCodes.Success
+      (a) => a.errorCode !== PlatformErrorCodes.Success
     );
 
     if (errorEntries.length > 0) {
@@ -221,37 +215,12 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
     }
   };
 
-  const entitlementOwned = (
-    membershipType: Globals.BungieMembershipType,
-    gameVersion: Globals.DestinyGameVersions
-  ) => {
-    const memberShipTypeString = Globals.BungieMembershipType[
-      membershipType
-    ] as EnumStrings<typeof Globals.BungieMembershipType>;
-    const entitlements =
-      flowState.entitlements.platformEntitlements[memberShipTypeString];
-
-    return (
-      entitlements && EnumUtils.hasFlag(gameVersion, entitlements.gameVersions)
-    );
-  };
-
   const renderPairReview = () => {
     const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
       flowState
     );
-    const gameVersionsForCommitPage = [
-      Globals.DestinyGameVersions.Forsaken,
-      Globals.DestinyGameVersions.DLC2,
-      Globals.DestinyGameVersions.DLC1,
-    ];
 
-    const includedPlatforms = pairableMembershipTypes.map((membershipType) => {
-      const flowstateForMembership = CrossSaveUtils.getFlowStateInfoForMembership(
-        flowState,
-        membershipType
-      );
-
+    return pairableMembershipTypes.map((membershipType) => {
       const needsAuth =
         flowState.includedMembershipTypes.indexOf(membershipType) === -1;
       const classes = classNames(
@@ -264,45 +233,6 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
 
       if (needsAuth) {
         return null;
-      }
-
-      const entitlementsOwned = gameVersionsForCommitPage.filter((gv) =>
-        entitlementOwned(membershipType, gv)
-      );
-      const hasEntitlements = entitlementsOwned.length > 0;
-
-      const entitlementsOwnedRendered = entitlementsOwned.map((gv) => {
-        return (
-          <div key={gv} className={styles.entitlementTag}>
-            {Localizer.Format(Localizer.Crosssave.OwnedLabel, {
-              platformName:
-                Localizer.Crosssave[Globals.DestinyGameVersions[gv]],
-            })}
-          </div>
-        );
-      });
-
-      let seasonsOwnedRendered = null;
-
-      if (
-        flowstateForMembership.profileResponse &&
-        flowstateForMembership.profileResponse.profile &&
-        flowstateForMembership.profileResponse.profile.data.seasonHashes &&
-        flowstateForMembership.profileResponse.profile.data.seasonHashes
-          .length > 0
-      ) {
-        seasonsOwnedRendered = flowstateForMembership.profileResponse.profile.data.seasonHashes.map(
-          (seasonHash) => {
-            const def = flowState.definitions.seasons[seasonHash];
-            if (def) {
-              return (
-                <div className={styles.entitlementTag}>
-                  {def.displayProperties.name}
-                </div>
-              );
-            }
-          }
-        );
       }
 
       return (
@@ -319,8 +249,6 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
         </div>
       );
     });
-
-    return includedPlatforms;
   };
 
   // Flatten all the errors into one big list
@@ -419,6 +347,7 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
                   styles.characterReview,
                   styles.reviewBlock
                 )}
+                pose={show ? "show" : "hide"}
               >
                 <div className={styles.ellipsesText}>
                   {Localizer.Crosssave.SetUpPrimary}
@@ -442,10 +371,16 @@ const CrossSaveCommit = (props: ICrossSaveReviewProps) => {
                   </CrossSaveAccountCard>
                 )}
               </StaggerItem>
-              <StaggerItem className={styles.dottedLine}>
+              <StaggerItem
+                className={styles.dottedLine}
+                pose={show ? "show" : "hide"}
+              >
                 <div />
               </StaggerItem>
-              <StaggerItem className={styles.platforms}>
+              <StaggerItem
+                className={styles.platforms}
+                pose={show ? "show" : "hide"}
+              >
                 <div className={styles.ellipsesText}>
                   {Localizer.Crosssave.SetUpAllPlatforms}
                 </div>

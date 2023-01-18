@@ -364,11 +364,12 @@ export enum BungieMembershipRoleMappings {
   BungieNet = 1,
   Destiny1 = 2,
   Destiny2 = 4,
-  CrossSave = 8,
+  CrossSaveRead = 8,
   D2Fireteams = 16,
   D2Clans = 32,
   D2Tokens = 64,
-  All = 127,
+  CrossSaveCreate = 128,
+  All = 255,
 }
 
 export enum AclEnum {
@@ -2545,10 +2546,22 @@ export enum EquipFailureReason {
 		*/
   ItemFailedLevelCheck = 8,
   /**
-		This item can't be equipped on the character requested, because it must be in that character's inventory first.
-		Transfer the item to the character you want to equip it before you attempt to equip it.
+		This item is 'wrapped' and must be unwrapped before being equipped.
+		NOTE: This value used to be called ItemNotOnCharacter but that is no longer accurate.
 		*/
-  ItemNotOnCharacter = 16,
+  ItemWrapped = 16,
+  /**
+		This item is not yet loaded and cannot be equipped yet.
+		*/
+  ItemNotLoaded = 32,
+  /**
+		This item is block-listed and cannot be equipped.
+		*/
+  ItemEquipBlocklisted = 64,
+  /**
+		This item does not meet the loadout requirements for the current activity
+		*/
+  ItemLoadoutRequirementNotMet = 128,
 }
 
 export enum DestinyTalentNodeState {
@@ -2687,6 +2700,7 @@ export enum DestinyVendorItemState {
 		This indicates that the sale item is paracausal.
 		*/
   Paracausal = 524288,
+  Cryptarch = 1048576,
 }
 
 /**
@@ -3601,6 +3615,7 @@ export enum DestinyActivityModeType {
   Rift = 88,
   ZoneControl = 89,
   IronBannerRift = 90,
+  IronBannerZoneControl = 91,
 }
 
 /**

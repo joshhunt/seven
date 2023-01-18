@@ -283,7 +283,16 @@ export class CrossSaveUtils {
       return false;
     }
 
-    const crossSaveCredentialTypes = loggedInUser.crossSaveCredentialTypes;
+    // Note that this is looking at credential types, so Stadia is 16 not 5
+    // For auth purposes, Stadia is always considered authorized
+    const crossSaveCredentialTypes = loggedInUser.crossSaveCredentialTypes.filter(
+      (ct) =>
+        !EnumUtils.looseEquals(
+          BungieCredentialType[ct],
+          BungieCredentialType.StadiaId,
+          BungieCredentialType
+        )
+    );
     const authStatuses = flowState.validation.authStatuses;
 
     const pairableMembershipTypes = CrossSaveUtils.getPairableMembershipTypes(
@@ -294,12 +303,16 @@ export class CrossSaveUtils {
       .map((mt) => {
         const mtFixed = this.EnumKeyifyMembershipType(BungieMembershipType[mt]);
 
-        return CrossSaveUtils.getAccountLinkStatus(
+        const statuss = CrossSaveUtils.getAccountLinkStatus(
           mt,
           authStatuses[mtFixed],
           flowState.validation.profileSpecificErrors[mtFixed],
           loggedInUser.crossSaveCredentialTypes
         );
+
+        console.log(mtFixed, statuss);
+
+        return statuss;
       })
       .filter((status) => status.goodToGo);
 

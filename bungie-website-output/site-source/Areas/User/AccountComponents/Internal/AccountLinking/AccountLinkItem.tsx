@@ -5,6 +5,7 @@ import { BungieCredentialType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
+import { Models } from "@Platform";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import React from "react";
@@ -25,6 +26,8 @@ interface AccountLinkItemProps {
   /** Callback to run after credential changes link status */
   onCredentialChange?: () => void;
   membershipSpecificId?: string;
+  /** There is one exception here which is that if you have Stadia set as your primary cross save account, we still show it to you even if the system is off */
+  stadiaSystemOverride?: boolean;
 }
 
 export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
@@ -36,6 +39,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
   onPublicSettingChanged,
   onCredentialChange,
   membershipSpecificId,
+  stadiaSystemOverride,
 }) => {
   const globalStateData = useDataStore(GlobalStateDataStore, [
     "loggedinuser",
@@ -142,7 +146,7 @@ export const AccountLinkItem: React.FC<AccountLinkItemProps> = ({
         />
       ) : null;
     case BungieCredentialType.StadiaId:
-      return stadiaSystem.enabled ? (
+      return stadiaSystem.enabled || stadiaSystemOverride ? (
         <TwoLineItem
           itemTitle={Localizer.Registration.networksigninoptionstadia}
           itemSubtitle={
