@@ -4,7 +4,7 @@
 import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import React from "react";
-import { Img } from "../../../Utilities/helpers";
+import { Img, sortUsingFilterArray } from "../../../Utilities/helpers";
 import { StoreSkuButton } from "../../UIKit/Controls/Button/StoreSkuButton";
 import { IDestinyProductDefinition } from "./DestinyProductDefinitions";
 import {
@@ -32,7 +32,6 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
 ) => {
   const {
     skuDefinition,
-    stores,
     subtitle,
     productFamily,
     skuConfig,
@@ -40,6 +39,21 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
     onStoreSelected,
     utmParams,
   } = props;
+
+  const params = new URLSearchParams(location.search);
+  const order = params.get("order");
+
+  // Sort stores into specific order
+  const stores =
+    order === "popularity"
+      ? sortUsingFilterArray(props.stores, [
+          ({ key }) => key === "Steam",
+          ({ key }) => key === "Playstation",
+          ({ key }) => key === "Xbox",
+          ({ key }) => key === "Epic",
+          ({ key }) => key === "MicrosoftPC",
+        ])
+      : props.stores;
 
   const getSaleDateString = (activeSale: IDestinySkuSale) => {
     const ed = DateTime.fromISO(activeSale.endDate);
