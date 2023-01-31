@@ -250,7 +250,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 navLoc.AboutUsBungieFoundation
               )}
               {this.renderLink(
-                RouteHelper.Foundation("ipadforkids"),
+                RouteHelper.Foundation("littlelights"),
                 navLoc.IpadsForKids
               )}
               {this.renderLink(

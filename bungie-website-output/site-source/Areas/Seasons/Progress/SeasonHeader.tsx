@@ -45,41 +45,51 @@ class SeasonHeader extends React.Component<Props, ISeasonHeaderState> {
 
     const seasonDetailsButton = Localizer.Seasons.SeasonDetails;
 
+    const timeLoc = Localizer.Time;
+
     const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
 
     const seasonOnPage = SeasonsArray.find(
       (season) => season.seasonNumber === seasonDef.seasonNumber
     );
 
-    const timeDisplay = DateTime.fromISO(seasonDef.endDate);
+    const getTimeRemainingString = () => {
+      const timeDisplay = DateTime.fromISO(seasonDef.endDate);
 
-    const diff = timeDisplay.diff(DateTime.now());
-    let timeString = "";
+      const diff = timeDisplay.diffNow("days");
 
-    if (diff.months === 1) {
-      timeString = `1 ${Localizer.time.month}`;
-    } else {
-      if (diff.months > 1) {
-        timeString = `${diff.months} ${Localizer.time.months}`;
+      let timeString = "";
+
+      const monthDiff = diff.as("months");
+
+      if (Math.round(monthDiff) === 1) {
+        timeString = Localizer.Format(timeLoc.TimeRemainingMonth, {
+          month: "1",
+        });
       } else {
-        timeString =
-          diff.days > 1
-            ? `${diff.days} ${Localizer.time.days}`
-            : `1 ${Localizer.time.day}`;
+        if (monthDiff > 1) {
+          timeString = Localizer.Format(timeLoc.TimeRemainingMonths, {
+            months: Math.round(monthDiff),
+          });
+        } else {
+          timeString =
+            diff.days > 1
+              ? `${Math.round(diff.days)} ${timeLoc.days}`
+              : `1 ${timeLoc.day}`;
+        }
       }
-    }
 
-    const remaining =
-      diff.valueOf() > 0
+      return diff.days > 0
         ? Localizer.Format(Localizer.Seasons.TimeRemaining, {
             time: timeString,
           })
         : Localizer.Seasons.SeasonComplete;
+    };
 
     return (
       <div className={styles.seasonHeader}>
         <h2>{seasonOnPage.title}</h2>
-        <p>{remaining}</p>
+        <p>{getTimeRemainingString()}</p>
       </div>
     );
   }

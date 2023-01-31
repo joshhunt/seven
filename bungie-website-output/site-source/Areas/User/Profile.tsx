@@ -22,7 +22,8 @@ import {
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
-import { Platform, Responses } from "@Platform";
+import { sortUsingFilterArray } from "@Helpers";
+import { GroupsV2, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IProfileParams } from "@Routes/RouteParams";
 import { Error404 } from "@UI/Errors/Error404";
@@ -56,6 +57,21 @@ const Profile: React.FC<ProfileProps> = (props) => {
     "loggedInUserClans",
   ]);
   const destinyMembership = useDataStore(ProfileDestinyMembershipDataStore);
+
+  const membershipFilterArray = [
+    (groupInfoCard: GroupsV2.GroupUserInfoCard) => {
+      return groupInfoCard.membershipType === BungieMembershipType.TigerPsn;
+    },
+    (groupInfoCard: GroupsV2.GroupUserInfoCard) => {
+      return groupInfoCard.membershipType === BungieMembershipType.TigerXbox;
+    },
+    (groupInfoCard: GroupsV2.GroupUserInfoCard) => {
+      return groupInfoCard.membershipType === BungieMembershipType.TigerSteam;
+    },
+    (groupInfoCard: GroupsV2.GroupUserInfoCard) => {
+      return groupInfoCard.membershipType === BungieMembershipType.TigerEgs;
+    },
+  ];
 
   // Only ever get membershipId and membershipType from the URL
   const membershipId = params.mid ?? "";
@@ -411,40 +427,41 @@ const Profile: React.FC<ProfileProps> = (props) => {
                 <div>
                   <h3>{profileLoc.LinkedAccounts}</h3>
                   <ul>
-                    {destinyMembership.membershipData.destinyMemberships.map(
-                      (value, index) => {
-                        const credentialName = UserUtils.getCredentialTypeFromMembershipType(
-                          value.membershipType
+                    {sortUsingFilterArray(
+                      destinyMembership.membershipData.destinyMemberships,
+                      membershipFilterArray
+                    ).map((value, index) => {
+                      const credentialName = UserUtils.getCredentialTypeFromMembershipType(
+                        value.membershipType
+                      );
+                      const credentialString = EnumUtils.getStringValue(
+                        credentialName,
+                        BungieCredentialType
+                      );
+                      if (
+                        value.membershipType !==
+                          BungieMembershipType.BungieNext &&
+                        value.membershipType !==
+                          BungieMembershipType.TigerStadia
+                      ) {
+                        return (
+                          <li
+                            key={value.membershipId}
+                            className={styles.linkedAccount}
+                          >
+                            <img
+                              src={value.iconPath}
+                              alt={
+                                sanitizedProfileNames &&
+                                sanitizedProfileNames[credentialString]
+                              }
+                            />{" "}
+                            {sanitizedProfileNames &&
+                              sanitizedProfileNames[credentialString]}
+                          </li>
                         );
-                        const credentialString = EnumUtils.getStringValue(
-                          credentialName,
-                          BungieCredentialType
-                        );
-                        if (
-                          value.membershipType !==
-                            BungieMembershipType.BungieNext &&
-                          value.membershipType !==
-                            BungieMembershipType.TigerStadia
-                        ) {
-                          return (
-                            <li
-                              key={value.membershipId}
-                              className={styles.linkedAccount}
-                            >
-                              <img
-                                src={value.iconPath}
-                                alt={
-                                  sanitizedProfileNames &&
-                                  sanitizedProfileNames[credentialString]
-                                }
-                              />{" "}
-                              {sanitizedProfileNames &&
-                                sanitizedProfileNames[credentialString]}
-                            </li>
-                          );
-                        }
                       }
-                    )}
+                    })}
                     {sanitizedProfileNames &&
                       sanitizedProfileNames[
                         EnumUtils.getStringValue(

@@ -168,6 +168,7 @@ export const AnimatedStrandGuardians: React.FC<AnimatedStrandGuardiansProps> = (
         }
 
         content.style.bottom = `${bottomPosition}px`;
+        content.style.marginBottom = `-${bottomPosition}px`;
 
         content.style.position = isSticky ? "sticky" : "relative";
       }

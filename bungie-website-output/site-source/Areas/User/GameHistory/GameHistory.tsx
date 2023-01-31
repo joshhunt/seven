@@ -83,7 +83,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
         membershipData?.selectedMembership?.membershipId,
         membershipData?.selectedCharacter?.characterId,
         activityMode,
-        20,
+        itemsRequested,
         currentPage
       )
         .then((data) => {
@@ -154,7 +154,7 @@ const GameHistory: React.FC<GameHistoryProps> = (props) => {
       </div>
       {hasHistory && (
         <div className={styles.pagerButtons}>
-          {currentPage > 1 && (
+          {currentPage > 0 && (
             <Button onClick={() => setCurrentPage(currentPage - 1)}>
               {Localizer.Actions.Previous}
             </Button>

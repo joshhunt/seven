@@ -57,7 +57,7 @@ export const LightfallGuardian: React.FC<LightfallGuardianProps> = (props) => {
 
   const handleImageThumbClick = (imgUrl: string) => {
     const { imgIndex, images } = getScreenshotPaginationData(
-      thumbs,
+      thumbs.filter((thumb) => !thumb.content_type.includes("video")),
       imgUrl,
       (thumbObj: BnetStackFile) => thumbObj?.url
     );
@@ -82,7 +82,6 @@ export const LightfallGuardian: React.FC<LightfallGuardianProps> = (props) => {
             {thumbs.length > 0 ? (
               <div className={styles.thumbs}>
                 {thumbs.map((thumb) => {
-                  console.log(thumb);
                   if (thumb.content_type.includes("video")) {
                     return (
                       <div className={styles.thumbWrap}>

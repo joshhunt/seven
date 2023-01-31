@@ -8,86 +8,69 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { responsiveBgImage } from "@Utilities/ContentStackUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./OurEndSection.module.scss";
+import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
+import { useCSWebpImages } from "@Utilities/CSUtils";
+import { LightfallTrailerBtn } from "@Areas/Destiny/Lightfall/components/LightfallTrailerBtn/LightfallTrailerBtn";
 
 interface OurEndSectionProps {
-  data?: BnetStackNebulaProductPage["our_end_section"];
-  TestCData?: BnetStackNebulaProductPage["img_swap_test"];
+  data?: any;
 }
 
 export const OurEndSection: React.FC<OurEndSectionProps> = (props) => {
-  const { top_header, bottom_header, top_bg, bottom_bg } = props.data ?? {};
-
+  const { data } = props;
+  const { title, blurb, button = [], desktop_bg, desktop_video, mobile_bg } =
+    data ?? {};
   const { mobile } = useDataStore(Responsive);
-  const urlParams = UrlUtils.useQuery();
 
-  const TestC = urlParams.get("t_sept1_ourend") === "true";
-
-  const desktopBgTop = TestC
-    ? props.TestCData?.our_end_bg?.desktop_bg
-    : top_bg?.desktop_bg;
-  const mobileBgTop = TestC
-    ? props.TestCData?.our_end_bg?.mobile_bg
-    : top_bg?.mobile_bg;
+  const imgs = useCSWebpImages(
+    useMemo(
+      () => ({
+        background: mobile ? mobile_bg?.url : null,
+      }),
+      [data, mobile]
+    )
+  );
 
   return (
     <div
       className={styles.section}
-      style={{
-        backgroundImage: responsiveBgImage(
-          desktopBgTop?.url,
-          mobileBgTop?.url,
-          mobile
-        ),
-      }}
+      style={{ backgroundImage: imgs.background && `url(${imgs.background})` }}
     >
-      <div className={styles.sectionContent}>
+      {!mobile && desktop_video && (
+        <video
+          className={styles.heroVid}
+          poster={desktop_bg?.url}
+          autoPlay
+          muted
+          playsInline
+          loop
+          controls={false}
+        >
+          <source src={desktop_video?.url} type={"video/mp4"} />
+        </video>
+      )}
+      <div className={styles.container}>
         <LightfallSectionHeader
-          blurb={top_header?.blurb}
-          heading={top_header?.heading}
-          largeHeading={top_header?.large_heading}
-          textBg={top_header?.text_bg?.url}
-          classes={{ largeHeading: styles.largeHeading }}
-          withDivider
-        />
-        <LightfallTripleImageSet
-          data={top_header?.thumbnails?.[0]}
+          heading={title}
+          blurb={blurb}
+          dividerColor="#D40066"
           classes={{
-            root: styles.topImgSet,
-            thumbWrapper: styles.topThumbWrapper,
+            content: styles.content,
+            title: styles.title,
           }}
-        />
-      </div>
-
-      <div className={classNames(styles.section, styles.bottomSection)}>
-        <div
-          className={styles.sectionBg}
-          style={{
-            backgroundImage: responsiveBgImage(
-              bottom_bg?.desktop_bg?.url,
-              bottom_bg?.mobile_bg?.url,
-              mobile
-            ),
-          }}
-        />
-        <div className={styles.sectionContent}>
-          <LightfallSectionHeader
-            classes={{ root: styles.neonHeader }}
-            heading={bottom_header?.heading}
-            blurb={bottom_header?.blurb}
-            alignment={"right"}
-            withDivider
-          />
-          <LightfallTripleImageSet
-            data={bottom_header?.thumbnails?.[0]}
-            classes={{
-              root: styles.bottomImgSet,
-              thumbWrapper: styles.bottomThumbWrapper,
-            }}
-          />
-        </div>
+        >
+          {button.map((b: any) => (
+            <LightfallTrailerBtn key={b.uid} {...b} className={styles.btn}>
+              <>
+                <img className={styles.btnIcon} src={b?.icon?.url} alt="" />
+                {b.label}
+              </>
+            </LightfallTrailerBtn>
+          ))}
+        </LightfallSectionHeader>
       </div>
     </div>
   );

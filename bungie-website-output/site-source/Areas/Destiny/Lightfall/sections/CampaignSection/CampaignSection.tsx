@@ -11,13 +11,14 @@ import styles from "./CampaignSection.module.scss";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { PmpInfoThumbnailGroup } from "@UI/Marketing/Fragments/PmpInfoThumbnailGroup";
 import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/LightfallSectionHeader/LightfallSectionHeader";
+import { LightfallTrailerBtn } from "@Areas/Destiny/Lightfall/components/LightfallTrailerBtn/LightfallTrailerBtn";
 
 interface CampaingSectionProps {
   data?: any;
 }
 
 export const CampaignSection: React.FC<CampaingSectionProps> = (props) => {
-  const { title, blurb, desktop_bg, mobile_bg, content = [] } =
+  const { title, blurb, desktop_bg, mobile_bg, button = [], content = [] } =
     props.data ?? {};
 
   const { mobile } = useDataStore(Responsive);
@@ -36,10 +37,18 @@ export const CampaignSection: React.FC<CampaingSectionProps> = (props) => {
       <div className={styles.container}>
         <LightfallSectionHeader
           heading={title}
-          blurb={blurb}
           dividerColor="#B414FF"
           classes={{ root: styles.header, content: styles.content }}
-        />
+        >
+          {button.map((b: any) => (
+            <LightfallTrailerBtn key={b.uid} {...b} className={styles.btn}>
+              <>
+                <img className={styles.btnIcon} src={b?.icon?.url} alt="" />
+                {b.label}
+              </>
+            </LightfallTrailerBtn>
+          ))}
+        </LightfallSectionHeader>
       </div>
 
       {content.map((data: any) => {

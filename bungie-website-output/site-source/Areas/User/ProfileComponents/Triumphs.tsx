@@ -100,8 +100,15 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
       <div className={styles.seals}>
         {sealsToDisplay.map((seal) => {
           return (
-            <div className={styles.seal} key={seal.hash}>
-              <img src={seal.displayProperties.icon} alt={""} />
+            <div
+              className={styles.seal}
+              key={seal.hash}
+              title={seal.displayProperties.name}
+            >
+              <img
+                src={seal.displayProperties.icon}
+                alt={seal.displayProperties.name}
+              />
             </div>
           );
         })}
