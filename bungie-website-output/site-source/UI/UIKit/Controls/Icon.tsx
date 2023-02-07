@@ -3,6 +3,8 @@ import * as React from "react";
 import styles from "./Icon.module.scss";
 import { Spinner } from "./Spinner";
 
+export type iconTypeType = "material" | "fa" | "bungle";
+
 export interface IIconProps extends React.DOMAttributes<HTMLDivElement> {
   /** If true, icon will spin */
   spin?: boolean;
@@ -12,7 +14,7 @@ export interface IIconProps extends React.DOMAttributes<HTMLDivElement> {
    * */
   iconName: string;
   /** Icon library to use */
-  iconType: "material" | "fa" | "bungle";
+  iconType: iconTypeType;
   /** Additional styles */
   style?: React.CSSProperties;
   /** Additional className */

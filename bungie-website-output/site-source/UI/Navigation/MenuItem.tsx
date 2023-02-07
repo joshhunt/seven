@@ -2,16 +2,14 @@ import { IResponsiveState } from "@bungie/responsive/Responsive";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
-import { GroupsV2 } from "@Platform";
 import {
   IMenuParentItem,
   INavigationLinkItem,
   INavigationTopLink,
   NavigationConfigLegacy,
 } from "@UI/Navigation/MainNavigation";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { Icon, iconTypeType } from "@UI/UIKit/Controls/Icon";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
@@ -38,7 +36,9 @@ interface ILinkProps {
   link: INavigationLinkItem | INavigationTopLink;
   className?: string;
   isAuthTrigger?: boolean;
-  onExpandToggle: (e: React.TouchEvent<HTMLSpanElement>) => boolean;
+  onExpandToggle: (
+    e: React.TouchEvent<HTMLSpanElement> | React.MouseEvent<HTMLSpanElement>
+  ) => boolean;
   onChildSelected: (e: React.MouseEvent<HTMLSpanElement>) => boolean;
 }
 
@@ -46,7 +46,9 @@ interface IMainParentProps {
   responsive?: IResponsiveState;
   className?: string;
   isAuthTrigger?: boolean;
-  onExpandToggle: (e: React.TouchEvent<HTMLSpanElement>) => boolean;
+  onExpandToggle: (
+    e: React.TouchEvent<HTMLSpanElement> | React.MouseEvent<HTMLSpanElement>
+  ) => boolean;
   onChildSelected: (e: React.MouseEvent<HTMLSpanElement>) => boolean;
   navBucketOpen: boolean;
   isTouched: boolean;
@@ -61,6 +63,14 @@ interface INavBucketProps extends IMainParentProps {
 interface IMenuItemState {
   navBucketOpen: boolean;
   isTouched: boolean;
+}
+
+interface IExpanderAttributes {
+  className: string;
+  iconType: iconTypeType;
+  iconName: string;
+  onTouchEnd?: (e: React.TouchEvent<HTMLSpanElement>) => boolean;
+  onClick?: (e: React.MouseEvent<HTMLSpanElement>) => boolean;
 }
 
 export class MenuItem extends React.Component<IMenuItemProps, IMenuItemState> {
@@ -108,7 +118,9 @@ export class MenuItem extends React.Component<IMenuItemProps, IMenuItemState> {
     }
   };
 
-  private readonly onExpandToggle = (e: React.TouchEvent<HTMLSpanElement>) => {
+  private readonly onExpandToggle = (
+    e: React.TouchEvent<HTMLSpanElement> | React.MouseEvent<HTMLSpanElement>
+  ) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -233,6 +245,8 @@ const MenuLink = (props: ILinkProps) => {
     return props.onChildSelected(e);
   };
 
+  const touchSupported = matchMedia("(hover: none), (pointer: coarse)").matches;
+
   if (UserUtils.isAuthenticated(GlobalStateDataStore.state)) {
     const uniqueLoggedInClans = UserUtils.getUsersUniqueClanMemberships(
       GlobalStateDataStore.state.loggedInUserClans?.results
@@ -291,14 +305,19 @@ const MenuLink = (props: ILinkProps) => {
     const iconName =
       isOpen && responsive.medium ? "expand_less" : "expand_more";
 
-    expandIcon = (
-      <Icon
-        className={styles.expandIcon}
-        iconType="material"
-        iconName={iconName}
-        onTouchEnd={onExpandToggle}
-      />
-    );
+    const attributes: IExpanderAttributes = {
+      className: styles.expandIcon,
+      iconType: "material",
+      iconName: iconName,
+    };
+
+    if (touchSupported) {
+      attributes.onTouchEnd = onExpandToggle;
+    } else {
+      attributes.onClick = onExpandToggle;
+    }
+
+    expandIcon = <Icon {...attributes} />;
   }
 
   const isLegacy = link.Legacy === NavigationConfigLegacy.Legacy;
