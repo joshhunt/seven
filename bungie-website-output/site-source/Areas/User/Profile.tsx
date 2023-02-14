@@ -172,7 +172,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
     //only load destiny profile if user has destiny memberships, remove it for users that don't have a destiny membership so that they don't use the prev users version
     if (destinyMembership?.selectedMembership) {
-      loadExtendedDestinyProfileData();
+      loadExtendedDestinyProfileData(); // Has potential to fire off multiple times
     } else {
       setDestinyProfileResponse(null);
     }
@@ -192,14 +192,18 @@ const Profile: React.FC<ProfileProps> = (props) => {
   }, [membershipType, membershipId, isLoggedIn]);
 
   useEffect(() => {
-    membershipId &&
-      Platform.UserService.GetSanitizedPlatformDisplayNames(
-        membershipId
-      ).then((names) =>
-        setSanitizedProfileNames(
-          UserUtils.getStringKeyedMapForSanitizedCredentialNames(names)
+    if (membershipId !== "") {
+      Platform.UserService.GetSanitizedPlatformDisplayNames(membershipId)
+        .then((names) =>
+          setSanitizedProfileNames(
+            UserUtils.getStringKeyedMapForSanitizedCredentialNames(names)
+          )
         )
-      );
+        .catch((e) => {
+          // If we error, we don't want to block the UI with the loader element
+          setIsLoading(false);
+        });
+    }
   }, [membershipId]);
 
   const sendFriendRequest = () => {
@@ -293,10 +297,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
     );
   };
 
-  const loadExtendedDestinyProfileData = () => {
+  const loadExtendedDestinyProfileData = async () => {
     if (destinyMembership?.selectedMembership) {
       try {
-        Platform.Destiny2Service.GetProfile(
+        const destinyResponse: Responses.DestinyProfileResponse = await Platform.Destiny2Service.GetProfile(
           destinyMembership.selectedMembership.membershipType,
           destinyMembership.selectedMembership.membershipId,
           [
@@ -308,9 +312,8 @@ const Profile: React.FC<ProfileProps> = (props) => {
             DestinyComponentType.Collectibles,
             DestinyComponentType.Metrics,
           ]
-        ).then((destinyResponse: Responses.DestinyProfileResponse) => {
-          setDestinyProfileResponse(destinyResponse);
-        });
+        );
+        setDestinyProfileResponse(destinyResponse);
       } catch {
         //couldn't load destiny profile
       }
