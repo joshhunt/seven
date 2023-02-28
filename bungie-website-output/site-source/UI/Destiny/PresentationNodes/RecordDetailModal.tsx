@@ -284,12 +284,11 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
                     description={objectiveDef.progressDescription}
                     customText={""}
                   />
-                ) : intervalRewards ? (
+                ) : intervalRewards && intervalRewards?.length ? (
                   <span className={styles.claimedRewardLabel}>
                     {Localizer.Triumphs.RewardEarned}
                   </span>
                 ) : null}
-
                 <div>
                   {intervalRewards.map((r) => {
                     const rewardDef = props.definitions.DestinyInventoryItemLiteDefinition.get(

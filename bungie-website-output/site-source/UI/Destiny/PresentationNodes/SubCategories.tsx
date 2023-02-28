@@ -85,7 +85,7 @@ const SubCategories: React.FC<SubCategoriesProps> = (props) => {
     const categoryHash =
       !Number.isNaN(props.categoryHash) && props.categoryHash
         ? props.categoryHash
-        : nodeDef.parentNodeHashes[0];
+        : nodeDef.parentNodeHashes?.[0];
 
     if (!nodeDef) {
       return null;
@@ -100,7 +100,7 @@ const SubCategories: React.FC<SubCategoriesProps> = (props) => {
       cid: destinyMembership.selectedCharacter?.characterId,
       root: props.rootHash.toString(),
       parent: props.parentHash.toString(),
-      category: categoryHash.toString(),
+      category: categoryHash?.toString(),
       subcategory: sl.presentationNodeHash.toString(),
       sort: props.sort,
     };

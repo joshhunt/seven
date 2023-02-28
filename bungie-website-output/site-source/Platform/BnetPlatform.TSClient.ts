@@ -3660,6 +3660,11 @@ export declare namespace Responses {
     profileStringVariables: Components.SingleComponentResponseDestinyStringVariablesComponent;
 
     /**
+		COMPONENT TYPE: SocialCommendations
+		*/
+    profileCommendations: Components.SingleComponentResponseDestinySocialCommendationsComponent;
+
+    /**
 		Basic information about each character, keyed by the CharacterId.
 		
 		COMPONENT TYPE: Characters
@@ -3672,6 +3677,13 @@ export declare namespace Responses {
 		COMPONENT TYPE: CharacterInventories
 		*/
     characterInventories: Components.DictionaryComponentResponseInt64DestinyInventoryComponent;
+
+    /**
+		The character loadouts, keyed by the Character's Id.
+		
+		COMPONENT TYPE: CharacterLoadouts
+		*/
+    characterLoadouts: Components.DictionaryComponentResponseInt64DestinyLoadoutsComponent;
 
     /**
 		Character-level progression data, keyed by the Character's Id.
@@ -3845,6 +3857,13 @@ export declare namespace Responses {
 		COMPONENT TYPE: CharacterEquipment
 		*/
     equipment: Components.SingleComponentResponseDestinyInventoryComponent;
+
+    /**
+		The loadouts available to the character.
+		
+		COMPONENT TYPE: CharacterLoadouts
+		*/
+    loadouts: Components.SingleComponentResponseDestinyLoadoutsComponent;
 
     /**
 		Items available from Kiosks that are available to this specific character. 
@@ -5206,6 +5225,12 @@ export declare namespace Models {
     loreRootNodeHash: number;
 
     craftingRootNodeHash: number;
+
+    loadoutConstantsHash: number;
+
+    guardianRankConstantsHash: number;
+
+    guardianRanksRootNodeHash: number;
 
     currentRankProgressionHashes: number[];
 
@@ -8886,6 +8911,42 @@ export declare namespace Definitions {
   }
 
   /**
+	All damage types that are possible in the game are defined here, along with localized info and icons as needed.
+	*/
+  export interface DestinyDamageTypeDefinition {
+    /**
+		The description of the damage type, icon etc...
+		*/
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		A variant of the icon that is transparent and colorless.
+		*/
+    transparentIconPath: string;
+
+    /**
+		If TRUE, the game shows this damage type's icon.  Otherwise, it doesn't.  Whether you show it or not is up to you.
+		*/
+    showIcon: boolean;
+
+    /**
+		We have an enumeration for damage types for quick reference.  This is the current definition's damage type enum value.
+		*/
+    enumValue: Globals.DamageType;
+
+    /**
+		A color associated with the damage type. The displayProperties icon is tinted with a color close to this.
+		*/
+    color: Misc.DestinyColor;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  /**
 	This represents a stat that's applied to a character or an item (such as a weapon, piece of armor, or a vehicle).
 	
 	An example of a stat might be Attack Power on a weapon.
@@ -10757,37 +10818,6 @@ export declare namespace Definitions {
   }
 
   /**
-	All damage types that are possible in the game are defined here, along with localized info and icons as needed.
-	*/
-  export interface DestinyDamageTypeDefinition {
-    /**
-		The description of the damage type, icon etc...
-		*/
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		A variant of the icon that is transparent and colorless.
-		*/
-    transparentIconPath: string;
-
-    /**
-		If TRUE, the game shows this damage type's icon.  Otherwise, it doesn't.  Whether you show it or not is up to you.
-		*/
-    showIcon: boolean;
-
-    /**
-		We have an enumeration for damage types for quick reference.  This is the current definition's damage type enum value.
-		*/
-    enumValue: Globals.DamageType;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  /**
 	Aggregations of multiple progressions.
 	
 	These are used to apply rewards to multiple progressions
@@ -10805,6 +10835,26 @@ export declare namespace Definitions {
 		progressions' display units.
 		*/
     displayUnits: string;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  /**
+	Represent a set of material requirements: Items that either need to be owned or need to be consumed
+	in order to perform an action.
+	
+	A variety of other entities refer to these as gatekeepers and payments
+	for actions that can be performed in game.
+	*/
+  export interface DestinyMaterialRequirementSetDefinition {
+    /**
+		The list of all materials that are required.
+		*/
+    materials: Definitions.DestinyMaterialRequirement[];
 
     hash: number;
 
@@ -10937,6 +10987,93 @@ export declare namespace Definitions {
 		The display properties to show instead of the base DestinyStatDefinition display properties.
 		*/
     displayProperties: Common.DestinyDisplayPropertiesDefinition;
+  }
+
+  export interface DestinySandboxPatternDefinition {
+    patternHash: number;
+
+    patternGlobalTagIdHash: number;
+
+    weaponContentGroupHash: number;
+
+    weaponTranslationGroupHash: number;
+
+    weaponTypeHash?: number;
+
+    weaponType: Globals.DestinyItemSubType;
+
+    filters: Definitions.DestinyArrangementRegionFilterDefinition[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyArrangementRegionFilterDefinition {
+    artArrangementRegionHash: number;
+
+    artArrangementRegionIndex: number;
+
+    statHash: number;
+
+    arrangementIndexByStatValue: { [key: number]: number };
+  }
+
+  /**
+	Defines a Character Class in Destiny 2.  These are types of characters you can play, like
+	Titan, Warlock, and Hunter.
+	*/
+  export interface DestinyClassDefinition {
+    /**
+		In Destiny 1, we added a convenience Enumeration for referring to classes.  We've kept it,
+		though mostly for posterity.  This is the enum value for this definition's class.
+		*/
+    classType: Globals.DestinyClass;
+
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		A localized string referring to the singular form of the Class's name when referred to in gendered form.
+		Keyed by the DestinyGender.
+		*/
+    genderedClassNames: {
+      [K in EnumStrings<typeof Globals.DestinyGender>]?: string;
+    };
+
+    genderedClassNamesByGenderHash: { [key: number]: string };
+
+    /**
+		Mentors don't really mean anything anymore.  Don't expect this to be populated.
+		*/
+    mentorVendorHash?: number;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  /**
+	Gender is a social construct, and as such we have definitions for Genders.  Right now there happens
+	to only be two, but we'll see what the future holds.
+	*/
+  export interface DestinyGenderDefinition {
+    /**
+		This is a quick reference enumeration for all of the currently defined Genders.  We use the enumeration
+		for quicker lookups in related data, like DestinyClassDefinition.genderedClassNames.
+		*/
+    genderType: Globals.DestinyGender;
+
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
   }
 
   /**
@@ -11215,46 +11352,6 @@ export declare namespace Definitions {
 		reward source data.
 		*/
     category: Globals.DestinyRewardSourceCategory;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  /**
-	Represent a set of material requirements: Items that either need to be owned or need to be consumed
-	in order to perform an action.
-	
-	A variety of other entities refer to these as gatekeepers and payments
-	for actions that can be performed in game.
-	*/
-  export interface DestinyMaterialRequirementSetDefinition {
-    /**
-		The list of all materials that are required.
-		*/
-    materials: Definitions.DestinyMaterialRequirement[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  /**
-	Gender is a social construct, and as such we have definitions for Genders.  Right now there happens
-	to only be two, but we'll see what the future holds.
-	*/
-  export interface DestinyGenderDefinition {
-    /**
-		This is a quick reference enumeration for all of the currently defined Genders.  We use the enumeration
-		for quicker lookups in related data, like DestinyClassDefinition.genderedClassNames.
-		*/
-    genderType: Globals.DestinyGender;
-
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
     hash: number;
 
@@ -11858,32 +11955,13 @@ export declare namespace Definitions {
   }
 
   /**
-	Defines a Character Class in Destiny 2.  These are types of characters you can play, like
-	Titan, Warlock, and Hunter.
+	INTERNAL ONLY: Unlock Events are a complicated mechanism for time-based setting of
+	unlock information, that ultimately gets used to drive things like weekly rituals and other
+	repeatable/predicatable events.  We mine this data, for example, to determine when Milestones
+	are active and when they will reset.
 	*/
-  export interface DestinyClassDefinition {
-    /**
-		In Destiny 1, we added a convenience Enumeration for referring to classes.  We've kept it,
-		though mostly for posterity.  This is the enum value for this definition's class.
-		*/
-    classType: Globals.DestinyClass;
-
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		A localized string referring to the singular form of the Class's name when referred to in gendered form.
-		Keyed by the DestinyGender.
-		*/
-    genderedClassNames: {
-      [K in EnumStrings<typeof Globals.DestinyGender>]?: string;
-    };
-
-    genderedClassNamesByGenderHash: { [key: number]: string };
-
-    /**
-		Mentors don't really mean anything anymore.  Don't expect this to be populated.
-		*/
-    mentorVendorHash?: number;
+  export interface DestinyUnlockEventDefinition {
+    unlockEntries: Definitions.DestinyUnlockEventEntry[];
 
     hash: number;
 
@@ -11891,6 +11969,8 @@ export declare namespace Definitions {
 
     redacted: boolean;
   }
+
+  export interface DestinyUnlockEventEntry {}
 
   /**
 	When we parse Unlock Definitions, sometimes we can predict the date ranges when they will be
@@ -13569,6 +13649,16 @@ export declare namespace Profiles {
 		If populated, this is a reference to the event card that is currently active.
 		*/
     activeEventCardHash?: number;
+
+    /**
+		The 'current' Guardian Rank value, which starts at rank 1.
+		*/
+    currentGuardianRank: number;
+
+    /**
+		The 'lifetime highest' Guardian Rank value, which starts at rank 1.
+		*/
+    lifetimeHighestGuardianRank: number;
   }
 
   /**
@@ -14453,6 +14543,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface SingleComponentResponseDestinySocialCommendationsComponent {
+    data: Social.DestinySocialCommendationsComponent;
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface DictionaryComponentResponseInt64DestinyCharacterComponent {
     data: { [key: string]: Characters.DestinyCharacterComponent };
 
@@ -14463,6 +14561,14 @@ export declare namespace Components {
 
   export interface DictionaryComponentResponseInt64DestinyInventoryComponent {
     data: { [key: string]: Inventory.DestinyInventoryComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
+  export interface DictionaryComponentResponseInt64DestinyLoadoutsComponent {
+    data: { [key: string]: Loadouts.DestinyLoadoutsComponent };
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -14679,6 +14785,14 @@ export declare namespace Components {
 
   export interface SingleComponentResponseDestinyCharacterActivitiesComponent {
     data: Characters.DestinyCharacterActivitiesComponent;
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
+  export interface SingleComponentResponseDestinyLoadoutsComponent {
+    data: Loadouts.DestinyLoadoutsComponent;
 
     privacy: Globals.ComponentPrivacySetting;
 
@@ -15477,6 +15591,45 @@ export declare namespace Metrics {
 export declare namespace StringVariables {
   export interface DestinyStringVariablesComponent {
     integerValuesByHash: { [key: number]: number };
+  }
+}
+
+export declare namespace Social {
+  export interface DestinySocialCommendationsComponent {
+    totalScore: number;
+
+    /**
+		The percentage for each commendation type out of total received
+		*/
+    commendationNodePercentagesByHash: { [key: number]: number };
+
+    scoreDetailValues: number[];
+
+    commendationNodeScoresByHash: { [key: number]: number };
+
+    commendationScoresByHash: { [key: number]: number };
+  }
+}
+
+export declare namespace Loadouts {
+  export interface DestinyLoadoutsComponent {
+    loadouts: Loadouts.DestinyLoadoutComponent[];
+  }
+
+  export interface DestinyLoadoutComponent {
+    colorHash: number;
+
+    iconHash: number;
+
+    nameHash: number;
+
+    items: Loadouts.DestinyLoadoutItemComponent[];
+  }
+
+  export interface DestinyLoadoutItemComponent {
+    itemInstanceId: string;
+
+    plugItemHashes: number[];
   }
 }
 
@@ -16979,6 +17132,31 @@ export declare namespace Actions {
     membershipType: Globals.BungieMembershipType;
   }
 
+  export interface DestinyLoadoutActionRequest {
+    /**
+		The index of the loadout for this action request.
+		*/
+    loadoutIndex: number;
+
+    characterId: string;
+
+    membershipType: Globals.BungieMembershipType;
+  }
+
+  export interface DestinyLoadoutUpdateActionRequest {
+    colorHash?: number;
+
+    iconHash?: number;
+
+    nameHash?: number;
+
+    loadoutIndex: number;
+
+    characterId: string;
+
+    membershipType: Globals.BungieMembershipType;
+  }
+
   export interface DestinyItemStateRequest {
     state: boolean;
 
@@ -17798,6 +17976,12 @@ export declare namespace Fireteam {
     datePlayerModified: string;
 
     titleBeforeModeration: string;
+
+    ownerCurrentGuardianRankSnapshot: number;
+
+    ownerHighestLifetimeGuardianRankSnapshot: number;
+
+    ownerTotalCommendationScoreSnapshot: number;
   }
 
   export interface FireteamResponse {
@@ -18076,6 +18260,8 @@ export declare namespace Renderer {
 
     perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
+    damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
+
     stats: { [key: number]: Definitions.DestinyStatDefinition };
 
     equipmentSlots: {
@@ -18100,6 +18286,10 @@ export declare namespace Renderer {
 
     items: { [key: number]: Definitions.DestinyInventoryItemDefinition };
 
+    unlockExpressions: {
+      [key: number]: Definitions.DestinyUnlockExpressionDefinition;
+    };
+
     collectibles: { [key: number]: Collectibles.DestinyCollectibleDefinition };
 
     lore: { [key: number]: Lore.DestinyLoreDefinition };
@@ -18110,31 +18300,41 @@ export declare namespace Renderer {
 
     breakerTypes: { [key: number]: BreakerTypes.DestinyBreakerTypeDefinition };
 
-    damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
-
     seasons: { [key: number]: Seasons.DestinySeasonDefinition };
 
     progressionMappings: {
       [key: number]: Definitions.DestinyProgressionMappingDefinition;
     };
 
-    itemTierTypes: { [key: number]: Items.DestinyItemTierTypeDefinition };
-
-    statGroups: { [key: number]: Definitions.DestinyStatGroupDefinition };
-
-    artifacts: { [key: number]: Artifacts.DestinyArtifactDefinition };
-
-    factions: { [key: number]: Definitions.DestinyFactionDefinition };
-
-    progressions: { [key: number]: Definitions.DestinyProgressionDefinition };
-
     socketTypes: { [key: number]: Sockets.DestinySocketTypeDefinition };
+
+    materialRequirementSets: {
+      [key: number]: Definitions.DestinyMaterialRequirementSetDefinition;
+    };
 
     socketCategories: {
       [key: number]: Sockets.DestinySocketCategoryDefinition;
     };
 
+    itemTierTypes: { [key: number]: Items.DestinyItemTierTypeDefinition };
+
+    statGroups: { [key: number]: Definitions.DestinyStatGroupDefinition };
+
+    sandboxPatterns: {
+      [key: number]: Definitions.DestinySandboxPatternDefinition;
+    };
+
+    classes: { [key: number]: Definitions.DestinyClassDefinition };
+
+    genders: { [key: number]: Definitions.DestinyGenderDefinition };
+
+    factions: { [key: number]: Definitions.DestinyFactionDefinition };
+
+    progressions: { [key: number]: Definitions.DestinyProgressionDefinition };
+
     vendorGroups: { [key: number]: Definitions.DestinyVendorGroupDefinition };
+
+    artifacts: { [key: number]: Artifacts.DestinyArtifactDefinition };
 
     progressionLevelRequirements: {
       [key: number]: Progression.DestinyProgressionLevelRequirementDefinition;
@@ -18152,14 +18352,6 @@ export declare namespace Renderer {
 
     traits: { [key: number]: Traits.DestinyTraitDefinition };
 
-    materialRequirementSets: {
-      [key: number]: Definitions.DestinyMaterialRequirementSetDefinition;
-    };
-
-    traitCategories: { [key: number]: Traits.DestinyTraitCategoryDefinition };
-
-    genders: { [key: number]: Definitions.DestinyGenderDefinition };
-
     metrics: { [key: number]: Metrics.DestinyMetricDefinition };
 
     energyTypes: { [key: number]: EnergyTypes.DestinyEnergyTypeDefinition };
@@ -18174,17 +18366,15 @@ export declare namespace Renderer {
       [key: number]: ActivityModifiers.DestinyActivityModifierDefinition;
     };
 
+    eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
+
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
     races: { [key: number]: Definitions.DestinyRaceDefinition };
 
-    classes: { [key: number]: Definitions.DestinyClassDefinition };
-
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
-    unlockExpressions: {
-      [key: number]: Definitions.DestinyUnlockExpressionDefinition;
-    };
+    unlockEvents: { [key: number]: Definitions.DestinyUnlockEventDefinition };
   }
 
   export interface SeasonsUserDataDefined {
@@ -18218,6 +18408,8 @@ export declare namespace Renderer {
 
     perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
+    damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
+
     stats: { [key: number]: Definitions.DestinyStatDefinition };
 
     equipmentSlots: {
@@ -18242,6 +18434,10 @@ export declare namespace Renderer {
 
     items: { [key: number]: Definitions.DestinyInventoryItemDefinition };
 
+    unlockExpressions: {
+      [key: number]: Definitions.DestinyUnlockExpressionDefinition;
+    };
+
     collectibles: { [key: number]: Collectibles.DestinyCollectibleDefinition };
 
     lore: { [key: number]: Lore.DestinyLoreDefinition };
@@ -18252,31 +18448,41 @@ export declare namespace Renderer {
 
     breakerTypes: { [key: number]: BreakerTypes.DestinyBreakerTypeDefinition };
 
-    damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
-
     seasons: { [key: number]: Seasons.DestinySeasonDefinition };
 
     progressionMappings: {
       [key: number]: Definitions.DestinyProgressionMappingDefinition;
     };
 
-    itemTierTypes: { [key: number]: Items.DestinyItemTierTypeDefinition };
-
-    statGroups: { [key: number]: Definitions.DestinyStatGroupDefinition };
-
-    artifacts: { [key: number]: Artifacts.DestinyArtifactDefinition };
-
-    factions: { [key: number]: Definitions.DestinyFactionDefinition };
-
-    progressions: { [key: number]: Definitions.DestinyProgressionDefinition };
-
     socketTypes: { [key: number]: Sockets.DestinySocketTypeDefinition };
+
+    materialRequirementSets: {
+      [key: number]: Definitions.DestinyMaterialRequirementSetDefinition;
+    };
 
     socketCategories: {
       [key: number]: Sockets.DestinySocketCategoryDefinition;
     };
 
+    itemTierTypes: { [key: number]: Items.DestinyItemTierTypeDefinition };
+
+    statGroups: { [key: number]: Definitions.DestinyStatGroupDefinition };
+
+    sandboxPatterns: {
+      [key: number]: Definitions.DestinySandboxPatternDefinition;
+    };
+
+    classes: { [key: number]: Definitions.DestinyClassDefinition };
+
+    genders: { [key: number]: Definitions.DestinyGenderDefinition };
+
+    factions: { [key: number]: Definitions.DestinyFactionDefinition };
+
+    progressions: { [key: number]: Definitions.DestinyProgressionDefinition };
+
     vendorGroups: { [key: number]: Definitions.DestinyVendorGroupDefinition };
+
+    artifacts: { [key: number]: Artifacts.DestinyArtifactDefinition };
 
     progressionLevelRequirements: {
       [key: number]: Progression.DestinyProgressionLevelRequirementDefinition;
@@ -18294,14 +18500,6 @@ export declare namespace Renderer {
 
     traits: { [key: number]: Traits.DestinyTraitDefinition };
 
-    materialRequirementSets: {
-      [key: number]: Definitions.DestinyMaterialRequirementSetDefinition;
-    };
-
-    traitCategories: { [key: number]: Traits.DestinyTraitCategoryDefinition };
-
-    genders: { [key: number]: Definitions.DestinyGenderDefinition };
-
     metrics: { [key: number]: Metrics.DestinyMetricDefinition };
 
     energyTypes: { [key: number]: EnergyTypes.DestinyEnergyTypeDefinition };
@@ -18316,17 +18514,15 @@ export declare namespace Renderer {
       [key: number]: ActivityModifiers.DestinyActivityModifierDefinition;
     };
 
+    eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
+
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
     races: { [key: number]: Definitions.DestinyRaceDefinition };
 
-    classes: { [key: number]: Definitions.DestinyClassDefinition };
-
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
-    unlockExpressions: {
-      [key: number]: Definitions.DestinyUnlockExpressionDefinition;
-    };
+    unlockEvents: { [key: number]: Definitions.DestinyUnlockEventDefinition };
   }
 
   export interface Destiny2Entitlements {
@@ -18491,6 +18687,55 @@ export declare namespace Seasons {
     index: number;
 
     redacted: boolean;
+  }
+
+  /**
+	Defines the properties of an 'Event Card' in Destiny 2,
+	to coincide with a seasonal event for additional challenges, premium rewards, a new seal, and a special title.
+	For example: Solstice of Heroes 2022.
+	*/
+  export interface DestinyEventCardDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    linkRedirectPath: string;
+
+    color: Misc.DestinyColor;
+
+    images: Seasons.DestinyEventCardImages;
+
+    triumphsPresentationNodeHash: number;
+
+    sealPresentationNodeHash: number;
+
+    ticketCurrencyItemHash: number;
+
+    ticketVendorHash: number;
+
+    ticketVendorCategoryHash: number;
+
+    endTime: string;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyEventCardImages {
+    unownedCardSleeveImagePath: string;
+
+    unownedCardSleeveWrapImagePath: string;
+
+    cardIncompleteImagePath: string;
+
+    cardCompleteImagePath: string;
+
+    cardCompleteWrapImagePath: string;
+
+    progressIconImagePath: string;
+
+    themeBackgroundImagePath: string;
   }
 }
 
@@ -18832,29 +19077,11 @@ export declare namespace Traits {
   export interface DestinyTraitDefinition {
     displayProperties: Common.DestinyDisplayPropertiesDefinition;
 
-    traitCategoryId: string;
-
-    traitCategoryHash: number;
-
     /**
 		An identifier for how this trait can be displayed.
 		For example: a 'keyword' hint to show an explanation for certain related terms.
 		*/
     displayHint: string;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyTraitCategoryDefinition {
-    traitCategoryId: string;
-
-    traitHashes: number[];
-
-    traitIds: string[];
 
     hash: number;
 
@@ -19427,6 +19654,25 @@ class JsonpServiceInternal {
 }
 
 class ApplicationServiceInternal {
+  /**
+   * Internal method for collecting info on Applications for Cloud burst tech.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static AppCloudDump = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number[]> =>
+    ApiIntermediary.doGetRequest(
+      `/App/AppCloudDump/`,
+      [],
+      optionalQueryAppend,
+      "App",
+      "AppCloudDump",
+      undefined,
+      clientState
+    );
+
   /**
    * Trades an authorization code for access and refresh tokens.
    * @param optionalQueryAppend Segment to append to query string. May be null.
@@ -26343,6 +26589,86 @@ class Destiny2ServiceInternal {
     );
 
   /**
+   * Equip a loadout. You must have a valid Destiny Account, and either be in a social space, in orbit, or offline.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static EquipLoadout = (
+    input: Actions.DestinyLoadoutActionRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/Actions/Loadouts/EquipLoadout/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "EquipLoadout",
+      input,
+      clientState
+    );
+
+  /**
+   * Snapshot a loadout with the currently equipped items.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SnapshotLoadout = (
+    input: Actions.DestinyLoadoutUpdateActionRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/Actions/Loadouts/SnapshotLoadout/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "SnapshotLoadout",
+      input,
+      clientState
+    );
+
+  /**
+   * Update the color, icon, and name of a loadout.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UpdateLoadoutIdentifiers = (
+    input: Actions.DestinyLoadoutUpdateActionRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/Actions/Loadouts/UpdateLoadoutIdentifiers/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "UpdateLoadoutIdentifiers",
+      input,
+      clientState
+    );
+
+  /**
+   * Clear the identifiers and items of a loadout.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ClearLoadout = (
+    input: Actions.DestinyLoadoutActionRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/Destiny2/Actions/Loadouts/ClearLoadout/`,
+      [],
+      optionalQueryAppend,
+      "Destiny2",
+      "ClearLoadout",
+      input,
+      clientState
+    );
+
+  /**
    * Set the Lock State for an instanced item.  You must have a valid Destiny Account.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -27254,6 +27580,7 @@ class FireteamServiceInternal {
    * @param publicOnly Determines public/private filtering.
    * @param page Zero based page
    * @param langFilter An optional language filter.
+   * @param excludeImmediate If you wish the result to exclude immediate fireteams, set this to true.  Immediate-only can be forced using the dateRange enum.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -27266,6 +27593,7 @@ class FireteamServiceInternal {
     publicOnly: Globals.FireteamPublicSearchOption,
     page: number,
     langFilter: string,
+    excludeImmediate: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Queries.SearchResultFireteamSummary> =>
@@ -27273,7 +27601,10 @@ class FireteamServiceInternal {
       `/Fireteam/Clan/${e(groupId)}/Available/${e(platform)}/${e(
         activityType
       )}/${e(dateRange)}/${e(slotFilter)}/${e(publicOnly)}/${e(page)}/`,
-      [["langFilter", langFilter]],
+      [
+        ["langFilter", langFilter],
+        ["excludeImmediate", excludeImmediate],
+      ],
       optionalQueryAppend,
       "Fireteam",
       "GetAvailableClanFireteams",
@@ -27289,6 +27620,7 @@ class FireteamServiceInternal {
    * @param slotFilter Filters based on available slots
    * @param page Zero based page
    * @param langFilter An optional language filter.
+   * @param excludeImmediate If you wish the result to exclude immediate fireteams, set this to true.  Immediate-only can be forced using the dateRange enum.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -27299,6 +27631,7 @@ class FireteamServiceInternal {
     slotFilter: Globals.FireteamSlotSearch,
     page: number,
     langFilter: string,
+    excludeImmediate: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Queries.SearchResultFireteamSummary> =>
@@ -27306,7 +27639,10 @@ class FireteamServiceInternal {
       `/Fireteam/Search/Available/${e(platform)}/${e(activityType)}/${e(
         dateRange
       )}/${e(slotFilter)}/${e(page)}/`,
-      [["langFilter", langFilter]],
+      [
+        ["langFilter", langFilter],
+        ["excludeImmediate", excludeImmediate],
+      ],
       optionalQueryAppend,
       "Fireteam",
       "SearchPublicAvailableClanFireteams",

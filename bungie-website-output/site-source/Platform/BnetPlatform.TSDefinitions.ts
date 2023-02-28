@@ -286,6 +286,7 @@ export declare namespace DestinyDefinitions {
     Void = 4,
     Raid = 5,
     Stasis = 6,
+    Strand = 7,
   }
 
   enum BucketScope {
@@ -703,6 +704,8 @@ export declare namespace DestinyDefinitions {
     Medals = 2,
     Collectible = 3,
     Record = 4,
+    SeasonalTriumph = 5,
+    GuardianRank = 6,
   }
 
   enum DestinyRecordValueStyle {
@@ -723,6 +726,7 @@ export declare namespace DestinyDefinitions {
     SeasonChallengeComplete = 6,
     GildedTitleComplete = 7,
     CraftingRecipeUnlocked = 8,
+    ToastGuardianRankDetails = 9,
   }
 
   enum DestinyPresentationScreenStyle {
@@ -1256,6 +1260,8 @@ export declare namespace DestinyDefinitions {
     showIcon: boolean;
 
     enumValue: DamageType;
+
+    color: DestinyColor;
 
     boundToRelease: string;
 
@@ -4496,32 +4502,8 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
-  export interface DestinyTraitCategoryDefinition {
-    traitCategoryId: string;
-
-    traitHashes: number[];
-
-    traitIds: string[];
-
-    boundToRelease: string;
-
-    hash: number;
-
-    index: number;
-
-    contentIdentifier: string;
-
-    redacted: boolean;
-
-    blacklisted: boolean;
-  }
-
   export interface DestinyTraitDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
-
-    traitCategoryId: string;
-
-    traitCategoryHash: number;
 
     displayHint: string;
 
@@ -4640,6 +4622,84 @@ export declare namespace DestinyDefinitions {
     currencyItemHash: number;
 
     scalarValue: number;
+  }
+
+  export interface DestinySocialCommendationDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    cardImagePath: string;
+
+    color: DestinyColor;
+
+    displayPriority: number;
+
+    activityGivingLimit: number;
+
+    parentCommendationNodeHash: number;
+
+    parentCommendationNodeIdentifier: string;
+
+    snapshotValueUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    sendingRequirementUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    receivingRequirementUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    valuePredicates: DestinySocialCommendationValuePredicate[];
+
+    displayActivities: DestinyDisplayPropertiesDefinition[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinySocialCommendationValuePredicate {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    recentCommendationWeight: number;
+
+    predicateUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    senderCommendationPointsExpression: DestinyUnlockExpressionDefinition;
+
+    receiverCommendationPointsExpression: DestinyUnlockExpressionDefinition;
+  }
+
+  export interface DestinySocialCommendationNodeDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    color: DestinyColor;
+
+    tintedIcon: string;
+
+    valueUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    parentCommendationNodeHash: number;
+
+    childCommendationNodeHashes: number[];
+
+    childCommendationHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
   }
 
   export interface DestinyEventCardDefinition {
@@ -5486,6 +5546,164 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinyLoadoutColorDefinition {
+    colorImagePath: string;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyLoadoutConstantsDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    whiteIconImagePath: string;
+
+    blackIconImagePath: string;
+
+    loadoutCountPerCharacter: number;
+
+    loadoutPreviewFilterOutSocketCategoryHashes: number[];
+
+    loadoutPreviewFilterOutSocketTypeHashes: number[];
+
+    loadoutNameHashes: number[];
+
+    loadoutIconHashes: number[];
+
+    loadoutColorHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyLoadoutIconDefinition {
+    iconImagePath: string;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyLoadoutNameDefinition {
+    name: string;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyGuardianRankConstantsDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    rankCount: number;
+
+    guardianRankHashes: number[];
+
+    rootNodeHash: number;
+
+    iconBackgrounds: DestinyGuardianRankIconBackgroundsDefinition;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyGuardianRankIconBackgroundsDefinition {
+    backgroundEmptyBorderedImagePath: string;
+
+    backgroundEmptyBlueGradientBorderedImagePath: string;
+
+    backgroundFilledBlueBorderedImagePath: string;
+
+    backgroundFilledBlueGradientBorderedImagePath: string;
+
+    backgroundFilledBlueLowAlphaImagePath: string;
+
+    backgroundFilledBlueMediumAlphaImagePath: string;
+
+    backgroundFilledGrayMediumAlphaBorderedImagePath: string;
+
+    backgroundFilledGrayHeavyAlphaBorderedImagePath: string;
+
+    backgroundFilledWhiteMediumAlphaImagePath: string;
+
+    backgroundFilledWhiteImagePath: string;
+
+    backgroundPlateWhiteImagePath: string;
+
+    backgroundPlateBlackImagePath: string;
+
+    backgroundPlateBlackAlphaImagePath: string;
+  }
+
+  export interface DestinyGuardianRankDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    rankNumber: number;
+
+    presentationNodeHash: number;
+
+    foregroundImagePath: string;
+
+    overlayImagePath: string;
+
+    overlayMaskImagePath: string;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DestinyEnergyTypeDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
 
@@ -6086,6 +6304,12 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyGenderDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGenderDefinition;
   };
+  DestinyGuardianRankConstantsDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
+  };
+  DestinyGuardianRankDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyGuardianRankDefinition;
+  };
   DestinyInventoryBucketDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryBucketDefinition;
   };
@@ -6100,6 +6324,18 @@ export interface DestinyWorldDefinitionsGenerated {
   };
   DestinyItemTierTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyItemTierTypeDefinition;
+  };
+  DestinyLoadoutColorDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyLoadoutColorDefinition;
+  };
+  DestinyLoadoutConstantsDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyLoadoutConstantsDefinition;
+  };
+  DestinyLoadoutIconDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyLoadoutIconDefinition;
+  };
+  DestinyLoadoutNameDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyLoadoutNameDefinition;
   };
   DestinyLocationDefinition?: {
     [key: string]: DestinyDefinitions.DestinyLocationDefinition;
@@ -6189,6 +6425,12 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinySeasonPassDefinition?: {
     [key: string]: DestinyDefinitions.DestinySeasonPassDefinition;
   };
+  DestinySocialCommendationDefinition?: {
+    [key: string]: DestinyDefinitions.DestinySocialCommendationDefinition;
+  };
+  DestinySocialCommendationNodeDefinition?: {
+    [key: string]: DestinyDefinitions.DestinySocialCommendationNodeDefinition;
+  };
   DestinySocketCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinySocketCategoryDefinition;
   };
@@ -6206,9 +6448,6 @@ export interface DestinyWorldDefinitionsGenerated {
   };
   DestinyTalentNodeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTalentNodeDefinition;
-  };
-  DestinyTraitCategoryDefinition?: {
-    [key: string]: DestinyDefinitions.DestinyTraitCategoryDefinition;
   };
   DestinyTraitDefinition?: {
     [key: string]: DestinyDefinitions.DestinyTraitDefinition;
@@ -6280,11 +6519,12 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyVendorGroupDefinition?: DestinyDefinitions.DestinyVendorGroupDefinition;
   DestinyUnlockCountMappingDefinition?: DestinyDefinitions.DestinyUnlockCountMappingDefinition;
   DestinyUnlockExpressionMappingDefinition?: DestinyDefinitions.DestinyUnlockExpressionMappingDefinition;
-  DestinyTraitCategoryDefinition?: DestinyDefinitions.DestinyTraitCategoryDefinition;
   DestinyTraitDefinition?: DestinyDefinitions.DestinyTraitDefinition;
   DestinyPlugSetDefinition?: DestinyDefinitions.DestinyPlugSetDefinition;
   DestinySocketCategoryDefinition?: DestinyDefinitions.DestinySocketCategoryDefinition;
   DestinySocketTypeDefinition?: DestinyDefinitions.DestinySocketTypeDefinition;
+  DestinySocialCommendationDefinition?: DestinyDefinitions.DestinySocialCommendationDefinition;
+  DestinySocialCommendationNodeDefinition?: DestinyDefinitions.DestinySocialCommendationNodeDefinition;
   DestinyEventCardDefinition?: DestinyDefinitions.DestinyEventCardDefinition;
   DestinySeasonDefinition?: DestinyDefinitions.DestinySeasonDefinition;
   DestinySeasonPassDefinition?: DestinyDefinitions.DestinySeasonPassDefinition;
@@ -6300,8 +6540,14 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyMilestoneDefinition?: DestinyDefinitions.DestinyMilestoneDefinition;
   DestinyMetricDefinition?: DestinyDefinitions.DestinyMetricDefinition;
   DestinyLoreDefinition?: DestinyDefinitions.DestinyLoreDefinition;
+  DestinyLoadoutColorDefinition?: DestinyDefinitions.DestinyLoadoutColorDefinition;
+  DestinyLoadoutConstantsDefinition?: DestinyDefinitions.DestinyLoadoutConstantsDefinition;
+  DestinyLoadoutIconDefinition?: DestinyDefinitions.DestinyLoadoutIconDefinition;
+  DestinyLoadoutNameDefinition?: DestinyDefinitions.DestinyLoadoutNameDefinition;
   DestinyInventoryItemLiteDefinition?: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
   DestinyItemTierTypeDefinition?: DestinyDefinitions.DestinyItemTierTypeDefinition;
+  DestinyGuardianRankConstantsDefinition?: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
+  DestinyGuardianRankDefinition?: DestinyDefinitions.DestinyGuardianRankDefinition;
   DestinyEnergyTypeDefinition?: DestinyDefinitions.DestinyEnergyTypeDefinition;
   DestinyActivityGraphDefinition?: DestinyDefinitions.DestinyActivityGraphDefinition;
   DestinyCollectibleDefinition?: DestinyDefinitions.DestinyCollectibleDefinition;
@@ -6356,11 +6602,12 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyVendorGroupDefinition",
   "DestinyUnlockCountMappingDefinition",
   "DestinyUnlockExpressionMappingDefinition",
-  "DestinyTraitCategoryDefinition",
   "DestinyTraitDefinition",
   "DestinyPlugSetDefinition",
   "DestinySocketCategoryDefinition",
   "DestinySocketTypeDefinition",
+  "DestinySocialCommendationDefinition",
+  "DestinySocialCommendationNodeDefinition",
   "DestinyEventCardDefinition",
   "DestinySeasonDefinition",
   "DestinySeasonPassDefinition",
@@ -6376,8 +6623,14 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyMilestoneDefinition",
   "DestinyMetricDefinition",
   "DestinyLoreDefinition",
+  "DestinyLoadoutColorDefinition",
+  "DestinyLoadoutConstantsDefinition",
+  "DestinyLoadoutIconDefinition",
+  "DestinyLoadoutNameDefinition",
   "DestinyInventoryItemLiteDefinition",
   "DestinyItemTierTypeDefinition",
+  "DestinyGuardianRankConstantsDefinition",
+  "DestinyGuardianRankDefinition",
   "DestinyEnergyTypeDefinition",
   "DestinyActivityGraphDefinition",
   "DestinyCollectibleDefinition",

@@ -51,9 +51,13 @@ export class BungieHelmet extends React.Component<
       : BungieHelmet.DefaultBoringMetaImage;
 
     let imageWithHostname = image;
-    if (image.indexOf(location.hostname) === -1) {
-      const slash = image.startsWith("/") ? "" : "/";
-      imageWithHostname = `${location.protocol}//${location.hostname}${slash}${image}`;
+
+    // don't reconstruct the image URL if it starts with an HTTP scheme
+    if (!image.startsWith("http://") && !image.startsWith("https://")) {
+      if (image.indexOf(location.hostname) === -1) {
+        const slash = image.startsWith("/") ? "" : "/";
+        imageWithHostname = `${location.protocol}//${location.hostname}${slash}${image}`;
+      }
     }
 
     return (

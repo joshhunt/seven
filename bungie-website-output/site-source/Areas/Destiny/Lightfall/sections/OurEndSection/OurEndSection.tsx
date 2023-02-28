@@ -14,6 +14,7 @@ import styles from "./OurEndSection.module.scss";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { useCSWebpImages } from "@Utilities/CSUtils";
 import { LightfallTrailerBtn } from "@Areas/Destiny/Lightfall/components/LightfallTrailerBtn/LightfallTrailerBtn";
+import { ClickableMediaThumbnail } from "@UI/Marketing/ClickableMediaThumbnail";
 
 interface OurEndSectionProps {
   data?: any;
@@ -21,8 +22,17 @@ interface OurEndSectionProps {
 
 export const OurEndSection: React.FC<OurEndSectionProps> = (props) => {
   const { data } = props;
-  const { title, blurb, button = [], desktop_bg, desktop_video, mobile_bg } =
-    data ?? {};
+  const {
+    title,
+    blurb,
+    button = [],
+    trailer_thumbnail,
+    trailer_id,
+    trailer_title,
+    desktop_bg,
+    desktop_video,
+    mobile_bg,
+  } = data ?? {};
   const { mobile } = useDataStore(Responsive);
 
   const imgs = useCSWebpImages(
@@ -71,6 +81,20 @@ export const OurEndSection: React.FC<OurEndSectionProps> = (props) => {
             </LightfallTrailerBtn>
           ))}
         </LightfallSectionHeader>
+
+        {trailer_id ? (
+          <div className={styles.trailerWrap}>
+            <ClickableMediaThumbnail
+              thumbnail={trailer_thumbnail?.url}
+              videoId={trailer_id}
+              classes={{
+                btnWrapper: styles.trailerThumbnail,
+                playIcon: styles.trailerPlayIcon,
+              }}
+            />
+            <p className={styles.trailerTitle}>{trailer_title}</p>
+          </div>
+        ) : null}
       </div>
     </div>
   );

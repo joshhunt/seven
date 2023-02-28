@@ -41,6 +41,8 @@ interface DefaultProps {
   isFrameless: boolean;
   /** If true, modal cannot be closed */
   preventUserClose: boolean;
+  /** If true, modal can only be closed via the X */
+  onlyAllowCloseButtonToClose: boolean;
 }
 
 interface IModalProps {
@@ -120,6 +122,7 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     overflowType: ModalOverflowTypes.scrollinmodal,
     isFrameless: false,
     preventUserClose: false,
+    onlyAllowCloseButtonToClose: false,
   };
 
   constructor(props: ModalProps) {
@@ -235,7 +238,9 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     );
     const clickedInside = this.modalRef.contains(targetElem);
     const clickedModal = e.target === this.modalRef;
+
     if (
+      !this.props.onlyAllowCloseButtonToClose &&
       !clickedModal &&
       !clickedInside &&
       !clickedInsideDropdown &&

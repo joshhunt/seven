@@ -36,7 +36,10 @@ export const App: React.FC = () => {
       <Router basename={AppBaseUrl}>
         <BasicErrorBoundary>
           <AppLayout>
-            <Helmet titleTemplate="%s | Bungie.net" />
+            <Helmet
+              titleTemplate="%s | Bungie.net"
+              defaultTitle={"Bungie.net"}
+            />
             {coreSettings && (
               <React.Fragment>
                 <FullPageLoadingBar />

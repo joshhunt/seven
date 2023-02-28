@@ -505,10 +505,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                             {Localizer.Buyflow.AvailableOn}
                           </p>
                         )}
+                        <div className={styles.playstation} />
                         <div className={styles.xboxSeriesX} />
                         <div className={styles.xboxOne} />
                         <div className={styles.windows} />
-                        <div className={styles.playstation} />
                         <div className={styles.steam} />
                         <img
                           className={styles.epic}

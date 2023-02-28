@@ -64,7 +64,10 @@ export const PmpInfoThumbnailGroup: React.FC<PmpInfoThumbnailGroupProps> = (
                 <InfoBlockThumbnail
                   thumbItem={t}
                   allImageData={thumbnail_blocks}
-                  classes={{ thumbBg: classes?.thumbBg }}
+                  classes={{
+                    thumbBg: classes?.thumbBg,
+                    thumbnail: classes?.thumbnail,
+                  }}
                 />
                 {heading ? (
                   <p className={classNames(styles.heading, classes?.heading)}>
@@ -94,6 +97,7 @@ type InfoBlockThumbnailProps = {
   allImageData: PmpInfoThumbnailGroupItem[];
   classes?: {
     thumbBg?: string;
+    thumbnail?: string;
   };
 };
 
@@ -115,7 +119,7 @@ const InfoBlockThumbnail: React.FC<InfoBlockThumbnailProps> = (props) => {
   const thumbProps: ImageThumbProps = {
     classes: {
       image: classNames([styles.thumbBg, classes?.thumbBg]),
-      imageContainer: styles.thumbnail,
+      imageContainer: classNames([styles.thumbnail, classes?.thumbnail]),
     },
     image: getThumbBlockItem(thumbItem)?.thumbnail?.url,
   };

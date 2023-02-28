@@ -9,15 +9,13 @@ import {
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
+import { DestinyCharacterCardSelector } from "@UI/Destiny/DestinyCharacterCardSelector";
 import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
-import { Grid } from "@UI/UIKit/Layout/Grid/Grid";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import classNames from "classnames";
 import React, { ReactNode, useEffect } from "react";
 import styles from "./DestinyAccountWrapper.module.scss";
 
@@ -25,6 +23,7 @@ export interface IAccountFeatures {
   bnetProfile: ReactNode;
   platformSelector: ReactNode;
   characterSelector: ReactNode;
+  characterCardSelector: ReactNode;
 }
 
 // Required props
@@ -144,6 +143,37 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
                     membershipDataStore.actions.updateCharacter(value);
                     onCharacterChange?.(value);
                   }}
+                />
+              ) : (
+                <div className={styles.errors}>
+                  {errorFetchingMembership && Localizer.Account.AccountError}
+                  {noCharacters &&
+                    Localizer.Format(Localizer.Crosssave.NoCharacters, {
+                      platform: LocalizerUtils.getPlatformNameFromMembershipType(
+                        membershipData?.selectedMembership?.membershipType
+                      ),
+                    })}
+                </div>
+              )}
+            </>
+          ),
+          characterCardSelector: (
+            <>
+              {membershipData?.selectedCharacter ? (
+                <DestinyCharacterCardSelector
+                  selectedCharacterId={
+                    membershipData?.selectedCharacter?.characterId
+                  }
+                  dataStore={membershipDataStore}
+                  membershipType={
+                    membershipData?.selectedMembership?.membershipType
+                  }
+                  membershipId={
+                    membershipData?.selectedMembership?.membershipId
+                  }
+                  characters={membershipData?.characters}
+                  linkToGear={false}
+                  showEmptyStates={false}
                 />
               ) : (
                 <div className={styles.errors}>

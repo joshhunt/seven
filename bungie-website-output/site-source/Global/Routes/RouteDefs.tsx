@@ -25,6 +25,7 @@ export class RouteDefs {
     CrossSave: "CrossSave",
     Destiny: "Destiny",
     Direct: "Direct",
+    Fireteams: "Fireteams",
     Guide: "Guide",
     Legal: "Legal",
     News: "News",
@@ -196,6 +197,16 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reveal"),
       ],
     }),
+    Fireteams: new Area({
+      name: RouteDefs.AreaNames.Fireteams,
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/Fireteams/FireteamsArea")
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "Search"),
+        (area) => new ActionRoute(area, "Fireteam", { path: ":fireteamId" }),
+      ],
+    }),
     Guide: new Area({
       name: RouteDefs.AreaNames.Guide,
       lazyComponent: createAsyncComponent(
@@ -314,6 +325,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheHaunted"),
         (area) => new ActionRoute(area, "SeasonOfPlunder"),
         (area) => new ActionRoute(area, "SeasonOfTheSeraph"),
+        (area) => new ActionRoute(area, "SeasonOfDefiance"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),

@@ -66,20 +66,21 @@ export interface IDropdownPrettyOption {
   onClick?: (value: string) => void;
   children?: undefined;
   className?: string;
+  iconPath?: string;
 }
 
 export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
+  iconPath,
   children,
   onClick,
   selected,
   option,
   className,
 }) => {
-  const iconRendered = option.iconPath && (
-    <div
-      className={styles.icon}
-      style={{ backgroundImage: `url(${option.iconPath})` }}
-    />
+  const icon = iconPath ?? option?.iconPath;
+
+  const iconRendered = icon && (
+    <div className={styles.icon} style={{ backgroundImage: `url(${icon})` }} />
   );
 
   return (

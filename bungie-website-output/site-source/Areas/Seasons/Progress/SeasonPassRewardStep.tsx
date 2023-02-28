@@ -3,6 +3,8 @@
 
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import DestinyCollectibleDetailItemModalContent from "@UI/Destiny/DestinyCollectibleDetailItemContent";
+import DestinyCollectibleDetailModal from "@UI/Destiny/DestinyCollectibleDetailModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
@@ -11,7 +13,7 @@ import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefi
 import { DestinyDefinitions } from "@Definitions";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";
-import { DestinyProgressionRewardItemState } from "@Enum";
+import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";
 
 export type CompleteState = "None" | "Incomplete" | "Complete";
@@ -289,25 +291,9 @@ export class SeasonPassRewardStep extends React.Component<
   }
 
   private async openItemDetailModal(itemHash: number) {
-    const response = await fetch(
-      `/${Localizer.CurrentCultureName}/Gear/ItemSummary/${itemHash}`
-    );
-
-    const myJson = await response.text();
-
-    const doc = new DOMParser().parseFromString(myJson, "text/html");
-
     Modal.open(
       <>
-        <div
-          className={seasonItemModalStyles.itemModal}
-          dangerouslySetInnerHTML={sanitizeHTML(
-            doc
-              .getElementById("gear-item-summary-container")
-              ?.getElementsByTagName("template")
-              ?.item(0)?.innerHTML
-          )}
-        />
+        <DestinyCollectibleDetailItemModalContent itemHash={itemHash} />
       </>,
       {
         className: seasonItemModalStyles.seasonItemModal,

@@ -94,7 +94,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
             <IoIosArrowDropupCircle className={styles.footerTriggerIcon} />
           </div>
         )}
-        <a href="/">
+        <a href="/7">
           <img
             src="/7/ca/bungie/icons/logos/bungienet/bungie_logo_footer.png"
             className={styles.footerLogo}
@@ -119,7 +119,12 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               )}
               {this.renderLink(RouteHelper.Seasons(), navLoc.TopNavSeasons)}
               {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
-              {this.renderLink(RouteHelper.Fireteams(), navLoc.ClanFireteams)}
+              {this.renderLink(
+                ConfigUtils.SystemStatus(SystemNames.ReactFireteamUI)
+                  ? RouteHelper.NewFireteams()
+                  : RouteHelper.Fireteams(),
+                navLoc.ClanFireteams
+              )}
               {appsEnabled &&
                 this.renderLink(
                   RouteHelper.Applications(),
@@ -258,7 +263,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 navLoc.NewsAmpEvents
               )}
               {this.renderLink(
-                "https://thebungiefoundation.kindful.com/",
+                "https://bungiefoundation.donordrive.com/index.cfm?fuseaction=donate.event&eventID=506",
                 navLoc.Donate
               )}
             </ul>

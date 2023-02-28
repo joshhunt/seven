@@ -389,6 +389,24 @@
     "path": "/7/en/Direct/Video/:title"
   },
   {
+    "areaName": "Fireteams",
+    "areaObjectName": "Fireteams",
+    "componentImportPath": "@Areas/Fireteams/FireteamsArea",
+    "action": "Fireteam",
+    "params": {
+      "path": ":fireteamId"
+    },
+    "path": "/7/en/Fireteams/Fireteam/:fireteamId"
+  },
+  {
+    "areaName": "Fireteams",
+    "areaObjectName": "Fireteams",
+    "componentImportPath": "@Areas/Fireteams/FireteamsArea",
+    "action": "Search",
+    "params": {},
+    "path": "/7/en/Fireteams/Search"
+  },
+  {
     "areaName": "Guide",
     "areaObjectName": "Guide",
     "componentImportPath": "@Areas/Guide/GuideArea",
@@ -643,6 +661,14 @@
     "action": "SeasonOfDawn",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfDawn"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfDefiance",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfDefiance"
   },
   {
     "areaName": "Seasons",

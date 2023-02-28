@@ -71,6 +71,12 @@ export class DestinySkuUtils {
   public static productFamilyDefinitionFromContent(
     contentItem: Content.ContentItemPublicContract
   ): IDestinyProductFamilyDefinition {
+    console.log(
+      "contentItem",
+      contentItem.properties["PageTitle"],
+      contentItem
+    );
+
     return {
       /* Listen, I know this first one is a bad idea, but it is technically very safe. Since which product family data to use
 			 is pulled from the firehose by adding the final part of the url to "product-family-" to create the tag, here we just pull

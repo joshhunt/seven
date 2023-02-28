@@ -3,6 +3,8 @@
 
 import styles from "@Areas/User/Profile.module.scss";
 import { Clan } from "@Areas/User/ProfileComponents/Clan";
+import DestinyCommendations from "@Areas/User/ProfileComponents/DestinyCommendations";
+import DestinyGuardianRanks from "@Areas/User/ProfileComponents/DestinyGuardianRanks";
 import { Localizer } from "@bungie/localization";
 import Collections from "@Areas/User/ProfileComponents/Collections";
 import ProfileCharacterSelector from "@Areas/User/ProfileComponents/ProfileCharacterSelector";
@@ -71,6 +73,8 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
         />
       </ProfileErrorBoundary>
       <div className={styles.triumphsCollections}>
+        <DestinyCommendations />
+        <DestinyGuardianRanks destinyProfileResponse={destinyProfileResponse} />
         <ProfileErrorBoundary message={profileLoc.TriumphsLoadingError}>
           <Triumphs
             profileResponse={destinyProfileResponse}

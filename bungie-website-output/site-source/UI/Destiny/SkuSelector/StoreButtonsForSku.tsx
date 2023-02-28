@@ -38,22 +38,8 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
     selectedRegion,
     onStoreSelected,
     utmParams,
+    stores,
   } = props;
-
-  const params = new URLSearchParams(location.search);
-  const order = params.get("order");
-
-  // Sort stores into specific order
-  const stores =
-    order === "popularity"
-      ? sortUsingFilterArray(props.stores, [
-          ({ key }) => key === "Steam",
-          ({ key }) => key === "Playstation",
-          ({ key }) => key === "Xbox",
-          ({ key }) => key === "Epic",
-          ({ key }) => key === "MicrosoftPC",
-        ])
-      : props.stores;
 
   const getSaleDateString = (activeSale: IDestinySkuSale) => {
     const ed = DateTime.fromISO(activeSale.endDate);

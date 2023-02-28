@@ -127,8 +127,10 @@ class AppLayout extends React.Component<
         this.onHistoryUpdate();
       }),
       DestinyDefinitions.observe(
-        ({ isLoading: definitionsLoading }: ManifestPayload) =>
-          this.setState({ definitionsLoading }),
+        ({ isLoading, hasError }: ManifestPayload) => {
+          const definitionsLoading = isLoading && !hasError;
+          this.setState({ definitionsLoading });
+        },
         { types: null },
         true
       ),

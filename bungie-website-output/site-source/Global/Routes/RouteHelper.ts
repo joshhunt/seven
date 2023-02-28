@@ -16,6 +16,8 @@ import {
   ISearchParams,
   IRewardClaimParams,
   PresentationNodeParams,
+  IFireteamSearchParams,
+  IFireteamParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -86,7 +88,7 @@ export const ZendeskHelpArticleUrl = (articleId: string) => {
 
 export class RouteHelper {
   public static Home: IMultiSiteLink = {
-    legacy: true,
+    legacy: false,
     url: "/",
   };
 
@@ -331,6 +333,16 @@ export class RouteHelper {
   public static Fireteams = LegacyPathWithQuery(
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );
+  public static NewFireteams = BasicReactPath<IFireteamSearchParams>(
+    RouteDefs.Areas.Fireteams.getAction("Search")
+  );
+  public static NewFireteam = BasicReactPath<IFireteamParams>(
+    RouteDefs.Areas.Fireteams.getAction("Fireteam")
+  );
+  public static Fireteam = (groupId: string, fireteamId: string) =>
+    LegacyPath(
+      `ClanV2/PublicFireteam?groupId=${groupId}&fireteamId=${fireteamId}`
+    );
   public static Groups = LegacyPathWithQuery("/Groups");
   public static Group = (groupId: string) =>
     LegacyPath(`/Groups/Chat?groupId=${groupId}`);
@@ -451,6 +463,9 @@ export class RouteHelper {
   );
   public static SeasonOfTheSeraph = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheSeraph")
+  );
+  public static SeasonOfDefiance = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfDefiance")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(

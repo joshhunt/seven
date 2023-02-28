@@ -311,6 +311,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
             DestinyComponentType.Records,
             DestinyComponentType.Collectibles,
             DestinyComponentType.Metrics,
+            DestinyComponentType.ProfileProgression,
           ]
         );
         setDestinyProfileResponse(destinyResponse);

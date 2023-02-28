@@ -1,7 +1,6 @@
 // Created by v-ahipp, 2022
 // Copyright Bungie, Inc.
 
-import { AnimatedStrandGuardians } from "@Areas/Destiny/Lightfall/components/AnimatedStrandGuardians/AnimatedStrandGuardians";
 import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/LightfallSectionHeader/LightfallSectionHeader";
 import LightfallStickyNav from "@Areas/Destiny/Lightfall/components/LightfallStickyNav/LightfallStickyNav";
 import { LightfallEditionsSection } from "@Areas/Destiny/Lightfall/sections/LightfallEditionsSection/LightfallEditionsSection";
@@ -14,10 +13,8 @@ import { Localizer } from "@bungie/localization";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { PmpMedia } from "@UI/Marketing/Fragments/PmpMedia";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Button } from "@UIKit/Controls/Button/Button";
 import classNames from "classnames";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { BnetStackNebulaProductPage } from "../../../Generated/contentstack-types";
 import { Responsive } from "@Boot/Responsive";
 import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 import {
@@ -56,10 +53,6 @@ const contentReferences: string[] = [
 
 const Lightfall: React.FC = () => {
   const [data, setData] = useState<any | null>(null);
-  const [
-    nebulaData,
-    setNebulaData,
-  ] = useState<BnetStackNebulaProductPage | null>(null);
 
   const heroRef = useRef<HTMLDivElement | null>(null);
   const topContent = useRef<HTMLDivElement | null>(null);
@@ -76,15 +69,6 @@ const Lightfall: React.FC = () => {
       .toJSON()
       .fetch()
       .then(setData);
-
-    ContentStackClient()
-      .ContentType("nebula_product_page")
-      .Entry("blt1687fccada8d316b")
-      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
-      .includeReference([])
-      .toJSON()
-      .fetch()
-      .then(setNebulaData);
   }, []);
 
   const {
@@ -106,11 +90,6 @@ const Lightfall: React.FC = () => {
     desktop_bg_bottom,
     mobile_bg_bottom,
   } = data ?? {};
-
-  const {
-    strand_section: oldStrandSection,
-    guardian_toasts: oldGuardianToasts,
-  } = nebulaData ?? {};
 
   const imgs = useCSWebpImages(
     useMemo(
@@ -171,16 +150,7 @@ const Lightfall: React.FC = () => {
         <LightfallStrandSection data={strand_section} />
       </div>
 
-      {strand_section?.legacy_strand_section ? (
-        <AnimatedStrandGuardians
-          data={oldStrandSection?.guardians_graphic}
-          toasts={oldGuardianToasts}
-          aboveContent={topContent}
-          belowContent={bottomContent}
-        />
-      ) : (
-        <LightfallGuardiansSection data={{ guardians: guardian_toasts }} />
-      )}
+      <LightfallGuardiansSection data={{ guardians: guardian_toasts }} />
 
       <div className={styles.bottomContent} ref={bottomContent}>
         {/* NEON SECTION */}

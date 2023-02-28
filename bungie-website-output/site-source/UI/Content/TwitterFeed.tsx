@@ -104,3 +104,57 @@ export class TwitterFeed extends React.Component {
     );
   }
 }
+
+export class TweetPreview extends React.Component {
+  private twitterLoadingTries = 0;
+
+  constructor(props: {} | Readonly<{}>) {
+    super(props);
+  }
+
+  public componentDidMount() {
+    if (!window.twttr?.widgets) {
+      const tryLoadTwitter = new Promise<void>((resolve, reject) => {
+        const interval = setInterval(() => {
+          this.twitterLoadingTries += 1;
+
+          if (this.twitterLoadingTries >= 8) {
+            clearInterval(interval);
+            this.twitterLoadingTries = 0;
+          }
+
+          if (window.twttr?.widgets?.load) {
+            resolve();
+            clearInterval(interval);
+            this.twitterLoadingTries = 0;
+            this.setState({ visible: true });
+          }
+        }, 30);
+      });
+
+      tryLoadTwitter.then(() => window.twttr.widgets.load());
+    } else {
+      window.twttr.widgets.load();
+    }
+  }
+
+  public render() {
+    return (
+      <>
+        <TwitterScript />
+        <a
+          className={classNames(
+            "twitter-timeline",
+            "twitter-timeline-rendered",
+            styles["twitter-timeline"]
+          )}
+          href={`https://twitter.com/Bungie?ref_src=twsrc%5Etfw`}
+          data-chrome="nofooter noheaders noborders"
+          data-tweet-limit={1}
+          data-width={"350px"}
+          data-theme={"light"}
+        />
+      </>
+    );
+  }
+}

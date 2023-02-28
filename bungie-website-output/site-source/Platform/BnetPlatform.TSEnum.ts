@@ -1663,6 +1663,8 @@ export enum DestinyPresentationDisplayStyle {
   Medals = 2,
   Collectible = 3,
   Record = 4,
+  SeasonalTriumph = 5,
+  GuardianRank = 6,
 }
 
 export enum DestinyRecordValueStyle {
@@ -1689,6 +1691,7 @@ export enum DestinyRecordToastStyle {
   SeasonChallengeComplete = 6,
   GildedTitleComplete = 7,
   CraftingRecipeUnlocked = 8,
+  ToastGuardianRankDetails = 9,
 }
 
 export enum TierType {
@@ -1799,6 +1802,7 @@ export enum DamageType {
   Void = 4,
   Raid = 5,
   Stasis = 6,
+  Strand = 7,
 }
 
 /**
@@ -2192,6 +2196,10 @@ export enum DestinyComponentType {
 		*/
   CharacterEquipment = 205,
   /**
+		This will return info about the loadouts of the character(s).
+		*/
+  CharacterLoadouts = 206,
+  /**
 		This will return basic info about instanced items - whether they can be equipped, their
 		tracked status, and some info commonly needed in many places (current damage type,
 		primary stat value, etc)
@@ -2324,6 +2332,10 @@ export enum DestinyComponentType {
 		Returns summary status information about all "Craftables" aka crafting recipe items.
 		*/
   Craftables = 1300,
+  /**
+		Returns score values for all commendations and commendation nodes.
+		*/
+  SocialCommendations = 1400,
 }
 
 /**
@@ -3014,6 +3026,37 @@ export enum DestinyActivityModeCategory {
 }
 
 /**
+	Indicates the type of actions that can be performed
+	*/
+export enum SocketTypeActionType {
+  InsertPlug = 0,
+  InfuseItem = 1,
+  ReinitializeSocket = 2,
+}
+
+export enum DestinySocketVisibility {
+  Visible = 0,
+  Hidden = 1,
+  HiddenWhenEmpty = 2,
+  HiddenIfNoPlugsAvailable = 3,
+}
+
+/**
+	Represents the possible and known UI styles used by the game for rendering Socket Categories.
+	*/
+export enum DestinySocketCategoryStyle {
+  Unknown = 0,
+  Reusable = 1,
+  Consumable = 2,
+  Unlockable = 3,
+  Intrinsic = 4,
+  EnergyMeter = 5,
+  LargePerk = 6,
+  Abilities = 7,
+  Supers = 8,
+}
+
+/**
 	There are many Progressions in Destiny (think Character Level, or Reputation).
 	These are the various "Scopes" of Progressions, which affect many things:
 	* Where/if they are stored
@@ -3048,37 +3091,6 @@ export enum DestinyProgressionStepDisplayEffect {
 export enum DestinyProgressionRewardItemAcquisitionBehavior {
   Instant = 0,
   PlayerClaimRequired = 1,
-}
-
-/**
-	Indicates the type of actions that can be performed
-	*/
-export enum SocketTypeActionType {
-  InsertPlug = 0,
-  InfuseItem = 1,
-  ReinitializeSocket = 2,
-}
-
-export enum DestinySocketVisibility {
-  Visible = 0,
-  Hidden = 1,
-  HiddenWhenEmpty = 2,
-  HiddenIfNoPlugsAvailable = 3,
-}
-
-/**
-	Represents the possible and known UI styles used by the game for rendering Socket Categories.
-	*/
-export enum DestinySocketCategoryStyle {
-  Unknown = 0,
-  Reusable = 1,
-  Consumable = 2,
-  Unlockable = 3,
-  Intrinsic = 4,
-  EnergyMeter = 5,
-  LargePerk = 6,
-  Abilities = 7,
-  Supers = 8,
 }
 
 /**
@@ -3313,6 +3325,10 @@ export enum ActivityType {
   UnlockItem = 1009,
   PullFromPostmaster = 1011,
   InsertPlug = 1012,
+  EquipLoadout = 1020,
+  SnapshotLoadout = 1021,
+  UpdateLoadoutIdentifiers = 1022,
+  ClearLoadout = 1023,
   Authorize = 2000,
   Revoke = 2001,
   Join = 2500,

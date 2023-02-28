@@ -3,6 +3,7 @@ export enum BasicSize {
   Small,
   Medium,
   Large,
+  FullSize,
 }
 
 export type Coin<TCoinProps> = React.ReactElement<TCoinProps>;

@@ -23,6 +23,7 @@ export const SystemNames = {
   CompanionFeaturePage: "CompanionFeaturePage",
   CoreAreaSeasons: "CoreAreaSeasons",
   CoreDestinyBuy: "CoreDestinyBuy",
+  CoreHomeandNews: "CoreHomeandNews",
   CrossSave: "CrossSave",
   CrossSaveStadiaException: "CrossSaveStadiaSeasonsException",
   Destiny2: "Destiny2",
@@ -118,4 +119,6 @@ export const SystemNames = {
   FirehoseNewsMigrator: "FirehoseNewsMigrator",
   DirectVideoCS: "DirectVideoCS",
   StadiaSunsetAlerts: "StadiaSunsetAlerts",
+  Fireteams: "ClanFireteams",
+  ReactFireteamUI: "ReactFireteamUI",
 } as const;

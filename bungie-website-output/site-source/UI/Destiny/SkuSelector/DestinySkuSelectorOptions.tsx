@@ -18,6 +18,7 @@ import styles from "./DestinySkuSelectorOptions.module.scss";
 import DestinySkuStoreButton from "./DestinySkuStoreButton";
 import { DestinySkuUtils } from "./DestinySkuUtils";
 import { StoreButtonsForSku } from "./StoreButtonsForSku";
+import { sortUsingFilterArray } from "@Helpers";
 
 // Required props
 interface IDestinySkuSelectorOptionsProps extends RouteComponentProps {
@@ -54,10 +55,14 @@ class DestinySkuSelectorOptionsInternal extends React.Component<
   public render() {
     const { definition, className, utmParams } = this.props;
 
-    const stores = DestinySkuUtils.getStoresForProduct(
+    const storesForProduct = DestinySkuUtils.getStoresForProduct(
       definition.skuTag,
       this.props.skuConfig
     );
+    // Sort stores into specific order
+    const stores = sortUsingFilterArray(storesForProduct, [
+      ({ key }) => key === "Playstation",
+    ]);
 
     const subtitle = Localizer.Format(Localizer.Buyflow.ChooseAPlatformToOpen, {
       productName: definition.title,

@@ -7,7 +7,11 @@ import { SaveButtonBar } from "@Areas/User/AccountComponents/Internal/SaveButton
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
-import { BungieMembershipType, PlatformErrorCodes } from "@Enum";
+import {
+  BungieMembershipType,
+  PlatformErrorCodes,
+  BungieCredentialType,
+} from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Contract, Platform, User } from "@Platform";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -28,6 +32,7 @@ import accountStyles from "../Account.module.scss";
 import styles from "./IdentitySettings.module.scss";
 import { Avatars } from "./Internal/Avatars";
 import { Themes } from "./Internal/Themes";
+import { EnumUtils } from "@Utilities/EnumUtils";
 
 type NameChangeStatus =
   | "initial"
@@ -353,7 +358,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                             <div>
                               {Object.keys(displayNameSuggestions).map(
                                 (credentialType, i) => {
+                                  //Remove stadia names from name suggestions
                                   if (
+                                    credentialType !==
+                                      EnumUtils.getStringValue(
+                                        BungieCredentialType.StadiaId,
+                                        BungieCredentialType
+                                      ) &&
                                     !displayNameSuggestions[
                                       credentialType
                                     ].includes("★")
