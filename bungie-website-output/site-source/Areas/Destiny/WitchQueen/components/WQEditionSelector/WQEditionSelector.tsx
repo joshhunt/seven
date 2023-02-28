@@ -101,9 +101,13 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
     return null;
   }
 
-  const wqComparisonSkus = skuItems?.filter((value: any) =>
-    wqProductFamily?.comparisonSection?.find((v) => value.skuTag === v.SkuTag)
-  );
+  const wqComparisonSkus =
+    wqProductFamily?.comparisonSection &&
+    skuItems?.filter((value: any) =>
+      wqProductFamily?.comparisonSection?.find(
+        (v) => value?.skuTag === v?.SkuTag
+      )
+    );
 
   const tabs = [
     { title: props.deluxeTabTitle, edition: WQEditions.witchqueendeluxe },
@@ -143,13 +147,14 @@ const WQEditionSelector: React.FC<WQEditionSelectorProps> = (props) => {
         className={styles.comparisonWrapper}
         style={{ backgroundImage: editionsBgImage }}
       >
-        {wqComparisonSkus?.map((value: any, i: number) => (
-          <WQEditionDisplay
-            key={i}
-            productDef={value}
-            selectedEdition={selectedEdition}
-          />
-        ))}
+        {wqComparisonSkus &&
+          wqComparisonSkus?.map((value: any, i: number) => (
+            <WQEditionDisplay
+              key={i}
+              productDef={value}
+              selectedEdition={selectedEdition}
+            />
+          ))}
       </div>
     </section>
   );

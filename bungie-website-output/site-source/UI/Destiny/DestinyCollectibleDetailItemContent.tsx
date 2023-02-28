@@ -318,10 +318,6 @@ const DestinyCollectibleDetailItemModalContent: React.FC<DestinyDetailItemModalP
     );
   };
 
-  const devCommonImagesPath = (path: string) => {
-    return `https://bnetdev.bungie.bng.local/${path}`;
-  };
-
   return (
     <div
       className={classNames(styles.gearItemSummary, {
@@ -332,11 +328,7 @@ const DestinyCollectibleDetailItemModalContent: React.FC<DestinyDetailItemModalP
         {itemDef.screenshot && (
           <div
             className={styles.background}
-            style={{
-              backgroundImage: `url(${devCommonImagesPath(
-                itemDef.screenshot
-              )})`,
-            }}
+            style={{ backgroundImage: `url(${itemDef.screenshot})` }}
           />
         )}
         <div className={styles.itemHeader}>
