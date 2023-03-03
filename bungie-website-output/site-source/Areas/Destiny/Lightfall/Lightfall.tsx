@@ -165,6 +165,8 @@ const Lightfall: React.FC = () => {
         <div id={"gear"} />
         <LightfallGearSection data={gear_section} />
 
+        {/* OUT RUN THE END SECTION */}
+        <div id={"outrun-the-end"} className={styles.anchor} />
         <OutrunTheEndSection data={outrun_section} />
 
         {/* EDITIONS SELECTOR */}

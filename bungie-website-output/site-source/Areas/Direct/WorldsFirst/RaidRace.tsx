@@ -44,8 +44,8 @@ const WorldsFirst: React.FC = () => {
 
   useEffect(() => {
     ContentStackClient()
-      .ContentType("nebula_raid_race_page")
-      .Entry("bltca83911b5a3317a8")
+      .ContentType("lightfall_raid_race_page")
+      .Entry("blt8f7a03325dc50b85")
       .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
       .toJSON()
       .fetch()
@@ -110,10 +110,16 @@ const WorldsFirst: React.FC = () => {
       >
         <div className={styles.hero}>
           <img className={styles.destinyLogo} src={destiny_logo?.url} />
-          <h1
-            className={styles.title}
-            dangerouslySetInnerHTML={sanitizeHTML(page_title)}
-          />
+          <h1 className={styles.title}>
+            <span
+              className={styles.titleRootFx}
+              dangerouslySetInnerHTML={sanitizeHTML(page_title)}
+            />
+            <span
+              className={styles.titleInnerFx}
+              dangerouslySetInnerHTML={sanitizeHTML(page_title)}
+            />
+          </h1>
           <h2 className={styles.subtitle}>{page_subtitle}</h2>
         </div>
 
@@ -133,7 +139,7 @@ const WorldsFirst: React.FC = () => {
         {isLive && (
           <div className={styles.streamBtnWrapper}>
             <a className={styles.liveStreamBtn} href={twitch_btn_url}>
-              <img src={twitch_logo?.url} />
+              <img className={styles.liveStreamLogo} src={twitch_logo?.url} />
             </a>
           </div>
         )}
@@ -145,6 +151,7 @@ const WorldsFirst: React.FC = () => {
               videoId={pre_reveal?.trailer_btn.trailer_id}
               classes={{
                 btnWrapper: styles.trailerBtn,
+                playIcon: styles.trailerPlayIcon,
                 btnBg: styles.btnBg,
               }}
               showShadowBehindPlayIcon
@@ -155,7 +162,7 @@ const WorldsFirst: React.FC = () => {
             </ClickableMediaThumbnail>
 
             <div className={styles.optInBtnWrapper}>
-              <MarketingOptInButton />
+              <MarketingOptInButton className={styles.optInButton} />
             </div>
           </>
         )}
