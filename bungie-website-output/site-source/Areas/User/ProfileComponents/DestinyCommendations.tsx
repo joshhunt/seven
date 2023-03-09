@@ -159,7 +159,9 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
 
             return (
               <div key={node.value} className={styles[className]}>
-                <span className={styles.label}>{profileLoc[className]}</span>
+                <span className={styles.label}>
+                  {node?.def?.displayProperties?.name}
+                </span>
                 <span
                   className={classNames(styles.number, styles[className])}
                 >{`${percentValue}%`}</span>

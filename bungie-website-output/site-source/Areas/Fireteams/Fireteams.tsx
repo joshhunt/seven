@@ -76,7 +76,7 @@ export const Fireteams: React.FC = (props) => {
   const fireteamGroupId = urlParams.get("groupId")
     ? urlParams.get("groupId")
     : "0";
-  const langFilter = urlParams.get("lang") ?? Localizer.CurrentCultureName;
+  const langFilter = urlParams.get("lang") ?? "";
   const isMine =
     urlParams.get("isMine") && UserUtils.isAuthenticated(globalState)
       ? urlParams.get("isMine") === "1"
@@ -468,7 +468,7 @@ export const Fireteams: React.FC = (props) => {
                           FireteamPlatform
                         ).toString(),
                         "0",
-                        page,
+                        0,
                         false,
                         false
                       );
@@ -498,7 +498,7 @@ export const Fireteams: React.FC = (props) => {
                           FireteamPlatform
                         ).toString(),
                         "0",
-                        page,
+                        0,
                         false,
                         true
                       );
@@ -525,7 +525,7 @@ export const Fireteams: React.FC = (props) => {
                               FireteamPlatform
                             ).toString(),
                             "0",
-                            page,
+                            0,
                             true,
                             isScheduled
                           );
@@ -564,7 +564,7 @@ export const Fireteams: React.FC = (props) => {
                                   FireteamPlatform
                                 ).toString(),
                                 c.group?.groupId,
-                                page,
+                                0,
                                 false,
                                 isScheduled
                               );
@@ -747,6 +747,7 @@ export const Fireteams: React.FC = (props) => {
                           ? fireteamSearchResponse.query.currentPage + 5
                           : 5
                       }
+                      forcePage={page + 1}
                       marginPagesDisplayed={2}
                       pageRangeDisplayed={5}
                       previousLabel={Localizer.usertools.previousPage}
@@ -801,6 +802,7 @@ export const Fireteams: React.FC = (props) => {
                           ? myFireteamsSearchResponse.query.currentPage + 5
                           : 5
                       }
+                      forcePage={page + 1}
                       marginPagesDisplayed={2}
                       pageRangeDisplayed={5}
                       previousLabel={Localizer.usertools.previousPage}

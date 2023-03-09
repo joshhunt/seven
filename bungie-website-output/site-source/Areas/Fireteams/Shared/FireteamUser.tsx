@@ -12,6 +12,7 @@ interface FireteamUserProps {
   isHost: boolean;
   isAdmin: boolean;
   isSelf: boolean;
+  invited: boolean;
   refreshFireteam?: () => void;
 }
 
@@ -23,6 +24,7 @@ export const FireteamUser: React.FC<FireteamUserProps> = (props) => {
       isAdmin={props.isAdmin}
       member={props.member}
       fireteam={props.fireteam}
+      invited={props.invited}
       refreshFireteam={() => props.refreshFireteam()}
     />
   );

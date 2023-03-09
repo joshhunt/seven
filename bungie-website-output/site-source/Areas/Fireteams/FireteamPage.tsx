@@ -31,6 +31,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -72,6 +73,8 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
   //destiny membershipIds that have been loaded are pushed into array
   const [loadedMember, setLoadedMember] = useState<string[]>([]);
   const [loadedHost, setLoadedHost] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
+  const [allHaveBeenInvited, setAllHaveBeenInvited] = useState(false);
 
   const isAdmin = globalState.loggedInUser?.userAcls.some((u) => {
     return (
@@ -90,6 +93,7 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
     const fireteamId = props.fireteamId ?? params?.fireteamId;
 
     Platform.FireteamService.GetClanFireteam("0", fireteamId).then((result) => {
+      setIsReloading(false);
       setFireteam(result);
     });
   };
@@ -160,6 +164,8 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
       fireteam?.Summary?.fireteamId,
       false
     ).then(() => {
+      setAllHaveBeenInvited(true);
+
       getFireteam();
     });
   };
@@ -221,173 +227,196 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
       >
         <body className={isModal && SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
-      <SpinnerContainer loading={!fireteam}>
-        {fireteam && (
-          <div
-            className={classNames(
-              styles.fireteamPage,
-              !isModal && styles.nonModal
-            )}
-          >
-            <div className={styles.header}>
-              <Grid
-                className={styles.headerGrid}
-                style={{
-                  backgroundImage: `url(${
-                    fireteamActivity?.childSettings?.find(
-                      (c) => c.identifier === "widebackground"
-                    )?.imagePath
-                  })`,
-                }}
-              >
-                <div className={styles.creationTime}>
-                  <FireteamCreationTime
-                    fireteamSummary={fireteam?.Summary}
-                    showScheduledTimeOverride={true}
-                  />
-                  <Anchor
-                    className={styles.directLink}
-                    url={fireteamDirectLink}
-                    legacy={false}
-                    onClick={() => isModal && props.closeFn()}
-                  >
-                    <IoMdLink />
-                  </Anchor>
-                  <BiRefresh
-                    className={styles.refreshIcon}
-                    onClick={() => getFireteam()}
-                  />
-                </div>
-                <GridCol className={styles.headerContent} cols={12}>
-                  <div className={styles.headerTop}>
-                    <div
-                      className={styles.activityIcon}
-                      style={{
-                        backgroundImage: `url(${fireteamActivity?.imagePath})`,
+      <RequiresAuth
+        onSignIn={() => {
+          FireteamsDestinyMembershipDataStore.actions.loadUserData();
+          getFireteam();
+        }}
+      >
+        <SpinnerContainer loading={!fireteam || isReloading}>
+          {fireteam && (
+            <div
+              className={classNames(
+                styles.fireteamPage,
+                !isModal && styles.nonModal
+              )}
+            >
+              <div className={styles.header}>
+                <Grid
+                  className={styles.headerGrid}
+                  style={{
+                    backgroundImage: `url(${
+                      fireteamActivity?.childSettings?.find(
+                        (c) => c.identifier === "widebackground"
+                      )?.imagePath
+                    })`,
+                  }}
+                >
+                  <div className={styles.creationTime}>
+                    <FireteamCreationTime
+                      fireteamSummary={fireteam?.Summary}
+                      showScheduledTimeOverride={true}
+                    />
+                    <Anchor
+                      className={styles.directLink}
+                      url={fireteamDirectLink}
+                      legacy={false}
+                      onClick={() => isModal && props.closeFn()}
+                    >
+                      <IoMdLink />
+                    </Anchor>
+                    <BiRefresh
+                      className={styles.refreshIcon}
+                      onClick={() => {
+                        setIsReloading(true);
+                        getFireteam();
                       }}
                     />
                   </div>
-                  <h2 className={styles.activity}>{fireteam?.Summary.title}</h2>
-                  {fireteam?.Summary &&
-                    fireteam?.Summary?.title !== activityTypeString && (
-                      <h3 className={styles.title}>
-                        {activityTypeString ?? ""}
-                      </h3>
-                    )}
-                  <div className={styles.tags}>
-                    {!fireteam?.Summary.isValid && (
+                  <GridCol className={styles.headerContent} cols={12}>
+                    <div className={styles.headerTop}>
                       <div
-                        className={classNames(styles.closedTag, tagStyles.tag)}
-                      >
-                        {fireteamsLoc.ClosedFireteam}
-                      </div>
-                    )}
-                    <FireteamPlatformTag fireteamSummary={fireteam?.Summary} />
-                    <FireteamTimeTag fireteamSummary={fireteam?.Summary} />
-                    <FireteamClanTags fireteamSummary={fireteam?.Summary} />
+                        className={styles.activityIcon}
+                        style={{
+                          backgroundImage: `url(${fireteamActivity?.imagePath})`,
+                        }}
+                      />
+                    </div>
+                    {fireteam?.Summary &&
+                      fireteam?.Summary?.title !== activityTypeString && (
+                        <h2 className={styles.activity}>
+                          {activityTypeString ?? ""}
+                        </h2>
+                      )}
+                    <h3 className={styles.title}>
+                      {StringUtils.decodeHtmlEntities(fireteam?.Summary.title)}
+                    </h3>
+                    <div className={styles.tags}>
+                      {!fireteam?.Summary.isValid && (
+                        <div
+                          className={classNames(
+                            styles.closedTag,
+                            tagStyles.tag
+                          )}
+                        >
+                          {fireteamsLoc.ClosedFireteam}
+                        </div>
+                      )}
+                      <FireteamPlatformTag
+                        fireteamSummary={fireteam?.Summary}
+                      />
+                      <FireteamTimeTag
+                        fireteamSummary={fireteam?.Summary}
+                        addToCalendarAvailable={true}
+                      />
+                      <FireteamClanTags fireteamSummary={fireteam?.Summary} />
+                    </div>
+                  </GridCol>
+                </Grid>
+              </div>
+              <Grid className={styles.body}>
+                {canEditFireteam && fireteam?.Summary?.isValid && (
+                  <div className={styles.buttons}>
+                    {isAdmin && <span>{fireteamsLoc.ModActions}</span>}
+                    <Button
+                      buttonType={"gold"}
+                      className={styles.goldButton}
+                      size={BasicSize.Small}
+                      onClick={() => inviteAll()}
+                    >
+                      {fireteamsLoc.InviteAll}
+                    </Button>
+                    <Button
+                      onClick={() => closeFireteam()}
+                      buttonType={"none"}
+                      size={BasicSize.Small}
+                    >
+                      {fireteamsLoc.CloseFireteam}
+                    </Button>
+                    {/*<Button onClick={() => closeChat()}>{fireteamsLoc.CloseChatAndOpenFireteam}</Button>*/}
                   </div>
-                </GridCol>
+                )}
+                {!viewerIsHost && fireteam?.Summary?.isValid && (
+                  <div className={styles.buttons}>
+                    {!isMember && (
+                      <Button
+                        buttonType={"gold"}
+                        size={BasicSize.Small}
+                        className={styles.goldButton}
+                        onClick={() => openJoinFireteam()}
+                      >
+                        {fireteamsLoc.JoinFireteam}
+                      </Button>
+                    )}
+                    {isMember && (
+                      <Button
+                        buttonType={"gold"}
+                        size={BasicSize.Small}
+                        className={styles.goldButton}
+                        onClick={() => leaveFireteam()}
+                      >
+                        {fireteamsLoc.LeaveFireteam}
+                      </Button>
+                    )}
+                    <Button
+                      size={BasicSize.Small}
+                      buttonType={"none"}
+                      onClick={() => reportFireteam()}
+                    >
+                      {fireteamsLoc.ReportFireteam}
+                    </Button>
+                  </div>
+                )}
+                <div className={styles.members}>
+                  <h4>{fireteamsLoc.Host}</h4>
+                  <FireteamUser
+                    member={host}
+                    isHost={viewerIsHost}
+                    fireteam={fireteam?.Summary}
+                    invited={false}
+                    isAdmin={isAdmin}
+                    isSelf={viewerIsHost}
+                  />
+                  <h4>
+                    {fireteam?.Summary.availablePlayerSlotCount === 1
+                      ? Localizer.Format(
+                          fireteamsLoc.LookingForNumberMemberSingle,
+                          { number: fireteam?.Summary.availablePlayerSlotCount }
+                        )
+                      : Localizer.Format(fireteamsLoc.LookingForNumberMembers, {
+                          number: fireteam?.Summary.availablePlayerSlotCount,
+                        })}
+                  </h4>
+                  {fireteam?.Members?.filter(
+                    (m) =>
+                      m.destinyUserInfo.membershipId !==
+                      host.destinyUserInfo.membershipId
+                  ).map((m) => {
+                    const isSelf = !!destinyMembership.memberships?.find(
+                      (dm) =>
+                        dm.membershipId === m.destinyUserInfo?.membershipId
+                    );
+
+                    return (
+                      <FireteamUser
+                        key={m.destinyUserInfo.membershipId}
+                        isHost={viewerIsHost}
+                        invited={allHaveBeenInvited}
+                        isSelf={isSelf}
+                        isAdmin={isAdmin}
+                        member={m}
+                        fireteam={fireteam?.Summary}
+                        refreshFireteam={() => getFireteam()}
+                      />
+                    );
+                  })}
+                  {availableSlots(fireteam?.Summary.availablePlayerSlotCount)}
+                </div>
               </Grid>
             </div>
-            <Grid className={styles.body}>
-              {canEditFireteam && fireteam?.Summary?.isValid && (
-                <div className={styles.buttons}>
-                  {isAdmin && <span>{fireteamsLoc.ModActions}</span>}
-                  <Button
-                    buttonType={"gold"}
-                    className={styles.goldButton}
-                    size={BasicSize.Small}
-                    onClick={() => inviteAll()}
-                  >
-                    {fireteamsLoc.InviteAll}
-                  </Button>
-                  <Button
-                    onClick={() => closeFireteam()}
-                    buttonType={"none"}
-                    size={BasicSize.Small}
-                  >
-                    {fireteamsLoc.CloseFireteam}
-                  </Button>
-                  {/*<Button onClick={() => closeChat()}>{fireteamsLoc.CloseChatAndOpenFireteam}</Button>*/}
-                </div>
-              )}
-              {!viewerIsHost && fireteam?.Summary?.isValid && (
-                <div className={styles.buttons}>
-                  {!isMember && (
-                    <Button
-                      buttonType={"gold"}
-                      size={BasicSize.Small}
-                      className={styles.goldButton}
-                      onClick={() => openJoinFireteam()}
-                    >
-                      {fireteamsLoc.JoinFireteam}
-                    </Button>
-                  )}
-                  {isMember && (
-                    <Button
-                      buttonType={"gold"}
-                      size={BasicSize.Small}
-                      className={styles.goldButton}
-                      onClick={() => leaveFireteam()}
-                    >
-                      {fireteamsLoc.LeaveFireteam}
-                    </Button>
-                  )}
-                  <Button
-                    size={BasicSize.Small}
-                    buttonType={"none"}
-                    onClick={() => reportFireteam()}
-                  >
-                    {fireteamsLoc.ReportFireteam}
-                  </Button>
-                </div>
-              )}
-              <div className={styles.members}>
-                <h4>{fireteamsLoc.Host}</h4>
-                <FireteamUser
-                  member={host}
-                  isHost={viewerIsHost}
-                  fireteam={fireteam?.Summary}
-                  isAdmin={isAdmin}
-                  isSelf={viewerIsHost}
-                />
-                <h4>
-                  {fireteam?.Summary.availablePlayerSlotCount === 1
-                    ? Localizer.Format(
-                        fireteamsLoc.LookingForNumberMemberSingle,
-                        { number: fireteam?.Summary.availablePlayerSlotCount }
-                      )
-                    : Localizer.Format(fireteamsLoc.LookingForNumberMembers, {
-                        number: fireteam?.Summary.availablePlayerSlotCount,
-                      })}
-                </h4>
-                {fireteam?.Members?.filter(
-                  (m) =>
-                    m.destinyUserInfo.membershipId !==
-                    host.destinyUserInfo.membershipId
-                ).map((m) => {
-                  const isSelf = !!destinyMembership.memberships?.find(
-                    (dm) => dm.membershipId === m.destinyUserInfo?.membershipId
-                  );
-
-                  return (
-                    <FireteamUser
-                      key={m.destinyUserInfo.membershipId}
-                      isHost={viewerIsHost}
-                      isSelf={isSelf}
-                      isAdmin={isAdmin}
-                      member={m}
-                      fireteam={fireteam?.Summary}
-                      refreshFireteam={() => getFireteam()}
-                    />
-                  );
-                })}
-                {availableSlots(fireteam?.Summary.availablePlayerSlotCount)}
-              </div>
-            </Grid>
-          </div>
-        )}
-      </SpinnerContainer>
+          )}
+        </SpinnerContainer>
+      </RequiresAuth>
     </SystemDisabledHandler>
   );
 };

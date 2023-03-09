@@ -11,6 +11,7 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { Fireteam, Platform, Responses } from "@Platform";
+import { AiOutlineCheck } from "@react-icons/all-files/ai/AiOutlineCheck";
 import { BsFillMicFill } from "@react-icons/all-files/bs/BsFillMicFill";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -29,6 +30,7 @@ interface FireteamUserInternalProps
   isHost: boolean;
   isAdmin: boolean;
   isSelf: boolean;
+  invited: boolean;
   refreshFireteam?: () => void;
   loaded?: () => void;
 }
@@ -38,6 +40,8 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   const [profileResponse, setProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >();
+
+  const [userHasBeenInvited, setUserHasBeenInvited] = useState(props.invited);
 
   const character =
     profileResponse?.characters?.data &&
@@ -82,6 +86,8 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
       props.fireteam.fireteamId,
       props.member.destinyUserInfo.membershipId
     ).then((result) => {
+      setUserHasBeenInvited(true);
+
       props.refreshFireteam();
     });
   };
@@ -89,6 +95,10 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   useEffect(() => {
     getProfile();
   }, [props.member]);
+
+  useEffect(() => {
+    setUserHasBeenInvited(props.invited);
+  }, [props.invited]);
 
   const emblemDef = props.definitions.DestinyInventoryItemLiteDefinition.get(
     character?.emblemHash
@@ -101,6 +111,8 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   const isFireteamHost =
     props.member.destinyUserInfo.membershipId ===
     props.fireteam.ownerMembershipId;
+
+  const showInvited = props.isHost && !isFireteamHost && userHasBeenInvited;
 
   return (
     <div
@@ -154,9 +166,12 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
                   buttonType={"gold"}
                   size={BasicSize.Small}
                   onClick={() => inviteUser()}
-                  className={styles.btnInvite}
+                  className={classNames(styles.btnInvite, {
+                    [styles.invited]: showInvited,
+                  })}
                 >
-                  {fireteamsLoc.Invite}
+                  {showInvited && <AiOutlineCheck />}
+                  {showInvited ? fireteamsLoc.InviteSent : fireteamsLoc.Invite}
                 </Button>
                 <Button
                   buttonType={"clear"}

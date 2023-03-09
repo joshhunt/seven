@@ -16,10 +16,12 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Fireteam } from "@Platform";
 import { AiFillStar } from "@react-icons/all-files/ai/AiFillStar";
 import { GoAlert } from "@react-icons/all-files/go/GoAlert";
+import { IoMdLink } from "@react-icons/all-files/io/IoMdLink";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ReportItem } from "@UI/Report/ReportItem";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useState } from "react";
@@ -132,7 +134,9 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
         />
         <div className={styles.fireteamContent}>
           <div className={styles.fireteamDetails}>
-            <p className={styles.title}>{props.fireteamSummary.title}</p>
+            <p className={styles.title}>
+              {StringUtils.decodeHtmlEntities(props.fireteamSummary.title)}
+            </p>
             <div className={styles.fireteamMeta}>
               {!isOwnedFireteam && !globalState.responsive.mobile && (
                 <span
@@ -148,6 +152,16 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
                   {fireteamsLoc.ReportFireteam}
                 </span>
               )}
+              <Anchor
+                className={styles.permaLink}
+                onClick={(e) => e.stopPropagation()}
+                url={RouteHelper.NewFireteam({
+                  fireteamId: props.fireteamSummary?.fireteamId,
+                })}
+                target={"_blank"}
+              >
+                <IoMdLink />
+              </Anchor>
               {isOwnedFireteam && (
                 <span className={styles.creatorLabel}>
                   <AiFillStar />
@@ -162,7 +176,10 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
           </div>
           <div className={styles.badgeContainer}>
             <FireteamPlatformTag fireteamSummary={props.fireteamSummary} />
-            <FireteamTimeTag fireteamSummary={props.fireteamSummary} />
+            <FireteamTimeTag
+              fireteamSummary={props.fireteamSummary}
+              addToCalendarAvailable={false}
+            />
             <FireteamClanTags fireteamSummary={props.fireteamSummary} />
             <FireteamOwnerStatTags
               highestLifetimeGuardianRank={

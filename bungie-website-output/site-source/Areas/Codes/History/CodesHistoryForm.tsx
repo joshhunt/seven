@@ -20,6 +20,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 
@@ -250,13 +251,12 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
 
 const _makeDateString = (date: string) => {
   const d = DateTime.fromISO(date);
-  const dateString = Localizer.Format(Localizer.Time.MonthDayYear, {
-    month: d.toFormat("MMM"),
-    day: d.toFormat("DD"),
-    year: d.toFormat("YYYY"),
-  });
 
-  return dateString;
+  return d?.toFormat("DD", {
+    locale: LocalizerUtils.useAltChineseCultureString(
+      Localizer.CurrentCultureName
+    ),
+  });
 };
 const _offerOrRedeem = (offer: Contracts.OfferHistoryResponse) => {
   if (

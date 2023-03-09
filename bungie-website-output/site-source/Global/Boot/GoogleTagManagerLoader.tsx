@@ -19,9 +19,15 @@ export const GoogleTagManagerLoader = () => {
 				'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 			})(window,document,'script','dataLayer','GTM-MQ5FZJQ');`;
 
+  const googleTagManagerDatalayerReserveFunction = `window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('config', 'TAG_ID');`;
+
   return (
     <>
       <Helmet>
+        <script>{googleTagManagerDatalayerReserveFunction}</script>
         <script>{googleTagManagerFunction}</script>
       </Helmet>
       <noscript>

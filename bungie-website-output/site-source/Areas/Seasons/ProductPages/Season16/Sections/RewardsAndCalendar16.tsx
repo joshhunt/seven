@@ -64,6 +64,8 @@ const RewardsAndCalendar16: React.FC<RewardsAndCalendar16Props> = ({
 
   const sectionBg = bgImageFromStackFile(data?.bg?.desktop);
 
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+
   return (
     <div className={classNames(styles.rewardsAndCalendar)}>
       <div className={styles.sectionIdAnchor} id={"rewards"} ref={inputRef} />
@@ -72,15 +74,16 @@ const RewardsAndCalendar16: React.FC<RewardsAndCalendar16Props> = ({
         className={styles.sectionBg}
         style={{ backgroundImage: sectionBg }}
       />
-
-      <div className={styles.carouselWrapper}>
-        <SeasonPassRewardProgression
-          seasonHash={SeasonUtils.GetSeasonHashFromSeasonNumber(
-            16,
-            definitions.DestinySeasonDefinition
-          )}
-        />
-      </div>
+      {!destiny2Disabled && (
+        <div className={styles.carouselWrapper}>
+          <SeasonPassRewardProgression
+            seasonHash={SeasonUtils.GetSeasonHashFromSeasonNumber(
+              16,
+              definitions.DestinySeasonDefinition
+            )}
+          />
+        </div>
+      )}
       <div className={styles.contentWrapperNormal}>
         <SeasonPassRewardsList data={data?.rewards_table} logo={undefined} />
         <div

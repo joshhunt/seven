@@ -311,7 +311,7 @@ class SeasonOfDefiance extends SeasonDefinition {
   public image = "/7/ca/destiny/bgs/season20/S20_Key_Art_16-9.jpg";
   public progressPageImage =
     "/7/ca/destiny/bgs/season20/seasonbackground_20.jpg";
-  public smallIcon = "/7/ca/destiny/bgs/season20/seasonicon_20.png";
+  public smallIcon = "/7/ca/destiny/bgs/season20/s20_Seasonal_Icon.png";
 
   public productPageLink = RouteHelper.SeasonOfDefiance();
   public calendarContentItem: string;

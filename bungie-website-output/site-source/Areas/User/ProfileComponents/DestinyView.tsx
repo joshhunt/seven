@@ -62,6 +62,8 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
       <ProfileErrorBoundary message={profileLoc.ClanLoadingError}>
         <Clan membershipId={membershipId} />
       </ProfileErrorBoundary>
+      <DestinyGuardianRanks destinyProfileResponse={destinyProfileResponse} />
+      <DestinyCommendations />
       <ProfileErrorBoundary message={profileLoc.SeasonLoadingError}>
         <Season
           seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
@@ -73,8 +75,6 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
         />
       </ProfileErrorBoundary>
       <div className={styles.triumphsCollections}>
-        <DestinyCommendations />
-        <DestinyGuardianRanks destinyProfileResponse={destinyProfileResponse} />
         <ProfileErrorBoundary message={profileLoc.TriumphsLoadingError}>
           <Triumphs
             profileResponse={destinyProfileResponse}

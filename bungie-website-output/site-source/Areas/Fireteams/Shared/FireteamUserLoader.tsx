@@ -14,6 +14,7 @@ interface FireteamUserLoaderProps {
   isHost: boolean;
   isAdmin: boolean;
   isSelf: boolean;
+  invited: boolean;
   refreshFireteam?: () => void;
 }
 
@@ -33,6 +34,7 @@ export const FireteamUserLoader: React.FC<FireteamUserLoaderProps> = (
         isAdmin={props.isAdmin}
         member={props.member}
         fireteam={props.fireteam}
+        invited={props.invited}
         refreshFireteam={() => props.refreshFireteam()}
         loaded={() => setIsLoaded(true)}
       />

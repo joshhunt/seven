@@ -3,6 +3,8 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
+import { SystemNames } from "@Global/SystemNames";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SeasonUtils } from "@Utilities/SeasonUtils";
 import React from "react";
 import styles from "./S20SeasonPassRewards.module.scss";
@@ -13,6 +15,10 @@ interface RewardsAndCalendar16Props
 const RewardsAndCalendar20: React.FC<RewardsAndCalendar16Props> = ({
   definitions,
 }) => {
+  if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+    return null;
+  }
+
   return (
     <div className={styles.root}>
       <SeasonPassRewardProgression

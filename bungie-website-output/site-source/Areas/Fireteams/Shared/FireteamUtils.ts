@@ -37,7 +37,7 @@ export class FireteamUtils {
   }
 
   public static langOptions() {
-    return Localizer.validLocales.map((lo) => {
+    const validLocales = Localizer.validLocales.map((lo) => {
       const dropdownOption: IDropdownOption = {
         value: lo.name,
         label: Localizer.Languages[lo.locKey],
@@ -45,6 +45,13 @@ export class FireteamUtils {
 
       return dropdownOption;
     });
+
+    validLocales.unshift({
+      label: Localizer.Fireteams.AllLanguages,
+      value: "",
+    });
+
+    return validLocales;
   }
 
   public static activityOptions(

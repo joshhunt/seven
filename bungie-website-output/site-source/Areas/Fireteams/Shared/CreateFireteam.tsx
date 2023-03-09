@@ -93,7 +93,7 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
       platform: FireteamUtils.BnetMembershipTypeToFireteamPlatform(
         values.membershipType
       ),
-      locale: Localizer.CurrentCultureName,
+      locale: values.locale,
       ownerCharacterId:
         destinyMembership?.selectedCharacter?.characterId ?? values.characterId,
       playerSlotCount: parseInt(values.players, 10),
@@ -141,6 +141,7 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
             .value,
           isScheduled: FireteamRadioOptions.isScheduledRadioOptions()[0].value,
           hasMic: "",
+          locale: Localizer.CurrentCultureName,
           isPublic: FireteamRadioOptions.isPublic()[0].value,
           scheduledTime: DateTime.now(),
         }}
@@ -268,6 +269,7 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                         />
                       </div>
                     )}
+
                     <div
                       className={styles.section}
                       onClick={(e) => handleSchedulingEvents(e)}
@@ -302,6 +304,18 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                         />
                       </div>
                     )}
+                    <div className={styles.section}>
+                      <p>{fireteamsLoc.Language}</p>
+                      <FormikSelect
+                        name={"locale"}
+                        options={FireteamUtils.langOptions()}
+                        selectedValue={formikProps.values.locale}
+                        onChange={(value) => {
+                          formikProps.setFieldValue("locale", value);
+                        }}
+                        className={styles.localeSelector}
+                      />
+                    </div>
                   </div>
                   {/*<div className={classNames(styles.tag, styles.section)}>
 										<h6>{fireteamsLoc.Tag}</h6>
