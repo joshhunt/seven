@@ -99,8 +99,10 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
     "platforms.button",
     "story_section.content",
     "activities_section.content",
+    "event_section.content",
     "gear_section.content",
     "season_pass_section.content",
+    "bungie_rewards_section.content",
     "rewards_section.content",
     "event_section.content",
     "bundle_section.content",
@@ -146,8 +148,10 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
     platforms,
     story_section,
     activities_section,
+    event_section,
     gear_section,
     season_pass_section,
+    bungie_rewards_section,
     rewards_section,
     bundle_section,
     cta_section,
@@ -257,12 +261,52 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
           />
         </div>
 
+        {/* MISSION */}
+        {event_section?.display_event_section ? (
+          <>
+            <div
+              className={styles.sectionDivider}
+              style={{
+                background:
+                  "linear-gradient(90deg, #6146E7 0%, #B3A5FC 50%, #6146E7 100%)",
+              }}
+            />
+            <div
+              id={"mission"}
+              className={classNames(styles.section, styles.event)}
+              style={{
+                backgroundImage: [
+                  getResponsiveBg(event_section?.top_bg),
+                  getResponsiveBg(event_section?.bottom_bg),
+                  "linear-gradient(180deg, #0B2553 80%, #020D2C 80%)",
+                ].join(","),
+              }}
+            >
+              <PmpSectionHeader
+                data={event_section?.content?.[0]}
+                classes={{
+                  root: styles.eventSectionTopRoot,
+                  textWrapper: styles.eventSectionTextWrapper,
+                }}
+              />
+
+              <PmpSectionHeader
+                data={event_section?.content?.[1]}
+                classes={{
+                  root: styles.eventSectionBottomRoot,
+                  textWrapper: styles.eventSectionTextWrapper,
+                }}
+              />
+            </div>
+          </>
+        ) : null}
+
         {/* GEAR */}
         <div
           className={styles.sectionDivider}
           style={{
             background:
-              "linear-gradient(90deg, #6146E7 0%, #B3A5FC 50%, #6146E7 100%)",
+              "linear-gradient(90deg, #005465 0%, #7AE9FF 50%, #005465 100%)",
           }}
         />
         <div
@@ -333,28 +377,54 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
                 />
               ),
               pmp_callout: (ref) => (
-                <PmpCallout
-                  data={ref?.data}
-                  classes={{
-                    root: styles.seasonPassCallout,
-                    heading: styles.seasonPassCalloutHeading,
-                    asideImg: styles.seasonPassCalloutAsideImg,
-                    textWrapper: styles.seasonPassCalloutTextWrapper,
-                  }}
-                />
+                <>
+                  <div id={"rewards"} className={styles.anchor} />
+                  <PmpCallout
+                    data={ref?.data}
+                    classes={{
+                      root: styles.seasonPassCallout,
+                      heading: styles.seasonPassCalloutHeading,
+                      asideImg: styles.seasonPassCalloutAsideImg,
+                      textWrapper: styles.seasonPassCalloutTextWrapper,
+                    }}
+                  />
+                </>
               ),
             }}
           />
         </div>
 
+        {/* BUNGIE REWARDS 
+				<div className={styles.sectionDivider} style={{ backgroundColor: "#1D9CD4" }} />
+				<div id={"bungie-rewards"} className={classNames(styles.section, styles.bungieRewards)} style={{backgroundImage: getResponsiveBg(bungie_rewards_section?.bg)}}>
+					<div className={styles.bungieRewardsSectionHeader}>
+						<img src={bungie_rewards_section?.section_header?.logo?.url} className={styles.bungieRewardsSectionHeaderLogo} alt={bungie_rewards_section?.logo?.desciption} />
+						<p className={styles.bungieRewardsSectionHeaderBlurb} dangerouslySetInnerHTML={sanitizeHTML(bungie_rewards_section?.section_header?.blurb)} />
+					</div>
+					<S20ProceduralContent content={bungie_rewards_section?.content} pmpComponents={{
+						...pmpComponentOverrides,
+						pmp_stacked_info_thumb_blocks: (ref) => (
+							<PmpStackedInfoThumbBlocks
+								data={ref?.data}
+								classes={{
+									root: styles.bungieRewardsThumbBlocks,
+									reverse: styles.bungieRewardsThumbBlocksReverse,
+									blockWrapper: styles.bungieRewardsThumbBlocksBlockWrapper,
+									textWrapper: styles.bungieRewardsThumbBlocksTextWrapper,
+									heading: styles.bungieRewardsThumbBlocksHeading,
+								}}
+							/>
+						),
+					}} />
+				</div> */}
+
+        {/* REWARDS */}
         <div
           className={styles.sectionDivider}
           style={{ backgroundColor: "#4B0C29" }}
         />
-
-        {/* REWARDS */}
         <div
-          id={"rewards"}
+          id={"season-rewards"}
           className={classNames(styles.section, styles.rewards)}
           style={{ backgroundImage: getResponsiveBg(rewards_section?.bg) }}
         >

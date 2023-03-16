@@ -25,6 +25,7 @@ type PmpStackedInfoThumbBlocksProps = DataReference<
 > & {
   classes?: {
     root?: string;
+    reverse?: string;
     blockWrapper?: string;
     textWrapper?: string;
     heading?: string;
@@ -61,7 +62,10 @@ export const PmpStackedInfoThumbBlocks: React.FC<PmpStackedInfoThumbBlocksProps>
 
         const blockClasses = classNames(
           styles.infoThumbBlock,
-          { [styles.reverse]: isReverseFlex },
+          {
+            [styles.reverse]: isReverseFlex,
+            [classes?.reverse]: isReverseFlex,
+          },
           classes?.blockWrapper
         );
 

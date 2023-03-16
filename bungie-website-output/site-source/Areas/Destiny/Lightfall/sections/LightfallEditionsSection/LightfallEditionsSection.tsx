@@ -64,8 +64,8 @@ const EditionBlock: React.FC<EditionBlockProps> = ({ data, isStandard }) => {
     standard_image,
     standard_heading,
     unlocks_heading,
-    standard_unlocks,
-    pass_unlocks,
+    standard_unlocks = [],
+    pass_unlocks = [],
     unlocks_list,
     annual_pass_heading,
   } = data ?? {};
@@ -107,25 +107,27 @@ const EditionBlock: React.FC<EditionBlockProps> = ({ data, isStandard }) => {
           {buy_btn_text}
         </Button>
       </div>
-      <div className={styles.unlockImages}>
-        <p className={styles.unlocksHeading}>{unlocks_heading}</p>
-        {(isStandard ? standard_unlocks : pass_unlocks)?.map((unlock, i) => {
-          return (
-            <div className={styles.unlockImgWrapper} key={i}>
-              <div className={styles.unlockImgBox}>
-                <ImageThumb
-                  image={unlock?.image?.url}
-                  classes={{
-                    imageContainer: styles.unlockImg,
-                    image: styles.unlockImgBg,
-                  }}
-                />
+      {standard_unlocks.length && pass_unlocks.length ? (
+        <div className={styles.unlockImages}>
+          <p className={styles.unlocksHeading}>{unlocks_heading}</p>
+          {(isStandard ? standard_unlocks : pass_unlocks)?.map((unlock, i) => {
+            return (
+              <div className={styles.unlockImgWrapper} key={i}>
+                <div className={styles.unlockImgBox}>
+                  <ImageThumb
+                    image={unlock?.image?.url}
+                    classes={{
+                      imageContainer: styles.unlockImg,
+                      image: styles.unlockImgBg,
+                    }}
+                  />
+                </div>
+                <p className={styles.caption}>{unlock?.caption}</p>
               </div>
-              <p className={styles.caption}>{unlock?.caption}</p>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : null}
       <div className={styles.unlockList}>
         {unlocks_list?.map((item, i) => {
           const isAvailableForEdition =
