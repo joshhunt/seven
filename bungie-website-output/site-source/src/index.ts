@@ -1,360 +1,618 @@
-import {
-  format,
-  complementError,
-  asyncMap,
-  warning,
-  deepMerge,
-  convertFieldsError,
-} from "./util";
-import validators from "./validator/index";
-import { messages as defaultMessages, newMessages } from "./messages";
-import {
-  InternalRuleItem,
-  InternalValidateMessages,
-  Rule,
-  RuleItem,
-  Rules,
-  ValidateCallback,
-  ValidateMessages,
-  ValidateOption,
-  Values,
-  RuleValuePackage,
-  ValidateError,
-  ValidateFieldsError,
-  SyncErrorType,
-  ValidateResult,
-} from "./interface";
-
-export * from "./interface";
-
 /**
- *  Encapsulates a validation schema.
- *
- *  @param descriptor An object declaring validation rules
- *  for this schema.
+ * Tokenizer results.
  */
-class Schema {
-  // ========================= Static =========================
-  static register = function register(type: string, validator) {
-    if (typeof validator !== "function") {
-      throw new Error(
-        "Cannot register a validator by type, validator is not a function"
-      );
-    }
-    validators[type] = validator;
-  };
-
-  static warning = warning;
-
-  static messages = defaultMessages;
-
-  static validators = validators;
-
-  // ======================== Instance ========================
-  rules: Record<string, RuleItem[]> = null;
-  _messages: InternalValidateMessages = defaultMessages;
-
-  constructor(descriptor: Rules) {
-    this.define(descriptor);
-  }
-
-  define(rules: Rules) {
-    if (!rules) {
-      throw new Error("Cannot configure a schema with no rules");
-    }
-    if (typeof rules !== "object" || Array.isArray(rules)) {
-      throw new Error("Rules must be an object");
-    }
-    this.rules = {};
-
-    Object.keys(rules).forEach((name) => {
-      const item: Rule = rules[name];
-      this.rules[name] = Array.isArray(item) ? item : [item];
-    });
-  }
-
-  messages(messages?: ValidateMessages) {
-    if (messages) {
-      this._messages = deepMerge(newMessages(), messages);
-    }
-    return this._messages;
-  }
-
-  validate(
-    source: Values,
-    option?: ValidateOption,
-    callback?: ValidateCallback
-  ): Promise<Values>;
-  validate(source: Values, callback: ValidateCallback): Promise<Values>;
-  validate(source: Values): Promise<Values>;
-
-  validate(source_: Values, o: any = {}, oc: any = () => {}): Promise<Values> {
-    let source: Values = source_;
-    let options: ValidateOption = o;
-    let callback: ValidateCallback = oc;
-    if (typeof options === "function") {
-      callback = options;
-      options = {};
-    }
-    if (!this.rules || Object.keys(this.rules).length === 0) {
-      if (callback) {
-        callback(null, source);
-      }
-      return Promise.resolve(source);
-    }
-
-    function complete(results: (ValidateError | ValidateError[])[]) {
-      let errors: ValidateError[] = [];
-      let fields: ValidateFieldsError = {};
-
-      function add(e: ValidateError | ValidateError[]) {
-        if (Array.isArray(e)) {
-          errors = errors.concat(...e);
-        } else {
-          errors.push(e);
-        }
-      }
-
-      for (let i = 0; i < results.length; i++) {
-        add(results[i]);
-      }
-      if (!errors.length) {
-        callback(null, source);
-      } else {
-        fields = convertFieldsError(errors);
-        (callback as (
-          errors: ValidateError[],
-          fields: ValidateFieldsError
-        ) => void)(errors, fields);
-      }
-    }
-
-    if (options.messages) {
-      let messages = this.messages();
-      if (messages === defaultMessages) {
-        messages = newMessages();
-      }
-      deepMerge(messages, options.messages);
-      options.messages = messages;
-    } else {
-      options.messages = this.messages();
-    }
-
-    const series: Record<string, RuleValuePackage[]> = {};
-    const keys = options.keys || Object.keys(this.rules);
-    keys.forEach((z) => {
-      const arr = this.rules[z];
-      let value = source[z];
-      arr.forEach((r) => {
-        let rule: InternalRuleItem = r;
-        if (typeof rule.transform === "function") {
-          if (source === source_) {
-            source = { ...source };
-          }
-          value = source[z] = rule.transform(value);
-        }
-        if (typeof rule === "function") {
-          rule = {
-            validator: rule,
-          };
-        } else {
-          rule = { ...rule };
-        }
-
-        // Fill validator. Skip if nothing need to validate
-        rule.validator = this.getValidationMethod(rule);
-        if (!rule.validator) {
-          return;
-        }
-
-        rule.field = z;
-        rule.fullField = rule.fullField || z;
-        rule.type = this.getType(rule);
-        series[z] = series[z] || [];
-        series[z].push({
-          rule,
-          value,
-          source,
-          field: z,
-        });
-      });
-    });
-    const errorFields = {};
-    return asyncMap(
-      series,
-      options,
-      (data, doIt) => {
-        const rule = data.rule;
-        let deep =
-          (rule.type === "object" || rule.type === "array") &&
-          (typeof rule.fields === "object" ||
-            typeof rule.defaultField === "object");
-        deep = deep && (rule.required || (!rule.required && data.value));
-        rule.field = data.field;
-
-        function addFullField(key: string, schema: RuleItem) {
-          return {
-            ...schema,
-            fullField: `${rule.fullField}.${key}`,
-            fullFields: rule.fullFields ? [...rule.fullFields, key] : [key],
-          };
-        }
-
-        function cb(e: SyncErrorType | SyncErrorType[] = []) {
-          let errorList = Array.isArray(e) ? e : [e];
-          if (!options.suppressWarning && errorList.length) {
-            Schema.warning("async-validator:", errorList);
-          }
-          if (errorList.length && rule.message !== undefined) {
-            errorList = [].concat(rule.message);
-          }
-
-          // Fill error info
-          let filledErrors = errorList.map(complementError(rule, source));
-
-          if (options.first && filledErrors.length) {
-            errorFields[rule.field] = 1;
-            return doIt(filledErrors);
-          }
-          if (!deep) {
-            doIt(filledErrors);
-          } else {
-            // if rule is required but the target object
-            // does not exist fail at the rule level and don't
-            // go deeper
-            if (rule.required && !data.value) {
-              if (rule.message !== undefined) {
-                filledErrors = []
-                  .concat(rule.message)
-                  .map(complementError(rule, source));
-              } else if (options.error) {
-                filledErrors = [
-                  options.error(
-                    rule,
-                    format(options.messages.required, rule.field)
-                  ),
-                ];
-              }
-              return doIt(filledErrors);
-            }
-
-            let fieldsSchema: Record<string, Rule> = {};
-            if (rule.defaultField) {
-              Object.keys(data.value).map((key) => {
-                fieldsSchema[key] = rule.defaultField;
-              });
-            }
-            fieldsSchema = {
-              ...fieldsSchema,
-              ...data.rule.fields,
-            };
-
-            const paredFieldsSchema: Record<string, RuleItem[]> = {};
-
-            Object.keys(fieldsSchema).forEach((field) => {
-              const fieldSchema = fieldsSchema[field];
-              const fieldSchemaList = Array.isArray(fieldSchema)
-                ? fieldSchema
-                : [fieldSchema];
-              paredFieldsSchema[field] = fieldSchemaList.map(
-                addFullField.bind(null, field)
-              );
-            });
-            const schema = new Schema(paredFieldsSchema);
-            schema.messages(options.messages);
-            if (data.rule.options) {
-              data.rule.options.messages = options.messages;
-              data.rule.options.error = options.error;
-            }
-            schema.validate(
-              data.value,
-              data.rule.options || options,
-              (errs) => {
-                const finalErrors = [];
-                if (filledErrors && filledErrors.length) {
-                  finalErrors.push(...filledErrors);
-                }
-                if (errs && errs.length) {
-                  finalErrors.push(...errs);
-                }
-                doIt(finalErrors.length ? finalErrors : null);
-              }
-            );
-          }
-        }
-
-        let res: ValidateResult;
-        if (rule.asyncValidator) {
-          res = rule.asyncValidator(rule, data.value, cb, data.source, options);
-        } else if (rule.validator) {
-          try {
-            res = rule.validator(rule, data.value, cb, data.source, options);
-          } catch (error) {
-            console.error?.(error);
-            // rethrow to report error
-            if (!options.suppressValidatorError) {
-              setTimeout(() => {
-                throw error;
-              }, 0);
-            }
-            cb(error.message);
-          }
-          if (res === true) {
-            cb();
-          } else if (res === false) {
-            cb(
-              typeof rule.message === "function"
-                ? rule.message(rule.fullField || rule.field)
-                : rule.message || `${rule.fullField || rule.field} fails`
-            );
-          } else if (res instanceof Array) {
-            cb(res);
-          } else if (res instanceof Error) {
-            cb(res.message);
-          }
-        }
-        if (res && (res as Promise<void>).then) {
-          (res as Promise<void>).then(
-            () => cb(),
-            (e) => cb(e)
-          );
-        }
-      },
-      (results) => {
-        complete(results);
-      },
-      source
-    );
-  }
-
-  getType(rule: InternalRuleItem) {
-    if (rule.type === undefined && rule.pattern instanceof RegExp) {
-      rule.type = "pattern";
-    }
-    if (
-      typeof rule.validator !== "function" &&
-      rule.type &&
-      !validators.hasOwnProperty(rule.type)
-    ) {
-      throw new Error(format("Unknown rule type %s", rule.type));
-    }
-    return rule.type || "string";
-  }
-
-  getValidationMethod(rule: InternalRuleItem) {
-    if (typeof rule.validator === "function") {
-      return rule.validator;
-    }
-    const keys = Object.keys(rule);
-    const messageIndex = keys.indexOf("message");
-    if (messageIndex !== -1) {
-      keys.splice(messageIndex, 1);
-    }
-    if (keys.length === 1 && keys[0] === "required") {
-      return validators.required;
-    }
-    return validators[this.getType(rule)] || undefined;
-  }
+interface LexToken {
+  type:
+    | "OPEN"
+    | "CLOSE"
+    | "PATTERN"
+    | "NAME"
+    | "CHAR"
+    | "ESCAPED_CHAR"
+    | "MODIFIER"
+    | "END";
+  index: number;
+  value: string;
 }
 
-export default Schema;
+/**
+ * Tokenize input string.
+ */
+function lexer(str: string): LexToken[] {
+  const tokens: LexToken[] = [];
+  let i = 0;
+
+  while (i < str.length) {
+    const char = str[i];
+
+    if (char === "*" || char === "+" || char === "?") {
+      tokens.push({ type: "MODIFIER", index: i, value: str[i++] });
+      continue;
+    }
+
+    if (char === "\\") {
+      tokens.push({ type: "ESCAPED_CHAR", index: i++, value: str[i++] });
+      continue;
+    }
+
+    if (char === "{") {
+      tokens.push({ type: "OPEN", index: i, value: str[i++] });
+      continue;
+    }
+
+    if (char === "}") {
+      tokens.push({ type: "CLOSE", index: i, value: str[i++] });
+      continue;
+    }
+
+    if (char === ":") {
+      let name = "";
+      let j = i + 1;
+
+      while (j < str.length) {
+        const code = str.charCodeAt(j);
+
+        if (
+          // `0-9`
+          (code >= 48 && code <= 57) ||
+          // `A-Z`
+          (code >= 65 && code <= 90) ||
+          // `a-z`
+          (code >= 97 && code <= 122) ||
+          // `_`
+          code === 95
+        ) {
+          name += str[j++];
+          continue;
+        }
+
+        break;
+      }
+
+      if (!name) throw new TypeError(`Missing parameter name at ${i}`);
+
+      tokens.push({ type: "NAME", index: i, value: name });
+      i = j;
+      continue;
+    }
+
+    if (char === "(") {
+      let count = 1;
+      let pattern = "";
+      let j = i + 1;
+
+      if (str[j] === "?") {
+        throw new TypeError(`Pattern cannot start with "?" at ${j}`);
+      }
+
+      while (j < str.length) {
+        if (str[j] === "\\") {
+          pattern += str[j++] + str[j++];
+          continue;
+        }
+
+        if (str[j] === ")") {
+          count--;
+          if (count === 0) {
+            j++;
+            break;
+          }
+        } else if (str[j] === "(") {
+          count++;
+          if (str[j + 1] !== "?") {
+            throw new TypeError(`Capturing groups are not allowed at ${j}`);
+          }
+        }
+
+        pattern += str[j++];
+      }
+
+      if (count) throw new TypeError(`Unbalanced pattern at ${i}`);
+      if (!pattern) throw new TypeError(`Missing pattern at ${i}`);
+
+      tokens.push({ type: "PATTERN", index: i, value: pattern });
+      i = j;
+      continue;
+    }
+
+    tokens.push({ type: "CHAR", index: i, value: str[i++] });
+  }
+
+  tokens.push({ type: "END", index: i, value: "" });
+
+  return tokens;
+}
+
+export interface ParseOptions {
+  /**
+   * Set the default delimiter for repeat parameters. (default: `'/'`)
+   */
+  delimiter?: string;
+  /**
+   * List of characters to automatically consider prefixes when parsing.
+   */
+  prefixes?: string;
+}
+
+/**
+ * Parse a string for the raw tokens.
+ */
+export function parse(str: string, options: ParseOptions = {}): Token[] {
+  const tokens = lexer(str);
+  const { prefixes = "./" } = options;
+  const defaultPattern = `[^${escapeString(options.delimiter || "/#?")}]+?`;
+  const result: Token[] = [];
+  let key = 0;
+  let i = 0;
+  let path = "";
+
+  const tryConsume = (type: LexToken["type"]): string | undefined => {
+    if (i < tokens.length && tokens[i].type === type) return tokens[i++].value;
+  };
+
+  const mustConsume = (type: LexToken["type"]): string => {
+    const value = tryConsume(type);
+    if (value !== undefined) return value;
+    const { type: nextType, index } = tokens[i];
+    throw new TypeError(`Unexpected ${nextType} at ${index}, expected ${type}`);
+  };
+
+  const consumeText = (): string => {
+    let result = "";
+    let value: string | undefined;
+    // tslint:disable-next-line
+    while ((value = tryConsume("CHAR") || tryConsume("ESCAPED_CHAR"))) {
+      result += value;
+    }
+    return result;
+  };
+
+  while (i < tokens.length) {
+    const char = tryConsume("CHAR");
+    const name = tryConsume("NAME");
+    const pattern = tryConsume("PATTERN");
+
+    if (name || pattern) {
+      let prefix = char || "";
+
+      if (prefixes.indexOf(prefix) === -1) {
+        path += prefix;
+        prefix = "";
+      }
+
+      if (path) {
+        result.push(path);
+        path = "";
+      }
+
+      result.push({
+        name: name || key++,
+        prefix,
+        suffix: "",
+        pattern: pattern || defaultPattern,
+        modifier: tryConsume("MODIFIER") || "",
+      });
+      continue;
+    }
+
+    const value = char || tryConsume("ESCAPED_CHAR");
+    if (value) {
+      path += value;
+      continue;
+    }
+
+    if (path) {
+      result.push(path);
+      path = "";
+    }
+
+    const open = tryConsume("OPEN");
+    if (open) {
+      const prefix = consumeText();
+      const name = tryConsume("NAME") || "";
+      const pattern = tryConsume("PATTERN") || "";
+      const suffix = consumeText();
+
+      mustConsume("CLOSE");
+
+      result.push({
+        name: name || (pattern ? key++ : ""),
+        pattern: name && !pattern ? defaultPattern : pattern,
+        prefix,
+        suffix,
+        modifier: tryConsume("MODIFIER") || "",
+      });
+      continue;
+    }
+
+    mustConsume("END");
+  }
+
+  return result;
+}
+
+export interface TokensToFunctionOptions {
+  /**
+   * When `true` the regexp will be case sensitive. (default: `false`)
+   */
+  sensitive?: boolean;
+  /**
+   * Function for encoding input strings for output.
+   */
+  encode?: (value: string, token: Key) => string;
+  /**
+   * When `false` the function can produce an invalid (unmatched) path. (default: `true`)
+   */
+  validate?: boolean;
+}
+
+/**
+ * Compile a string to a template function for the path.
+ */
+export function compile<P extends object = object>(
+  str: string,
+  options?: ParseOptions & TokensToFunctionOptions
+) {
+  return tokensToFunction<P>(parse(str, options), options);
+}
+
+export type PathFunction<P extends object = object> = (data?: P) => string;
+
+/**
+ * Expose a method for transforming tokens into the path function.
+ */
+export function tokensToFunction<P extends object = object>(
+  tokens: Token[],
+  options: TokensToFunctionOptions = {}
+): PathFunction<P> {
+  const reFlags = flags(options);
+  const { encode = (x: string) => x, validate = true } = options;
+
+  // Compile all the tokens into regexps.
+  const matches = tokens.map((token) => {
+    if (typeof token === "object") {
+      return new RegExp(`^(?:${token.pattern})$`, reFlags);
+    }
+  });
+
+  return (data: Record<string, any> | null | undefined) => {
+    let path = "";
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+
+      if (typeof token === "string") {
+        path += token;
+        continue;
+      }
+
+      const value = data ? data[token.name] : undefined;
+      const optional = token.modifier === "?" || token.modifier === "*";
+      const repeat = token.modifier === "*" || token.modifier === "+";
+
+      if (Array.isArray(value)) {
+        if (!repeat) {
+          throw new TypeError(
+            `Expected "${token.name}" to not repeat, but got an array`
+          );
+        }
+
+        if (value.length === 0) {
+          if (optional) continue;
+
+          throw new TypeError(`Expected "${token.name}" to not be empty`);
+        }
+
+        for (let j = 0; j < value.length; j++) {
+          const segment = encode(value[j], token);
+
+          if (validate && !(matches[i] as RegExp).test(segment)) {
+            throw new TypeError(
+              `Expected all "${token.name}" to match "${token.pattern}", but got "${segment}"`
+            );
+          }
+
+          path += token.prefix + segment + token.suffix;
+        }
+
+        continue;
+      }
+
+      if (typeof value === "string" || typeof value === "number") {
+        const segment = encode(String(value), token);
+
+        if (validate && !(matches[i] as RegExp).test(segment)) {
+          throw new TypeError(
+            `Expected "${token.name}" to match "${token.pattern}", but got "${segment}"`
+          );
+        }
+
+        path += token.prefix + segment + token.suffix;
+        continue;
+      }
+
+      if (optional) continue;
+
+      const typeOfMessage = repeat ? "an array" : "a string";
+      throw new TypeError(`Expected "${token.name}" to be ${typeOfMessage}`);
+    }
+
+    return path;
+  };
+}
+
+export interface RegexpToFunctionOptions {
+  /**
+   * Function for decoding strings for params.
+   */
+  decode?: (value: string, token: Key) => string;
+}
+
+/**
+ * A match result contains data about the path match.
+ */
+export interface MatchResult<P extends object = object> {
+  path: string;
+  index: number;
+  params: P;
+}
+
+/**
+ * A match is either `false` (no match) or a match result.
+ */
+export type Match<P extends object = object> = false | MatchResult<P>;
+
+/**
+ * The match function takes a string and returns whether it matched the path.
+ */
+export type MatchFunction<P extends object = object> = (
+  path: string
+) => Match<P>;
+
+/**
+ * Create path match function from `path-to-regexp` spec.
+ */
+export function match<P extends object = object>(
+  str: Path,
+  options?: ParseOptions & TokensToRegexpOptions & RegexpToFunctionOptions
+) {
+  const keys: Key[] = [];
+  const re = pathToRegexp(str, keys, options);
+  return regexpToFunction<P>(re, keys, options);
+}
+
+/**
+ * Create a path match function from `path-to-regexp` output.
+ */
+export function regexpToFunction<P extends object = object>(
+  re: RegExp,
+  keys: Key[],
+  options: RegexpToFunctionOptions = {}
+): MatchFunction<P> {
+  const { decode = (x: string) => x } = options;
+
+  return function (pathname: string) {
+    const m = re.exec(pathname);
+    if (!m) return false;
+
+    const { 0: path, index } = m;
+    const params = Object.create(null);
+
+    for (let i = 1; i < m.length; i++) {
+      // tslint:disable-next-line
+      if (m[i] === undefined) continue;
+
+      const key = keys[i - 1];
+
+      if (key.modifier === "*" || key.modifier === "+") {
+        params[key.name] = m[i].split(key.prefix + key.suffix).map((value) => {
+          return decode(value, key);
+        });
+      } else {
+        params[key.name] = decode(m[i], key);
+      }
+    }
+
+    return { path, index, params };
+  };
+}
+
+/**
+ * Escape a regular expression string.
+ */
+function escapeString(str: string) {
+  return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+}
+
+/**
+ * Get the flags for a regexp from the options.
+ */
+function flags(options?: { sensitive?: boolean }) {
+  return options && options.sensitive ? "" : "i";
+}
+
+/**
+ * Metadata about a key.
+ */
+export interface Key {
+  name: string | number;
+  prefix: string;
+  suffix: string;
+  pattern: string;
+  modifier: string;
+}
+
+/**
+ * A token is a string (nothing special) or key metadata (capture group).
+ */
+export type Token = string | Key;
+
+/**
+ * Pull out keys from a regexp.
+ */
+function regexpToRegexp(path: RegExp, keys?: Key[]): RegExp {
+  if (!keys) return path;
+
+  const groupsRegex = /\((?:\?<(.*?)>)?(?!\?)/g;
+
+  let index = 0;
+  let execResult = groupsRegex.exec(path.source);
+  while (execResult) {
+    keys.push({
+      // Use parenthesized substring match if available, index otherwise
+      name: execResult[1] || index++,
+      prefix: "",
+      suffix: "",
+      modifier: "",
+      pattern: "",
+    });
+    execResult = groupsRegex.exec(path.source);
+  }
+
+  return path;
+}
+
+/**
+ * Transform an array into a regexp.
+ */
+function arrayToRegexp(
+  paths: Array<string | RegExp>,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+): RegExp {
+  const parts = paths.map((path) => pathToRegexp(path, keys, options).source);
+  return new RegExp(`(?:${parts.join("|")})`, flags(options));
+}
+
+/**
+ * Create a path regexp from string input.
+ */
+function stringToRegexp(
+  path: string,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+) {
+  return tokensToRegexp(parse(path, options), keys, options);
+}
+
+export interface TokensToRegexpOptions {
+  /**
+   * When `true` the regexp will be case sensitive. (default: `false`)
+   */
+  sensitive?: boolean;
+  /**
+   * When `true` the regexp won't allow an optional trailing delimiter to match. (default: `false`)
+   */
+  strict?: boolean;
+  /**
+   * When `true` the regexp will match to the end of the string. (default: `true`)
+   */
+  end?: boolean;
+  /**
+   * When `true` the regexp will match from the beginning of the string. (default: `true`)
+   */
+  start?: boolean;
+  /**
+   * Sets the final character for non-ending optimistic matches. (default: `/`)
+   */
+  delimiter?: string;
+  /**
+   * List of characters that can also be "end" characters.
+   */
+  endsWith?: string;
+  /**
+   * Encode path tokens for use in the `RegExp`.
+   */
+  encode?: (value: string) => string;
+}
+
+/**
+ * Expose a function for taking tokens and returning a RegExp.
+ */
+export function tokensToRegexp(
+  tokens: Token[],
+  keys?: Key[],
+  options: TokensToRegexpOptions = {}
+) {
+  const {
+    strict = false,
+    start = true,
+    end = true,
+    encode = (x: string) => x,
+  } = options;
+  const endsWith = `[${escapeString(options.endsWith || "")}]|$`;
+  const delimiter = `[${escapeString(options.delimiter || "/#?")}]`;
+  let route = start ? "^" : "";
+
+  // Iterate over the tokens and create our regexp string.
+  for (const token of tokens) {
+    if (typeof token === "string") {
+      route += escapeString(encode(token));
+    } else {
+      const prefix = escapeString(encode(token.prefix));
+      const suffix = escapeString(encode(token.suffix));
+
+      if (token.pattern) {
+        if (keys) keys.push(token);
+
+        if (prefix || suffix) {
+          if (token.modifier === "+" || token.modifier === "*") {
+            const mod = token.modifier === "*" ? "?" : "";
+            route += `(?:${prefix}((?:${token.pattern})(?:${suffix}${prefix}(?:${token.pattern}))*)${suffix})${mod}`;
+          } else {
+            route += `(?:${prefix}(${token.pattern})${suffix})${token.modifier}`;
+          }
+        } else {
+          route += `(${token.pattern})${token.modifier}`;
+        }
+      } else {
+        route += `(?:${prefix}${suffix})${token.modifier}`;
+      }
+    }
+  }
+
+  if (end) {
+    if (!strict) route += `${delimiter}?`;
+
+    route += !options.endsWith ? "$" : `(?=${endsWith})`;
+  } else {
+    const endToken = tokens[tokens.length - 1];
+    const isEndDelimited =
+      typeof endToken === "string"
+        ? delimiter.indexOf(endToken[endToken.length - 1]) > -1
+        : // tslint:disable-next-line
+          endToken === undefined;
+
+    if (!strict) {
+      route += `(?:${delimiter}(?=${endsWith}))?`;
+    }
+
+    if (!isEndDelimited) {
+      route += `(?=${delimiter}|${endsWith})`;
+    }
+  }
+
+  return new RegExp(route, flags(options));
+}
+
+/**
+ * Supported `path-to-regexp` input types.
+ */
+export type Path = string | RegExp | Array<string | RegExp>;
+
+/**
+ * Normalize the given path string, returning a regular expression.
+ *
+ * An empty array can be passed in for the keys, which will hold the
+ * placeholder key descriptions. For example, using `/user/:id`, `keys` will
+ * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
+ */
+export function pathToRegexp(
+  path: Path,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+) {
+  if (path instanceof RegExp) return regexpToRegexp(path, keys);
+  if (Array.isArray(path)) return arrayToRegexp(path, keys, options);
+  return stringToRegexp(path, keys, options);
+}
