@@ -16,6 +16,8 @@ export type AuthTemporaryGlobalState = GlobalState<
 
 interface IRequiresAuthProps extends RouteComponentProps {
   customLabel?: string;
+  allowModalClose?: boolean;
+  autoOpenModal?: boolean;
 }
 
 interface IRequiresAuthState {
@@ -95,7 +97,11 @@ class RequiresAuthInternal extends React.Component<Props, IRequiresAuthState> {
 
     return (
       <SystemDisabledHandler systems={["Authentication"]}>
-        <Auth onSignIn={this.props.onSignIn} />
+        <Auth
+          onSignIn={this.props.onSignIn}
+          preventModalClose={!this.props.allowModalClose}
+          autoOpenModal={this.props.autoOpenModal}
+        />
       </SystemDisabledHandler>
     );
   }

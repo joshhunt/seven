@@ -32,6 +32,7 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { StringUtils } from "@Utilities/StringUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -89,13 +90,17 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
   );
 
   const getFireteam = () => {
-    //use the props one by default (modal)
-    const fireteamId = props.fireteamId ?? params?.fireteamId;
+    if (UserUtils.isAuthenticated(globalState)) {
+      //use the props one by default (modal)
+      const fireteamId = props.fireteamId ?? params?.fireteamId;
 
-    Platform.FireteamService.GetClanFireteam("0", fireteamId).then((result) => {
-      setIsReloading(false);
-      setFireteam(result);
-    });
+      Platform.FireteamService.GetClanFireteam("0", fireteamId).then(
+        (result) => {
+          setIsReloading(false);
+          setFireteam(result);
+        }
+      );
+    }
   };
 
   useEffect(() => {
@@ -228,6 +233,8 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
         <body className={isModal && SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
       <RequiresAuth
+        allowModalClose={true}
+        autoOpenModal={false}
         onSignIn={() => {
           FireteamsDestinyMembershipDataStore.actions.loadUserData();
           getFireteam();

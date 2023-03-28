@@ -198,17 +198,6 @@ const WitchQueen: React.FC = () => {
             );
           })}
 
-          <div className={styles.editionsAnchor} id={"editions"} />
-          <WQEditionSelector
-            sectionTitle={editions_section_title}
-            standardTabTitle={editions_tab_standard}
-            deluxeTabTitle={editions_tab_deluxe}
-            annivPackTabTitle={editions_tab_anniversary_bundle}
-            bgImage={bgImageFromStackFile(editions_section_bg_desktop)}
-            ceBgImage={bgImageFromStackFile(collectors_edition_bg_image)}
-            editionsRef={(ref) => setEditionsRef(ref)}
-          />
-
           <div className={styles.mediaSection}>
             <div className={styles.mediaContent}>
               <FirehoseNewsAndMedia

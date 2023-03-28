@@ -29,8 +29,9 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
 
   const luxonDate = DateTime?.fromISO(date?.toString());
   const timeSince = luxonDate?.diffNow();
+  const timeHours = Math.abs(timeSince?.as("hours"));
   const timeString =
-    Math.abs(timeSince?.as("hours")) > 24
+    timeHours > 24
       ? Localizer.time.CompactMonthDayYear
       : Localizer.time.TimeHoursSince;
 
@@ -39,7 +40,7 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
     month: luxonDate?.month,
     day: luxonDate?.day,
     year: luxonDate?.year,
-    hours: Math.ceil(timeSince?.as("hours")),
+    hours: Math.ceil(timeHours),
   });
 
   return (

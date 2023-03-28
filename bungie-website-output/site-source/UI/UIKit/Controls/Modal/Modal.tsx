@@ -290,6 +290,8 @@ export class Modal extends React.Component<ModalProps, IModalState> {
       BrowserUtils.lockScroll(this.scrollableRef);
     } else if (!this.state.open) {
       BrowserUtils.unlockScroll(this.scrollableRef);
+
+      return null;
     }
 
     // This makes sure modals close before switching from one React page to another on back button click

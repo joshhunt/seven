@@ -4,6 +4,7 @@ export class DestinySkuTags {
   public static ShadowkeepCollectors = "shadowkeepcollectors";
   public static ForsakenDetail = "forsaken";
   public static LegendaryEdition = "legendaryedition";
+  public static ArmoryCollection = "armorycollection";
   public static SilverBundle = "silverbundle";
   public static LightfallStandard = "lightfallstandardpreorder";
   public static LightfallAnnualPass = "lightfallannualpreorder";
@@ -12,6 +13,7 @@ export class DestinySkuTags {
 export class DestinyProductFamilies {
   public static NewLight = "freetoplay";
   public static LegendaryEdition = "legendary";
+  public static ArmoryCollection = "armorycollection";
   public static Shadowkeep = "shadowkeep";
   public static Forsaken = "forsaken";
   public static BeyondLight = "beyondlight";

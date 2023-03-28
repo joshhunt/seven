@@ -36,15 +36,6 @@ interface IPartnerRewardsRouteParams {
   membershipId: string;
 }
 
-interface IPartnerRewardsProps
-  extends GlobalStateComponentProps<"loggedInUser">,
-    RouteComponentProps<IPartnerRewardsRouteParams> {}
-
-/**
- * PartnerRewards - Replace this description
- *  *
- * @returns
- */
 export const PartnerRewards: React.FC = () => {
   const appIds = [
     Number(
@@ -80,6 +71,7 @@ export const PartnerRewards: React.FC = () => {
   const [rewards, setRewards] = useState<Tokens.PartnerRewardHistoryResponse[]>(
     null
   );
+
   const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
     false
   );
@@ -234,58 +226,45 @@ export const PartnerRewards: React.FC = () => {
         {loggedInUserCanReadHistory && (
           <div>
             {rewards
-              ?.filter(
-                (
-                  v: Tokens.PartnerRewardHistoryResponse,
-                  i: number,
-                  a: Tokens.PartnerRewardHistoryResponse[]
-                ) => {
-                  // Removes duplicate TwitchDrops rewards due to multiple appid for Twitch by finding the first entry with the specific title
-                  // Partner rewards are excluded from filter
-                  return (
-                    v.PartnerOffers?.[0] ||
-                    a.findIndex(
-                      (v2) =>
-                        v.TwitchDrops?.[0] &&
-                        v2.TwitchDrops?.[0] &&
-                        v2.TwitchDrops[0]?.Title === v.TwitchDrops[0]?.Title
-                    ) === i
-                  );
-                }
-              )
               ?.filter((r) => r.PartnerOffers?.[0] || r.TwitchDrops?.[0])
-              ?.map((r, i) => {
+              ?.map((r, index) => {
                 const partnerOffer = r.PartnerOffers?.[0];
                 const twitchDrop = r.TwitchDrops?.[0];
 
                 if (twitchDrop) {
-                  return (
-                    <div key={i}>
+                  return r.TwitchDrops.filter((v, i, a) => {
+                    // Removes duplicate TwitchDrops rewards due to multiple appid for Twitch by finding the first entry with the specific title
+                    return (
+                      a.findIndex((v2) => v && v2 && v2?.Title === v?.Title) ===
+                      i
+                    );
+                  }).map((td) => (
+                    <div key={index}>
                       <TwoLineItem
-                        itemTitle={twitchDrop.Title}
-                        itemSubtitle={twitchDrop.Description}
+                        itemTitle={td.Title}
+                        itemSubtitle={td.Description}
                         flair={
-                          twitchDrop.ClaimState &&
-                          twitchDrop.ClaimState === DropStateEnum.Fulfilled ? (
-                            <div>{makeDateString(twitchDrop.CreatedAt)}</div>
+                          td.ClaimState &&
+                          td.ClaimState === DropStateEnum.Fulfilled ? (
+                            <div>{makeDateString(td.CreatedAt)}</div>
                           ) : (
                             ""
                           )
                         }
                       />
                     </div>
-                  );
+                  ));
                 }
 
                 if (partnerOffer) {
-                  return (
-                    <div key={i}>
+                  return r.PartnerOffers.map((po) => (
+                    <div key={index}>
                       <TwoLineItem
-                        itemTitle={partnerOffer.LocalizedName}
-                        itemSubtitle={partnerOffer.LocalizedDescription}
+                        itemTitle={po.LocalizedName}
+                        itemSubtitle={po.LocalizedDescription}
                         flair={
-                          partnerOffer.AllOffersApplied ? (
-                            <div>{makeDateString(partnerOffer.ClaimDate)}</div>
+                          po.AllOffersApplied ? (
+                            <div>{makeDateString(po.ClaimDate)}</div>
                           ) : (
                             <Button
                               size={BasicSize.Small}
@@ -297,7 +276,7 @@ export const PartnerRewards: React.FC = () => {
                         }
                       />
                     </div>
-                  );
+                  ));
                 }
 
                 return null;

@@ -374,6 +374,20 @@ export const Fireteams: React.FC = (props) => {
           style={{
             backgroundImage: `url(${SeasonsDefinitions.currentSeason.progressPageImage})`,
           }}
+          onClick={() =>
+            updateResults(
+              langFilter,
+              fireteamActivityType.toString(),
+              EnumUtils.getNumberValue(
+                fireteamPlatform,
+                FireteamPlatform
+              ).toString(),
+              fireteamGroupId,
+              0,
+              isMine,
+              isScheduled
+            )
+          }
         >
           <Grid className={styles.headerGrid}>
             <GridCol className={styles.headerContent} cols={12}>
@@ -392,7 +406,38 @@ export const Fireteams: React.FC = (props) => {
               className={styles.mobileResultsHeader}
             >
               <div className={styles.resultsHeader}>
-                <p className={styles.resultsHeaderLabel}>{pageLabel()}</p>
+                <p className={styles.resultsHeaderLabel}>
+                  {!isMine && (
+                    <Dropdown
+                      className={classNames(
+                        styles.filterDropdown,
+                        styles.activityDropdown
+                      )}
+                      options={FireteamUtils.activityOptions(
+                        globalState.coreSettings,
+                        false
+                      )}
+                      iconPath={
+                        "/7/ca/destiny/bgs/fireteams/icon_fireteamActivities.svg"
+                      }
+                      selectedValue={fireteamActivityType.toString()}
+                      onChange={(value) =>
+                        updateResults(
+                          langFilter,
+                          value,
+                          EnumUtils.getNumberValue(
+                            fireteamPlatform,
+                            FireteamPlatform
+                          ).toString(),
+                          fireteamGroupId,
+                          page,
+                          isMine,
+                          isScheduled
+                        )
+                      }
+                    />
+                  )}
+                </p>
                 <Button
                   onClick={handleCreateFireteamButton}
                   className={classNames(styles.buttonCreateFireteam, {
@@ -624,36 +669,6 @@ export const Fireteams: React.FC = (props) => {
                     )
                   }
                 />
-                {!isMine && (
-                  <Dropdown
-                    className={classNames(
-                      styles.filterDropdown,
-                      styles.activityDropdown
-                    )}
-                    options={FireteamUtils.activityOptions(
-                      globalState.coreSettings,
-                      false
-                    )}
-                    iconPath={
-                      "/7/ca/destiny/bgs/fireteams/icon_fireteamActivities.svg"
-                    }
-                    selectedValue={fireteamActivityType.toString()}
-                    onChange={(value) =>
-                      updateResults(
-                        langFilter,
-                        value,
-                        EnumUtils.getNumberValue(
-                          fireteamPlatform,
-                          FireteamPlatform
-                        ).toString(),
-                        fireteamGroupId,
-                        page,
-                        isMine,
-                        isScheduled
-                      )
-                    }
-                  />
-                )}
                 <Dropdown
                   className={classNames(
                     styles.filterDropdown,
@@ -699,7 +714,36 @@ export const Fireteams: React.FC = (props) => {
           <GridCol cols={9} medium={7} mobile={12}>
             {!globalState.responsive.mobile && (
               <div className={styles.resultsHeader}>
-                {pageLabel()}
+                {!isMine && (
+                  <Dropdown
+                    className={classNames(
+                      styles.filterDropdown,
+                      styles.activityDropdown
+                    )}
+                    options={FireteamUtils.activityOptions(
+                      globalState.coreSettings,
+                      false
+                    )}
+                    iconPath={
+                      "/7/ca/destiny/bgs/fireteams/icon_fireteamActivities.svg"
+                    }
+                    selectedValue={fireteamActivityType.toString()}
+                    onChange={(value) =>
+                      updateResults(
+                        langFilter,
+                        value,
+                        EnumUtils.getNumberValue(
+                          fireteamPlatform,
+                          FireteamPlatform
+                        ).toString(),
+                        fireteamGroupId,
+                        page,
+                        isMine,
+                        isScheduled
+                      )
+                    }
+                  />
+                )}
                 <Button
                   onClick={handleCreateFireteamButton}
                   className={classNames(styles.buttonCreateFireteam, {
@@ -747,7 +791,7 @@ export const Fireteams: React.FC = (props) => {
                           ? fireteamSearchResponse.query.currentPage + 5
                           : 5
                       }
-                      forcePage={page + 1}
+                      forcePage={page}
                       marginPagesDisplayed={2}
                       pageRangeDisplayed={5}
                       previousLabel={Localizer.usertools.previousPage}
@@ -802,7 +846,7 @@ export const Fireteams: React.FC = (props) => {
                           ? myFireteamsSearchResponse.query.currentPage + 5
                           : 5
                       }
-                      forcePage={page + 1}
+                      forcePage={page}
                       marginPagesDisplayed={2}
                       pageRangeDisplayed={5}
                       previousLabel={Localizer.usertools.previousPage}

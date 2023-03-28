@@ -106,20 +106,25 @@ const NewsArticle = () => {
     return finalArray;
   };
 
-  const now = DateTime.now();
-  const creationDate = DateTime.fromISO(date);
-  let timeString = "";
-  if (now.diff(creationDate) > Duration.fromObject({ day: 1 })) {
-    timeString = Localizer.Format(Localizer.time.MonthAbbrDayYear, {
-      monthabbr: Localizer.time["monthabbr" + creationDate.month],
-      day: creationDate.day,
-      year: creationDate.year,
-    });
-  } else {
-    timeString = Localizer.format(Localizer.time.timehourssince, {
-      hours: DateTime.now().diff(creationDate).hours,
-    });
-  }
+  const luxonDate = DateTime?.fromISO(date?.toString());
+  const timeSince = luxonDate?.diffNow();
+  const timeHours = Math.abs(timeSince?.as("hours"));
+  const timeString =
+    timeHours > 24
+      ? Localizer.Format(Localizer.time.MonthAbbrDayYear, {
+          monthabbr: Localizer.time["monthabbr" + luxonDate.month],
+          day: luxonDate.day,
+          year: luxonDate.year,
+        })
+      : Localizer.time.TimeHoursSince;
+
+  const time = Localizer.Format(timeString, {
+    monthabbr: Localizer.time["MonthAbbr" + luxonDate?.month],
+    month: luxonDate?.month,
+    day: luxonDate?.day,
+    year: luxonDate?.year,
+    hours: Math.ceil(timeHours),
+  });
 
   return (
     <>
@@ -145,7 +150,7 @@ const NewsArticle = () => {
           <GridCol cols={12}>
             <h1 className={styles.title}>{title}</h1>
             <h3 className={styles.subtitle}>
-              <span>{`${timeString} - ${author}`}</span>
+              <span>{`${time} - ${author}`}</span>
             </h3>
             <div className={styles.articleContainer}>
               {separateCodeContentRecursive(html_content, []) &&

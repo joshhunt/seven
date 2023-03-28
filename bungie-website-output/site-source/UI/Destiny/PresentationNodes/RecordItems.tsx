@@ -299,6 +299,11 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
           const description = recordDef?.loreHash
             ? null
             : recordDef?.displayProperties?.description;
+          const incompleteObjectives = recordData?.objectives?.filter(
+            (o) => !o.complete
+          );
+          const progress = incompleteObjectives?.[0]?.progress;
+          const total = incompleteObjectives?.[0]?.completionValue;
 
           const detailCoin =
             recordData?.objectives &&
@@ -308,20 +313,14 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
               firstObjectiveDef
             ) ? (
               <ProgressBar
-                progressToTotal={
-                  recordData?.objectives?.filter((o) => o.complete)?.length
-                }
-                progressPercent={
-                  (recordData?.objectives?.filter((o) => o.complete)?.length /
-                    recordData?.objectives?.length) *
-                  100
-                }
+                progressToTotal={progress}
+                progressPercent={(progress / total) * 100}
+                total={total}
                 isCompact={true}
                 showBarWhenComplete={false}
                 showText={false}
                 customText={""}
                 description={""}
-                total={recordData?.objectives?.length}
               />
             ) : null;
 

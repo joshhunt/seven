@@ -49,15 +49,10 @@ export const WQStickyBuyNav: React.FC<WQStickyBuyNavProps> = (props) => {
           </div>
           <div className={styles.selectorWrapper}>
             <div className={styles.dropDownWrapper}>
-              <WQNavDropdown
-                title={dropdownTitle}
-                options={skus}
-                onChange={handleDropdownChange}
-              />
               <Button
+                url={"/WitchQueenBuyNow"}
                 className={styles.skuBuyBtn}
                 buttonType={"queenGreen"}
-                onClick={() => handleSkuBtnClick(selectedSku)}
               >
                 {buyBtnText}
               </Button>

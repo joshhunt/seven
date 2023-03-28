@@ -45,7 +45,7 @@ export const FireteamJoin: React.FC<FireteamJoinProps> = (props) => {
 
     //has correct membership
     if (
-      !!destinyMembership.memberships.find(
+      !!destinyMembership.membershipData.destinyMemberships.find(
         (m) =>
           FireteamUtils.BnetMembershipTypeToFireteamPlatform(
             m.membershipType

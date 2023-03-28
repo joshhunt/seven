@@ -84,22 +84,22 @@ const DestinyShadowkeep: React.FC<DestinyShadowkeepProps> = (props) => {
     ? `url(${endgame_section?.eris_icon?.url})`
     : undefined;
 
-  const mediaScreenshots: IDestinyNewsMedia[] = media?.screenshots?.map(
+  const mediaScreenshots: IDestinyNewsMedia[] = media?.screenshot?.map(
     (s: any) => ({
       isVideo: false,
       thumbnail:
-        s.screenshot?.thumbnail?.url || `${s.screenshot?.image?.url}?width=500`,
-      detail: s.screenshot?.image?.url,
+        s.screenshot?.thumbnail?.url || `${s.screenshot?.url}?width=500`,
+      detail: s.screenshot?.url,
     })
   );
 
-  const mediaVideos: IDestinyNewsMedia[] = media?.videos?.map((vid: any) => ({
+  const mediaVideos: IDestinyNewsMedia[] = media?.video?.map((vid: any) => ({
     isVideo: true,
     thumbnail: vid.thumbnail?.url,
     detail: vid.video_id,
   }));
 
-  const mediaWallpapers: IDestinyNewsMedia[] = media?.wallpapers?.map(
+  const mediaWallpapers: IDestinyNewsMedia[] = media?.wallpaper?.map(
     (wall: any) => ({
       isVideo: false,
       thumbnail: wall?.thumbnail?.url,

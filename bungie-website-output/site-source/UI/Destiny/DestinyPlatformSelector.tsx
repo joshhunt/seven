@@ -18,6 +18,7 @@ interface IDestinyPlatformSelectorProps {
   selectedValue?: BungieMembershipType;
   isViewingOthers?: boolean;
   showCrossSaveBanner?: boolean;
+  showAllCrossSavedPlatforms?: boolean;
 }
 
 // Default props - these will have values set in DestinyPlatformSelector.defaultProps
@@ -128,49 +129,50 @@ export class DestinyPlatformSelector extends React.Component<
     );
 
     // if cross saved only show the cross saved one
-    const platformOptions: IDropdownOption[] = crossSavePlatform
-      ? [
-          {
-            iconPath: crossSavePlatform.iconPath,
-            label: `${crossSavePlatform.displayName} : ${
-              Localizer.Platforms[
-                EnumUtils.getStringValue(
-                  crossSavePlatform.membershipType,
-                  BungieMembershipType
-                )
-              ]
-            }`,
-            value: EnumUtils.getStringValue(
-              crossSavePlatform.membershipType,
-              BungieMembershipType
-            ),
-          },
-        ]
-      : this.props.userMembershipData.destinyMemberships
-          .filter(
-            (dm) => dm.membershipType !== BungieMembershipType.TigerStadia
-          )
-          .map((value) => {
-            const bMembershipTypeString = EnumUtils.getStringValue(
-              value.membershipType,
-              BungieMembershipType
-            );
-            const bCredentialTypeString = EnumUtils.getStringValue(
-              UserUtils.getCredentialTypeFromMembershipType(
-                value.membershipType
+    const platformOptions: IDropdownOption[] =
+      crossSavePlatform && !this.props.showAllCrossSavedPlatforms
+        ? [
+            {
+              iconPath: crossSavePlatform.iconPath,
+              label: `${crossSavePlatform.displayName} : ${
+                Localizer.Platforms[
+                  EnumUtils.getStringValue(
+                    crossSavePlatform.membershipType,
+                    BungieMembershipType
+                  )
+                ]
+              }`,
+              value: EnumUtils.getStringValue(
+                crossSavePlatform.membershipType,
+                BungieMembershipType
               ),
-              BungieCredentialType
-            );
-            const sanitizedPlatformName = this.state.credentialNameMap?.[
-              bCredentialTypeString
-            ];
+            },
+          ]
+        : this.props.userMembershipData.destinyMemberships
+            .filter(
+              (dm) => dm.membershipType !== BungieMembershipType.TigerStadia
+            )
+            .map((value) => {
+              const bMembershipTypeString = EnumUtils.getStringValue(
+                value.membershipType,
+                BungieMembershipType
+              );
+              const bCredentialTypeString = EnumUtils.getStringValue(
+                UserUtils.getCredentialTypeFromMembershipType(
+                  value.membershipType
+                ),
+                BungieCredentialType
+              );
+              const sanitizedPlatformName = this.state.credentialNameMap?.[
+                bCredentialTypeString
+              ];
 
-            return {
-              iconPath: value.iconPath,
-              label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
-              value: bMembershipTypeString,
-            };
-          });
+              return {
+                iconPath: value.iconPath,
+                label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
+                value: bMembershipTypeString,
+              };
+            });
 
     return !!crossSavePlatform && this.props.showCrossSaveBanner ? (
       <div className={styles.crossSaveBanner}>

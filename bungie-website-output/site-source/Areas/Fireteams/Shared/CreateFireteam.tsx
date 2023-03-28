@@ -16,6 +16,7 @@ import {
   DestinyAccountWrapper,
   IAccountFeatures,
 } from "@UI/Destiny/DestinyAccountWrapper";
+import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { FormikSelect } from "@UIKit/Forms/FormikForms/FormikSelect";
@@ -59,6 +60,9 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   const [activitySelected, setActivitySelected] = useState(5);
   const [dateTimeValue, setDateTimeValue] = useState(new Date());
   const [openDateTimePicker, setOpenDateTimePicker] = useState(false);
+  const [crossSavedPlatformSelected, setCrossSavedPlatformSelected] = useState<
+    BungieMembershipType
+  >();
 
   const currentActivity = globalState?.coreSettings?.fireteamActivities?.find(
     (f) => f.identifier === activitySelected?.toString()
@@ -91,7 +95,9 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
       isPublic: values.isPublic === "0",
       activityType: parseInt(values.fireteamActivity, 10),
       platform: FireteamUtils.BnetMembershipTypeToFireteamPlatform(
-        values.membershipType
+        values.platform === "1" && !!crossSavedPlatformSelected
+          ? crossSavedPlatformSelected
+          : values.membershipType
       ),
       locale: values.locale,
       ownerCharacterId:
@@ -267,6 +273,29 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                           radioGroupName={"platform"}
                           radioOptions={FireteamRadioOptions.platformRadioOptions()}
                         />
+                        {formikProps.values.platform ===
+                          FireteamRadioOptions.platformRadioOptions()[1]
+                            .value && (
+                          <div className={styles.extraPlatformSelector}>
+                            <DestinyPlatformSelector
+                              userMembershipData={
+                                destinyMembership.membershipData
+                              }
+                              onChange={(value) =>
+                                setCrossSavedPlatformSelected(
+                                  BungieMembershipType[
+                                    value as keyof typeof BungieMembershipType
+                                  ]
+                                )
+                              }
+                              defaultValue={
+                                destinyMembership.selectedMembership
+                                  .membershipType
+                              }
+                              showAllCrossSavedPlatforms={true}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
 
