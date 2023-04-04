@@ -5,10 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { PlatformError } from "@CustomErrors";
 import { AclEnum, DropStateEnum } from "@Enum";
-import {
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform, Tokens } from "@Platform";
@@ -22,13 +19,12 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { usePrevious } from "@Utilities/ReactUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import { RouteComponentProps, useParams } from "react-router";
+import { useParams } from "react-router";
 import styles from "./PartnerRewards.module.scss";
 import { FaTwitch } from "@react-icons/all-files/fa/FaTwitch";
 
@@ -68,9 +64,9 @@ export const PartnerRewards: React.FC = () => {
     ),
   ].filter((a) => a !== 0);
 
-  const [rewards, setRewards] = useState<Tokens.PartnerRewardHistoryResponse[]>(
-    null
-  );
+  const [rewardItems, setRewardItems] = useState<
+    (Tokens.PartnerOfferSkuHistoryResponse | Tokens.TwitchDropHistoryResponse)[]
+  >();
 
   const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
     false
@@ -125,10 +121,7 @@ export const PartnerRewards: React.FC = () => {
 
           Promise.all(promises)
             .then((dataArray) => {
-              let allRewards = dataArray.reduce((a, c) => a.concat(c), []);
-              allRewards = sortByDate(allRewards);
-
-              setRewards(allRewards);
+              setRewardItems(getRewardItems(dataArray));
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e));
@@ -152,17 +145,48 @@ export const PartnerRewards: React.FC = () => {
     });
   };
 
-  const sortByDate = (array: Tokens.PartnerRewardHistoryResponse[]) => {
-    return array.sort((a, b) => {
-      const aDate =
-        a.PartnerOffers?.[0]?.ClaimDate ?? a.TwitchDrops?.[0]?.CreatedAt;
-      const bDate =
-        b.PartnerOffers?.[0]?.ClaimDate ?? b.TwitchDrops?.[0]?.CreatedAt;
+  const getRewardItems = (
+    rewardResponses: Tokens.PartnerRewardHistoryResponse[]
+  ) => {
+    const rewItems: (
+      | Tokens.PartnerOfferSkuHistoryResponse
+      | Tokens.TwitchDropHistoryResponse
+    )[] = [];
 
-      return DateTime.fromISO(bDate, { zone: "utc" })
-        .diff(DateTime.fromISO(aDate, { zone: "utc" }))
+    rewardResponses.forEach((r) => {
+      if (r.TwitchDrops?.length) {
+        r.TwitchDrops.forEach((tw) => {
+          //filter out the dupes
+          if (
+            !rewItems.find(
+              (i) => (i as Tokens.TwitchDropHistoryResponse).Title === tw.Title
+            )
+          ) {
+            rewItems.push(tw);
+          }
+        });
+      }
+
+      if (r.PartnerOffers?.length) {
+        r.PartnerOffers.forEach((po) => rewItems.push(po));
+      }
+    });
+
+    rewItems.sort((a, b) => {
+      const dateA = a.hasOwnProperty("SkuIdentifier")
+        ? (a as Tokens.PartnerOfferSkuHistoryResponse).ClaimDate
+        : (a as Tokens.TwitchDropHistoryResponse).CreatedAt;
+
+      const dateB = b.hasOwnProperty("SkuIdentifier")
+        ? (b as Tokens.PartnerOfferSkuHistoryResponse).ClaimDate
+        : (b as Tokens.TwitchDropHistoryResponse).CreatedAt;
+
+      return DateTime.fromISO(dateB, { zone: "utc" })
+        .diff(DateTime.fromISO(dateA, { zone: "utc" }))
         .toObject().milliseconds;
     });
+
+    return rewItems;
   };
 
   const claimRewards = () => {
@@ -225,63 +249,54 @@ export const PartnerRewards: React.FC = () => {
         </div>
         {loggedInUserCanReadHistory && (
           <div>
-            {rewards
-              ?.filter((r) => r.PartnerOffers?.[0] || r.TwitchDrops?.[0])
-              ?.map((r, index) => {
-                const partnerOffer = r.PartnerOffers?.[0];
-                const twitchDrop = r.TwitchDrops?.[0];
+            {rewardItems?.map((r, index) => {
+              const isPartnerOffer = r.hasOwnProperty("SkuIdentifier");
 
-                if (twitchDrop) {
-                  return r.TwitchDrops.filter((v, i, a) => {
-                    // Removes duplicate TwitchDrops rewards due to multiple appid for Twitch by finding the first entry with the specific title
-                    return (
-                      a.findIndex((v2) => v && v2 && v2?.Title === v?.Title) ===
-                      i
-                    );
-                  }).map((td) => (
-                    <div key={index}>
-                      <TwoLineItem
-                        itemTitle={td.Title}
-                        itemSubtitle={td.Description}
-                        flair={
-                          td.ClaimState &&
-                          td.ClaimState === DropStateEnum.Fulfilled ? (
-                            <div>{makeDateString(td.CreatedAt)}</div>
-                          ) : (
-                            ""
-                          )
-                        }
-                      />
-                    </div>
-                  ));
-                }
+              if (!isPartnerOffer) {
+                const tw: Tokens.TwitchDropHistoryResponse = r as Tokens.TwitchDropHistoryResponse;
 
-                if (partnerOffer) {
-                  return r.PartnerOffers.map((po) => (
-                    <div key={index}>
-                      <TwoLineItem
-                        itemTitle={po.LocalizedName}
-                        itemSubtitle={po.LocalizedDescription}
-                        flair={
-                          po.AllOffersApplied ? (
-                            <div>{makeDateString(po.ClaimDate)}</div>
-                          ) : (
-                            <Button
-                              size={BasicSize.Small}
-                              onClick={() => claimRewards()}
-                            >
-                              {Localizer.PartnerOffers.Claim}
-                            </Button>
-                          )
-                        }
-                      />
-                    </div>
-                  ));
-                }
+                return (
+                  <div key={index}>
+                    <TwoLineItem
+                      itemTitle={tw.Title}
+                      itemSubtitle={tw.Description}
+                      flair={
+                        tw.ClaimState &&
+                        tw.ClaimState === DropStateEnum.Fulfilled ? (
+                          <div>{makeDateString(tw.CreatedAt)}</div>
+                        ) : (
+                          ""
+                        )
+                      }
+                    />
+                  </div>
+                );
+              } else {
+                const po: Tokens.PartnerOfferSkuHistoryResponse = r as Tokens.PartnerOfferSkuHistoryResponse;
 
-                return null;
-              })}
-            {!rewards?.length && (
+                return (
+                  <div key={index}>
+                    <TwoLineItem
+                      itemTitle={po.LocalizedName}
+                      itemSubtitle={po.LocalizedDescription}
+                      flair={
+                        po.AllOffersApplied ? (
+                          <div>{makeDateString(po.ClaimDate)}</div>
+                        ) : (
+                          <Button
+                            size={BasicSize.Small}
+                            onClick={() => claimRewards()}
+                          >
+                            {Localizer.PartnerOffers.Claim}
+                          </Button>
+                        )
+                      }
+                    />
+                  </div>
+                );
+              }
+            })}
+            {!rewardItems?.length && (
               <p className={styles.noResults}>
                 {Localizer.Coderedemption.NoResults}
               </p>

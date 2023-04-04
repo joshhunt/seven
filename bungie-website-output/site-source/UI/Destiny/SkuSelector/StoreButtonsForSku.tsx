@@ -89,7 +89,6 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
             (storeRegions.length > 1
               ? storeRegions[0].key
               : DestinySkuUtils.REGION_GLOBAL_KEY);
-
           const url = DestinySkuUtils.getStoreUrlForSku(
             skuDefinition.skuTag,
             store.key,
@@ -103,6 +102,7 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
               store.key,
               skuConfig
             ) || null;
+
           let activeSaleEndDate = "";
           if (activeSale) {
             activeSaleEndDate = getSaleDateString(activeSale);
@@ -114,6 +114,12 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
           const storeKeyForIcon =
             store.key === "StadiaFree" ? "stadia" : store.key.toLowerCase();
           const storeKeyForTitle = getTitleKey(store.key);
+          console.log(
+            store.key,
+            storeRegion !== DestinySkuUtils.REGION_GLOBAL_KEY,
+            storeRegion,
+            DestinySkuUtils.REGION_GLOBAL_KEY
+          );
 
           return (
             <div

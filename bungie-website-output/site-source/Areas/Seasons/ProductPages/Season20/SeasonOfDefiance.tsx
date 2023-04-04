@@ -394,34 +394,55 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
           />
         </div>
 
-        {/* BUNGIE REWARDS 
-				<div className={styles.sectionDivider} style={{ backgroundColor: "#1D9CD4" }} />
-				<div id={"bungie-rewards"} className={classNames(styles.section, styles.bungieRewards)} style={{backgroundImage: getResponsiveBg(bungie_rewards_section?.bg)}}>
-					<div className={styles.bungieRewardsSectionHeader}>
-						<img src={bungie_rewards_section?.section_header?.logo?.url} className={styles.bungieRewardsSectionHeaderLogo} alt={bungie_rewards_section?.logo?.desciption} />
-						<p className={styles.bungieRewardsSectionHeaderBlurb} dangerouslySetInnerHTML={sanitizeHTML(bungie_rewards_section?.section_header?.blurb)} />
-					</div>
-					<S20ProceduralContent content={bungie_rewards_section?.content} pmpComponents={{
-						...pmpComponentOverrides,
-						pmp_stacked_info_thumb_blocks: (ref) => (
-							<PmpStackedInfoThumbBlocks
-								data={ref?.data}
-								classes={{
-									root: styles.bungieRewardsThumbBlocks,
-									reverse: styles.bungieRewardsThumbBlocksReverse,
-									blockWrapper: styles.bungieRewardsThumbBlocksBlockWrapper,
-									textWrapper: styles.bungieRewardsThumbBlocksTextWrapper,
-									heading: styles.bungieRewardsThumbBlocksHeading,
-								}}
-							/>
-						),
-					}} />
-				</div> */}
+        {/* BUNGIE REWARDS */}
+        <div
+          className={styles.sectionDivider}
+          style={{ backgroundColor: "#1D9CD4" }}
+        />
+        <div
+          id={"bungie-rewards"}
+          className={classNames(styles.section, styles.bungieRewards)}
+          style={{
+            backgroundImage: getResponsiveBg(bungie_rewards_section?.bg),
+          }}
+        >
+          <div className={styles.bungieRewardsSectionHeader}>
+            <img
+              src={bungie_rewards_section?.section_header?.logo?.url}
+              className={styles.bungieRewardsSectionHeaderLogo}
+              alt={bungie_rewards_section?.logo?.desciption}
+            />
+            <p
+              className={styles.bungieRewardsSectionHeaderBlurb}
+              dangerouslySetInnerHTML={sanitizeHTML(
+                bungie_rewards_section?.section_header?.blurb
+              )}
+            />
+          </div>
+          <S20ProceduralContent
+            content={bungie_rewards_section?.content}
+            pmpComponents={{
+              ...pmpComponentOverrides,
+              pmp_stacked_info_thumb_blocks: (ref) => (
+                <PmpStackedInfoThumbBlocks
+                  data={ref?.data}
+                  classes={{
+                    root: styles.bungieRewardsThumbBlocks,
+                    reverse: styles.bungieRewardsThumbBlocksReverse,
+                    blockWrapper: styles.bungieRewardsThumbBlocksBlockWrapper,
+                    textWrapper: styles.bungieRewardsThumbBlocksTextWrapper,
+                    heading: styles.bungieRewardsThumbBlocksHeading,
+                  }}
+                />
+              ),
+            }}
+          />
+        </div>
 
         {/* REWARDS */}
         <div
           className={styles.sectionDivider}
-          style={{ backgroundColor: "#4B0C29" }}
+          style={{ backgroundColor: "#a304B21" }}
         />
         <div
           id={"season-rewards"}
