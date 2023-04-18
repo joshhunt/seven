@@ -71,39 +71,39 @@ const Home = () => {
     )
   );
 
-  if (!homePageData) {
-    return null;
-  }
+  const bnetTitle = "Bungie.net";
 
   return (
     <>
       <BungieHelmet
-        title={""}
+        title={bnetTitle}
         image={hero_image?.url || BungieHelmet.DefaultBoringMetaImage}
       >
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
-      <div>
-        <Hero
-          heroData={{
-            hero_image: images?.heroBg,
-            mobile_hero_image: images?.mobileBg,
-            hero_video,
-            title,
-            title_as_image: images?.titleImg,
-            subtitle,
-            button_one: { label: button_one_label, link: button_one_link },
-            button_two: { label: button_two_label, link: button_two_link },
-          }}
-        />
-        <Featured featured={featured} />
-        <Recent />
-        <div className={styles.buttonContainer}>
-          <Button buttonType={"white"} url={RouteHelper.News()}>
-            {Localizer.news.morenews}
-          </Button>
+      {homePageData && (
+        <div>
+          <Hero
+            heroData={{
+              hero_image: images?.heroBg,
+              mobile_hero_image: images?.mobileBg,
+              hero_video,
+              title,
+              title_as_image: images?.titleImg,
+              subtitle,
+              button_one: { label: button_one_label, link: button_one_link },
+              button_two: { label: button_two_label, link: button_two_link },
+            }}
+          />
+          <Featured featured={featured} />
+          <Recent />
+          <div className={styles.buttonContainer}>
+            <Button buttonType={"white"} url={RouteHelper.News()}>
+              {Localizer.news.morenews}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };

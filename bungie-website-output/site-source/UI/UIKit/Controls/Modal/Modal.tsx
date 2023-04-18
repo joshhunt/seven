@@ -226,6 +226,8 @@ export class Modal extends React.Component<ModalProps, IModalState> {
       },
       () => {
         this.props.onClose && this.props.onClose();
+
+        BrowserUtils.unlockScroll(this.scrollableRef);
       }
     );
   };

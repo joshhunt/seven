@@ -359,8 +359,8 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
 
           if (isObscured) {
             name =
-              recordDef?.stateInfo?.obscuredString !== ""
-                ? recordDef?.stateInfo?.obscuredString
+              recordDef?.stateInfo?.obscuredDescription !== ""
+                ? recordDef?.stateInfo?.obscuredDescription
                 : nodesLoc.ObscuredTriumphTitle;
           }
 

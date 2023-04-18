@@ -242,7 +242,7 @@ class SeasonOfDawnInternal extends React.Component<
       });
 
     return (
-      <div className={styles.contentWrapper}>
+      <div>
         <BungieHelmet
           title={SeasonsDefinitions.seasonOfDawn.title}
           image={SeasonsDefinitions.seasonOfDawn.image}

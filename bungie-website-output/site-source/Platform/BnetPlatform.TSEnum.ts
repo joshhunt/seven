@@ -729,6 +729,7 @@ export enum PlatformErrorCodes {
   MessagingSenderIsBanned = 311,
   MessagingGroupOptionalChatExceededMaximum = 312,
   PrivateMessagingRequiresDestinyMembership = 313,
+  MessagingSendDailyThrottle = 314,
   AddSurveyAnswersUnknownSqlException = 400,
   ForumBodyCannotBeEmpty = 500,
   ForumSubjectCannotBeEmptyOnTopicPost = 501,

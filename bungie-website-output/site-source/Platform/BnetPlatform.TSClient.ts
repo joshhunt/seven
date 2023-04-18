@@ -5427,15 +5427,17 @@ export declare namespace Content {
   }
 
   export interface NewsArticleRssResponse {
-    NewsArticles: Content.NewsArticleRssItem[];
-
     CurrentPaginationToken: number;
 
     NextPaginationToken?: number;
 
     ResultCountThisPage: number;
 
+    NewsArticles: Content.NewsArticleRssItem[];
+
     CategoryFilter: string;
+
+    PagerAction: string;
   }
 
   export interface NewsArticleRssItem {
@@ -6268,6 +6270,11 @@ export declare namespace Records {
 		*/
     rewardItems: World.DestinyItemQuantity[];
 
+    /**
+		A display name for the type of record this is (Triumphs, Lore, Medals, Seasonal Challenge, etc.).
+		*/
+    recordTypeName: string;
+
     presentationNodeType: Globals.DestinyPresentationNodeType;
 
     traitIds: string[];
@@ -6314,7 +6321,15 @@ export declare namespace Records {
   export interface SchemaRecordStateBlock {
     featuredPriority: number;
 
-    obscuredString: string;
+    /**
+		A display name override to show when this record is 'obscured' instead of the default obscured display name.
+		*/
+    obscuredName: string;
+
+    /**
+		A display description override to show when this record is 'obscured' instead of the default obscured display description.
+		*/
+    obscuredDescription: string;
   }
 
   /**

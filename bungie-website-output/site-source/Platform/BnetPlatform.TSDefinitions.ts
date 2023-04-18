@@ -5019,6 +5019,8 @@ export declare namespace DestinyDefinitions {
 
     anyRewardHasConditionalVisibility: boolean;
 
+    recordTypeName: string;
+
     presentationNodeType: DestinyPresentationNodeType;
 
     traitIds: string[];
@@ -5069,7 +5071,9 @@ export declare namespace DestinyDefinitions {
   export interface SchemaRecordStateBlock {
     featuredPriority: number;
 
-    obscuredString: string;
+    obscuredName: string;
+
+    obscuredDescription: string;
 
     featuredExpression: DestinyUnlockExpressionDefinition;
 

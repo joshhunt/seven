@@ -31,6 +31,8 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
     Responses.DestinyProfileResponse
   >();
 
+  const sortOrder = ["154475713", "4180748446", "1341823550", "1390663518"];
+
   const profileLoc = Localizer.Profile;
 
   const isSelf =
@@ -93,7 +95,8 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
           };
         }
       })
-      .filter((n) => !!n);
+      .filter((n) => !!n)
+      .sort((a, b) => sortOrder.indexOf(a.key) - sortOrder.indexOf(b.key));
 
   const visibleTotal = visibleCommendationNodes
     ?.map((v) => v?.value)

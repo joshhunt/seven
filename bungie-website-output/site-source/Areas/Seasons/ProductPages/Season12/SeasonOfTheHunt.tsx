@@ -245,20 +245,17 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
       </div>
 
       {/* Nav */}
-
-      <div className={styles.nav}>
-        <MarketingSubNav
-          ids={Object.keys(idToElementsMapping)}
-          renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
-          primaryColor={"darkgray"}
-          accentColor={"teal"}
-          buttonProps={{
-            children: Localizer.Seasons.MenuCTALabel,
-            url: RouteHelper.DestinyBuy(),
-            buttonType: "teal",
-          }}
-        />
-      </div>
+      <MarketingSubNav
+        ids={Object.keys(idToElementsMapping)}
+        renderLabel={(id) => Localizer.Destiny[`Submenu_${id}`]}
+        primaryColor={"darkgray"}
+        accentColor={"teal"}
+        buttonProps={{
+          children: Localizer.Seasons.MenuCTALabel,
+          url: RouteHelper.DestinyBuy(),
+          buttonType: "teal",
+        }}
+      />
 
       {/* Story */}
 
@@ -462,7 +459,7 @@ const SeasonOfTheHunt: React.FC<SeasonOfTheHuntProps> = (props) => {
 
       {/* Rewards */}
 
-      <div>
+      <div className={styles.overflowWrapper}>
         <div className={styles.seasonPassSection}>
           <MarketingContentBlock
             smallTitle={Localizer.Destiny.submenu_rewards}
