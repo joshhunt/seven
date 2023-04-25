@@ -112,10 +112,11 @@ export default class DestinyBuyInternal extends React.Component<
       (product) => product.landingPageCategory === bundlesCategoryName
     );
 
+    //url is ?version=Promo
     const params = new URLSearchParams(location.search);
-    const promoView = params.get("promo");
+    const promoView = params.get("version");
 
-    if (promoView === "true") {
+    if (promoView === "Promo") {
       return (
         <Grid
           className={styles.contentFrame}

@@ -13,11 +13,14 @@ import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 
 type S20HeroProps = {
   data?: any;
+  showCTA?: boolean;
   scrollToEvent: () => void;
 };
 
 export const S20Hero: React.FC<S20HeroProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
+
+  const { data, showCTA, scrollToEvent } = props ?? {};
 
   const {
     bg_desktop_poster,
@@ -26,8 +29,8 @@ export const S20Hero: React.FC<S20HeroProps> = (props) => {
     bg_mobile,
     logo,
     trailer_btn,
-    bug_group,
-  } = props.data ?? {};
+    cta,
+  } = data ?? {};
 
   const handleTrailerBtnClick = () => {
     YoutubeModal.show({ videoId: trailer_btn?.video_id });
@@ -81,14 +84,15 @@ export const S20Hero: React.FC<S20HeroProps> = (props) => {
           </div>
         </div>
       </div>
+      {showCTA ? <HeroCTA cta={cta} scrollToEvent={scrollToEvent} /> : null}
     </div>
   );
 };
 
-const HeroBug: React.FC<any & { scrollToEvent: () => void }> = (props) => {
-  const { mobile } = useDataStore(Responsive);
+const HeroCTA: React.FC<any & { scrollToEvent: () => void }> = (props) => {
+  const { scrollToEvent, cta } = props;
 
-  const { scrollToEvent, icon, label, bg } = props;
+  const { graphic, logo, text } = cta || {};
 
   return (
     <div className={styles.bugWrapper}>
@@ -96,11 +100,11 @@ const HeroBug: React.FC<any & { scrollToEvent: () => void }> = (props) => {
         className={styles.bugContent}
         onClick={scrollToEvent}
         style={{
-          backgroundImage: bg ? `url(${bg.url})` : undefined,
+          backgroundImage: graphic ? `url(${graphic.url})` : undefined,
         }}
       >
-        <img src={icon?.url} alt={""} className={styles.bugIcon} />
-        <span dangerouslySetInnerHTML={sanitizeHTML(label)} />
+        <img src={logo?.url} alt={""} className={styles.bugIcon} />
+        <span dangerouslySetInnerHTML={sanitizeHTML(text)} />
         <DestinyArrows
           classes={{
             root: styles.arrows,

@@ -36,6 +36,16 @@
     "path": "/7/en/BungieTech/article/articleUrl?"
   },
   {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "Index",
+    "params": {
+      "path": ":clanId"
+    },
+    "path": "/7/en/Clan/:clanId"
+  },
+  {
     "areaName": "Clans",
     "areaObjectName": "Clans",
     "componentImportPath": "@Areas/Clans/ClansArea",
@@ -244,6 +254,14 @@
     "action": "GameHistory",
     "params": {},
     "path": "/7/en/Destiny/GameHistory"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "Home",
+    "params": {},
+    "path": "/7/en/Destiny/Home"
   },
   {
     "areaName": "Destiny",

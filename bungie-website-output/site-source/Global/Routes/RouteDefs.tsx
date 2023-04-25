@@ -19,6 +19,7 @@ export class RouteDefs {
     Admin: "Admin",
     BeyondLight: "BeyondLight",
     BungieTech: "BungieTech",
+    Clan: "Clan",
     Clans: "Clans",
     Codes: "Codes",
     Collections: "Collections",
@@ -65,6 +66,14 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "article", { path: "articleUrl?" }),
       ],
+    }),
+    Clan: new Area({
+      name: RouteDefs.AreaNames.Clan,
+      indexParams: { path: ":clanId" },
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/Clan/ClanArea" /* webpackChunkName: "Clan" */)
+      ),
+      routes: [(area) => new ActionRoute(area, "Index", { path: ":clanId" })],
     }),
     Clans: new Area({
       name: RouteDefs.AreaNames.Clans,
@@ -130,6 +139,7 @@ export class RouteDefs {
           import("@Areas/Destiny/DestinyArea" /* webpackChunkName: "Destiny" */)
       ),
       routes: [
+        (area) => new ActionRoute(area, "Home"),
         (area) => new ActionRoute(area, "ProductPage"),
         (area) => new ActionRoute(area, "Buy"),
         (area) =>

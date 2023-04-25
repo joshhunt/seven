@@ -100,6 +100,7 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
     "story_section.content",
     "activities_section.content",
     "event_section.content",
+    "free_for_all_section.content",
     "gear_section.content",
     "season_pass_section.content",
     "bungie_rewards_section.content",
@@ -149,6 +150,7 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
     story_section,
     activities_section,
     event_section,
+    free_for_all_section,
     gear_section,
     season_pass_section,
     bungie_rewards_section,
@@ -180,7 +182,11 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
 
       <div className={styles.pageFixedContent}>
         {/* HERO */}
-        <S20Hero data={hero} scrollToEvent={scrollToEventSection} />
+        <S20Hero
+          data={hero}
+          scrollToEvent={scrollToEventSection}
+          showCTA={free_for_all_section?.display_free_for_all_section}
+        />
 
         {/* SUB NAV */}
         {paidMediaPlatformBar ? (
@@ -295,6 +301,67 @@ const SeasonOfDefiance = (props: SeasonOfDefianceProps) => {
                 classes={{
                   root: styles.eventSectionBottomRoot,
                   textWrapper: styles.eventSectionTextWrapper,
+                }}
+              />
+            </div>
+          </>
+        ) : null}
+
+        {/* FREE FOR ALL */}
+        {free_for_all_section?.display_free_for_all_section ? (
+          <>
+            <div
+              ref={eventRef}
+              id={"free-for-all"}
+              className={classNames(styles.section, styles.freeForAll)}
+              style={{
+                backgroundImage: getResponsiveBg(free_for_all_section?.bg),
+              }}
+            >
+              <S20ProceduralContent
+                content={free_for_all_section?.content}
+                pmpComponents={{
+                  ...pmpComponentOverrides,
+                  pmp_section_header: (ref) => (
+                    <PmpSectionHeader
+                      data={ref?.data}
+                      classes={{
+                        root: styles.freeForAllSectionHeader,
+                        heading: classNames([
+                          styles.sectionHeading,
+                          styles.freeForAllSectionHeading,
+                        ]),
+                        smallTitle: styles.freeForAllSectionHeaderSmallTitle,
+                        btnWrapper: styles.freeForAllSectionHeaderBtnWrapper,
+                      }}
+                    />
+                  ),
+                  pmp_callout: (ref) => (
+                    <PmpCallout
+                      data={ref?.data}
+                      classes={{
+                        root: styles.freeForAllCallout,
+                        heading: styles.freeForAllCalloutHeading,
+                        asideImg: styles.freeForAllCalloutAsideImg,
+                        textWrapper: styles.freeForAllCalloutTextWrapper,
+                        blurb: styles.freeForAllCalloutBlurb,
+                      }}
+                    />
+                  ),
+                  pmp_stacked_info_thumb_blocks: (ref) => (
+                    <PmpStackedInfoThumbBlocks
+                      data={ref?.data}
+                      classes={{
+                        root: styles.freeForAllStackedBlocks,
+                        blockWrapper: styles.freeForAllStackedBlocksWrapper,
+                        thumbImg: styles.freeForAllStackedBlocksThumbImg,
+                        thumbWrapper:
+                          styles.freeForAllStackedBlocksThumbWrapper,
+                        blurb: styles.freeForAllStackedBlocksBlurb,
+                        textWrapper: styles.freeForAllStackedBlocksTextWrapper,
+                      }}
+                    />
+                  ),
                 }}
               />
             </div>

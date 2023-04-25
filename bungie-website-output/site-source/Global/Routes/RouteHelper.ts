@@ -526,16 +526,29 @@ export class RouteHelper {
     RouteDefs.Areas.BungieTech.getAction("Index")
   );
 
-  public static pressKitLocale =
-    Localizer.CurrentCultureName !== "en"
-      ? `/${Localizer.CurrentCultureName}`
-      : "";
+  public static pressKitLocale = () => {
+    switch (Localizer.CurrentCultureName) {
+      case "ja":
+        return "/ja-JP";
+      case "ko":
+        return "/ko-KR";
+      case "zh-chs":
+        return "/zh-CN";
+      case "zh-cht":
+        return "/zh-TW";
+      default:
+        return Localizer.CurrentCultureName !== "en"
+          ? `/${Localizer.CurrentCultureName}`
+          : "";
+    }
+  };
+
   public static PressKits = () =>
     ConfigUtils.GetParameter(
       "WebRenderer",
       "PressKitUrl",
       "https://press.bungie.com"
-    ) + RouteHelper.pressKitLocale;
+    ) + RouteHelper.pressKitLocale();
 
   /**
    *

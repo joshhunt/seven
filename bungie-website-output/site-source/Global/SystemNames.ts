@@ -121,4 +121,5 @@ export const SystemNames = {
   StadiaSunsetAlerts: "StadiaSunsetAlerts",
   Fireteams: "ClanFireteams",
   ReactFireteamUI: "ReactFireteamUI",
+  ClanReactUI: "ClanReactUI",
 } as const;

@@ -37,11 +37,9 @@ export const FireteamCreationTime: React.FC<FireteamCreationTimeProps> = (
       } else {
         if (seconds < 3600) {
           return `${Math.round(seconds / 60)}${timeLoc.MinutesLetter}`;
-        } else {
-          if (seconds < 86400) {
-            return `${Math.round(seconds / 60 / 24)}${timeLoc.HoursLetter}`;
-          }
         }
+
+        return `${Math.round(seconds / 60 / 60)}${timeLoc.HoursLetter}`;
       }
     }
 
