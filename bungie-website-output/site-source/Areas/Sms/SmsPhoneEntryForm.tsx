@@ -34,7 +34,8 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
     setLoading(true);
     setError("");
 
-    window.dataLayer.push({ event: "sms_add_phone_submit" });
+    window.dataLayer &&
+      window.dataLayer.push({ event: "sms_add_phone_submit" });
 
     Platform.UserService.AddPhoneNumber(phone)
       .then((response) => {
