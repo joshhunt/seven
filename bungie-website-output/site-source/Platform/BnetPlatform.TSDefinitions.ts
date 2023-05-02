@@ -6158,6 +6158,8 @@ export declare namespace DestinyDefinitions {
     itemHash: number;
 
     activeUnlockHash: number;
+
+    visibleUnlockExpressions: DestinyUnlockExpressionDefinition[];
   }
 
   export interface DestinyActivityModifierDefinition {

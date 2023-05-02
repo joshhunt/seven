@@ -181,7 +181,7 @@ export class ApiIntermediary {
         : queryString
       ).split("&");
       for (let i = 0; i < pairs.length; i++) {
-        let pair = pairs[i].split("=");
+        let pair = pairs[i].split(/=(.*)/s);
         query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
       }
       return query;

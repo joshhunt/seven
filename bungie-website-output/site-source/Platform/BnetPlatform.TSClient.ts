@@ -2771,6 +2771,8 @@ export declare namespace GroupsV2 {
 
     features: GroupsV2.GroupFeatures;
 
+    remoteGroupId?: string;
+
     clanInfo: GroupsV2.GroupV2ClanInfoAndInvestment;
   }
 
@@ -2959,6 +2961,8 @@ export declare namespace GroupsV2 {
     membershipOption: Globals.MembershipOption;
 
     capabilities: Globals.Capabilities;
+
+    remoteGroupId?: string;
 
     clanInfo: GroupsV2.GroupV2ClanInfo;
 
@@ -15495,6 +15499,8 @@ export declare namespace Artifacts {
     itemHash: number;
 
     isActive: boolean;
+
+    isVisible: boolean;
   }
 
   /**

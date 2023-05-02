@@ -2388,7 +2388,7 @@ export enum DestinyRecordState {
   ObjectiveNotCompleted = 4,
   /**
 		If this is set, the game recommends that you replace the display text of this Record with 
-		DestinyRecordDefinition.stateInfo.obscuredString.
+		DestinyRecordDefinition.stateInfo.obscuredDescription.
 		*/
   Obscured = 8,
   /**

@@ -19,11 +19,11 @@ const ZendeskAuth: React.FC<ZendeskAuthProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const queryString = new URLSearchParams(window.location.search);
   const returnToValue = queryString?.get("return_to");
-
+  const returnToKey = "return_to=";
   const [error, setError] = useState<PlatformError>();
 
   const redirectToZendesk = () => {
-    Platform.UserService.ZendeskHelpAuthenticate(returnToValue)
+    Platform.UserService.ZendeskHelpAuthenticate(returnToKey + returnToValue)
       .then((result) => {
         if (result?.length) {
           window.location.href = result;
