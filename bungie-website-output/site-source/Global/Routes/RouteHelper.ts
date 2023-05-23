@@ -18,6 +18,7 @@ import {
   PresentationNodeParams,
   IFireteamSearchParams,
   IFireteamParams,
+  IClanParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -308,6 +309,9 @@ export class RouteHelper {
    * Destiny Links
    *
    * */
+  public static DestinyHome = BasicReactPath(
+    RouteDefs.Areas.Destiny.getAction("Index")
+  );
   public static News = BasicReactPath(RouteDefs.Areas.News.getAction("Index"));
   public static NewsArticle = BasicReactPath<NewsParams>(
     RouteDefs.Areas.News.getAction("Article")
@@ -330,6 +334,34 @@ export class RouteHelper {
   );
   public static Clan = (clanId: string) =>
     LegacyPath(`/ClanV2?groupid=${clanId}`);
+  public static NewClanProfile = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("Profile")
+  );
+  public static NewClanSettings = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("Settings")
+  );
+  public static NewClanInvitations = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("Invitations")
+  );
+  public static NewClanCultureSettings = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("CultureFields")
+  );
+  public static NewClanGeneralSettings = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("GeneralSettings")
+  );
+  public static NewClanBanned = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("Banned")
+  );
+  public static NewClanEditBanner = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("EditBanner")
+  );
+  public static NewClanAdminHistory = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("AdminHistory")
+  );
+  public static NewClanEditHistory = BasicReactPath<IClanParams>(
+    RouteDefs.Areas.Clan.getAction("EditHistory")
+  );
+
   public static Fireteams = LegacyPathWithQuery(
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );
@@ -466,6 +498,9 @@ export class RouteHelper {
   );
   public static SeasonOfDefiance = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfDefiance")
+  );
+  public static SeasonOfTheDeep = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheDeep")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(

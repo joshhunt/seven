@@ -1141,6 +1141,20 @@ export declare namespace Queries {
     useTotalResults: boolean;
   }
 
+  export interface SearchResultGroupEditHistory {
+    results: GroupsV2.GroupEditHistory[];
+
+    totalResults: number;
+
+    hasMore: boolean;
+
+    query: Queries.PagedQuery;
+
+    replacementContinuationToken: string;
+
+    useTotalResults: boolean;
+  }
+
   export interface SearchResultGroupMemberApplication {
     results: GroupsV2.GroupMemberApplication[];
 
@@ -3225,6 +3239,30 @@ export declare namespace GroupsV2 {
     bungieNetUserInfo: User.UserInfoCard;
 
     destinyUserInfo: GroupsV2.GroupUserInfoCard;
+  }
+
+  export interface GroupEditHistory {
+    groupId: string;
+
+    name: string;
+
+    nameEditors?: string;
+
+    about: string;
+
+    aboutEditors?: string;
+
+    motto: string;
+
+    mottoEditors?: string;
+
+    clanCallsign: string;
+
+    clanCallsignEditors?: string;
+
+    editDate?: string;
+
+    groupEditors: User.UserInfoCard[];
   }
 
   export interface GroupApplicationResponse {
@@ -24072,6 +24110,29 @@ class GroupV2ServiceInternal {
       optionalQueryAppend,
       "GroupV2",
       "GetBannedMembersOfGroup",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Get the list of edits made to a given group.  Only accessible to group Admins and above.
+   * @param groupId Group ID whose edit history you are fetching
+   * @param currentPage Page number (starting with 1). Each page has a fixed size of 50 entries.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetGroupEditHistory = (
+    groupId: string,
+    currentPage: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Queries.SearchResultGroupEditHistory> =>
+    ApiIntermediary.doGetRequest(
+      `/GroupV2/${e(groupId)}/EditHistory/`,
+      [["currentPage", currentPage]],
+      optionalQueryAppend,
+      "GroupV2",
+      "GetGroupEditHistory",
       undefined,
       clientState
     );

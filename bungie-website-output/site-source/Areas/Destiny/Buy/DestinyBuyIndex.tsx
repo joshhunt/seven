@@ -34,6 +34,7 @@ import classNames from "classnames";
 import React from "react";
 import styles from "./DestinyBuyIndex.module.scss";
 import { DestinyBuyCoverCard } from "./Shared/DestinyBuyCoverCard";
+import BuyFlowDescriptiveProductCard from "@Areas/Destiny/Buy/ABTests/Components/BuyFlowDescriptiveProductCard";
 
 interface IDestinyBuyIndexProps {}
 
@@ -380,13 +381,21 @@ const PaidContent = ({
   bundleProducts,
   skuConfig,
 }: IPaidContent) => {
+  const params = new URLSearchParams(location.search);
+  const promoView = params.get("version");
+  const isDescriptionPromo = promoView === "description";
+
   return (
     <>
       <div className={styles.borderTop}>
         <div className={styles.sectionTitle}>{Localizer.Buyflow.Releases}</div>
       </div>
 
-      <div className={styles.coverCards}>
+      <div
+        className={classNames(styles.coverCards, {
+          [styles.testDescriptionCardContainer]: isDescriptionPromo,
+        })}
+      >
         {expansionProducts.map((productFamily, i) => {
           const productIsOnSale =
             skuConfig &&
@@ -396,7 +405,7 @@ const PaidContent = ({
           const saleInformation =
             Localizer.Sales[productFamily.productFamilyTag];
 
-          return (
+          return !isDescriptionPromo ? (
             <GridCol cols={3} mobile={6} key={i}>
               <DestinyBuyCoverCard productFamily={productFamily}>
                 <ProductFamilyTitles
@@ -407,6 +416,12 @@ const PaidContent = ({
                 />
               </DestinyBuyCoverCard>
             </GridCol>
+          ) : (
+            <BuyFlowDescriptiveProductCard
+              product={productFamily}
+              isOnSale={productIsOnSale}
+              saleInformation={saleInformation}
+            />
           );
         })}
       </div>
@@ -415,7 +430,11 @@ const PaidContent = ({
         <div className={styles.sectionTitle}>{Localizer.Buyflow.Bundles}</div>
       </div>
 
-      <div className={classNames(styles.coverCards, styles.bundleCards)}>
+      <div
+        className={classNames(styles.coverCards, styles.bundleCards, {
+          [styles.testDescriptionCardContainer]: isDescriptionPromo,
+        })}
+      >
         {bundleProducts.map((productFamily, i) => {
           const productIsOnSale =
             skuConfig &&
@@ -425,7 +444,7 @@ const PaidContent = ({
           const saleInformation =
             Localizer.Sales[productFamily.productFamilyTag];
 
-          return (
+          return !isDescriptionPromo ? (
             <GridCol cols={3} mobile={6} key={i}>
               <DestinyBuyCoverCard productFamily={productFamily}>
                 <ProductFamilyTitles
@@ -436,6 +455,12 @@ const PaidContent = ({
                 />
               </DestinyBuyCoverCard>
             </GridCol>
+          ) : (
+            <BuyFlowDescriptiveProductCard
+              product={productFamily}
+              isOnSale={productIsOnSale}
+              saleInformation={saleInformation}
+            />
           );
         })}
       </div>

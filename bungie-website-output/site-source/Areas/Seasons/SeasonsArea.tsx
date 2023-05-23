@@ -144,6 +144,15 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
           )}
         />
         <Route
+          path={RouteDefs.Areas.Seasons.getAction("SeasonOfTheDeep").path}
+          component={createAsyncComponent(
+            () =>
+              import(
+                "./ProductPages/Season21/SeasonOfTheDeep" /* webpackChunkName: "Season21" */
+              )
+          )}
+        />
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("Events").path}
           component={EventsRouter}
         />

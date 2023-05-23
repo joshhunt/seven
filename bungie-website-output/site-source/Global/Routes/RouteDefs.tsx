@@ -69,11 +69,23 @@ export class RouteDefs {
     }),
     Clan: new Area({
       name: RouteDefs.AreaNames.Clan,
-      indexParams: { path: ":clanId" },
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Clan/ClanArea" /* webpackChunkName: "Clan" */)
       ),
-      routes: [(area) => new ActionRoute(area, "Index", { path: ":clanId" })],
+      routes: [
+        (area) => new ActionRoute(area, "Profile", { path: ":clanId" }),
+        (area) => new ActionRoute(area, "Settings", { path: ":clanId" }),
+        (area) => new ActionRoute(area, "CultureFields", { path: ":clanId" }),
+        (area) => new ActionRoute(area, "GeneralSettings", { path: ":clanId" }),
+        (area) => new ActionRoute(area, "EditBanner", { path: ":clanId" }),
+        (area) =>
+          new ActionRoute(area, "AdminHistory", { path: ":clanId/:page?" }),
+        (area) =>
+          new ActionRoute(area, "EditHistory", { path: ":clanId/:page?" }),
+        (area) => new ActionRoute(area, "Banned", { path: ":clanId/:page?" }),
+        (area) =>
+          new ActionRoute(area, "Invitations", { path: ":clanId/:page?" }),
+      ],
     }),
     Clans: new Area({
       name: RouteDefs.AreaNames.Clans,
@@ -139,7 +151,7 @@ export class RouteDefs {
           import("@Areas/Destiny/DestinyArea" /* webpackChunkName: "Destiny" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Home"),
+        (area) => new ActionRoute(area, "index"),
         (area) => new ActionRoute(area, "ProductPage"),
         (area) => new ActionRoute(area, "Buy"),
         (area) =>
@@ -336,6 +348,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfPlunder"),
         (area) => new ActionRoute(area, "SeasonOfTheSeraph"),
         (area) => new ActionRoute(area, "SeasonOfDefiance"),
+        (area) => new ActionRoute(area, "SeasonOfTheDeep"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),

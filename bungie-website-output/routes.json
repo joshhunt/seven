@@ -39,11 +39,91 @@
     "areaName": "Clan",
     "areaObjectName": "Clan",
     "componentImportPath": "@Areas/Clan/ClanArea",
-    "action": "Index",
+    "action": "AdminHistory",
+    "params": {
+      "path": ":clanId/:page?"
+    },
+    "path": "/7/en/Clan/AdminHistory/:clanId/:page?"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "Banned",
+    "params": {
+      "path": ":clanId/:page?"
+    },
+    "path": "/7/en/Clan/Banned/:clanId/:page?"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "CultureFields",
     "params": {
       "path": ":clanId"
     },
-    "path": "/7/en/Clan/:clanId"
+    "path": "/7/en/Clan/CultureFields/:clanId"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "EditBanner",
+    "params": {
+      "path": ":clanId"
+    },
+    "path": "/7/en/Clan/EditBanner/:clanId"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "EditHistory",
+    "params": {
+      "path": ":clanId/:page?"
+    },
+    "path": "/7/en/Clan/EditHistory/:clanId/:page?"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "GeneralSettings",
+    "params": {
+      "path": ":clanId"
+    },
+    "path": "/7/en/Clan/GeneralSettings/:clanId"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "Invitations",
+    "params": {
+      "path": ":clanId/:page?"
+    },
+    "path": "/7/en/Clan/Invitations/:clanId/:page?"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "Profile",
+    "params": {
+      "path": ":clanId"
+    },
+    "path": "/7/en/Clan/Profile/:clanId"
+  },
+  {
+    "areaName": "Clan",
+    "areaObjectName": "Clan",
+    "componentImportPath": "@Areas/Clan/ClanArea",
+    "action": "Settings",
+    "params": {
+      "path": ":clanId"
+    },
+    "path": "/7/en/Clan/Settings/:clanId"
   },
   {
     "areaName": "Clans",
@@ -140,6 +220,14 @@
     "action": "Recap",
     "params": {},
     "path": "/7/en/CrossSave/Recap"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Destiny"
   },
   {
     "areaName": "Destiny",
@@ -254,14 +342,6 @@
     "action": "GameHistory",
     "params": {},
     "path": "/7/en/Destiny/GameHistory"
-  },
-  {
-    "areaName": "Destiny",
-    "areaObjectName": "Destiny",
-    "componentImportPath": "@Areas/Destiny/DestinyArea",
-    "action": "Home",
-    "params": {},
-    "path": "/7/en/Destiny/Home"
   },
   {
     "areaName": "Destiny",
@@ -703,6 +783,14 @@
     "action": "SeasonOfTheChosen",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheChosen"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheDeep",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheDeep"
   },
   {
     "areaName": "Seasons",

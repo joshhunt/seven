@@ -86,9 +86,13 @@ class SeasonHeader extends React.Component<Props, ISeasonHeaderState> {
         : Localizer.Seasons.SeasonComplete;
     };
 
+    if (!seasonOnPage) {
+      return null;
+    }
+
     return (
       <div className={styles.seasonHeader}>
-        <h2>{seasonOnPage.title}</h2>
+        <h2>{seasonOnPage?.title}</h2>
         <p>{getTimeRemainingString()}</p>
       </div>
     );
