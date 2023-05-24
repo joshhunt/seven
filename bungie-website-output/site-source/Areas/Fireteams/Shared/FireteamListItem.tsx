@@ -129,7 +129,10 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
         <span
           className={styles.activityIcon}
           style={{
-            backgroundImage: `url(${fireteamActivityDef.imagePath})`,
+            backgroundImage: `url(${
+              fireteamActivityDef?.imagePath ??
+              "/img/theme/destiny/icons/fireteams/fireteamAnything.png"
+            })`,
           }}
         />
         <div className={styles.fireteamContent}>

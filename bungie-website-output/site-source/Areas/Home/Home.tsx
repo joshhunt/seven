@@ -1,109 +1,239 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
-import { Featured } from "@Areas/Home/Featured";
-import { Hero } from "@Areas/Home/Hero";
-import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
-import { Localizer } from "@bungie/localization";
+import React, { useEffect, useState } from "react";
+import classNames from "classnames";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Button } from "@UIKit/Controls/Button/Button";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
-import { useCSWebpImages } from "@Utilities/CSUtils";
-import React, { useEffect, useMemo, useState } from "react";
-import { BnetStackHomePage } from "../../Generated/contentstack-types";
-import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { Recent } from "./Recent";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
+import {
+  CalloutSection,
+  Navigation,
+  SlimFooter,
+  ClipPathWrapper,
+} from "./Components";
+import {
+  LinkedInIcon,
+  InstagramIcon,
+  YouTubeIcon,
+  TwitterIcon,
+  TwitchIcon,
+  FacebookIcon,
+} from "./Components/SocialIcons";
+
 import styles from "./Home.module.scss";
 
 const Home = () => {
-  const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const [homePageData, setHomePageData] = useState<BnetStackHomePage>();
-  const [supportsWebP, setSupportsWebP] = useState(true);
+  const navLoc = Localizer.Nav;
+  const communityLoc = Localizer.Community;
+  const [isTopOfPage, setIsTopOfPage] = useState(true);
 
-  const responseCacheObject: Record<string, BnetStackHomePage> = {};
-
+  /* Detect if user has scrolled from top */
   useEffect(() => {
-    if (responseCacheObject[locale]) {
-      setHomePageData(responseCacheObject[locale]);
-    } else {
-      ContentStackClient()
-        .ContentType("home_page")
-        .Entry("blt801edf5507a32bf5")
-        .language(locale)
-        .includeReference("featured.news_article.reference")
-        .toJSON()
-        .fetch()
-        .then((result) => {
-          responseCacheObject[locale] = result;
-          setHomePageData(result);
-        });
-    }
+    const getSetScrollPos = () => {
+      if (window?.scrollY > 0) {
+        setIsTopOfPage(false);
+      } else {
+        setIsTopOfPage(true);
+      }
+    };
+    const onScroll = () => window?.requestAnimationFrame(getSetScrollPos);
 
-    BrowserUtils.supportsWebp().then((supportsWebp) =>
-      setSupportsWebP(supportsWebp)
-    );
-  }, [locale]);
+    window.addEventListener("scroll", onScroll);
 
-  const {
-    featured,
-    title,
-    button_one_label,
-    button_one_link,
-    button_two_label,
-    button_two_link,
-    hero_image,
-    mobile_hero_image,
-    hero_video,
-    subtitle,
-    title_as_image,
-  } = homePageData ?? {};
+    return () => window?.removeEventListener("scroll", onScroll);
+  }, [isTopOfPage]);
 
-  const images = useCSWebpImages(
-    useMemo(
-      () => ({
-        heroBg: hero_image?.url,
-        mobileBg: mobile_hero_image?.url,
-        titleImg: title_as_image?.url,
-      }),
-      [hero_image, mobile_hero_image, title_as_image]
-    )
-  );
+  /* Composing data here to keep modification central to one file*/
+  const SECTION_DATA = [
+    {
+      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_01.jpg",
+      logoImage: {
+        alt: navLoc.Destiny,
+        img: "7/ca/destiny/logos/logo_destiny2.png",
+      },
+      buttonData: [
+        {
+          href: RouteHelper.DestinyHome(),
+          label: Localizer.Buyflow.LearnMoreLinkLabel,
+          buttonColor: "blue" as "blue",
+        },
+      ],
+      esrbLogo: {
+        img: communityLoc.DestinyTwoRating,
+        alt: communityLoc.ratedtforteen,
+        href: communityLoc.ratingurl,
+        note: [
+          communityLoc.RatingTBlood,
+          communityLoc.RatingTLanguage,
+          communityLoc.RatingTViolence,
+        ],
+      },
+    },
+    {
+      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_02.jpg",
+      logoImage: {
+        alt: navLoc.Marathon,
+        img: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_02_L.svg",
+      },
+      buttonData: [
+        {
+          href:
+            "https://www.marathonthegame.com?CID=bungie_net:web:bnet:bnet_home:bnet_home:bng:2024_05",
+          label: Localizer.Buyflow.LearnMoreLinkLabel,
+          buttonColor: "green" as "green",
+        },
+      ],
+      esrbLogo: {
+        img: communityLoc.RatingPendingLogo,
+        alt: communityLoc.RatingPending,
+        href: communityLoc.RatingGuide,
+      },
+      classes: {
+        logoClass: styles.specialLogo,
+      },
+    },
+    {
+      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_03.jpg",
+      sectionTitle: navLoc.Careers,
+      logoImage: {
+        alt: "",
+        img: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_p.png",
+      },
+      buttonData: [
+        {
+          href: RouteHelper.Careers("jobs"),
+          label: communityLoc.ExploreJobs,
+          buttonColor: "blue" as "blue",
+        },
+        {
+          href: RouteHelper.Careers(),
+          label: communityLoc.AboutBungie,
+          buttonColor: "grey" as "grey",
+        },
+      ],
+      classes: {
+        logoClass: styles.careersLogo,
+        buttonContainer: styles.careersButtons,
+      },
+    },
+  ];
 
-  const bnetTitle = "Bungie.net";
+  const FOOTER_DATA = {
+    /* The Instagram and Facebook Font Awesome icons are old - needs to be updated; Using SVGs for now */
+    /* Bungie social accounts are not regionalized */
+    socialLinks: [
+      {
+        href: "https://twitter.com/bungie",
+        alt: communityLoc.BungieTwitter,
+        node: <TwitterIcon title={communityLoc.BungieTwitter} />,
+      },
+      {
+        href: "https://www.youtube.com/user/Bungie",
+        alt: communityLoc.BungieYoutube,
+        node: <YouTubeIcon title={communityLoc.BungieYoutube} />,
+      },
+      {
+        href: "https://www.instagram.com/bungie/",
+        alt: communityLoc.BungieInstagram,
+        node: <InstagramIcon title={communityLoc.BungieInstagram} />,
+      },
+      {
+        href: "https://www.facebook.com/Bungie",
+        alt: communityLoc.BungieFacebook,
+        node: <FacebookIcon title={communityLoc.BungieFacebook} />,
+      },
+      {
+        href: "https://www.twitch.tv/bungie",
+        alt: communityLoc.BungieTwitch,
+        node: <TwitchIcon title={communityLoc.BungieTwitch} />,
+      },
+      {
+        href: "https://www.linkedin.com/company/bungie",
+        alt: communityLoc.BungieLinkedIn,
+        node: <LinkedInIcon title={communityLoc.BungieLinkedIn} />,
+      },
+    ],
+    links: [
+      {
+        href: RouteHelper.DestinyHome(),
+        label: navLoc.NavTopGameCollapse,
+      },
+      {
+        href:
+          "https://www.marathonthegame.com?CID=bungie_net:web:bnet_home:bnet_footer:marathon:bng:2024_05",
+        label: navLoc.Marathon,
+      },
+      {
+        href: RouteHelper.Careers(),
+        label: navLoc.Careers,
+      },
+      {
+        href: RouteHelper.BungieStore(),
+        label: navLoc.Store,
+      },
+      {
+        href: RouteHelper.Foundation(),
+        label: navLoc.Foundation,
+      },
+      {
+        href: RouteHelper.LegalSLA(),
+        label: navLoc.Legal,
+      },
+      {
+        href: RouteHelper.LegalTermsOfUse(),
+        label: navLoc.Terms,
+      },
+      {
+        href: RouteHelper.PressKits(),
+        label: navLoc.Press,
+      },
+    ],
+    siteLogo: {
+      img: "/7/ca/bungie/icons/logos/bungienet/bungie_logo_basic.svg",
+      href: RouteHelper.Home,
+      alt: navLoc.Bungie,
+    },
+  };
+
+  const BUNGIE_TITLE = navLoc.BungieHomeSeoTitle;
+  const BUNGIE_DESC = navLoc.BungieHomeSeoDesc;
 
   return (
     <>
       <BungieHelmet
-        title={bnetTitle}
-        image={hero_image?.url || BungieHelmet.DefaultBoringMetaImage}
+        title={BUNGIE_TITLE}
+        description={BUNGIE_DESC}
+        image={"7/ca/bungie/bgs/bungie_home_og.jpg"}
       >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        <body
+          className={classNames(
+            SpecialBodyClasses(BodyClasses.NoSpacer | BodyClasses.HideMainNav),
+            styles.specialWrapper
+          )}
+        />
+        <link rel="stylesheet" href="https://use.typekit.net/php2xww.css" />
       </BungieHelmet>
-      {homePageData && (
-        <div>
-          <Hero
-            heroData={{
-              hero_image: images?.heroBg,
-              mobile_hero_image: images?.mobileBg,
-              hero_video,
-              title,
-              title_as_image: images?.titleImg,
-              subtitle,
-              button_one: { label: button_one_label, link: button_one_link },
-              button_two: { label: button_two_label, link: button_two_link },
-            }}
-          />
-          <Featured featured={featured} />
-          <Recent />
-          <div className={styles.buttonContainer}>
-            <Button buttonType={"white"} url={RouteHelper.News()}>
-              {Localizer.news.morenews}
-            </Button>
-          </div>
-        </div>
-      )}
+      <h1 className={styles.srOnly}>{navLoc.Bungie}</h1>
+      <div className={styles.homeWrapper}>
+        <Navigation isTopOfPage={isTopOfPage} />
+        {SECTION_DATA.map((section, index) => (
+          <ClipPathWrapper
+            clipPathOff={index === 0}
+            backgroundImage={section.backgroundImage}
+            key={section?.logoImage?.img}
+          >
+            <CalloutSection {...section} />
+          </ClipPathWrapper>
+        ))}
+        <ClipPathWrapper
+          backgroundColor={"#000000"}
+          classes={{ wrapper: styles.footer }}
+        >
+          <SlimFooter {...FOOTER_DATA} />
+        </ClipPathWrapper>
+      </div>
     </>
   );
 };

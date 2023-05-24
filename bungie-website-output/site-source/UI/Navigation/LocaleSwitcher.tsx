@@ -98,6 +98,8 @@ class LocaleSwitcher extends React.Component<
       return (
         <div
           key={i}
+          role="option"
+          aria-selected={LocalizationState.currentCultureName === locale.name}
           className={optionClasses}
           onClick={() => this.onChange(locale.name)}
           data-locale={locale.name}
@@ -129,6 +131,8 @@ class LocaleSwitcher extends React.Component<
       this.props.classes?.options
     );
 
+    const validationLoc = Localizer.validationProperties;
+
     return (
       <div
         ref={this.wrapperRef}
@@ -138,7 +142,13 @@ class LocaleSwitcher extends React.Component<
         <div className={triggerClasses}>
           <MdLanguage />
         </div>
-        <div className={optionsClasses}>{options}</div>
+        <div
+          className={optionsClasses}
+          aria-label={validationLoc.preferredLanguage}
+          role="listbox"
+        >
+          {options}
+        </div>
       </div>
     );
   }

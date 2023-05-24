@@ -2,12 +2,12 @@
 // Copyright Bungie, Inc.
 
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
-import { ClanBannerDisplay } from "@Areas/User/ProfileComponents/ClanBanner";
-import { ProfileUtils } from "@Areas/User/ProfileComponents/ProfileUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { ClanBannerDisplay } from "@UI/Destiny/ClanBanner";
 import { useAsyncError } from "@Utilities/ReactUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import styles from "./Clan.module.scss";
 import React, { useEffect, useState } from "react";
 import { GroupsV2, Platform } from "@Platform";
@@ -26,7 +26,7 @@ export const Clan: React.FC<ClanProps> = (props) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUserClans"]);
   const destinyMembership = useDataStore(ProfileDestinyMembershipDataStore);
 
-  const isViewingSelf = ProfileUtils.IsViewingSelf(
+  const isViewingSelf = UserUtils.IsViewingSelf(
     props.membershipId,
     globalState,
     destinyMembership

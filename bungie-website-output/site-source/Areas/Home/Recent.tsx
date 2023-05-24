@@ -12,7 +12,7 @@ import { Logger } from "../../Global/Logger";
 import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
 import { TwitterFeed, TwitterScript } from "../../UI/Content/TwitterFeed";
 import { Grid, GridCol, IGridColProps } from "../../UI/UIKit/Layout/Grid/Grid";
-import { BasicNewsQuery } from "../../Utilities/ContentUtils";
+import { SpecifiedNewsQuery } from "../../Utilities/ContentUtils";
 import { NewsPreview } from "../News/NewsPreview";
 
 export const Recent = () => {
@@ -22,7 +22,12 @@ export const Recent = () => {
   const recentArticleLimit = 10;
 
   useEffect(() => {
-    BasicNewsQuery(locale, recentArticleLimit)
+    SpecifiedNewsQuery(
+      locale,
+      recentArticleLimit,
+      "category",
+      "community|destiny|updates"
+    )
       .toJSON()
       .find()
       .then((response) => {

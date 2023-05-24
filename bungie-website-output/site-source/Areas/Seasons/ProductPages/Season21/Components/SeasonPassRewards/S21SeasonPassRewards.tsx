@@ -12,7 +12,7 @@ import styles from "./S21SeasonPassRewards.module.scss";
 interface RewardsAndCalendar16Props
   extends D2DatabaseComponentProps<"DestinySeasonDefinition"> {}
 
-const RewardsAndCalendar20: React.FC<RewardsAndCalendar16Props> = ({
+const RewardsAndCalendar21: React.FC<RewardsAndCalendar16Props> = ({
   definitions,
 }) => {
   if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
@@ -31,6 +31,6 @@ const RewardsAndCalendar20: React.FC<RewardsAndCalendar16Props> = ({
   );
 };
 
-export default withDestinyDefinitions(RewardsAndCalendar20, {
+export default withDestinyDefinitions(RewardsAndCalendar21, {
   types: ["DestinySeasonDefinition"],
 });

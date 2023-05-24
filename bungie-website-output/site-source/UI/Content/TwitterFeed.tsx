@@ -88,7 +88,7 @@ export class TwitterFeed extends React.Component {
             "twitter-timeline-rendered",
             styles["twitter-timeline"]
           )}
-          href={`https://twitter.com/Bungie?ref_src=twsrc%5Etfw`}
+          href={`https://twitter.com/DestinyTheGame?ref_src=twsrc%5Etfw`}
           data-chrome="nofooter noheaders noborders"
           data-tweet-limit={2}
           data-width={"350px"}
@@ -96,7 +96,7 @@ export class TwitterFeed extends React.Component {
         />
         <Anchor
           className={styles.readMore}
-          url={`https://www.twitter.com/Bungie`}
+          url={`https://www.twitter.com/DestinyTheGame`}
         >
           {Localizer.News.ViewMore}
         </Anchor>

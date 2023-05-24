@@ -1,11 +1,8 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
-import clanStyles from "@Areas/Clan/Clan.module.scss";
-import {
-  PROGRESSION_HASH_CLAN_FITNESS_NIGHTFALL,
-  PROGRESSION_HASH_CLAN_FITNESS_RAID,
-} from "@Areas/Clan/Shared/ClanProgression";
+import clanStyles from "@Areas/Clan/ClanProfile.module.scss";
+import { ClanUtils } from "@Areas/Clan/Shared/ClanUtils";
 import { Localizer } from "@bungie/localization/Localizer";
 import { World } from "@Platform";
 import { FaMinus } from "@react-icons/all-files/fa/FaMinus";
@@ -21,10 +18,10 @@ export const OathKeeperScore: React.FC<OathKeeperScoreProps> = (props) => {
   const clansLoc = Localizer.Clans;
 
   const nightfallFitness = Object.entries(props.clanProgression).find(
-    ([k, v]) => k === PROGRESSION_HASH_CLAN_FITNESS_NIGHTFALL
+    ([k, v]) => k === ClanUtils.PROGRESSION_HASH_CLAN_FITNESS_NIGHTFALL
   );
   const raidFitness = Object.entries(props.clanProgression).find(
-    ([k, v]) => k === PROGRESSION_HASH_CLAN_FITNESS_RAID
+    ([k, v]) => k === ClanUtils.PROGRESSION_HASH_CLAN_FITNESS_RAID
   );
 
   const clanProgression = (

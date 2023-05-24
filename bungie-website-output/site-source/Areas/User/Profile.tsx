@@ -9,7 +9,6 @@ import { BungieFriend } from "@Areas/User/ProfileComponents/BungieFriend";
 import { InviteToClanButton } from "@Areas/User/ProfileComponents/InviteToClanButton";
 import { ProfileHeader } from "@Areas/User/ProfileComponents/ProfileHeader";
 import { ProfileUserSummary } from "@Areas/User/ProfileComponents/ProfileUserSummary";
-import { ProfileUtils } from "@Areas/User/ProfileComponents/ProfileUtils";
 import { SendMessage } from "@Areas/User/ProfileComponents/SendMessage";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -83,7 +82,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
   const loggedInUserMembershipId = UserUtils.loggedInUserMembershipId(
     globalState
   );
-  const isSelf = ProfileUtils.IsViewingSelf(
+  const isSelf = UserUtils.IsViewingSelf(
     membershipId,
     globalState,
     destinyMembership

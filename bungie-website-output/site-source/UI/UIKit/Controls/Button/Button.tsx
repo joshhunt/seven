@@ -41,6 +41,8 @@ export interface IButtonProps extends DOMAttributes<HTMLElement> {
   sameTab?: boolean;
   /** Used for GTM*/
   analyticsId?: string;
+  /** If true, button type is type="submit" */
+  submit?: boolean;
 }
 
 export interface DefaultButtonProps {
@@ -88,6 +90,7 @@ export class Button extends React.Component<ButtonProps> {
       caps,
       url,
       analyticsId,
+      submit,
       ...rest
     } = this.props;
 
@@ -141,8 +144,11 @@ export class Button extends React.Component<ButtonProps> {
     const props = {
       ...rest,
       url,
+      submit,
       className: classes,
     };
+
+    const inputButtonType = submit ? "submit" : "button";
 
     return url ? (
       <Anchor
@@ -158,6 +164,7 @@ export class Button extends React.Component<ButtonProps> {
         className={classes}
         disabled={disabled}
         data-analytics-id={analyticsId}
+        type={inputButtonType}
         {...rest}
       >
         {inner}

@@ -5,7 +5,7 @@ import { InvitationActionButton } from "@Areas/Clan/Shared/InvitationActionButto
 import { JoinButton } from "@Areas/Clan/Shared/JoinButton";
 import { LeaveButton } from "@Areas/Clan/Shared/LeaveButton";
 import { RescindButton } from "@Areas/Clan/Shared/RescindButton";
-import { BungieMembershipType } from "@Enum";
+import { BungieMembershipType, MembershipOption } from "@Enum";
 import { GroupsV2 } from "@Platform";
 import React from "react";
 
@@ -19,6 +19,7 @@ interface ProfileClanMembershipButtonsProps {
       typeof BungieMembershipType
     >]?: GroupsV2.GroupPotentialMember;
   };
+  membershipOption: MembershipOption;
   membershipUpdated: () => void;
 }
 
@@ -44,12 +45,14 @@ export const ProfileClanMembershipButtons: React.FC<ProfileClanMembershipButtons
         clanId={props.clanId}
         potentialMemberMap={props.potentialMembershipMap}
         membershipMap={props.membershipMap}
+        membershipOption={props.membershipOption}
         callback={() => props.membershipUpdated()}
       />
       {/*invitations*/}
       <InvitationActionButton
         clanId={props.clanId}
         potentialClanMemberMap={props.potentialMembershipMap}
+        callback={() => props.membershipUpdated()}
       />
     </>
   );

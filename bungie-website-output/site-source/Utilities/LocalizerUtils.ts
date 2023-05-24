@@ -2,6 +2,16 @@ import { Localizer } from "@bungie/localization";
 import { DetailedError } from "@CustomErrors";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { Content } from "@Platform";
+import { French } from "flatpickr/dist/l10n/fr.js";
+import { Spanish } from "flatpickr/dist/l10n/es.js";
+import { German } from "flatpickr/dist/l10n/de.js";
+import { Italian } from "flatpickr/dist/l10n/it.js";
+import { Japanese } from "flatpickr/dist/l10n/ja.js";
+import { Portuguese } from "flatpickr/dist/l10n/pt.js";
+import { Russian } from "flatpickr/dist/l10n/ru.js";
+import { Polish } from "flatpickr/dist/l10n/pl.js";
+import { Korean } from "flatpickr/dist/l10n/ko.js";
+import { Mandarin } from "flatpickr/dist/l10n/zh.js";
 
 export class LocalizerUtils {
   /**
@@ -132,4 +142,38 @@ export class LocalizerUtils {
 
     return num?.toLocaleString(serverLanguage);
   }
+
+  /**
+   * converts bnet locales to Flatpickr locales
+   */
+
+  public static convertLocaleToFlatpickrLocale = (loc: string) => {
+    if (Localizer.validLocales.some((l) => l.name === loc) && loc !== "en") {
+      switch (loc) {
+        case "fr":
+          return French;
+        case "es":
+          return Spanish;
+        case "de":
+          return German;
+        case "it":
+          return Italian;
+        case "ja":
+          return Japanese;
+        case "pt-br":
+          return Portuguese;
+        case "ru":
+          return Russian;
+        case "pl":
+          return Polish;
+        case "ko":
+          return Korean;
+        case "zh-cht":
+        case "zh-chs":
+          return Mandarin;
+      }
+    }
+
+    return null;
+  };
 }

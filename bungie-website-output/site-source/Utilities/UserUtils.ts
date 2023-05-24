@@ -3,6 +3,7 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { DetailedError } from "@CustomErrors";
 import * as Globals from "@Enum";
+import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalState,
   GlobalStateComponentProps,
@@ -622,5 +623,33 @@ export class UserUtils {
     );
 
     return uniqueClans ?? clans ?? [];
+  }
+
+  public static IsViewingSelf(
+    membershipId: string,
+    globalState: GlobalState<"loggedInUser">,
+    destinyMembership: DestinyMembershipDataStorePayload
+  ) {
+    const isLoggedIn =
+      UserUtils.isAuthenticated(globalState) && globalState?.loggedInUser;
+    const loggedInUserMembershipId = UserUtils.loggedInUserMembershipId(
+      globalState
+    );
+    const loggedInMIDIsCurrentMembershipMID =
+      loggedInUserMembershipId === membershipId;
+    const loggedInMIDIsPlatformMID = destinyMembership?.memberships?.some(
+      (m) => m.membershipId === loggedInUserMembershipId
+    );
+    const loggedInMIDIsBNetMID =
+      destinyMembership?.membershipData?.bungieNetUser?.membershipId ===
+      loggedInUserMembershipId;
+
+    // check mid against the bungienet account and the platform accounts
+    return (
+      isLoggedIn &&
+      (loggedInMIDIsCurrentMembershipMID ||
+        loggedInMIDIsPlatformMID ||
+        loggedInMIDIsBNetMID)
+    );
   }
 }

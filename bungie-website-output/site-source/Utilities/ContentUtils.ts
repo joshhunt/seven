@@ -69,3 +69,32 @@ export const BasicNewsQuery = (
     .limit(articleLimit)
     .toJSON();
 };
+
+/*
+ * This function allows you to filter a news query by specific items using regex
+ * Example: If you are attempting to filter by a single word:
+ * .regex("category", "community")
+ *
+ * Example: If you are attempting to filter by many words:
+ * .regex("category", "community|destiny|updates")
+ * .regex("title", "demo|destiny")
+ *
+ *  */
+export const SpecifiedNewsQuery = (
+  locale: string,
+  articleLimit: number,
+  key: string,
+  regexFilter: string,
+  currentPage = 1
+) => {
+  return ContentStackClient()
+    .ContentType("news_article")
+    .Query()
+    .regex(key, regexFilter)
+    .language(locale)
+    .descending("date")
+    .includeCount()
+    .skip((currentPage - 1) * articleLimit)
+    .limit(articleLimit)
+    .toJSON();
+};

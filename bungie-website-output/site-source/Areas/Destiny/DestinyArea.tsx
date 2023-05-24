@@ -1,5 +1,6 @@
 import BeyondLight from "@Areas/Destiny/BeyondLight/BeyondLight";
 import { BeyondLightFlickerWrapper } from "@Areas/Destiny/BeyondLight/BeyondLightFlickerWrapper";
+import Home from "@Areas/Destiny/Home";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { Redirect, Route, RouteComponentProps } from "react-router-dom";
 import React from "react";
@@ -123,9 +124,7 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           <Route path={companionPath} component={Companion} />
           <Route path={infoFlowUrl} component={EventsRouter} />
           <Route path={revealPath} component={Reveal} />
-          <Route path={indexPath}>
-            <Redirect to={newLightUrl} />
-          </Route>
+          <Route path={indexPath} component={Home} />
         </SwitchWithErrors>
       </React.Fragment>
     );

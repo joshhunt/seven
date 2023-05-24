@@ -63,17 +63,17 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
     const facebookUrl = ConfigUtils.GetParameter(
       SystemNames.FacebookUrlByLocale,
       userLanguage,
-      "https://www.facebook.com/Bungie"
+      "https://www.facebook.com/DestinyTheGame"
     );
     const twitterUrl = ConfigUtils.GetParameter(
       SystemNames.TwitterUrlByLocale,
       userLanguage,
-      "https://twitter.com/bungie"
+      "https://twitter.com/DestinyTheGame"
     );
     const instagramUrl = ConfigUtils.GetParameter(
       SystemNames.InstagramUrlByLocale,
       userLanguage,
-      "https://www.instagram.com/bungie/"
+      "https://www.instagram.com/DestinyTheGame/"
     );
 
     const classes = classNames(styles.footer, {
@@ -199,10 +199,6 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 label={navLoc.Careers}
               />
               <FooterLink
-                url={RouteHelper.BungieNewsRoom()}
-                label={navLoc.BungieNewsRoom}
-              />
-              <FooterLink
                 url={RouteHelper.BungieTechBlog()}
                 label={navLoc.TechBlog}
               />
@@ -282,28 +278,28 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 <a
                   href={facebookUrl}
                   className="ir"
-                  title={Localizer.Community.BungieFacebook}
+                  title={Localizer.Community.DestinyFacebook}
                 />
               </li>
               <li className={styles.instagram}>
                 <a
                   href={instagramUrl}
                   className="ir"
-                  title={Localizer.Community.BungieInstagram}
+                  title={Localizer.Community.DestinyInstagram}
                 />
               </li>
               <li className={styles.twitter}>
                 <a
                   href={twitterUrl}
                   className="ir"
-                  title={Localizer.Community.BungieTwitter}
+                  title={Localizer.Community.DestinyTwitter}
                 />
               </li>
               <li className={styles.youtube}>
                 <a
-                  href="https://www.youtube.com/user/Bungie"
+                  href="https://www.youtube.com/user/destinygame"
                   className="ir"
-                  title={Localizer.Community.BungieYoutube}
+                  title={Localizer.Community.DestinyYoutube}
                 />
               </li>
               <li className={styles.twitch}>
@@ -311,6 +307,20 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                   href="https://www.twitch.tv/bungie"
                   className="ir"
                   title={Localizer.Community.BungieTwitch}
+                />
+              </li>
+              <li className={styles.tiktok}>
+                <a
+                  href="https://www.tiktok.com/@DestinyTheGame"
+                  className="ir"
+                  title={Localizer.Community.DestinyTikTok}
+                />
+              </li>
+              <li className={styles.discord}>
+                <a
+                  href="https://discord.gg/destinygame"
+                  className="ir"
+                  title={Localizer.Community.DestinyDiscord}
                 />
               </li>
               {Localizer.CurrentCultureName === "ru" && (

@@ -5,22 +5,17 @@ import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents
 import styles from "@Areas/User/Profile.module.scss";
 import { BungieView } from "@Areas/User/ProfileComponents/BungieView";
 import { DestinyView } from "@Areas/User/ProfileComponents/DestinyView";
-import { ProfileUtils } from "@Areas/User/ProfileComponents/ProfileUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Responses, User } from "@Platform";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { IProfileParams } from "@Routes/RouteParams";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,
 } from "@UI/Destiny/DestinyAccountWrapper";
-import DestinyActivityModesSelector from "@UI/Destiny/DestinyActivityModeSelector";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { Icon } from "@UIKit/Controls/Icon";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { useState } from "react";
 import { useHistory, useParams } from "react-router";
 

@@ -18,6 +18,7 @@ interface InvitationActionButtonProps {
       typeof BungieMembershipType
     >]?: GroupsV2.GroupPotentialMember;
   };
+  callback?: () => void;
 }
 
 export const InvitationActionButton: React.FC<InvitationActionButtonProps> = (
@@ -52,6 +53,7 @@ export const InvitationActionButton: React.FC<InvitationActionButtonProps> = (
       membershipId
     ).then(() => {
       //done - no message here
+      props.callback();
     });
   };
 
@@ -67,6 +69,7 @@ export const InvitationActionButton: React.FC<InvitationActionButtonProps> = (
       membershipType
     ).then(() => {
       //success
+      props.callback();
     });
   };
 

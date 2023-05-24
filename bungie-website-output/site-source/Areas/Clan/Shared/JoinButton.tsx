@@ -1,11 +1,11 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
-import SignIn from "@Areas/User/SignIn";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { BungieMembershipType } from "@Enum";
+import { BungieMembershipType, MembershipOption } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -25,10 +25,15 @@ interface JoinButtonProps {
   membershipMap: {
     [K in EnumStrings<typeof BungieMembershipType>]?: GroupsV2.GroupMember;
   };
+  membershipOption: MembershipOption;
   callback?: () => void;
 }
 
 export const JoinButton: React.FC<JoinButtonProps> = (props) => {
+  if (props.membershipOption === MembershipOption.Closed) {
+    return null;
+  }
+
   const globalState = useDataStore(GlobalStateDataStore, [
     "loggedInUser",
     "loggedInUserClans",
@@ -51,10 +56,13 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
       applicationRequest,
       props.clanId,
       membershipType
-    ).then(() => {
-      //join success
-      props.callback && props.callback();
-    });
+    )
+      .then(() => {
+        //join success
+        props.callback && props.callback();
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => Modal.error(e));
   };
 
   const signInToJoin = () => {
