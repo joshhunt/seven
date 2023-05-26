@@ -128,7 +128,11 @@ export const FireteamJoin: React.FC<FireteamJoinProps> = (props) => {
                   radioOptions={FireteamRadioOptions.hasMicRadioOptions()}
                 />
               </div>
-              <Button buttonType={"gold"} size={BasicSize.FullSize}>
+              <Button
+                buttonType={"gold"}
+                size={BasicSize.FullSize}
+                submit={true}
+              >
                 {fireteamsLoc.JoinFireteam}
               </Button>
               <div className={styles.joinWarning}>
