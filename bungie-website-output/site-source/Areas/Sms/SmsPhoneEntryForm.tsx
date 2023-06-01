@@ -112,7 +112,11 @@ export const SmsPhoneEntryForm: React.FC<SmsPhoneEntryFormProps> = (props) => {
         </div>
         {error !== "" && <SmsError errorMessage={error} />}
         <div className={styles.submit}>
-          <Button buttonType={submitStatus} size={BasicSize.Small}>
+          <Button
+            buttonType={submitStatus}
+            size={BasicSize.Small}
+            submit={true}
+          >
             {Localizer.Sms.SendCode}
           </Button>
           {smsDataStorePayload.lastDigits && (

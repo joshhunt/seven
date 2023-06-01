@@ -10,7 +10,6 @@ import { Recaptcha } from "@UI/Authentication/Recaptcha";
 import { RecaptchaBroadcaster } from "@UI/Authentication/RecaptchaBroadcaster";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Spinner } from "@UIKit/Controls/Spinner";
-import { SubmitButton } from "@UIKit/Forms/SubmitButton";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -140,13 +139,13 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
               {Localizer.Sms.Cancel}
             </Button>
           </div>
-          <SubmitButton
+          <Button
             buttonType={submitStatus}
             size={BasicSize.Small}
-            onClick={onSubmit}
+            submit={true}
           >
             {Localizer.Sms.SubmitCode}
-          </SubmitButton>
+          </Button>
         </div>
         {captchaEnabled && (
           <Recaptcha
