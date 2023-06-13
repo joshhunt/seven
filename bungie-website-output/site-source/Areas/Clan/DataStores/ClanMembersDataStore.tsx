@@ -3,7 +3,9 @@
 
 import { DataStore } from "@bungie/datastore";
 import { RuntimeGroupMemberType } from "@Enum";
+import { SystemNames } from "@Global/SystemNames";
 import { Platform, Queries } from "@Platform";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
 
 export interface ClanMemberTypeMembers {
@@ -48,6 +50,10 @@ class _ClanMembersDataStore extends DataStore<ClanMembersDataStorePayload> {
       page = 1,
       searchTerm = ""
     ) => {
+      if (!ConfigUtils.SystemStatus(SystemNames.Clans)) {
+        return;
+      }
+
       try {
         const data = await Promise.all([
           Platform.GroupV2Service.GetMembersOfGroup(
@@ -156,6 +162,10 @@ class _ClanMembersDataStore extends DataStore<ClanMembersDataStorePayload> {
       searchTerm = "",
       page = 1
     ) => {
+      if (!ConfigUtils.SystemStatus(SystemNames.Clans)) {
+        return;
+      }
+
       try {
         const data = await Promise.all(
           memberTypes.map((mt) =>

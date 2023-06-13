@@ -51,6 +51,7 @@ import BuyFlow1 from "./ABTests/BuyFlow1";
 import BuyFlow2 from "./ABTests/BuyFlow2";
 import BuyFlow3 from "./ABTests/BuyFlow3";
 import { BnetStackS18ProductPage } from "../../../Generated/contentstack-types";
+import { BorderedTitle } from "./Components";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 
 export interface IDestinyBuyProductDetailProps
@@ -555,11 +556,10 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       />
                     </GridCol>
 
-                    <div className={styles.borderTop}>
-                      <div className={styles.sectionTitle}>
-                        {destinyProductFamily.detailSectionTitle}
-                      </div>
-                    </div>
+                    <BorderedTitle
+                      sectionTitle={destinyProductFamily.detailSectionTitle}
+                      classes={{ wrapper: styles.borderSpacing }}
+                    />
 
                     {detailItems.map((mma, i) => {
                       return (
@@ -585,11 +585,13 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
                     {comparisonSkus.length > 0 && (
                       <>
-                        <div className={styles.borderTop}>
-                          <div className={styles.sectionTitle}>
-                            {destinyProductFamily.comparisonSectionTitle}
-                          </div>
-                        </div>
+                        <BorderedTitle
+                          sectionTitle={
+                            destinyProductFamily.comparisonSectionTitle
+                          }
+                          classes={{ wrapper: styles.borderSpacing }}
+                        />
+
                         {comparisonSkus.map(
                           (a, i) =>
                             a && (
@@ -615,11 +617,13 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
                     {collectorsEdition && (
                       <>
-                        <div className={styles.borderTop}>
-                          <div className={styles.sectionTitle}>
-                            {destinyProductFamily.collectorsEditionSectionTitle}
-                          </div>
-                        </div>
+                        <BorderedTitle
+                          sectionTitle={
+                            destinyProductFamily.collectorsEditionSectionTitle
+                          }
+                          classes={{ wrapper: styles.borderSpacing }}
+                        />
+
                         <GridCol
                           cols={12}
                           className={styles.collectorsEditionSection}

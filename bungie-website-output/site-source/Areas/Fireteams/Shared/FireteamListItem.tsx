@@ -103,6 +103,10 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
     (f) => f.identifier === props.fireteamSummary.activityType.toString()
   );
 
+  if (!fireteamActivityDef) {
+    return null;
+  }
+
   return (
     <li
       className={classNames(

@@ -4,8 +4,11 @@
 import { ProfileDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/ProfileDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ClanBannerDisplay } from "@UI/Destiny/ClanBanner";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { useAsyncError } from "@Utilities/ReactUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import styles from "./Clan.module.scss";
@@ -25,6 +28,8 @@ export const Clan: React.FC<ClanProps> = (props) => {
   //refactor
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUserClans"]);
   const destinyMembership = useDataStore(ProfileDestinyMembershipDataStore);
+
+  const clansDisabled = !ConfigUtils.SystemStatus(SystemNames.Clans);
 
   const isViewingSelf = UserUtils.IsViewingSelf(
     props.membershipId,
@@ -103,60 +108,64 @@ export const Clan: React.FC<ClanProps> = (props) => {
   };
 
   useEffect(() => {
-    const noCurrentClanLoaded = !clan && destinyMembership?.selectedMembership;
-    const clanIsDifferent =
-      clan &&
-      !destinyMembership?.membershipData?.destinyMemberships?.some(
-        (dm) => dm.membershipId === clan.member.destinyUserInfo.membershipId
-      );
+    if (!clansDisabled) {
+      const noCurrentClanLoaded =
+        !clan && destinyMembership?.selectedMembership;
+      const clanIsDifferent =
+        clan &&
+        !destinyMembership?.membershipData?.destinyMemberships?.some(
+          (dm) => dm.membershipId === clan.member.destinyUserInfo.membershipId
+        );
 
-    if (noCurrentClanLoaded || clanIsDifferent) {
-      loadClanInfo();
+      if (noCurrentClanLoaded || clanIsDifferent) {
+        loadClanInfo();
+      }
     }
   }, [destinyMembership?.selectedMembership]);
-
-  if (!clan) {
-    //empty state
-    return (
-      <Anchor
-        className={classNames(styles.clanSection, styles.emptyState)}
-        url={isViewingSelf ? RouteHelper.MyClan() : RouteHelper.Clans()}
-      >
-        <p>{Localizer.Clans.NotAMemberOfAClan}</p>
-      </Anchor>
-    );
-  }
 
   const profileLoc = Localizer.Profile;
 
   const clanMatesText =
-    clan.group.memberCount === 1
-      ? Localizer.Format(profileLoc.Clanmate, { count: clan.group.memberCount })
+    clan?.group?.memberCount === 1
+      ? Localizer.Format(profileLoc.Clanmate, {
+          count: clan?.group?.memberCount,
+        })
       : Localizer.Format(profileLoc.Clanmates, {
-          count: clan.group.memberCount,
+          count: clan?.group?.memberCount,
         });
 
   return (
-    <Anchor
-      className={styles.clanSection}
-      url={RouteHelper.Clan(clan.group.groupId)}
-    >
-      <ClanBannerDisplay
-        className={styles.clanBanner}
-        bannerSettings={clan.group.clanInfo.clanBannerData}
-        showStaff={true}
-        replaceCanvasWithImage={false}
-      />
-      <div className={styles.clanInfo}>
-        <h3>{clan.group.name}</h3>
-        <p className={styles.about}>{clan.group.motto}</p>
-        <p className={styles.membercount}>
-          <span className={styles.icon}>
-            <Icon iconType={"bungle"} iconName={"destinyuiroster"} />
-          </span>
-          {clanMatesText}
-        </p>
-      </div>
-    </Anchor>
+    <SystemDisabledHandler systems={[SystemNames.Clans]}>
+      {clan ? (
+        <Anchor
+          className={styles.clanSection}
+          url={RouteHelper.Clan(clan.group.groupId)}
+        >
+          <ClanBannerDisplay
+            className={styles.clanBanner}
+            bannerSettings={clan.group.clanInfo.clanBannerData}
+            showStaff={true}
+            replaceCanvasWithImage={false}
+          />
+          <div className={styles.clanInfo}>
+            <h3>{clan.group.name}</h3>
+            <p className={styles.about}>{clan.group.motto}</p>
+            <p className={styles.membercount}>
+              <span className={styles.icon}>
+                <Icon iconType={"bungle"} iconName={"destinyuiroster"} />
+              </span>
+              {clanMatesText}
+            </p>
+          </div>
+        </Anchor>
+      ) : (
+        <Anchor
+          className={classNames(styles.clanSection, styles.emptyState)}
+          url={isViewingSelf ? RouteHelper.MyClan() : RouteHelper.Clans()}
+        >
+          <p>{Localizer.Clans.NotAMemberOfAClan}</p>
+        </Anchor>
+      )}
+    </SystemDisabledHandler>
   );
 };

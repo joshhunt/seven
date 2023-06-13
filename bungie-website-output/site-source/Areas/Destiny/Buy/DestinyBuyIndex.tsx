@@ -1,6 +1,7 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
+import React from "react";
 import DestinyBuyCarouselHero from "@Areas/Destiny/Buy/Shared/DestinyBuyCarouselHero";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
@@ -31,10 +32,10 @@ import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { ContentUtils, IMarketingMediaAsset } from "@Utilities/ContentUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
-import React from "react";
-import styles from "./DestinyBuyIndex.module.scss";
 import { DestinyBuyCoverCard } from "./Shared/DestinyBuyCoverCard";
-import BuyFlowDescriptiveProductCard from "@Areas/Destiny/Buy/ABTests/Components/BuyFlowDescriptiveProductCard";
+import { BorderedTitle } from "./Components";
+
+import styles from "./DestinyBuyIndex.module.scss";
 
 interface IDestinyBuyIndexProps {}
 
@@ -116,6 +117,7 @@ export default class DestinyBuyInternal extends React.Component<
     //url is ?version=Promo
     const params = new URLSearchParams(location.search);
     const promoView = params.get("version");
+    const isBannerTest = promoView === "banner";
 
     if (promoView === "Promo") {
       return (
@@ -191,70 +193,80 @@ export default class DestinyBuyInternal extends React.Component<
         ) : (
           <div className={styles.spacer} />
         )}
-
-        <Grid
-          className={styles.contentFrame}
-          noPadding={true}
-          strictMode={true}
+        <div
+          className={classNames(styles.container, {
+            [styles.spacingBottom]: isBannerTest,
+          })}
         >
-          <div className={styles.borderTop}>
-            <div className={styles.sectionTitle}>
-              {Localizer.Buyflow.GetStarted}
-            </div>
-          </div>
-
-          <div className={styles.banner}>
-            {getStartedProducts.map((productFamily, i) => {
-              const isFreeToPlayItem =
-                productFamily.productFamilyTag === "playforfree";
-              const bgImage =
-                this.state.responsive.mobile && productFamily.mobileCoverImage
-                  ? productFamily.mobileCoverImage
-                  : productFamily.imagePath;
-              const coverTitle =
-                productFamily.coverTitleHtml || productFamily.coverTitle;
-
-              return (
-                <Anchor
-                  className={classNames(
-                    classNames(styles.bannerItem, {
-                      [styles.freeToPlay]: isFreeToPlayItem,
-                    })
-                  )}
-                  key={i}
-                  style={{ backgroundImage: `url(${bgImage})` }}
-                  url={RouteHelper.DestinyBuyDetail({
-                    productFamilyTag: productFamily.productFamilyTag,
-                  })}
-                >
-                  <ProductFamilyTitles
-                    titlesClassName={styles.getStartedTitles}
-                    title={coverTitle}
-                    subtitle={productFamily.smallCoverTitle}
-                  />
-
-                  {isFreeToPlayItem && (
-                    <img
-                      src={this.state.freeToPlayPopoutImg}
-                      className={styles.popoutImg}
-                    />
-                  )}
-                </Anchor>
-              );
+          <Grid
+            className={classNames(styles.contentFrame, {
+              [styles.orderOne]: !isBannerTest,
+              [styles.orderTwo]: isBannerTest,
             })}
-          </div>
-        </Grid>
-        <Grid
-          className={styles.contentFrame}
-          noPadding={true}
-          strictMode={true}
-        >
-          <PaidContent
-            expansionProducts={expansionProducts}
-            bundleProducts={bundleProducts}
-            skuConfig={skuConfig}
-          />
-        </Grid>
+            noPadding={true}
+            strictMode={true}
+          >
+            <BorderedTitle
+              sectionTitle={Localizer.Buyflow.GetStarted}
+              classes={{ wrapper: styles.borderSpacing }}
+            />
+
+            <div className={styles.banner}>
+              {getStartedProducts.map((productFamily, i) => {
+                const isFreeToPlayItem =
+                  productFamily.productFamilyTag === "playforfree";
+                const bgImage =
+                  this.state.responsive.mobile && productFamily.mobileCoverImage
+                    ? productFamily.mobileCoverImage
+                    : productFamily.imagePath;
+                const coverTitle =
+                  productFamily.coverTitleHtml || productFamily.coverTitle;
+
+                return (
+                  <Anchor
+                    className={classNames(
+                      classNames(styles.bannerItem, {
+                        [styles.freeToPlay]: isFreeToPlayItem,
+                      })
+                    )}
+                    key={i}
+                    style={{ backgroundImage: `url(${bgImage})` }}
+                    url={RouteHelper.DestinyBuyDetail({
+                      productFamilyTag: productFamily.productFamilyTag,
+                    })}
+                  >
+                    <ProductFamilyTitles
+                      titlesClassName={styles.getStartedTitles}
+                      title={coverTitle}
+                      subtitle={productFamily.smallCoverTitle}
+                    />
+
+                    {isFreeToPlayItem && (
+                      <img
+                        src={this.state.freeToPlayPopoutImg}
+                        className={styles.popoutImg}
+                      />
+                    )}
+                  </Anchor>
+                );
+              })}
+            </div>
+          </Grid>
+          <Grid
+            className={classNames(styles.contentFrame, {
+              [styles.orderTwo]: !isBannerTest,
+              [styles.orderOne]: isBannerTest,
+            })}
+            noPadding={true}
+            strictMode={true}
+          >
+            <PaidContent
+              expansionProducts={expansionProducts}
+              bundleProducts={bundleProducts}
+              skuConfig={skuConfig}
+            />
+          </Grid>
+        </div>
       </SystemDisabledHandler>
     );
   }
@@ -383,19 +395,16 @@ const PaidContent = ({
 }: IPaidContent) => {
   const params = new URLSearchParams(location.search);
   const promoView = params.get("version");
-  const isDescriptionPromo = promoView === "description";
+  const isBannerPromo = promoView === "banner";
 
   return (
     <>
-      <div className={styles.borderTop}>
-        <div className={styles.sectionTitle}>{Localizer.Buyflow.Releases}</div>
-      </div>
+      <BorderedTitle
+        sectionTitle={Localizer.Buyflow.Releases}
+        classes={{ wrapper: styles.borderSpacing }}
+      />
 
-      <div
-        className={classNames(styles.coverCards, {
-          [styles.testDescriptionCardContainer]: isDescriptionPromo,
-        })}
-      >
+      <div className={styles.coverCards}>
         {expansionProducts.map((productFamily, i) => {
           const productIsOnSale =
             skuConfig &&
@@ -405,7 +414,7 @@ const PaidContent = ({
           const saleInformation =
             Localizer.Sales[productFamily.productFamilyTag];
 
-          return !isDescriptionPromo ? (
+          return (
             <GridCol cols={3} mobile={6} key={i}>
               <DestinyBuyCoverCard productFamily={productFamily}>
                 <ProductFamilyTitles
@@ -416,23 +425,18 @@ const PaidContent = ({
                 />
               </DestinyBuyCoverCard>
             </GridCol>
-          ) : (
-            <BuyFlowDescriptiveProductCard
-              product={productFamily}
-              isOnSale={productIsOnSale}
-              saleInformation={saleInformation}
-            />
           );
         })}
       </div>
 
-      <div className={classNames(styles.borderTop, styles.bundlesTop)}>
-        <div className={styles.sectionTitle}>{Localizer.Buyflow.Bundles}</div>
-      </div>
+      <BorderedTitle
+        sectionTitle={Localizer.Buyflow.Bundles}
+        classes={{ wrapper: styles.bundlesTop }}
+      />
 
       <div
-        className={classNames(styles.coverCards, styles.bundleCards, {
-          [styles.testDescriptionCardContainer]: isDescriptionPromo,
+        className={classNames(styles.coverCards, {
+          [styles.bundleCards]: !isBannerPromo,
         })}
       >
         {bundleProducts.map((productFamily, i) => {
@@ -444,7 +448,7 @@ const PaidContent = ({
           const saleInformation =
             Localizer.Sales[productFamily.productFamilyTag];
 
-          return !isDescriptionPromo ? (
+          return (
             <GridCol cols={3} mobile={6} key={i}>
               <DestinyBuyCoverCard productFamily={productFamily}>
                 <ProductFamilyTitles
@@ -455,12 +459,6 @@ const PaidContent = ({
                 />
               </DestinyBuyCoverCard>
             </GridCol>
-          ) : (
-            <BuyFlowDescriptiveProductCard
-              product={productFamily}
-              isOnSale={productIsOnSale}
-              saleInformation={saleInformation}
-            />
           );
         })}
       </div>

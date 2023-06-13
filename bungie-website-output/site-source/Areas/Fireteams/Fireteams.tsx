@@ -344,20 +344,6 @@ export const Fireteams: React.FC = (props) => {
     (c) => c.group?.groupId === fireteamGroupId
   );
 
-  const pageLabel = () => {
-    if (clanInView) {
-      return Localizer.Format(fireteamsLoc.ClannameFireteams, {
-        clanname: clanInView?.group?.name,
-      });
-    } else {
-      if (showMyFireteams) {
-        return fireteamsLoc.MyFireteams;
-      } else {
-        return isScheduled ? fireteamsLoc.Scheduled : fireteamsLoc.PlayingNow;
-      }
-    }
-  };
-
   return (
     <SystemDisabledHandler
       systems={[SystemNames.Destiny2, SystemNames.Fireteams]}

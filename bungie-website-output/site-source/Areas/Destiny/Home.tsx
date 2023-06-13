@@ -3,6 +3,9 @@
 
 import { Featured } from "@Areas/Home/Featured";
 import { Hero } from "@Areas/Home/Hero";
+import * as Globals from "@Enum";
+import { Logger } from "@Global/Logger";
+import { Platform } from "@Platform";
 import styles from "./Home.module.scss";
 import { Recent } from "@Areas/Home/Recent";
 import { Footer } from "@Boot/Footer";
@@ -89,14 +92,40 @@ const Home: React.FC<HomeProps> = (props) => {
   const DESTINY_TITLE = navLoc.DestinyHomeSeoTitle;
   const DESTINY_DESC = navLoc.DestinyHomeSeoDesc;
 
+  const sanitizedTitle =
+    !DESTINY_TITLE || DESTINY_TITLE.startsWith("##")
+      ? "Destiny 2"
+      : DESTINY_TITLE;
+  const sanitizedDesc =
+    !DESTINY_DESC || DESTINY_DESC.startsWith("##")
+      ? "Join your fellow Guardians in the definitive sci-fi action MMO FPS, featuring a massive galaxy continually growing with new Seasons, Events, and Expansions, offering fresh challenges to experience and an arsenal of weapons and gear to collect."
+      : DESTINY_DESC;
+
+  if (DESTINY_TITLE.startsWith("##") || DESTINY_DESC.startsWith("##")) {
+    Platform.RendererService.ServerLog({
+      Url: location.href,
+      LogLevel: Globals.RendererLogLevel.Error,
+      Message: "Bungie Strings Not Loaded",
+      Stack: new Error()?.stack,
+      SpamReductionLevel: Globals.SpamReductionLevel.Default,
+    })
+      .then(() =>
+        Logger.log("Error logged to server: ", "Bungie Strings Not Loaded")
+      )
+      .catch((e) => null);
+  }
+
   return (
     <>
       <BungieHelmet
-        title={DESTINY_TITLE}
-        description={DESTINY_DESC}
+        title={sanitizedTitle}
+        description={sanitizedDesc}
         image={hero_image?.url || BungieHelmet.DefaultBoringMetaImage}
       >
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        {DESTINY_DESC && (
+          <meta property={"description"} content={sanitizedDesc} />
+        )}
       </BungieHelmet>
       <div>
         <Hero

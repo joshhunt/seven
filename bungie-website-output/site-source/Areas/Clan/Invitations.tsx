@@ -30,15 +30,15 @@ export const Invitations: React.FC = () => {
 
   const hasPermission = ClanUtils.canInvite(clan, globalState?.loggedInUser);
 
+  useEffect(() => {
+    ClanPendingInvitesDataStore.actions.getInvitationsAndFriends(clanId);
+  }, []);
+
   if (globalState.loaded && !hasPermission) {
     history.push(RouteHelper.NewClanSettings({ clanId: clanId }).url);
 
     return null;
   }
-
-  useEffect(() => {
-    ClanPendingInvitesDataStore.actions.getInvitationsAndFriends(clanId);
-  }, []);
 
   return (
     <SettingsWrapper>

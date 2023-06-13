@@ -15,6 +15,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { IgnoredItemType, RuntimeGroupMemberType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform } from "@Platform";
 import { IClanParams } from "@Routes/RouteParams";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -24,6 +25,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -38,9 +40,11 @@ export const Profile: React.FC = () => {
   const [clanResponse, setClanResponse] = useState<GroupsV2.GroupResponse>();
 
   const getClan = () => {
-    Platform.GroupV2Service.GetGroup(clanId).then((result) => {
-      setClanResponse(result);
-    });
+    if (ConfigUtils.SystemStatus(SystemNames.Clans)) {
+      Platform.GroupV2Service.GetGroup(clanId).then((result) => {
+        setClanResponse(result);
+      });
+    }
   };
 
   useEffect(() => {
@@ -54,11 +58,6 @@ export const Profile: React.FC = () => {
     getClan();
   }, [UserUtils.isAuthenticated(globalState)]);
 
-  if (!clanResponse) {
-    //empty state
-    return null;
-  }
-
   const reportClan = () => {
     //report
     const reportModal = Modal.open(
@@ -71,110 +70,118 @@ export const Profile: React.FC = () => {
     );
   };
 
-  const clanMemberCountString = `${clansLoc.Members} (${clanResponse.detail.memberCount} / 100)`;
+  const clanMemberCountString = `${clansLoc.Members} (${clanResponse?.detail?.memberCount} / 100)`;
 
   return (
-    <SystemDisabledHandler systems={["Clans"]}>
-      <BungieHelmet
-        title={Localizer.Format(Localizer.PageTitles.ClanDetail, {
-          0: clanResponse.detail.name,
-        })}
-        description={Localizer.Format(Localizer.PageTitles.ClanDetail, {
-          0: clanResponse.detail.name,
-        })}
-      >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-      </BungieHelmet>
-      <div className={styles.clanContainer}>
-        <div className={styles.clanGrid}>
-          <ClanWithSideBannerView
-            clanBannerProps={{
-              bannerSettings: clanResponse.detail.clanInfo.clanBannerData,
-              className: styles.clanBannerDisplay,
-              showStaff: true,
-              replaceCanvasWithImage: true,
-            }}
-            clanContentContainerClassName={styles.clanMeta}
-            clanBannerContainerClassName={styles.clanBannerContainer}
-            clanId={clanId}
+    <SystemDisabledHandler systems={[SystemNames.Clans]}>
+      {clanResponse ? (
+        <>
+          <BungieHelmet
+            title={Localizer.Format(Localizer.PageTitles.ClanDetail, {
+              0: clanResponse.detail.name,
+            })}
+            description={Localizer.Format(Localizer.PageTitles.ClanDetail, {
+              0: clanResponse.detail.name,
+            })}
           >
-            <Breadcrumb clanId={clanId} />
-            <h2>
-              {clanResponse.detail.name}{" "}
-              {clanResponse.detail.clanInfo.clanCallsign
-                ? `[${clanResponse.detail.clanInfo.clanCallsign}]`
-                : ""}
-            </h2>
-            {clanResponse.detail.motto && (
-              <p className={styles.clanMotto}>{clanResponse.detail.motto}</p>
-            )}
-            <div className={styles.buttons}>
-              <ProfileClanMembershipButtons
-                clanId={clanResponse.detail.groupId}
-                membershipMap={clanResponse.currentUserMemberMap}
-                potentialMembershipMap={
-                  clanResponse.currentUserPotentialMemberMap
-                }
-                membershipOption={clanResponse.detail.membershipOption}
-                membershipUpdated={() => getClan()}
-              />
-              <Button
-                size={BasicSize.Medium}
-                buttonType={"red"}
-                onClick={() => reportClan()}
+            <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+          </BungieHelmet>
+          <div className={styles.clanContainer}>
+            <div className={styles.clanGrid}>
+              <ClanWithSideBannerView
+                clanBannerProps={{
+                  bannerSettings: clanResponse.detail.clanInfo.clanBannerData,
+                  className: styles.clanBannerDisplay,
+                  showStaff: true,
+                  replaceCanvasWithImage: true,
+                }}
+                clanContentContainerClassName={styles.clanMeta}
+                clanBannerContainerClassName={styles.clanBannerContainer}
+                clanId={clanId}
               >
-                {clansLoc.ClanReport}
-              </Button>
+                <Breadcrumb clanId={clanId} />
+                <h2>
+                  {clanResponse.detail.name}{" "}
+                  {clanResponse.detail.clanInfo.clanCallsign
+                    ? `[${clanResponse.detail.clanInfo.clanCallsign}]`
+                    : ""}
+                </h2>
+                {clanResponse.detail.motto && (
+                  <p className={styles.clanMotto}>
+                    {clanResponse.detail.motto}
+                  </p>
+                )}
+                <div className={styles.buttons}>
+                  <ProfileClanMembershipButtons
+                    clanId={clanResponse.detail.groupId}
+                    membershipMap={clanResponse.currentUserMemberMap}
+                    potentialMembershipMap={
+                      clanResponse.currentUserPotentialMemberMap
+                    }
+                    membershipOption={clanResponse.detail.membershipOption}
+                    membershipUpdated={() => getClan()}
+                  />
+                  <Button
+                    size={BasicSize.Medium}
+                    buttonType={"red"}
+                    onClick={() => reportClan()}
+                  >
+                    {clansLoc.ClanReport}
+                  </Button>
+                </div>
+                <p className={styles.clanAbout}>{clanResponse.detail.about}</p>
+                <ClanFeaturesList
+                  membershipOption={clanResponse.detail.membershipOption}
+                  creationDate={clanResponse.detail.creationDate}
+                  memberCount={clanResponse.detail.memberCount}
+                />
+                <div className={styles.clanGameStatus}>
+                  <ClanProgression
+                    clanProgression={
+                      clanResponse.detail.clanInfo.d2ClanProgressions
+                    }
+                  />
+                  <OathKeeperScore
+                    clanProgression={
+                      clanResponse.detail.clanInfo.d2ClanProgressions
+                    }
+                  />
+                </div>
+                <div className={styles.clanMembers}>
+                  <h3 className={styles.sectionHeader}>
+                    {clanMemberCountString}
+                  </h3>
+                  <ClanMembersList
+                    clanId={clanResponse.detail.groupId}
+                    memberType={RuntimeGroupMemberType.Founder}
+                    listType={"full"}
+                  />
+                  <ClanMembersList
+                    clanId={clanResponse.detail.groupId}
+                    memberType={RuntimeGroupMemberType.ActingFounder}
+                    listType={"full"}
+                  />
+                  <ClanMembersList
+                    clanId={clanResponse.detail.groupId}
+                    memberType={RuntimeGroupMemberType.Admin}
+                    listType={"full"}
+                  />
+                  <ClanMembersList
+                    clanId={clanResponse.detail.groupId}
+                    memberType={RuntimeGroupMemberType.Member}
+                    listType={"full"}
+                  />
+                  <ClanMembersList
+                    clanId={clanResponse.detail.groupId}
+                    memberType={RuntimeGroupMemberType.Beginner}
+                    listType={"full"}
+                  />
+                </div>
+              </ClanWithSideBannerView>
             </div>
-            <p className={styles.clanAbout}>{clanResponse.detail.about}</p>
-            <ClanFeaturesList
-              membershipOption={clanResponse.detail.membershipOption}
-              creationDate={clanResponse.detail.creationDate}
-              memberCount={clanResponse.detail.memberCount}
-            />
-            <div className={styles.clanGameStatus}>
-              <ClanProgression
-                clanProgression={
-                  clanResponse.detail.clanInfo.d2ClanProgressions
-                }
-              />
-              <OathKeeperScore
-                clanProgression={
-                  clanResponse.detail.clanInfo.d2ClanProgressions
-                }
-              />
-            </div>
-            <div className={styles.clanMembers}>
-              <h3 className={styles.sectionHeader}>{clanMemberCountString}</h3>
-              <ClanMembersList
-                clanId={clanResponse.detail.groupId}
-                memberType={RuntimeGroupMemberType.Founder}
-                listType={"full"}
-              />
-              <ClanMembersList
-                clanId={clanResponse.detail.groupId}
-                memberType={RuntimeGroupMemberType.ActingFounder}
-                listType={"full"}
-              />
-              <ClanMembersList
-                clanId={clanResponse.detail.groupId}
-                memberType={RuntimeGroupMemberType.Admin}
-                listType={"full"}
-              />
-              <ClanMembersList
-                clanId={clanResponse.detail.groupId}
-                memberType={RuntimeGroupMemberType.Member}
-                listType={"full"}
-              />
-              <ClanMembersList
-                clanId={clanResponse.detail.groupId}
-                memberType={RuntimeGroupMemberType.Beginner}
-                listType={"full"}
-              />
-            </div>
-          </ClanWithSideBannerView>
-        </div>
-      </div>
+          </div>
+        </>
+      ) : null}
     </SystemDisabledHandler>
   );
 };

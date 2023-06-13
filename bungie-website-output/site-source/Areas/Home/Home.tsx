@@ -1,6 +1,9 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
+import * as Globals from "@Enum";
+import { Logger } from "@Global/Logger";
+import { Platform } from "@Platform";
 import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -200,11 +203,34 @@ const Home = () => {
   const BUNGIE_TITLE = navLoc.BungieHomeSeoTitle;
   const BUNGIE_DESC = navLoc.BungieHomeSeoDesc;
 
+  const sanitizedTitle =
+    !BUNGIE_TITLE || BUNGIE_TITLE.startsWith("##")
+      ? "Bungie.net | Creators of Destiny 2 & Marathon"
+      : BUNGIE_TITLE;
+  const sanitizedDesc =
+    !BUNGIE_DESC || BUNGIE_DESC.startsWith("##")
+      ? "Bungie is the studio behind Halo, Destiny, and Marathon. The studio's core mission is to build worlds that inspire friendship."
+      : BUNGIE_DESC;
+
+  if (BUNGIE_TITLE.startsWith("##") || BUNGIE_DESC.startsWith("##")) {
+    Platform.RendererService.ServerLog({
+      Url: location.href,
+      LogLevel: Globals.RendererLogLevel.Error,
+      Message: "Bungie Strings Not Loaded",
+      Stack: new Error()?.stack,
+      SpamReductionLevel: Globals.SpamReductionLevel.Default,
+    })
+      .then(() =>
+        Logger.log("Error logged to server: ", "Bungie Strings Not Loaded")
+      )
+      .catch((e) => null);
+  }
+
   return (
     <>
       <BungieHelmet
-        title={BUNGIE_TITLE}
-        description={BUNGIE_DESC}
+        title={sanitizedTitle}
+        description={sanitizedDesc}
         image={"7/ca/bungie/bgs/bungie_home_og.jpg"}
       >
         <body
@@ -213,6 +239,9 @@ const Home = () => {
             styles.specialWrapper
           )}
         />
+        {sanitizedDesc && (
+          <meta property={"description"} content={sanitizedDesc} />
+        )}
         <link rel="stylesheet" href="https://use.typekit.net/php2xww.css" />
       </BungieHelmet>
       <h1 className={styles.srOnly}>{navLoc.Bungie}</h1>

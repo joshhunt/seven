@@ -211,6 +211,14 @@ class SignInTriggers extends React.Component<{
             {Localizer.Nav.SignIn}
           </div>
         )}
+        {ConfigUtils.SystemStatus(SystemNames.PSNAuth) && (
+          <AuthTrigger
+            key={BungieCredentialType.Psnid}
+            credential={BungieCredentialType.Psnid}
+          >
+            {Localizer.Registration.networksigninoptionplaystation}
+          </AuthTrigger>
+        )}
 
         {ConfigUtils.SystemStatus(SystemNames.XuidAuth) && (
           <AuthTrigger
@@ -220,14 +228,7 @@ class SignInTriggers extends React.Component<{
             {Localizer.Registration.networksigninoptionxbox}
           </AuthTrigger>
         )}
-        {ConfigUtils.SystemStatus(SystemNames.PSNAuth) && (
-          <AuthTrigger
-            key={BungieCredentialType.Psnid}
-            credential={BungieCredentialType.Psnid}
-          >
-            {Localizer.Registration.networksigninoptionplaystation}
-          </AuthTrigger>
-        )}
+
         {auth && this.showSteamButton()}
         {ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth) && (
           <AuthTrigger

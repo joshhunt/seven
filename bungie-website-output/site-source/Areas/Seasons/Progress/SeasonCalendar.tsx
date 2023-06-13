@@ -124,15 +124,16 @@ class SeasonCalendar extends React.Component<Props, ISeasonCalendarState> {
         })
       );
     } else {
-      Platform.ContentService.GetContentById(
-        seasonOnPage.calendarContentItem,
-        Localizer.CurrentCultureName,
-        false
-      ).then((response) =>
-        this.setState({
-          calendarImage: response.properties.LargeImage,
-        })
-      );
+      seasonOnPage?.calendarContentItem &&
+        Platform.ContentService.GetContentById(
+          seasonOnPage.calendarContentItem,
+          Localizer.CurrentCultureName,
+          false
+        ).then((response) =>
+          this.setState({
+            calendarImage: response.properties.LargeImage,
+          })
+        );
     }
   }
 }

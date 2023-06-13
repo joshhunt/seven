@@ -2,13 +2,13 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { BungieFriendCard } from "@Areas/Clan/Shared/BungieFriendCard";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType } from "@Enum";
-import { Friends, Platform, User } from "@Platform";
+import { Platform, User } from "@Platform";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
+import { OneLineItem } from "@UIKit/Companion/OneLineItem";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -20,7 +20,8 @@ import React, { useEffect, useState } from "react";
 
 interface InviteModalProps {
   clanId: string;
-  friend: Friends.BungieFriend;
+  membershipId: string;
+  membershipType: BungieMembershipType;
   inviteSent: () => void;
 }
 
@@ -32,8 +33,8 @@ export const InviteModal: React.FC<InviteModalProps> = (props) => {
 
   const getDestinyInfoForInvited = () => {
     Platform.UserService.GetMembershipDataById(
-      props.friend.bungieNetUser.membershipId,
-      BungieMembershipType.BungieNext
+      props.membershipId,
+      props.membershipType
     ).then((result) => {
       setUserDestinyInfo(result);
     });
@@ -64,7 +65,16 @@ export const InviteModal: React.FC<InviteModalProps> = (props) => {
     return null;
   }
 
-  const bungieName = UserUtils.getBungieNameFromBnetBungieFriend(props.friend);
+  if (userDestinyInfo.destinyMemberships?.length === 0) {
+    return <p>{clansLoc.CannotInviteThisUserTo}</p>;
+  }
+
+  const bungieName = userDestinyInfo?.bungieNetUser
+    ? UserUtils.getBungieNameFromBnetGeneralUser(userDestinyInfo.bungieNetUser)
+    : UserUtils.getBungieNameFromGroupUserInfoCard(
+        userDestinyInfo.destinyMemberships[0]
+      );
+
   const bungieNameWithCode =
     bungieName.bungieGlobalName + bungieName.bungieGlobalCodeWithHashtag;
 
@@ -78,7 +88,24 @@ export const InviteModal: React.FC<InviteModalProps> = (props) => {
         })}
       </h3>
       <ul className={styles.listCards}>
-        <BungieFriendCard friend={props.friend} />
+        <li className={styles.inviteModalHeader}>
+          <OneLineItem
+            itemTitle={
+              bungieName
+                ? `${bungieName.bungieGlobalName}${bungieName.bungieGlobalCodeWithHashtag}`
+                : ""
+            }
+            icon={
+              <IconCoin
+                iconImageUrl={
+                  userDestinyInfo.bungieNetUser?.profilePicturePath ??
+                  userDestinyInfo?.destinyMemberships?.[0]?.iconPath ??
+                  ""
+                }
+              />
+            }
+          />
+        </li>
       </ul>
       <ul className={classNames(styles.listCards, styles.inviteCards)}>
         {userDestinyInfo.destinyMemberships

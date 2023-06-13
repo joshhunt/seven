@@ -54,7 +54,10 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
   const [pendingMembersCount, setPendingMembersCount] = useState(0);
   const [showTheSideNav, setShowTheSideNav] = useState(false);
 
-  if (!ConfigUtils.SystemStatus(SystemNames.ClanReactUI)) {
+  if (
+    ConfigUtils.SystemStatus(SystemNames.Clans) &&
+    !ConfigUtils.SystemStatus(SystemNames.ClanReactUI)
+  ) {
     window.location.href = RouteHelper.Clan(clanId).url;
 
     return null;
@@ -63,19 +66,21 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
   const isLoggedIn = UserUtils.isAuthenticated(globalState);
 
   const getClanInfo = () => {
-    Platform.GroupV2Service.GetGroup(clanId).then((result) => {
-      setClanResponse(result);
-    });
+    if (ConfigUtils.SystemStatus(SystemNames.Clans)) {
+      Platform.GroupV2Service.GetGroup(clanId).then((result) => {
+        setClanResponse(result);
+      });
 
-    if (ClanUtils.canViewAdmin(clanMembership, globalState)) {
-      Platform.GroupV2Service.GetPendingMemberships(clanId, 1).then(
-        (result) => {
-          setPendingMembersCount(result?.results?.length ?? 0);
-        }
-      );
+      if (ClanUtils.canViewAdmin(clanMembership, globalState)) {
+        Platform.GroupV2Service.GetPendingMemberships(clanId, 1).then(
+          (result) => {
+            setPendingMembersCount(result?.results?.length ?? 0);
+          }
+        );
+      }
+
+      ClanMembersDataStore.actions.getAllClanMembers(clanId);
     }
-
-    ClanMembersDataStore.actions.getAllClanMembers(clanId);
   };
 
   useEffect(() => {
@@ -105,9 +110,9 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
   const clanIdLabel = `Clan ID: ${clanResponse?.detail?.remoteGroupId ?? ""}`;
 
   return (
-    <>
-      {!clanResponse ? null : (
-        <SystemDisabledHandler systems={["Clans"]}>
+    <SystemDisabledHandler systems={["Clans"]}>
+      {clanResponse ? (
+        <>
           <BungieHelmet
             title={Localizer.Format(Localizer.PageTitles.ClanDetail, {
               0: clanResponse.detail.name,
@@ -266,8 +271,8 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
               </div>
             </div>
           </PermissionsGate>
-        </SystemDisabledHandler>
-      )}
-    </>
+        </>
+      ) : null}
+    </SystemDisabledHandler>
   );
 };

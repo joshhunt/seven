@@ -93,6 +93,15 @@ export class CrossSaveCard extends React.Component<
     ) {
       platformName = <>{Localizer.Crosssave.EpicAccount}</>;
     }
+    if (
+      EnumUtils.looseEquals(
+        membershipType,
+        BungieMembershipType.TigerPsn,
+        BungieMembershipType
+      )
+    ) {
+      platformName = <>{Localizer.Crosssave.PlaystationAccount}</>;
+    }
 
     return (
       <div className={classNames(className, styles.accountCard)} {...rest}>

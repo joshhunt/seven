@@ -10,6 +10,7 @@ import { GlobalFatalDataStore } from "@Global/DataStore/GlobalFatalDataStore";
 import { EventMux } from "@Global/EventMux/EventMuxBase";
 import { NotificationCountManager } from "@Global/EventMux/NotificationCount/NotificationCountManager";
 import { Logger } from "@Global/Logger";
+import { SystemNames } from "@Global/SystemNames";
 import { Contract, CrossSave, GroupsV2, Models, Platform } from "@Platform";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
@@ -17,6 +18,7 @@ import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { InitializeContentStackClient } from "Platform/ContentStack/ContentStackClient";
 import * as React from "react";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface IGlobalState {
   coreSettings: Models.CoreSettingsConfiguration;
@@ -135,6 +137,13 @@ class GlobalStateDataStoreInternal extends DataStore<
      */
     refreshLoggedInUserClans: async () => {
       let loggedInUserClans: GroupsV2.GetGroupsForMemberResponse;
+
+      if (!ConfigUtils.SystemStatus(SystemNames.Clans)) {
+        return {
+          loggedInUserClans,
+        };
+      }
+
       try {
         const results = await Platform.GroupV2Service.GetGroupsForMember(
           BungieMembershipType.BungieNext,

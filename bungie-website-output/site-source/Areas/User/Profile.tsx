@@ -37,6 +37,7 @@ import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
+import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
@@ -422,7 +423,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
               {bungieNetUser && (
                 <div>
                   <h3>{profileLoc.AboutMe}</h3>
-                  <p>{bungieNetUser.about}</p>
+                  <p>{StringUtils.decodeHtmlEntities(bungieNetUser.about)}</p>
                 </div>
               )}
 

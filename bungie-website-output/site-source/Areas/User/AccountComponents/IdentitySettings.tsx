@@ -22,6 +22,7 @@ import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
+import { StringUtils } from "@Utilities/StringUtils";
 import { IBungieName, UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
@@ -269,14 +270,14 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         <Formik
           initialValues={{
             displayName: bungieName?.bungieGlobalName,
-            about: onPageUser?.about,
+            about: StringUtils.decodeHtmlEntities(onPageUser?.about),
             profilePicture:
               onPageUser?.profilePicture === 0
                 ? 70432
                 : onPageUser?.profilePicture,
             profileTheme:
               onPageUser?.profileTheme === 0 ? 1000 : onPageUser?.profileTheme,
-            statusText: onPageUser?.statusText,
+            statusText: StringUtils.decodeHtmlEntities(onPageUser?.statusText),
             membershipId: onPageUser?.membershipId,
             locale: null,
             emailAddress: null,
@@ -450,7 +451,9 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     <FormikTextInput
                       name={"statusText"}
                       type={"text"}
-                      placeholder={formikProps.values?.statusText}
+                      placeholder={StringUtils.decodeHtmlEntities(
+                        formikProps.values?.statusText
+                      )}
                       classes={{ input: styles.textArea }}
                     />
                     <Icon iconName={"pencil"} iconType={"fa"} />
@@ -466,7 +469,9 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                     <Icon iconName={"pencil"} iconType={"fa"} />
                     <FormikTextArea
                       name={"about"}
-                      placeholder={formikProps.values?.about}
+                      placeholder={StringUtils.decodeHtmlEntities(
+                        formikProps.values?.about
+                      )}
                       className={styles.textArea}
                       rows={9}
                       cols={58}

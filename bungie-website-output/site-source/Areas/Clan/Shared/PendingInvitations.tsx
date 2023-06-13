@@ -5,7 +5,6 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ClanPendingInvitesDataStore } from "@Areas/Clan/DataStores/ClanPendingInvitesDataStore";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
 import settingsStyles from "@Areas/Clan/Shared/ClanSettings.module.scss";
-import { ClanUtils } from "@Areas/Clan/Shared/ClanUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
@@ -64,14 +63,14 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
       <div className={settingsStyles.membersHeader}>
         <h3>{clansLoc.PendingInvitations}</h3>
       </div>
-      <div>
-        <ul
-          className={classNames(
-            styles.listCards,
-            styles.admin,
-            styles.invitations
-          )}
-        >
+      <div
+        className={classNames(
+          styles.membersListWrapper,
+          styles.admin,
+          styles.invitations
+        )}
+      >
+        <ul className={styles.listCards}>
           {pendingInvitesData?.invitationsResponse?.results?.map((b) => {
             const profileLink = b.bungieNetUserInfo
               ? RouteHelper.NewProfile({
@@ -142,7 +141,7 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
                               className={styles.crossSaveIcon}
                             />
                           )}
-                          {isCrossSavedInactive && (
+                          {isCrossSavedInactive ? (
                             <>
                               <div
                                 className={classNames(
@@ -164,47 +163,37 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
                                   ]
                                 }
                               </div>
-                              <div className={styles.notLastSeen}>
+                              <div
+                                className={classNames(
+                                  styles.platformType,
+                                  styles.notLastSeen
+                                )}
+                              >
                                 {clansLoc.InactiveCharacters}
                               </div>
                             </>
+                          ) : (
+                            <div
+                              className={classNames(
+                                styles.platformType,
+                                styles[
+                                  EnumUtils.getStringValue(
+                                    b.destinyUserInfo.membershipType,
+                                    BungieMembershipType
+                                  )
+                                ]
+                              )}
+                            >
+                              {
+                                Localizer.Shortplatforms[
+                                  EnumUtils.getStringValue(
+                                    b.destinyUserInfo.membershipType,
+                                    BungieMembershipType
+                                  )
+                                ]
+                              }
+                            </div>
                           )}
-                          {ClanUtils.orderByLastSeen(
-                            b.destinyUserInfo?.applicableMembershipTypes ?? [],
-                            b.destinyUserInfo?.LastSeenDisplayNameType
-                          ).map((p, i) => {
-                            return (
-                              <div
-                                key={i}
-                                className={classNames(
-                                  styles.platformType,
-                                  styles[
-                                    EnumUtils.getStringValue(
-                                      p,
-                                      BungieMembershipType
-                                    )
-                                  ],
-                                  {
-                                    [styles.notLastSeen]: !EnumUtils.looseEquals(
-                                      p,
-                                      b.destinyUserInfo
-                                        ?.LastSeenDisplayNameType,
-                                      BungieMembershipType
-                                    ),
-                                  }
-                                )}
-                              >
-                                {
-                                  Localizer.Shortplatforms[
-                                    EnumUtils.getStringValue(
-                                      p,
-                                      BungieMembershipType
-                                    )
-                                  ]
-                                }
-                              </div>
-                            );
-                          })}
                         </div>
                       </div>
                     </div>

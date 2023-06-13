@@ -48,7 +48,11 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
     Object.entries(props.characters).forEach(
       (value: [string, Characters.DestinyCharacterComponent]) => {
         const charComponent = value[1];
-        const characterLight = `✧ ${charComponent.light}`;
+        const characterLight = (
+          <>
+            <span className={styles.lightSymbol}>✧</span> {charComponent.light}
+          </>
+        );
 
         const def = props.definitions.DestinyInventoryItemLiteDefinition.get(
           charComponent.emblemHash

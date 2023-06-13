@@ -2,21 +2,22 @@
 // Copyright Bungie, Inc.
 
 import { ClanPendingInvitesDataStore } from "@Areas/Clan/DataStores/ClanPendingInvitesDataStore";
-import { BungieFriendCard } from "@Areas/Clan/Shared/BungieFriendCard";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
-import modalStyles from "./InviteModal.module.scss";
 import settingsStyles from "@Areas/Clan/Shared/ClanSettings.module.scss";
 import { InviteModal } from "@Areas/Clan/Shared/InviteModal";
 import { SearchInput } from "@Areas/Clan/Shared/SearchInput";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
-import { Friends, GroupsV2, Platform, User } from "@Platform";
+import { GroupsV2, Platform, User } from "@Platform";
+import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
+import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
+import modalStyles from "./InviteModal.module.scss";
 
 interface InviteFriendsProps {
   clanId: string;
@@ -28,8 +29,14 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
   const clansLoc = Localizer.Clans;
   const clanPendingInvitesData = useDataStore(ClanPendingInvitesDataStore);
 
-  const [searchedUsers, setSearchedUsers] = useState<User.UserInfoCard[]>();
+  const [searchedDestinyUsers, setSearchedDestinyUsers] = useState<
+    User.UserInfoCard[]
+  >();
+  const [searchedBungieUsers, setSearchedBungieUsers] = useState<
+    User.UserSearchResponseDetail[]
+  >();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const refTimer = useRef<number | null>(null);
   const startSearchThrottleTimer = (name: string) => {
@@ -59,34 +66,55 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
     };
   }, []);
 
-  const getSuggestedUsers = () => {
-    //
-    ClanPendingInvitesDataStore.actions.getFriends();
-  };
-
   const searchForUsers = (value: string) => {
-    setSearchedUsers(undefined);
+    setSearchedDestinyUsers(undefined);
+    setSearchedBungieUsers(undefined);
 
-    const bungieGlobalName = value.split("#");
+    if (value !== "") {
+      const bungieGlobalName = value.split("#");
 
-    const destinyUserName: User.ExactSearchRequest = {
-      displayName: bungieGlobalName[0],
-      displayNameCode: parseInt(bungieGlobalName[1], 10),
-    };
+      setIsSearching(true);
 
-    Platform.Destiny2Service.SearchDestinyPlayerByBungieName(
-      destinyUserName,
-      BungieMembershipType.All
-    ).then((result) => {
-      //update
-      setSearchedUsers(result);
-    });
+      const destinyUserName: User.ExactSearchRequest = {
+        displayName: bungieGlobalName[0] ?? value,
+        displayNameCode: bungieGlobalName[1]
+          ? parseInt(bungieGlobalName[1].slice(0, 4), 10)
+          : 0,
+      };
+
+      Promise.allSettled([
+        Platform.UserService.SearchByGlobalNamePost(
+          {
+            displayNamePrefix: bungieGlobalName?.[0]
+              ? bungieGlobalName[0]
+              : value,
+          },
+          0
+        ),
+        Platform.Destiny2Service.SearchDestinyPlayerByBungieName(
+          destinyUserName,
+          BungieMembershipType.All
+        ),
+      ])
+        .then((result) => {
+          result[0].status === "fulfilled" &&
+            setSearchedBungieUsers(
+              result[0]?.value.searchResults?.filter(
+                (u) => u.destinyMemberships?.length > 0
+              )
+            );
+          result[1].status === "fulfilled" &&
+            setSearchedDestinyUsers(result[1].value);
+        })
+        .finally(() => setIsSearching(false));
+    }
   };
 
-  const openInviteModal = (friend: Friends.BungieFriend) => {
+  const openInviteModal = (mId: string, mType: BungieMembershipType) => {
     const inviteModal = Modal.open(
       <InviteModal
-        friend={friend}
+        membershipId={mId}
+        membershipType={mType}
         clanId={props.clanId}
         inviteSent={() => {
           inviteModal.current.close();
@@ -100,16 +128,28 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
     );
   };
 
-  const sendInviteToSearchUser = (mtype: BungieMembershipType, mid: string) => {
-    Platform.GroupV2Service.IndividualGroupInvite(
-      { message: "" },
-      props.clanId,
-      mtype,
-      mid
-    ).then((result) => {
-      //update
-    });
-  };
+  const hasBungieUsersWithDestinyAccountsNotPending = searchedBungieUsers
+    ?.filter((u) => u.destinyMemberships?.length > 0)
+    ?.find(
+      (u) =>
+        !clanPendingInvitesData?.invitationsResponse?.results?.find(
+          (iv) =>
+            iv.bungieNetUserInfo?.membershipId === u?.bungieNetMembershipId
+        )
+    );
+  const hasDestinyUsersNotPending = searchedDestinyUsers?.find(
+    (u) =>
+      !clanPendingInvitesData?.invitationsResponse?.results?.find(
+        (iv) => iv.destinyUserInfo?.membershipId === u?.membershipId
+      )
+  );
+  const hasFriendsWithDestinyAccountsNotPending = clanPendingInvitesData.friendsListResponse?.friends?.find(
+    (u) =>
+      !clanPendingInvitesData?.invitationsResponse?.results?.find(
+        (iv) =>
+          iv.bungieNetUserInfo?.membershipId === u?.bungieNetUser?.membershipId
+      )
+  );
 
   return (
     <>
@@ -135,39 +175,59 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
         {clanPendingInvitesData?.friendsListResponse &&
           clanPendingInvitesData?.friendsListResponse?.friends?.length ===
             0 && <p>{clansLoc.ThereWereNoResults}</p>}
-        {searchTerm === "" &&
-          clanPendingInvitesData?.friendsListResponse &&
-          clanPendingInvitesData?.friendsListResponse?.friends?.length > 0 && (
-            <ul className={classNames(styles.listCards)}>
-              {clanPendingInvitesData?.friendsListResponse?.friends?.map(
-                (b) => {
-                  if (
-                    clanPendingInvitesData?.invitationsResponse?.results
-                      ?.length &&
-                    clanPendingInvitesData?.invitationsResponse?.results?.find(
-                      (iv) =>
-                        b.bungieNetUser.membershipId ===
-                        iv.bungieNetUserInfo?.membershipId
+        {searchTerm === "" && hasFriendsWithDestinyAccountsNotPending && (
+          <ul className={classNames(styles.listCards)}>
+            {clanPendingInvitesData?.friendsListResponse?.friends?.map((b) => {
+              if (
+                clanPendingInvitesData?.invitationsResponse?.results?.length &&
+                clanPendingInvitesData?.invitationsResponse?.results?.find(
+                  (iv) =>
+                    b.bungieNetUser.membershipId ===
+                    iv.bungieNetUserInfo?.membershipId
+                )
+              ) {
+                //already has invitation
+                return null;
+              }
+
+              const bungieName = UserUtils.getBungieNameFromBnetBungieFriend(b);
+              const bungieNameWithCode = bungieName
+                ? `${bungieName.bungieGlobalName}${bungieName.bungieGlobalCodeWithHashtag}`
+                : "";
+
+              return (
+                <li
+                  key={b.lastSeenAsMembershipId}
+                  className={styles.memberCard}
+                  onClick={() =>
+                    openInviteModal(
+                      b.bungieNetUser.membershipId,
+                      BungieMembershipType.BungieNext
                     )
-                  ) {
-                    //already has invitation
-                    return null;
                   }
-
-                  return (
-                    <BungieFriendCard
-                      key={b.lastSeenAsMembershipId}
-                      friend={b}
-                      onClick={() => openInviteModal(b)}
+                >
+                  <div className={styles.content}>
+                    <OneLineItem
+                      itemTitle={bungieNameWithCode}
+                      icon={
+                        <IconCoin
+                          iconImageUrl={
+                            b.bungieNetUser.profilePicturePath ??
+                            `/img/profile/avatars/default_avatar.gif`
+                          }
+                        />
+                      }
                     />
-                  );
-                }
-              )}
-            </ul>
-          )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
 
-        {searchedUsers && searchedUsers?.length > 0 && (
-          <SpinnerContainer loading={true}>
+        {hasBungieUsersWithDestinyAccountsNotPending && (
+          <SpinnerContainer loading={isSearching}>
+            <h4>{clansLoc.BungieNetUsers}</h4>
             <ul
               className={classNames(
                 styles.listCards,
@@ -175,12 +235,57 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
                 styles.suggestedInvites
               )}
             >
-              {searchedUsers
-                ?.filter((u) =>
-                  clanPendingInvitesData?.invitationsResponse?.results?.find(
-                    (iv) => iv.destinyUserInfo?.membershipId !== u?.membershipId
-                  )
-                )
+              {searchedBungieUsers?.map((b) => {
+                const bungieNameWithCode = `${b.bungieGlobalDisplayName}${
+                  b.bungieGlobalDisplayNameCode
+                    ? `#${b.bungieGlobalDisplayNameCode}`
+                    : ""
+                }`;
+
+                return (
+                  <li
+                    className={styles.memberCard}
+                    key={b.bungieNetMembershipId}
+                    onClick={() =>
+                      openInviteModal(
+                        b.bungieNetMembershipId,
+                        BungieMembershipType.BungieNext
+                      )
+                    }
+                  >
+                    <div className={styles.content}>
+                      <OneLineItem
+                        itemTitle={bungieNameWithCode}
+                        icon={
+                          <IconCoin
+                            iconImageUrl={`/img/profile/avatars/default_avatar.gif`}
+                          />
+                        }
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </SpinnerContainer>
+        )}
+
+        {hasDestinyUsersNotPending && (
+          <SpinnerContainer loading={isSearching}>
+            <h4>{clansLoc.PlatformUsers}</h4>
+            <ul
+              className={classNames(
+                styles.listCards,
+                styles.admin,
+                styles.suggestedInvites
+              )}
+            >
+              {searchedDestinyUsers
+                ?.filter((u) => {
+                  return !clanPendingInvitesData?.invitationsResponse?.results?.find(
+                    (iv) => iv.destinyUserInfo?.membershipId === u?.membershipId
+                  );
+                })
                 .map((b) => {
                   const bungieName = UserUtils.getBungieNameFromUserInfoCard(b);
                   const bungieNameWithCode = bungieName
@@ -192,23 +297,21 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
                       className={styles.memberCard}
                       key={b.membershipId}
                       onClick={() =>
-                        sendInviteToSearchUser(b.membershipType, b.membershipId)
+                        openInviteModal(b.membershipId, b.membershipType)
                       }
                     >
                       <div className={styles.content}>
-                        <div className={styles.header}>
-                          <div
-                            className={styles.headerIcon}
-                            style={{
-                              backgroundImage: `url(/img/profile/avatars/default_avatar.gif)`,
-                            }}
-                          />
-                          <div className={styles.headerDetails}>
-                            <div className={styles.cardTitle}>
-                              <div>{bungieNameWithCode}</div>
-                            </div>
-                          </div>
-                        </div>
+                        <OneLineItem
+                          itemTitle={bungieNameWithCode}
+                          icon={
+                            <IconCoin
+                              iconImageUrl={
+                                b.iconPath ??
+                                `/img/profile/avatars/default_avatar.gif`
+                              }
+                            />
+                          }
+                        />
                       </div>
                     </li>
                   );
