@@ -13,10 +13,13 @@ import Season from "@Areas/User/ProfileComponents/Season";
 import Triumphs from "@Areas/User/ProfileComponents/Triumphs";
 import { BungieMembershipType } from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Models, Responses } from "@Platform";
+import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import React from "react";
 import { pageView } from "./ProfileUserSummary";
 import { ProfileGameHistoryLink } from "./ProfileGameHistoryLink";
+import viewStyles from "./DestinyView.module.scss";
 
 interface DestinyViewProps {
   destinyMembership: DestinyMembershipDataStorePayload;
@@ -43,7 +46,10 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
   const profileLoc = Localizer.Profile;
 
   return (
-    <>
+    <SystemDisabledHandler
+      className={viewStyles.destinyViewBlocks}
+      systems={[SystemNames.Destiny2]}
+    >
       {typeof destinyMembership.characters !== "undefined" && (
         <ProfileCharacterSelector
           membershipId={
@@ -98,6 +104,6 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
           <ProfileGameHistoryLink />
         </ProfileErrorBoundary>
       </div>
-    </>
+    </SystemDisabledHandler>
   );
 };

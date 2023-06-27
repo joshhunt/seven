@@ -21,6 +21,7 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
@@ -120,7 +121,9 @@ export const Reward: React.FC<RewardProps> = (props) => {
   const redemptionEndDateFormatted =
     redemptionEndDate && redemptionEndDate > DateTime.now()
       ? redemptionEndDate.setZone(timeZone).toLocaleString({
-          locale: Localizer.CurrentCultureName,
+          locale: LocalizerUtils.useAltChineseCultureString(
+            Localizer.CurrentCultureName
+          ),
           month: "short",
           year: "numeric",
           day: "numeric",

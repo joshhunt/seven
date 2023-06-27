@@ -218,6 +218,11 @@ class AppLayout extends React.Component<
         ? Responsive.getResponsiveClasses()
         : [];
 
+    const destiny2Disabled =
+      this.settingsLoaded &&
+      this.state.globalState &&
+      !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+
     const platformClass = BrowserUtils.getPlatformClass();
 
     const htmlClassList = classNames(
@@ -296,7 +301,7 @@ class AppLayout extends React.Component<
             <ScrollMemory />
           </Suspense>
 
-          {this.state.definitionsLoading && (
+          {this.state.definitionsLoading && !destiny2Disabled && (
             <SpinnerContainer
               loading={true}
               mode={SpinnerDisplayMode.fullPage}

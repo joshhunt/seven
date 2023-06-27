@@ -298,7 +298,10 @@ const Profile: React.FC<ProfileProps> = (props) => {
   };
 
   const loadExtendedDestinyProfileData = async () => {
-    if (destinyMembership?.selectedMembership) {
+    if (
+      ConfigUtils.SystemStatus(SystemNames.Destiny2) &&
+      destinyMembership?.selectedMembership
+    ) {
       try {
         const destinyResponse: Responses.DestinyProfileResponse = await Platform.Destiny2Service.GetProfile(
           destinyMembership.selectedMembership.membershipType,

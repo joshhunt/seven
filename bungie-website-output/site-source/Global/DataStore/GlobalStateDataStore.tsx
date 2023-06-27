@@ -168,6 +168,13 @@ class GlobalStateDataStoreInternal extends DataStore<
      */
     refreshCrossSavePairingStatus: async () => {
       let crossSavePairingStatus: CrossSave.CrossSavePairingStatus;
+
+      if (!ConfigUtils.SystemStatus("CrossSave")) {
+        return {
+          crossSavePairingStatus,
+        };
+      }
+
       try {
         crossSavePairingStatus = await Platform.CrosssaveService.GetCrossSavePairingStatus();
       } catch (e) {

@@ -36,6 +36,7 @@ import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
@@ -64,6 +65,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
   const destinyMembership = useDataStore(
     PresentationNodeDestinyMembershipDataStore
   );
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   const membershipType =
     (params?.mtype
@@ -144,7 +146,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
     !parentNodeHash || (parentNodeHash && Number.isNaN(parentNodeHash));
 
   const getProfileResponse = () => {
-    if (!destinyMembership.selectedMembership) {
+    if (destiny2Disabled || !destinyMembership.selectedMembership) {
       return;
     }
 
@@ -246,14 +248,9 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
     }
   }, [destinyMembership]);
 
-  if (!membershipType || !membershipId) {
-    //no destiny membership - show some message
-    return null;
-  }
-
-  if (!destinyMembership || (!profileResponse && hasDestinyAccount)) {
-    return null;
-  }
+  const noUserSpecified = !membershipType || !membershipId;
+  const noDestinyMembershipAvailable =
+    !destinyMembership || (!profileResponse && hasDestinyAccount);
 
   return (
     <SystemDisabledHandler
@@ -264,124 +261,140 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
         description={Localizer.Triumphs.PageName}
       />
       <ContainerBackground />
-      <Grid className={styles.presentationNodesContent}>
-        {!hasDestinyAccount && (
-          <GridCol cols={12}>
-            {Localizer.PresentationNodes.ADestinyAccountIsRequired}
-          </GridCol>
-        )}
-        {hasDestinyAccount && (
-          <div>
-            <GridCol cols={12} className={styles.nodesHeader}>
-              <Breadcrumb
-                pageType={"triumphs"}
-                rootHash={rootHash}
-                parentNodeHash={parentNodeHash}
-                categoryNodeHash={catNodeHash}
-                subCategoryHash={subCatNodeHash}
-                sort={sort}
-              />
-              {characterId && (
-                <DestinyAccountWrapper
-                  membershipDataStore={
-                    PresentationNodeDestinyMembershipDataStore
-                  }
-                  showCrossSaveBanner={true}
-                >
-                  {({
-                    bnetProfile,
-                    platformSelector,
-                    characterSelector,
-                  }: IAccountFeatures) => (
-                    <div>
-                      {bnetProfile}
-                      <div
-                        className={presentationNodesStyles.dropdownFlexWrapper}
-                      >
-                        {platformSelector}
-                        {characterSelector}
-                      </div>
-                    </div>
-                  )}
-                </DestinyAccountWrapper>
-              )}
-            </GridCol>
-            {isRootPage && <ScoreHeader profileResponse={profileResponse} />}
-            <div>
-              <GridCol
-                cols={isRootPage ? 8 : 12}
-                mobile={12}
-                className={classNames({ [styles.triumphParents]: !isRootPage })}
-              >
-                {isRootPage && (
-                  <div className={styles.presentationNodeSectionTitle}>
-                    <Anchor
-                      className={classNames(styles.subNavItem, {
-                        [styles.on]: !isLegacy,
-                      })}
-                      url={RouteHelper.NewTriumphs({
-                        mid:
-                          destinyMembership?.selectedMembership?.membershipId,
-                        mtype: EnumUtils.getNumberValue(
-                          destinyMembership?.selectedMembership?.membershipType,
-                          BungieMembershipType
-                        )?.toString(),
-                        cid: destinyMembership?.selectedCharacter?.characterId,
-                        root: activeTriumphsRootNodeHash.toString(),
-                        sort: sort,
-                      })}
-                    >
-                      {triumphsLoc.TriumphsSubNav}
-                    </Anchor>
-                    <Anchor
-                      className={classNames(styles.subNavItem, {
-                        [styles.on]: isLegacy,
-                      })}
-                      url={RouteHelper.NewTriumphs({
-                        mid:
-                          destinyMembership?.selectedMembership?.membershipId,
-                        mtype: EnumUtils.getNumberValue(
-                          destinyMembership?.selectedMembership?.membershipType,
-                          BungieMembershipType
-                        )?.toString(),
-                        cid: destinyMembership?.selectedCharacter?.characterId,
-                        root: legacyTriumphsRootHash.toString(),
-                        sort: sort,
-                      })}
-                    >
-                      {triumphsLoc.LegacyTriumphsSubNav}
-                    </Anchor>
-                  </div>
-                )}
-                <Parents
-                  profileResponse={profileResponse}
-                  isLegacy={isLegacy}
-                  isRootPage={isRootPage}
-                  parentNodeHash={parentNodeHash}
-                  sort={sort}
-                  triumphType={triumphType}
-                />
-                {globalState.responsive.mobile && isRootPage && (
-                  <BannersParents />
-                )}
+      <>
+        {noUserSpecified || noDestinyMembershipAvailable ? null : (
+          <Grid className={styles.presentationNodesContent}>
+            {!hasDestinyAccount && (
+              <GridCol cols={12}>
+                {Localizer.PresentationNodes.ADestinyAccountIsRequired}
               </GridCol>
-              {!globalState.responsive.mobile && isRootPage && (
-                <BannersParents />
-              )}
-              {!isRootPage && (
-                <DetailContainer
-                  profileResponse={profileResponse}
-                  categoryHash={catNodeHash}
-                  rootHash={rootHash}
-                  parentHash={parentNodeHash}
-                  subCategoryHash={subCatNodeHash}
-                  sort={sort}
-                />
-              )}
-            </div>
-          </div>
+            )}
+            {hasDestinyAccount && (
+              <div>
+                <GridCol cols={12} className={styles.nodesHeader}>
+                  <Breadcrumb
+                    pageType={"triumphs"}
+                    rootHash={rootHash}
+                    parentNodeHash={parentNodeHash}
+                    categoryNodeHash={catNodeHash}
+                    subCategoryHash={subCatNodeHash}
+                    sort={sort}
+                  />
+                  {characterId && (
+                    <DestinyAccountWrapper
+                      membershipDataStore={
+                        PresentationNodeDestinyMembershipDataStore
+                      }
+                      showCrossSaveBanner={true}
+                    >
+                      {({
+                        bnetProfile,
+                        platformSelector,
+                        characterSelector,
+                      }: IAccountFeatures) => (
+                        <div>
+                          {bnetProfile}
+                          <div
+                            className={
+                              presentationNodesStyles.dropdownFlexWrapper
+                            }
+                          >
+                            {platformSelector}
+                            {characterSelector}
+                          </div>
+                        </div>
+                      )}
+                    </DestinyAccountWrapper>
+                  )}
+                </GridCol>
+                {isRootPage && (
+                  <ScoreHeader profileResponse={profileResponse} />
+                )}
+                <div>
+                  <GridCol
+                    cols={isRootPage ? 8 : 12}
+                    mobile={12}
+                    className={classNames({
+                      [styles.triumphParents]: !isRootPage,
+                    })}
+                  >
+                    {isRootPage && (
+                      <div className={styles.presentationNodeSectionTitle}>
+                        <Anchor
+                          className={classNames(styles.subNavItem, {
+                            [styles.on]: !isLegacy,
+                          })}
+                          url={RouteHelper.NewTriumphs({
+                            mid:
+                              destinyMembership?.selectedMembership
+                                ?.membershipId,
+                            mtype: EnumUtils.getNumberValue(
+                              destinyMembership?.selectedMembership
+                                ?.membershipType,
+                              BungieMembershipType
+                            )?.toString(),
+                            cid:
+                              destinyMembership?.selectedCharacter?.characterId,
+                            root: activeTriumphsRootNodeHash.toString(),
+                            sort: sort,
+                          })}
+                        >
+                          {triumphsLoc.TriumphsSubNav}
+                        </Anchor>
+                        <Anchor
+                          className={classNames(styles.subNavItem, {
+                            [styles.on]: isLegacy,
+                          })}
+                          url={RouteHelper.NewTriumphs({
+                            mid:
+                              destinyMembership?.selectedMembership
+                                ?.membershipId,
+                            mtype: EnumUtils.getNumberValue(
+                              destinyMembership?.selectedMembership
+                                ?.membershipType,
+                              BungieMembershipType
+                            )?.toString(),
+                            cid:
+                              destinyMembership?.selectedCharacter?.characterId,
+                            root: legacyTriumphsRootHash.toString(),
+                            sort: sort,
+                          })}
+                        >
+                          {triumphsLoc.LegacyTriumphsSubNav}
+                        </Anchor>
+                      </div>
+                    )}
+                    <Parents
+                      profileResponse={profileResponse}
+                      isLegacy={isLegacy}
+                      isRootPage={isRootPage}
+                      parentNodeHash={parentNodeHash}
+                      sort={sort}
+                      triumphType={triumphType}
+                    />
+                    {globalState.responsive.mobile && isRootPage && (
+                      <BannersParents />
+                    )}
+                  </GridCol>
+                  {!globalState.responsive.mobile && isRootPage && (
+                    <BannersParents />
+                  )}
+                  {!isRootPage && (
+                    <DetailContainer
+                      profileResponse={profileResponse}
+                      categoryHash={catNodeHash}
+                      rootHash={rootHash}
+                      parentHash={parentNodeHash}
+                      subCategoryHash={subCatNodeHash}
+                      sort={sort}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </Grid>
         )}
-      </Grid>
+      </>
     </SystemDisabledHandler>
   );
 };

@@ -33,7 +33,6 @@ export type SearchType =
   | "clans"
   | "destinyusers"
   | "users"
-  | "activities"
   | "items"
   | "news"
   | "support"
@@ -146,52 +145,6 @@ class _SearchDataStore extends DataStore<SearchPayload> {
         hasMore: itemsSearchResponse?.results?.hasMore,
         nextPageFunction: () =>
           SearchDataStore.actions.doPagedItemSearch(searchTerm, page + 1),
-        searchItems: combinedList,
-      };
-
-      SearchDataStore.actions.addSearchTab(tabContent, page === 0);
-
-      return {
-        searchTerm: searchTerm,
-      };
-    },
-    doPagedActivitiesSearch: async (
-      state: SearchPayload,
-      searchTerm: string,
-      page = 0
-    ) => {
-      let activitiesSearchResponse;
-
-      try {
-        activitiesSearchResponse = await Platform.Destiny2Service.SearchDestinyEntities(
-          "DestinyActivityDefinition",
-          searchTerm,
-          page
-        );
-      } catch {
-        return {
-          searchTerm: searchTerm,
-        };
-      }
-
-      const currentDisplayPropsList = state.searchTabContentProps?.find(
-        (t) => t.searchType === "activities"
-      )?.searchItems;
-      const fetchedDisplayPropsList = SearchUtils.GetDisplayPropertiesFromItemSearch(
-        activitiesSearchResponse?.results.results
-      );
-      const combinedList =
-        page === 0
-          ? fetchedDisplayPropsList
-          : [...currentDisplayPropsList, ...fetchedDisplayPropsList];
-
-      const tabContent: SearchTabContentProps = {
-        tabLabel: Localizer.Usertools.Tab_Activites,
-        searchType: "activities",
-        page: activitiesSearchResponse?.results?.query?.currentPage ?? 0,
-        hasMore: activitiesSearchResponse?.results?.hasMore,
-        nextPageFunction: () =>
-          SearchDataStore.actions.doPagedActivitiesSearch(searchTerm, page + 1),
         searchItems: combinedList,
       };
 

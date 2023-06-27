@@ -135,7 +135,10 @@ export const Clan: React.FC<ClanProps> = (props) => {
         });
 
   return (
-    <SystemDisabledHandler systems={[SystemNames.Clans]}>
+    <SystemDisabledHandler
+      className={styles.clanSectionWrapper}
+      systems={[SystemNames.Clans]}
+    >
       {clan ? (
         <Anchor
           className={styles.clanSection}

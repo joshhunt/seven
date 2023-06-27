@@ -15,6 +15,7 @@ import {
   GlobalStateDataStore,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
@@ -72,12 +73,16 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
     Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
   >();
 
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+
   useEffect(() => {
-    SeasonsDestinyMembershipDataStore.actions.loadUserData();
+    if (!destiny2Disabled) {
+      SeasonsDestinyMembershipDataStore.actions.loadUserData();
+    }
   }, []);
 
   useEffect(() => {
-    if (destinyMembership?.selectedMembership) {
+    if (!destiny2Disabled && destinyMembership?.selectedMembership) {
       Platform.Destiny2Service.GetProfile(
         destinyMembership?.selectedMembership?.membershipType,
         destinyMembership?.selectedMembership?.membershipId,
@@ -100,7 +105,8 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
   const isAnonymous = !UserUtils.isAuthenticated(globalState);
 
   if (
-    ConfigUtils.SystemStatus("AccountServices") &&
+    !destiny2Disabled &&
+    ConfigUtils.SystemStatus(SystemNames.AccountServices) &&
     !isAnonymous &&
     !destinyMembership?.loaded
   ) {

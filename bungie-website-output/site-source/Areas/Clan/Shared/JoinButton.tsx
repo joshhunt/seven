@@ -107,6 +107,18 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
           return null;
         }
 
+        const isStadiaPrimaryCrossSave =
+          globalState?.crossSavePairingStatus?.primaryMembershipType ===
+          BungieMembershipType.TigerStadia;
+
+        if (
+          m.membershipType === BungieMembershipType.TigerStadia &&
+          !isStadiaPrimaryCrossSave
+        ) {
+          //Stadia membershipType but its not the primary cross save account
+          return null;
+        }
+
         return (
           <Button
             key={m.membershipType}

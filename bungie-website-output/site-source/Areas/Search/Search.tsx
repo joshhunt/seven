@@ -7,7 +7,6 @@ import {
 } from "@Areas/Search/DataStores/SearchDataStore";
 import { SearchTab } from "@Areas/Search/Shared/SearchTab";
 import { SearchTabContent } from "@Areas/Search/Shared/SearchTabContent";
-import { SearchUtils } from "@Areas/Search/Shared/SearchUtils";
 import styles from "@Areas/Search/search.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -58,7 +57,6 @@ const Search: React.FC<SearchProps> = (props) => {
   };
 
   const searchSeparately = () => {
-    SearchDataStore.actions.doPagedActivitiesSearch(inputString);
     SearchDataStore.actions.doPagedItemSearch(inputString);
     SearchDataStore.actions.doPagedUserSearch(inputString);
     SearchDataStore.actions.doPagedNewsSearch(inputString);

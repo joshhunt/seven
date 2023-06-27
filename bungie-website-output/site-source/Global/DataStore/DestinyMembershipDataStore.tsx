@@ -4,6 +4,7 @@
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { DataStore } from "@bungie/datastore";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import {
   Characters,
   GroupsV2,
@@ -12,6 +13,7 @@ import {
   User,
   Components,
 } from "@Platform";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
@@ -61,6 +63,18 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       force = false,
       showAllMembershipsWhenCrossaved = false
     ) => {
+      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+        return {
+          membershipData: null,
+          memberships: [],
+          characters: {},
+          selectedCharacter: null,
+          selectedMembership: null,
+          isCrossSaved: false,
+          loaded: true,
+        };
+      }
+
       const isSameMembershipType =
         user &&
         user?.membershipType === this.state.selectedMembership?.membershipType;
@@ -191,18 +205,20 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       } = {};
 
       try {
-        profileResponse = await Platform.Destiny2Service.GetProfile(
-          membershipToUse?.membershipType,
-          membershipToUse?.membershipId,
-          [DestinyComponentType.Profiles, DestinyComponentType.Characters]
-        );
+        if (ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+          profileResponse = await Platform.Destiny2Service.GetProfile(
+            membershipToUse?.membershipType,
+            membershipToUse?.membershipId,
+            [DestinyComponentType.Profiles, DestinyComponentType.Characters]
+          );
 
-        const hasCharacterData =
-          typeof profileResponse.characters !== "undefined" &&
-          typeof profileResponse.characters.data !== "undefined";
+          const hasCharacterData =
+            typeof profileResponse.characters !== "undefined" &&
+            typeof profileResponse.characters.data !== "undefined";
 
-        if (hasCharacterData) {
-          characters = profileResponse.characters.data;
+          if (hasCharacterData) {
+            characters = profileResponse.characters.data;
+          }
         }
       } catch {
         console.error(
@@ -226,6 +242,10 @@ export abstract class DestinyMembershipDataStore extends DataStore<
      * Change selected platform in state and update characters in state with characters on selected platform
      */
     updatePlatform: async (state, platformName: string) => {
+      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+        return;
+      }
+
       if (!this.state.loaded) {
         throw new Error(
           "actions.loadUserData must be called to initialize the data before any other action can be accessed"
