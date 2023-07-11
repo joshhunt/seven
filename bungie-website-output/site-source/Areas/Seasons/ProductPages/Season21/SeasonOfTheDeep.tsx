@@ -98,6 +98,7 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
     "platforms.button",
     "story_section.content",
     "activities_section.content",
+    "mission_section.content",
     "gear_section.content",
     "rewards_section.content",
     "event_section.content",
@@ -137,6 +138,15 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
     [mobile]
   );
 
+  const getResponsiveImg = useCallback(
+    (bg: TResponsiveBg): string => {
+      const img = mobile ? bg?.mobile_bg : bg?.desktop_bg;
+
+      return img?.url || undefined;
+    },
+    [mobile]
+  );
+
   const {
     title,
     hero,
@@ -144,6 +154,7 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
     sub_nav_btn_text,
     story_section,
     activities_section,
+    mission_section,
     gear_section,
     season_pass_section,
     rewards_section,
@@ -290,11 +301,29 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
                         <PmpCallout
                           data={ref?.data}
                           classes={{
-                            root: styles.activitiesCallout,
-                            upperContent: styles.activitiesCalloutUpperContent,
+                            root: classNames(styles.activitiesCalloutBase, {
+                              [styles.activitiesCallout]: !mission_section?.show_section,
+                              [styles.activitiesCalloutV2]:
+                                mission_section?.show_section,
+                            }),
+                            upperContent: classNames(
+                              styles.activitiesCalloutUpperContent,
+                              {
+                                [styles.activitiesCalloutUpperContentSpacing]:
+                                  mission_section?.show_section,
+                              }
+                            ),
                             heading: styles.activitiesCalloutHeading,
-                            textWrapper: styles.activitiesTextWrapper,
-                            asideImg: styles.activitiesCalloutAsideImage,
+                            textWrapper: classNames({
+                              [styles.activitiesTextWrapper]: !mission_section?.show_section,
+                              [styles.activitiesTextWrapperV2]:
+                                mission_section?.show_section,
+                            }),
+                            asideImg: classNames({
+                              [styles.activitiesCalloutAsideImage]: !mission_section?.show_section,
+                              [styles.activitiesCalloutAsideImageV2]:
+                                mission_section?.show_section,
+                            }),
                             blurb: styles.activitiesCalloutBlurb,
                           }}
                         />
@@ -308,11 +337,57 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
               </div>
             </div>
 
+            {mission_section?.show_section && (
+              <div id="mission">
+                <div
+                  className={styles.sectionDivider}
+                  style={{ background: "#3393AB" }}
+                />
+                <PmpSectionHeader
+                  data={mission_section?.content[0]}
+                  classes={{
+                    root: classNames(
+                      styles.missionSectionRoot,
+                      styles.missionSectionPadding
+                    ),
+                    textWrapper: styles.missionSectionOneText,
+                    secondaryHeading: styles.missionEyebrow,
+                    headingsFlexWrapper: styles.centerText,
+                    blurb: styles.centerText,
+                    heading: styles.missionHeading,
+                  }}
+                />
+                <div
+                  id="weapon"
+                  className={styles.missionBackground}
+                  style={{
+                    backgroundImage: getResponsiveBg(
+                      mission_section?.content[1]
+                    ),
+                  }}
+                >
+                  <img
+                    src={getResponsiveImg(
+                      mission_section?.primary_weapon_image
+                    )}
+                    className={styles.primaryImage}
+                  />
+                  <PmpSectionHeader
+                    data={mission_section?.content[1]}
+                    classes={{
+                      root: styles.missionSectionTwoRoot,
+                      textWrapper: styles.missionSectionTwoText,
+                      secondaryHeading: styles.missionEyebrow,
+                      headingsFlexWrapper: styles.centerText,
+                      blurb: styles.centerText,
+                      heading: styles.missionHeading,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* GEAR */}
-            <div
-              className={styles.sectionDivider}
-              style={{ background: "#3393AB" }}
-            />
             <div
               id={"gear"}
               className={classNames(
