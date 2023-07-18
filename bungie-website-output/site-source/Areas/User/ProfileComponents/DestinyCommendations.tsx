@@ -10,10 +10,12 @@ import {
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { BNetAccountPrivacy, DestinyComponentType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { Platform, Responses } from "@Platform";
 import { AiOutlineQuestionCircle } from "@react-icons/all-files/ai/AiOutlineQuestionCircle";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
@@ -41,17 +43,19 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
       globalState.loggedInUser?.user?.membershipId;
 
   const getProfile = () => {
-    Platform.Destiny2Service.GetProfile(
-      destinyMembership?.selectedMembership?.membershipType,
-      destinyMembership?.selectedMembership?.membershipId,
-      [
-        DestinyComponentType.Profiles,
-        DestinyComponentType.SocialCommendations,
-        DestinyComponentType.Records,
-      ]
-    ).then((result) => {
-      setProfileResponse(result);
-    });
+    if (ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+      Platform.Destiny2Service.GetProfile(
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
+        [
+          DestinyComponentType.Profiles,
+          DestinyComponentType.SocialCommendations,
+          DestinyComponentType.Records,
+        ]
+      ).then((result) => {
+        setProfileResponse(result);
+      });
+    }
   };
 
   const getPercentage = (hash: string) => {
@@ -146,7 +150,7 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
 
             return (
               <div
-                key={node?.key}
+                key={`${node?.key}_bar`}
                 className={styles[className]}
                 style={{ width: `${percentValue}%` }}
               />
@@ -161,7 +165,7 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
             const percentValue = getPercentage(node?.def?.hash?.toString());
 
             return (
-              <div key={node.value} className={styles[className]}>
+              <div key={`${node?.key}_score`} className={styles[className]}>
                 <span className={styles.label}>
                   {node?.def?.displayProperties?.name}
                 </span>

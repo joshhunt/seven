@@ -68,11 +68,6 @@ const FireteamGuardianRank: React.FC<FireteamGuardianRankProps> = (props) => {
       <span className={styles.rankValue}>
         {currentRankPresentationNodeDef?.displayProperties?.name}
       </span>
-      <span
-        className={classNames(styles.highestAchievedIndex, styles.rankNumber)}
-      >
-        {highestRank}
-      </span>
     </div>
   );
 };

@@ -153,6 +153,14 @@ export declare namespace User {
     bungieGlobalDisplayNameCode?: number;
   }
 
+  export interface UserEmailVerificationResponse {
+    EmailValidationStatusCode: number;
+
+    Title: string;
+
+    Message: string;
+  }
+
   export interface DestinyEmblemSourceRequest {
     MembershipType: Globals.BungieMembershipType;
 
@@ -6554,6 +6562,12 @@ export declare namespace Presentation {
     rootViewIcon: string;
 
     nodeType: Globals.DestinyPresentationNodeType;
+
+    /**
+		Primarily for Guardian Ranks, this property if the contents of this node are tied to the current season.
+		These nodes are shown with a different color for the in-game Guardian Ranks display.
+		*/
+    isSeasonal: boolean;
 
     /**
 		Indicates whether this presentation node's state is determined on a per-character or on an account-wide basis.
@@ -13708,14 +13722,19 @@ export declare namespace Profiles {
     activeEventCardHash?: number;
 
     /**
-		The 'current' Guardian Rank value, which starts at rank 1.
+		The 'current' Guardian Rank value, which starts at rank 1. This rank value will drop at the start of a new season to your 'renewed' rank from the previous season.
 		*/
     currentGuardianRank: number;
 
     /**
-		The 'lifetime highest' Guardian Rank value, which starts at rank 1.
+		The 'lifetime highest' Guardian Rank value, which starts at rank 1. This rank value should never go down.
 		*/
     lifetimeHighestGuardianRank: number;
+
+    /**
+		The seasonal 'renewed' Guardian Rank value. This rank value resets at the start of each new season to the highest-earned non-advanced rank.
+		*/
+    renewedGuardianRank: number;
   }
 
   /**
@@ -20095,6 +20114,27 @@ class ApplicationServiceInternal {
       input,
       clientState
     );
+
+  /**
+   * Endpoint provides a device type value for applications where applicable.
+   * @param apiKey An api key.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetApplicationDeviceTypeByApiKey = (
+    apiKey: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ClientDeviceType> =>
+    ApiIntermediary.doGetRequest(
+      `/App/GetApplicationDeviceTypeByApiKey/${e(apiKey)}/`,
+      [],
+      optionalQueryAppend,
+      "App",
+      "GetApplicationDeviceTypeByApiKey",
+      undefined,
+      clientState
+    );
 }
 
 class UserServiceInternal {
@@ -20256,6 +20296,48 @@ class UserServiceInternal {
     );
 
   /**
+   * Validates a users email.
+   * @param tokenGuid Email Validation Token
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ValidateEmail = (
+    tokenGuid: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserEmailVerificationResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ValidateEmail/${e(tokenGuid)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "ValidateEmail",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Unsubscribes a users email.
+   * @param tokenGuid Email Unsubscribe Token
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UnsubscribeEmail = (
+    tokenGuid: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserEmailVerificationResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/UnsubscribeEmail/${e(tokenGuid)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "UnsubscribeEmail",
+      undefined,
+      clientState
+    );
+
+  /**
    * Requests another validation email be sent if the current user's email is not validated.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -20263,7 +20345,7 @@ class UserServiceInternal {
   public static RevalidateEmail = (
     optionalQueryAppend?: string,
     clientState?: any
-  ): Promise<number> =>
+  ): Promise<User.UserEmailVerificationResponse> =>
     ApiIntermediary.doPostRequest(
       `/User/RevalidateEmail/`,
       [],

@@ -67,7 +67,7 @@ export const Clan: React.FC<ClanProps> = (props) => {
         setClan(clanResult);
       }
     } else {
-      if (destinyMembership?.selectedMembership) {
+      if (destinyMembership?.selectedMembership && !clansDisabled) {
         Platform.GroupV2Service.GetGroupsForMember(
           destinyMembership?.selectedMembership?.membershipType,
           destinyMembership?.selectedMembership?.membershipId,

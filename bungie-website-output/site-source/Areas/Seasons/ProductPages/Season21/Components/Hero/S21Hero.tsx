@@ -7,7 +7,12 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
+import { bgImage } from "@Utilities/ContentStackUtils";
 import React from "react";
+import {
+  BnetStackFile,
+  BnetStackSeasonOfTheHaunted,
+} from "../../../../../../Generated/contentstack-types";
 import styles from "./S21Hero.module.scss";
 import YoutubeModal from "@UIKit/Controls/Modal/YoutubeModal";
 import PlatformsBar from "../PlatformsBar/S21PlatformsBar";
@@ -18,12 +23,21 @@ type S21HeroProps = {
   showCTA?: boolean;
   openBuyModal: () => void;
   scrollToEvent: () => void;
+  showEventButton?: boolean;
+};
+
+type S21ScrollButtonProps = {
+  bottom_label: string;
+  images: BnetStackFile[];
+  mobile_label: string;
+  top_label: string;
 };
 
 export const S21Hero: React.FC<S21HeroProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, showCTA, scrollToEvent, openBuyModal } = props ?? {};
+  const { data, showCTA, scrollToEvent, openBuyModal, showEventButton } =
+    props ?? {};
 
   const {
     bg_desktop_poster,
@@ -37,6 +51,7 @@ export const S21Hero: React.FC<S21HeroProps> = (props) => {
     cta,
     platforms,
     available_now,
+    scroll_button,
   } = data ?? {};
 
   const handleTrailerBtnClick = () => {
@@ -112,19 +127,28 @@ export const S21Hero: React.FC<S21HeroProps> = (props) => {
 
           {paidMediaDefault ? (
             <div className={styles.btns}>
-              <Button
-                onClick={handleTrailerBtnClick}
-                buttonType={"gold"}
-                icon={
-                  <Icon
-                    className={styles.icon}
-                    iconType={"material"}
-                    iconName={"play_arrow"}
-                  />
-                }
-              >
-                {trailer_btn?.text}
-              </Button>
+              <div>
+                <Button
+                  onClick={handleTrailerBtnClick}
+                  buttonType={"gold"}
+                  icon={
+                    <Icon
+                      className={styles.icon}
+                      iconType={"material"}
+                      iconName={"play_arrow"}
+                    />
+                  }
+                >
+                  {trailer_btn?.text}
+                </Button>
+              </div>
+
+              {showEventButton && (
+                <ScrollButton
+                  {...scroll_button}
+                  scrollToEvent={scrollToEvent}
+                />
+              )}
             </div>
           ) : null}
         </div>
@@ -157,6 +181,42 @@ const HeroCTA: React.FC<any & { scrollToEvent: () => void }> = (props) => {
             animatedArrow: styles.animatedArrow,
           }}
         />
+      </button>
+    </div>
+  );
+};
+
+const ScrollButton: React.FC<
+  S21ScrollButtonProps & { scrollToEvent: () => void }
+> = (props) => {
+  const { mobile } = useDataStore(Responsive);
+
+  const {
+    scrollToEvent,
+    top_label,
+    bottom_label,
+    mobile_label,
+    images,
+  } = props;
+
+  return (
+    <div className={styles.eventBugWrapper}>
+      <button className={styles.eventBugContent} onClick={scrollToEvent}>
+        {!mobile && <p className={styles.title}>{top_label}</p>}
+        <div className={styles.iconOuterWrapper}>
+          <div className={styles.iconWrapper}>
+            {images?.map((image, i) => (
+              <div
+                className={styles.eventIcon}
+                style={{ backgroundImage: bgImage(image?.url) }}
+                key={i}
+              />
+            ))}
+          </div>
+        </div>
+        <p className={styles.title}>{mobile ? mobile_label : bottom_label}</p>
+
+        <DestinyArrows classes={{ root: styles.arrows }} />
       </button>
     </div>
   );

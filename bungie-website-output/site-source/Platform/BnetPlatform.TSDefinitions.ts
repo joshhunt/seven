@@ -650,6 +650,7 @@ export declare namespace DestinyDefinitions {
     Locked = 262144,
     Paracausal = 524288,
     Cryptarch = 1048576,
+    ArtifactPerkOwned = 2097152,
   }
 
   enum DestinySocketCategoryStyle {
@@ -5145,6 +5146,8 @@ export declare namespace DestinyDefinitions {
 
     nodeType: DestinyPresentationNodeType;
 
+    isSeasonal: boolean;
+
     scope: DestinyScope;
 
     objectiveHash?: number;
@@ -6157,7 +6160,7 @@ export declare namespace DestinyDefinitions {
   export interface DestinyArtifactTierItemDefinition {
     itemHash: number;
 
-    activeUnlockHash: number;
+    activeUnlockExpression: DestinyUnlockExpressionDefinition;
 
     visibleUnlockExpressions: DestinyUnlockExpressionDefinition[];
   }

@@ -8,11 +8,10 @@ import { Responsive } from "@Boot/Responsive";
 import { BnetStackNewsArticle } from "../../Generated/contentstack-types";
 import styles from "./Recent.module.scss";
 import React, { useEffect, useState } from "react";
-import { Logger } from "../../Global/Logger";
-import { RendererLogLevel } from "../../Platform/BnetPlatform.TSEnum";
-import { TwitterFeed, TwitterScript } from "../../UI/Content/TwitterFeed";
-import { Grid, GridCol, IGridColProps } from "../../UI/UIKit/Layout/Grid/Grid";
-import { SpecifiedNewsQuery } from "../../Utilities/ContentUtils";
+import { Logger } from "@Global/Logger";
+import { RendererLogLevel } from "@Enum";
+import { Grid, GridCol, IGridColProps } from "@UIKit/Layout/Grid/Grid";
+import { SpecifiedNewsQuery } from "@Utilities/ContentUtils";
 import { NewsPreview } from "../News/NewsPreview";
 
 export const Recent = () => {
@@ -41,7 +40,6 @@ export const Recent = () => {
 
   return (
     <div className={styles.container}>
-      <TwitterScript />
       <Grid>
         <GridCol cols={12}>
           <div className={styles.header}>
@@ -53,11 +51,6 @@ export const Recent = () => {
           cols={8}
           medium={12}
         />
-        {!medium && (
-          <GridCol cols={3} className={styles.right}>
-            <TwitterFeed />
-          </GridCol>
-        )}
         <ArticleSection
           articleList={articles?.slice(4, 6)}
           cols={6}

@@ -7,8 +7,10 @@ import { ClanSelector } from "@Areas/User/ProfileComponents/ClanSelector";
 import { PlatformError } from "@CustomErrors";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import { Localizer } from "@bungie/localization";
+import { SystemNames } from "@Global/SystemNames";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { Platform, GroupsV2 } from "@Platform";
@@ -136,10 +138,12 @@ export const InviteToClanButton: React.FC<InviteToClanButtonProps> = (
   };
 
   useEffect(() => {
-    getClanMembershipsForOnpageUser();
+    if (ConfigUtils.SystemStatus(SystemNames.Clans)) {
+      getClanMembershipsForOnpageUser();
+    }
   }, []);
 
-  if (typeof props.loggedInUserClans === "undefined") {
+  if (!props.loggedInUserClans) {
     return null;
   }
 

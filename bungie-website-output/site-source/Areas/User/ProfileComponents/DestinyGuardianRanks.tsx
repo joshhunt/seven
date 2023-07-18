@@ -13,7 +13,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Responses } from "@Platform";
+import { Profiles, Responses } from "@Platform";
 import { AiOutlineQuestionCircle } from "@react-icons/all-files/ai/AiOutlineQuestionCircle";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -38,39 +38,44 @@ const DestinyGuardianRanks: React.FC<DestinyGuardianRanksProps> = (props) => {
 
   const triumphsLoc = Localizer.Triumphs;
 
+  const profileData = props.destinyProfileResponse?.profile?.data;
+
   const rootNode = props.definitions.DestinyPresentationNodeDefinition.get(
     globalState.coreSettings.destiny2CoreSettings.guardianRanksRootNodeHash
   );
+  const rankIndex = (rankNumber: number) => Math.max((rankNumber ?? 1) - 1, 0);
+  const rankPresentationNodeDef = (index: number) =>
+    props.definitions.DestinyPresentationNodeDefinition.get(
+      rootNode?.children?.presentationNodes?.[index]?.presentationNodeHash
+    );
+  const rankDef = (rankNumber: number) =>
+    props.definitions.DestinyGuardianRankDefinition.get(rankNumber);
 
   //index is zero-based and is always 1 less than rank and is used for presentationNode def
   const highestRank = Math.max(
-    props.destinyProfileResponse?.profile?.data?.lifetimeHighestGuardianRank ??
-      1,
+    profileData?.lifetimeHighestGuardianRank ?? 1,
     1
   );
-  const currentRank = Math.max(
-    props.destinyProfileResponse?.profile?.data?.currentGuardianRank ?? 1,
-    1
-  );
-  const currentRankIndex = Math.max((currentRank ?? 1) - 1, 0);
-  const highestRankIndex = Math.max((highestRank ?? 1) - 1, 0);
+  const currentRank = Math.max(profileData?.currentGuardianRank ?? 1, 1);
+  const renewedRank = Math.max(profileData?.renewedGuardianRank ?? 1, 1);
 
-  const currentRankPresentationNodeDef = props.definitions.DestinyPresentationNodeDefinition.get(
-    rootNode?.children?.presentationNodes?.[currentRankIndex]
-      ?.presentationNodeHash
-  );
-  const highestRankPresentationNodeDef = props.definitions.DestinyPresentationNodeDefinition.get(
-    rootNode?.children?.presentationNodes?.[highestRankIndex]
-      ?.presentationNodeHash
-  );
+  const currentRankIndex = rankIndex(currentRank);
+  const highestRankIndex = rankIndex(highestRank);
+  const renewedRankIndex = rankIndex(renewedRank);
 
-  const currentRankDef = props.definitions.DestinyGuardianRankDefinition.get(
-    currentRank
+  const currentRankPresentationNodeDef = rankPresentationNodeDef(
+    currentRankIndex
+  );
+  const renewedRankPresentationNodeDef = rankPresentationNodeDef(
+    renewedRankIndex
+  );
+  const highestRankPresentationNodeDef = rankPresentationNodeDef(
+    highestRankIndex
   );
 
-  const highestRankDef = props.definitions.DestinyGuardianRankDefinition.get(
-    highestRank
-  );
+  const currentRankDef = rankDef(currentRank);
+  const renewedRankDef = rankDef(renewedRank);
+  const highestRankDef = rankDef(highestRank);
 
   const guardianRankConstants = props.definitions.DestinyGuardianRankConstantsDefinition.get(
     1
@@ -79,6 +84,30 @@ const DestinyGuardianRanks: React.FC<DestinyGuardianRanksProps> = (props) => {
   if (!rootNode || !currentRankPresentationNodeDef) {
     return null;
   }
+
+  const rankBar = (
+    title: string,
+    backgroundIconPath: string,
+    displayName: string
+  ) => {
+    return (
+      <div className={styles.bar}>
+        <span className={styles.label}>{title}</span>
+        <span className={styles.rankText}>
+          <span
+            className={classNames(
+              styles.highestCurrentCompletedIndex,
+              styles.rankNumber
+            )}
+            style={{
+              backgroundImage: `url(${backgroundIconPath})`,
+            }}
+          />
+          <span className={styles.rankValue}>{displayName}</span>
+        </span>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -149,40 +178,21 @@ const DestinyGuardianRanks: React.FC<DestinyGuardianRanksProps> = (props) => {
               );
             })}
           </div>
-          <div className={classNames(styles.currentRankBar, styles.bar)}>
-            <span className={styles.label}>{triumphsLoc.Rank}</span>
-            <span className={styles.rankText}>
-              <span
-                className={classNames(
-                  styles.highestCurrentCompletedIndex,
-                  styles.rankNumber
-                )}
-                style={{
-                  backgroundImage: `url(${currentRankDef?.displayProperties?.icon})`,
-                }}
-              />
-              <span className={styles.rankValue}>
-                {currentRankPresentationNodeDef?.displayProperties?.name}
-              </span>
-            </span>
-          </div>
-          <div className={classNames(styles.highestRankBar, styles.bar)}>
-            <span className={styles.label}>{triumphsLoc.HighestAchieved}</span>
-            <span className={styles.rankText}>
-              <span
-                className={classNames(
-                  styles.highestCurrentCompletedIndex,
-                  styles.rankNumber
-                )}
-                style={{
-                  backgroundImage: `url(${highestRankDef?.displayProperties?.icon})`,
-                }}
-              />
-              <span className={styles.rankValue}>
-                {highestRankPresentationNodeDef?.displayProperties?.name}
-              </span>
-            </span>
-          </div>
+          {rankBar(
+            triumphsLoc.Rank,
+            currentRankDef?.displayProperties?.icon,
+            currentRankPresentationNodeDef?.displayProperties?.name
+          )}
+          {rankBar(
+            triumphsLoc.RenewedRank,
+            renewedRankDef?.displayProperties?.icon,
+            renewedRankPresentationNodeDef?.displayProperties?.name
+          )}
+          {rankBar(
+            triumphsLoc.HighestAchieved,
+            highestRankDef?.displayProperties?.icon,
+            highestRankPresentationNodeDef?.displayProperties?.name
+          )}
         </div>
       </div>
     </div>

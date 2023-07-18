@@ -1,14 +1,15 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
+import { Localizer } from "@bungie/localization";
 import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
+import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UIKit/Companion/OneLineItem";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { useAsyncError } from "@Utilities/ReactUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieView.module.scss";
@@ -24,31 +25,31 @@ export const BungieNetGroups: React.FC<BungieNetGroupsProps> = (props) => {
   );
 
   const GetGroups = () => {
-    Platform.GroupV2Service.GetGroupsForMember(
-      BungieMembershipType.BungieNext,
-      props.membershipId,
-      GroupsForMemberFilter.All,
-      GroupType.General
-    )
-      .then((response) => {
-        setGroups(response);
-      })
-      .catch(throwError);
+    if (ConfigUtils.SystemStatus(SystemNames.Groups)) {
+      Platform.GroupV2Service.GetGroupsForMember(
+        BungieMembershipType.BungieNext,
+        props.membershipId,
+        GroupsForMemberFilter.All,
+        GroupType.General
+      )
+        .then((response) => {
+          setGroups(response);
+        })
+        .catch(throwError);
+    }
   };
 
   useEffect(() => {
     GetGroups();
   }, [props.membershipId]);
 
-  const groupsTitle = "Groups";
-
-  if (groups === null) {
+  if (!groups) {
     return null;
   }
 
   return (
     <div className={styles.groups}>
-      <h3>{groupsTitle}</h3>
+      <h3>{Localizer.Groups.GroupsTitle}</h3>
       <ul>
         {groups.results.map((group: GroupsV2.GroupMembership) => {
           return (

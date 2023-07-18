@@ -47,7 +47,9 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
     setCode(event.target.value);
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     setLoading(true);
     setError("");
 
@@ -58,8 +60,8 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
         setLoading(false);
       })
       .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        setError(e.message);
+      .catch((err: PlatformError) => {
+        setError(err.message);
         setLoading(false);
       });
   };
@@ -102,7 +104,7 @@ export const SmsCodeForm: React.FC<SmsCodeFormProps> = (props) => {
 
   return (
     <>
-      <form className={styles.form} onSubmit={onSubmit}>
+      <form className={styles.form} onSubmit={(e) => onSubmit(e)}>
         <div className={styles.spacer}>
           {loading && <Spinner inline={true} on={loading} />}
           {smsDatastorePayload.lastDigits &&

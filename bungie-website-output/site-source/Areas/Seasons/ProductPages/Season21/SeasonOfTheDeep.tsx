@@ -42,7 +42,7 @@ import { ContentStackClient } from "../../../../Platform/ContentStack/ContentSta
 import styles from "./SeasonOfTheDeep.module.scss";
 import { S21Hero } from "@Areas/Seasons/ProductPages/Season21/Components/Hero/S21Hero";
 import RewardsAndCalendar21 from "@Areas/Seasons/ProductPages/Season21/Components/SeasonPassRewards/S21SeasonPassRewards";
-
+import EventSection from "@Areas/Seasons/ProductPages/Season21/Components/EventTopSection/EventSection";
 interface SeasonOfTheDeepProps {}
 
 /* All pmp component overrides can be specified globally here since they all reference the same stylesheet */
@@ -100,8 +100,8 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
     "activities_section.content",
     "mission_section.content",
     "gear_section.content",
-    "rewards_section.content",
     "event_section.content",
+    "rewards_section.content",
     "season_pass_section.content",
     "bundle_section.content",
     "cta_section.content",
@@ -128,8 +128,8 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
   type TResponsiveBg = BnetStackS18ProductPage["story_section"]["top_bg"];
 
   const getResponsiveBg = useCallback(
-    (bg: TResponsiveBg) => {
-      const img = mobile ? bg?.mobile_bg : bg?.desktop_bg;
+    (image: TResponsiveBg) => {
+      const img = mobile ? image?.mobile_bg : image?.desktop_bg;
 
       return img?.url
         ? `url(${img?.url}?width=${mobile ? 768 : 1920})`
@@ -155,6 +155,7 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
     story_section,
     activities_section,
     mission_section,
+    event_section,
     gear_section,
     season_pass_section,
     rewards_section,
@@ -190,6 +191,7 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
           scrollToEvent={scrollToEventSection}
           showCTA={false}
           openBuyModal={openBuyModal}
+          showEventButton={mission_section?.show_section}
         />
 
         {paidMediaDefault ? (
@@ -359,7 +361,10 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
                 />
                 <div
                   id="weapon"
-                  className={styles.missionBackground}
+                  className={classNames(
+                    styles.missionBackground,
+                    styles.baseBackground
+                  )}
                   style={{
                     backgroundImage: getResponsiveBg(
                       mission_section?.content[1]
@@ -384,6 +389,21 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
                     }}
                   />
                 </div>
+              </div>
+            )}
+
+            {event_section?.show_section && (
+              <div id="solstice" ref={eventRef}>
+                <EventSection
+                  content={event_section?.content}
+                  eventHighlight={event_section?.event_highlight}
+                  topBackground={event_section?.top_bg}
+                  bottomBackground={event_section?.bottom_bg}
+                  topBanner={event_section?.top_banner}
+                  bottomBanner={event_section?.bottom_banner}
+                  leftAsideImage={event_section?.left_aside_image}
+                  rightAsideImage={event_section?.right_aside_image}
+                />
               </div>
             )}
 

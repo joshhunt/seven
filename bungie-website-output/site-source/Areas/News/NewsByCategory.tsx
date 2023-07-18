@@ -5,15 +5,13 @@ import { Responsive } from "@Boot/Responsive";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { NewsParams } from "@Routes/RouteParams";
 import classNames from "classnames";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { useHistory, useLocation } from "react-router";
 import { Logger } from "@Global/Logger";
 import { RendererLogLevel } from "@Enum";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { TwitterFeed } from "@UI/Content/TwitterFeed";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { NewsCategory } from "./News";
@@ -38,7 +36,6 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const articlesPerPage = 25;
   const [total, setTotal] = useState(articlesPerPage);
   const totalPages = total / articlesPerPage;
-  const TwitterFeedRef = useRef(<TwitterFeed />);
 
   const BasicNewsQuery = (currentPage: number, category?: string) => {
     return ContentStackClient()
@@ -119,9 +116,6 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
           />
         )}
       </div>
-      {!responsive.mobile && (
-        <div className={styles.twitterFeed}>{TwitterFeedRef.current}</div>
-      )}
     </div>
   );
 };

@@ -715,6 +715,10 @@ export enum PlatformErrorCodes {
   UserDisplayNameLessThanMinLength = 242,
   UserDisplayNameGreaterThanMaxLength = 243,
   UserDisplayNameContainsUnacceptableOrInvalidContent = 244,
+  EmailValidationOffline = 245,
+  EmailValidationFailOldCode = 246,
+  EmailValidationFailBadLink = 247,
+  EmailUnsubscribeFail = 248,
   MessagingUnknownError = 300,
   MessagingSelfError = 301,
   MessagingSendThrottle = 302,
@@ -2714,6 +2718,7 @@ export enum DestinyVendorItemState {
 		*/
   Paracausal = 524288,
   Cryptarch = 1048576,
+  ArtifactPerkOwned = 2097152,
 }
 
 /**

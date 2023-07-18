@@ -167,19 +167,15 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                       />
                       <Icon iconName={"pencil"} iconType={"fa"} />
                     </div>
-                    <button
-                      type="submit"
+                    <Button
+                      buttonType={"gold"}
+                      submit={true}
                       className={styles.textOnly}
+                      size={BasicSize.Small}
                       disabled={!(formikProps.isValid && formikProps.dirty)}
                     >
-                      <Button
-                        buttonType={"gold"}
-                        size={BasicSize.Small}
-                        disabled={!(formikProps.isValid && formikProps.dirty)}
-                      >
-                        {Localizer.userPages.savesettings}
-                      </Button>
-                    </button>
+                      {Localizer.userPages.savesettings}
+                    </Button>
                   </GridCol>
                 </div>
                 <GridCol cols={2} medium={0} />
@@ -228,22 +224,19 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
               </GridCol>
               <SaveButtonBar
                 saveButton={
-                  <button
-                    type="submit"
+                  <Button
                     className={classNames(styles.textOnly, styles.saveButton)}
+                    submit={true}
+                    buttonType={"gold"}
+                    loading={formikProps.isSubmitting}
+                    disabled={
+                      !formikProps.dirty ||
+                      !formikProps.isValid ||
+                      formikProps.isSubmitting
+                    }
                   >
-                    <Button
-                      buttonType={"gold"}
-                      loading={formikProps.isSubmitting}
-                      disabled={
-                        !formikProps.dirty ||
-                        !formikProps.isValid ||
-                        formikProps.isSubmitting
-                      }
-                    >
-                      {Localizer.userPages.savesettings}
-                    </Button>
-                  </button>
+                    {Localizer.userPages.savesettings}
+                  </Button>
                 }
                 showing={formikProps.dirty && formikProps.isValid}
               />
