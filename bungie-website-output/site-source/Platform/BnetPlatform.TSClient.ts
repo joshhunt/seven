@@ -712,6 +712,8 @@ export declare namespace Applications {
   }
 
   export interface Application {
+    applicationType: Globals.OAuthApplicationType;
+
     /**
 		Unique ID assigned to the application
 		*/
@@ -20132,6 +20134,27 @@ class ApplicationServiceInternal {
       optionalQueryAppend,
       "App",
       "GetApplicationDeviceTypeByApiKey",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Endpoint returns an application based on the api key id.
+   * @param apiKeyId An api key id
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetApplicationByApiKeyId = (
+    apiKeyId: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Applications.Application> =>
+    ApiIntermediary.doGetRequest(
+      `/App/GetApplicationByApiKeyId/${e(apiKeyId)}/`,
+      [],
+      optionalQueryAppend,
+      "App",
+      "GetApplicationByApiKeyId",
       undefined,
       clientState
     );
