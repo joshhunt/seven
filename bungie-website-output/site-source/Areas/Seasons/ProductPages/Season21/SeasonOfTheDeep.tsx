@@ -191,7 +191,7 @@ const SeasonOfTheDeep = (props: SeasonOfTheDeepProps) => {
           scrollToEvent={scrollToEventSection}
           showCTA={false}
           openBuyModal={openBuyModal}
-          showEventButton={mission_section?.show_section}
+          showEventButton={activities_section?.show_section}
         />
 
         {paidMediaDefault ? (
