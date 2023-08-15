@@ -43,35 +43,10 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
   const settingsModalRef = React.createRef<Modal>();
 
   const emailCode = (
-    isVerified: boolean,
-    settingsFullfied: boolean,
     rewardId: string,
     mType: BungieMembershipType,
     isDigital: boolean
   ) => {
-    if (!isVerified) {
-      //email not verified
-      Modal.error(new Error(rewardLoc.VerificationRequiredHeader));
-
-      return;
-    }
-
-    if (!settingsFullfied) {
-      Modal.open(
-        <Anchor
-          url={RouteHelper.EmailAndSms()}
-          target="_blank"
-          onClick={() => settingsModalRef.current.close()}
-        >
-          {rewardLoc.PleaseUpdateYourEmail}
-        </Anchor>,
-        {},
-        settingsModalRef
-      );
-
-      return;
-    }
-
     if (isDigital) {
       const platform = destinyMembership?.isCrossSaved
         ? globalState?.crossSavePairingStatus?.primaryMembershipType
@@ -134,14 +109,6 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
       !userAvailability.AvailabilityModel.DecryptedToken;
     const loyaltyMailAppliedText = rewardLoc.OfferApplied;
 
-    const emailSettingsOptInFlags = UserUtils.isAuthenticated(globalState)
-      ? parseInt(globalState.loggedInUser.emailUsage, 10)
-      : OptInFlags.None;
-    const emailSettingsFulfilled =
-      (emailSettingsOptInFlags & OptInFlags.Marketing) ===
-        OptInFlags.Marketing &&
-      (emailSettingsOptInFlags & OptInFlags.Social) === OptInFlags.Social;
-
     const modalRef = useRef<Modal>();
 
     if (
@@ -164,10 +131,6 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
           size={BasicSize.Small}
           onClick={() =>
             emailCode(
-              UserUtils.getEmailValidationState(
-                globalState.loggedInUser.emailStatus
-              ) === EmailValidationState.Verified,
-              emailSettingsFulfilled,
               props.reward.rewardId,
               membershipType,
               userAvailability.AvailabilityModel.IsOffer
@@ -187,10 +150,6 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
             size={BasicSize.Small}
             onClick={() =>
               emailCode(
-                UserUtils.getEmailValidationState(
-                  globalState.loggedInUser.emailStatus
-                ) === EmailValidationState.Verified,
-                emailSettingsFulfilled,
                 props.reward.rewardId,
                 membershipType,
                 userAvailability.AvailabilityModel.IsOffer

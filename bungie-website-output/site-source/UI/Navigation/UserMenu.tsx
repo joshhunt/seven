@@ -211,6 +211,7 @@ class SignInTriggers extends React.Component<{
             {Localizer.Nav.SignIn}
           </div>
         )}
+
         {ConfigUtils.SystemStatus(SystemNames.PSNAuth) && (
           <AuthTrigger
             key={BungieCredentialType.Psnid}
@@ -219,6 +220,8 @@ class SignInTriggers extends React.Component<{
             {Localizer.Registration.networksigninoptionplaystation}
           </AuthTrigger>
         )}
+
+        {auth && this.showSteamButton()}
 
         {ConfigUtils.SystemStatus(SystemNames.XuidAuth) && (
           <AuthTrigger
@@ -229,7 +232,24 @@ class SignInTriggers extends React.Component<{
           </AuthTrigger>
         )}
 
-        {auth && this.showSteamButton()}
+        {ConfigUtils.SystemStatus(SystemNames.EpicIdAuth) && (
+          <AuthTrigger
+            key={BungieCredentialType.EgsId}
+            credential={BungieCredentialType.EgsId}
+          >
+            {Localizer.Registration.networksigninoptionegsid}
+          </AuthTrigger>
+        )}
+
+        {ConfigUtils.SystemStatus(SystemNames.Twitch) && (
+          <AuthTrigger
+            key={BungieCredentialType.TwitchId}
+            credential={BungieCredentialType.TwitchId}
+          >
+            {Localizer.Registration.networksigninoptiontwitch}
+          </AuthTrigger>
+        )}
+
         {ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth) && (
           <AuthTrigger
             key={BungieCredentialType.StadiaId}
@@ -241,22 +261,6 @@ class SignInTriggers extends React.Component<{
                 <span>{Localizer.Registration.stadiaauthleaving}</span>
               )}
             </div>
-          </AuthTrigger>
-        )}
-        {ConfigUtils.SystemStatus(SystemNames.Twitch) && (
-          <AuthTrigger
-            key={BungieCredentialType.TwitchId}
-            credential={BungieCredentialType.TwitchId}
-          >
-            {Localizer.Registration.networksigninoptiontwitch}
-          </AuthTrigger>
-        )}
-        {ConfigUtils.SystemStatus(SystemNames.EpicIdAuth) && (
-          <AuthTrigger
-            key={BungieCredentialType.EgsId}
-            credential={BungieCredentialType.EgsId}
-          >
-            {Localizer.Registration.networksigninoptionegsid}
           </AuthTrigger>
         )}
 

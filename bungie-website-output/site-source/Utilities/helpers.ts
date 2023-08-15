@@ -1,5 +1,6 @@
 import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
+import { IDestinySkuStore } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UrlUtils } from ".//UrlUtils";
 
@@ -53,4 +54,28 @@ export const sortUsingFilterArray = <T>(
   });
 
   return sortedValues.concat(unsortedValues);
+};
+
+/**
+ * Takes in an array of strings that provides the sort order and the values that need to be sorted, returns values that are sorted
+ * @param values Array of objects that require sorting
+ * @param sortOrder Array of strings that set the sort order
+ * @param key the key that should be used for comparison in the values
+ */
+
+export const sortUsingArraySort = <T extends Record<string, any>>(
+  values: T[],
+  sortOrder: string[],
+  key: string
+): T[] => {
+  if (Array.isArray(values) && values?.length > 0) {
+    // Sort stores based on the predefined store order
+    return values.sort(
+      (a, b) =>
+        sortOrder.indexOf(a?.key?.toLowerCase()) -
+        sortOrder.indexOf(b?.key?.toLowerCase())
+    );
+  } else {
+    return values;
+  }
 };

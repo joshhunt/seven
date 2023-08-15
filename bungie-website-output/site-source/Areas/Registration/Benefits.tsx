@@ -1,7 +1,6 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { EmailVerified } from "@UI/User/EmailVerified";
 import * as React from "react";
 import styles from "./Benefits.module.scss";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
@@ -172,47 +171,7 @@ class Benefits extends React.Component<Props, IBenefitsState> {
         </div>
 
         <Grid className={styles.bodyContent}>
-          {!emailVerified && (
-            <div className={styles.containerVerifyEmail}>
-              <Grid>
-                <GridCol cols={12}>
-                  <div className={styles.verifyEmail}>
-                    <Icon iconName={"exclamation-triangle"} iconType={"fa"} />
-                    <div className={styles.text}>
-                      <strong>{verifyYourEmail}</strong>
-                      <p>
-                        {Localizer.Format(
-                          Localizer.Registrationbenefits
-                            .AVerifiedEmailIsRequired,
-                          { email: this.props.globalState.loggedInUser.email }
-                        )}
-                      </p>
-                    </div>
-                    <div className={styles.buttons}>
-                      <Button
-                        buttonType={"gold"}
-                        url={RouteHelper.ResendEmailVerification(
-                          this.props.globalState.loggedInUser.user.membershipId
-                        )}
-                      >
-                        {resendEmail}
-                      </Button>
-                      <Button
-                        buttonType={"white"}
-                        url={RouteHelper.Settings({
-                          category: "Notifications",
-                        })}
-                      >
-                        {emailSettings}
-                      </Button>
-                    </div>
-                  </div>
-                </GridCol>
-              </Grid>
-            </div>
-          )}
           <GridCol cols={12}>
-            <EmailVerified className={styles.emailVerified} />
             <SettingsBanners
               emailUsage={parseInt(
                 this.props.globalState.loggedInUser.emailUsage,
@@ -224,7 +183,6 @@ class Benefits extends React.Component<Props, IBenefitsState> {
               }
             />
             <RewardsBanner
-              emailVerified={emailVerified}
               membershipId={
                 this.props.globalState.loggedInUser.user.membershipId
               }

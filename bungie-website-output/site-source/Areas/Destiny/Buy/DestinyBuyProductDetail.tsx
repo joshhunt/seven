@@ -507,8 +507,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                           </p>
                         )}
                         <div className={styles.playstation} />
-                        <div className={styles.xboxSeriesX} />
-                        <div className={styles.xboxOne} />
+                        <div className={styles.xbox} />
                         <div className={styles.windows} />
                         <div className={styles.steam} />
                         <img

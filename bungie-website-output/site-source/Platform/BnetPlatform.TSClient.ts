@@ -1369,6 +1369,14 @@ export declare namespace Contract {
     rejectAllFriendRequests: boolean;
 
     isUltrabanned: boolean;
+
+    birthDate?: string;
+
+    countryOfResidence: string;
+
+    adminBirthDateChanges: number;
+
+    adminCountryChanges: number;
   }
 
   export interface CreateBungieProfileRequest {
@@ -1386,7 +1394,11 @@ export declare namespace Contract {
 
     offer: string;
 
-    emailSubscriptions: string;
+    emailSubscriptions?: string;
+
+    birthDate: string;
+
+    countryOfResidence: string;
   }
 
   export interface CreateEmailUserRequest {
@@ -1464,6 +1476,12 @@ export declare namespace Contract {
     adultMode?: boolean;
 
     isThemeLight?: boolean;
+  }
+
+  export interface UserBirthdayOrCountryEditRequest {
+    birthday: string;
+
+    country: string;
   }
 
   export interface UserCounts {
@@ -8902,7 +8920,7 @@ export declare namespace Definitions {
   /**
 	Perks are modifiers to a character or item that can be applied situationally.
 	
-	- Perks determine a weapons' damage type.
+	- Perks determine a weapon's damage type.
 	
 	- Perks put the Mods in Modifiers (they are literally the entity that bestows the Sandbox
 	benefit for whatever fluff text about the modifier in the Socket, Plug or Talent Node)
@@ -8952,35 +8970,11 @@ export declare namespace Definitions {
 		*/
     damageTypeHash?: number;
 
-    /**
-		An old holdover from the original Armory, this was an attempt to group perks by functionality.
-		
-		It is as yet unpopulated, and there will be quite a bit of work needed to restore it to its former
-		working order.
-		*/
-    perkGroups: Definitions.DestinyTalentNodeStepGroups;
-
     hash: number;
 
     index: number;
 
     redacted: boolean;
-  }
-
-  /**
-	These properties are an attempt to categorize talent node steps by certain common properties.  See
-	the related enumerations for the type of properties being categorized.
-	*/
-  export interface DestinyTalentNodeStepGroups {
-    weaponPerformance: Globals.DestinyTalentNodeStepWeaponPerformances;
-
-    impactEffects: Globals.DestinyTalentNodeStepImpactEffects;
-
-    guardianAttributes: Globals.DestinyTalentNodeStepGuardianAttributes;
-
-    lightAbilities: Globals.DestinyTalentNodeStepLightAbilities;
-
-    damageTypes: Globals.DestinyTalentNodeStepDamageTypes;
   }
 
   /**
@@ -11894,6 +11888,22 @@ export declare namespace Definitions {
 		with new Plugs.  See DestinyInventoryItemDefinition for more information about sockets and plugs.
 		*/
     socketReplacements: Definitions.DestinyNodeSocketReplaceResponse[];
+  }
+
+  /**
+	These properties are an attempt to categorize talent node steps by certain common properties.  See
+	the related enumerations for the type of properties being categorized.
+	*/
+  export interface DestinyTalentNodeStepGroups {
+    weaponPerformance: Globals.DestinyTalentNodeStepWeaponPerformances;
+
+    impactEffects: Globals.DestinyTalentNodeStepImpactEffects;
+
+    guardianAttributes: Globals.DestinyTalentNodeStepGuardianAttributes;
+
+    lightAbilities: Globals.DestinyTalentNodeStepLightAbilities;
+
+    damageTypes: Globals.DestinyTalentNodeStepDamageTypes;
   }
 
   /**
@@ -20459,6 +20469,48 @@ class UserServiceInternal {
       "User",
       "EditSuccessMessageFlags",
       undefined,
+      clientState
+    );
+
+  /**
+   * Edits a user's birthdate or native country used for age gating. Requires an admin.
+   * @param membershipId
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static EditBirthdayOrCountryAdmin = (
+    input: Contract.UserBirthdayOrCountryEditRequest,
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/User/EditBirthdayOrCountry/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "EditBirthdayOrCountryAdmin",
+      input,
+      clientState
+    );
+
+  /**
+   * Edits a user's birthdate and native country used for age gating.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static EditBirthdayAndCountry = (
+    input: Contract.UserBirthdayOrCountryEditRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/User/EditBirthdayAndCountry/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "EditBirthdayAndCountry",
+      input,
       clientState
     );
 

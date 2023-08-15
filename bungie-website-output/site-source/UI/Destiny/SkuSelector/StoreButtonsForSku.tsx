@@ -4,7 +4,11 @@
 import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import React from "react";
-import { Img, sortUsingFilterArray } from "../../../Utilities/helpers";
+import {
+  Img,
+  sortUsingFilterArray,
+  sortUsingArraySort,
+} from "../../../Utilities/helpers";
 import { StoreSkuButton } from "../../UIKit/Controls/Button/StoreSkuButton";
 import { IDestinyProductDefinition } from "./DestinyProductDefinitions";
 import {
@@ -56,6 +60,16 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
     });
   };
 
+  const storeOrder = [
+    "playstation",
+    "steam",
+    "xbox",
+    "epic",
+    "microsoftpc",
+    "bungiestore",
+  ];
+  const storesList = sortUsingArraySort(stores, storeOrder, "key");
+
   const getTitleKey = (key: string) => {
     switch (key) {
       case "StadiaFree":
@@ -78,7 +92,7 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
     <>
       <div className={styles.modalSubtitle}>{subtitle}</div>
       <div className={styles.modalButtons}>
-        {stores.map((store) => {
+        {storesList?.map((store) => {
           const storeRegions = DestinySkuUtils.getRegionsForProduct(
             skuDefinition.skuTag,
             store.key,
@@ -114,12 +128,6 @@ export const StoreButtonsForSku: React.FC<StoreButtonsForSkuProps> = (
           const storeKeyForIcon =
             store.key === "StadiaFree" ? "stadia" : store.key.toLowerCase();
           const storeKeyForTitle = getTitleKey(store.key);
-          console.log(
-            store.key,
-            storeRegion !== DestinySkuUtils.REGION_GLOBAL_KEY,
-            storeRegion,
-            DestinySkuUtils.REGION_GLOBAL_KEY
-          );
 
           return (
             <div

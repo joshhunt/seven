@@ -86,6 +86,14 @@ export declare namespace DestinyDefinitions {
     ZoneControl = 89,
     IronBannerRift = 90,
     IronBannerZoneControl = 91,
+    Relic = 92,
+  }
+
+  enum DestinyRewardSourceCategory {
+    None = 0,
+    Activity = 1,
+    Vendor = 2,
+    Aggregate = 3,
   }
 
   enum DestinyTalentNodeStepWeaponPerformances {
@@ -148,13 +156,6 @@ export declare namespace DestinyDefinitions {
     Solar = 4,
     Void = 8,
     All = 15,
-  }
-
-  enum DestinyRewardSourceCategory {
-    None = 0,
-    Activity = 1,
-    Vendor = 2,
-    Aggregate = 3,
   }
 
   enum DestinyUnlockEventPeriodType {
@@ -651,6 +652,7 @@ export declare namespace DestinyDefinitions {
     Paracausal = 524288,
     Cryptarch = 1048576,
     ArtifactPerkOwned = 2097152,
+    Savings = 4194304,
   }
 
   enum DestinySocketCategoryStyle {
@@ -707,6 +709,20 @@ export declare namespace DestinyDefinitions {
     Record = 4,
     SeasonalTriumph = 5,
     GuardianRank = 6,
+    CategoryCollectibles = 7,
+    CategoryCurrencies = 8,
+    CategoryEmblems = 9,
+    CategoryEmotes = 10,
+    CategoryEngrams = 11,
+    CategoryFinishers = 12,
+    CategoryGhosts = 13,
+    CategoryMisc = 14,
+    CategoryMods = 15,
+    CategoryOrnaments = 16,
+    CategoryShaders = 17,
+    CategoryShips = 18,
+    CategorySpawnfx = 19,
+    CategoryUpgradeMaterials = 20,
   }
 
   enum DestinyRecordValueStyle {
@@ -2128,6 +2144,8 @@ export declare namespace DestinyDefinitions {
 
     groupCategoryOnly: boolean;
 
+    requiresNonNullPropertyNamed: string;
+
     boundToRelease: string;
 
     hash: number;
@@ -2394,8 +2412,6 @@ export declare namespace DestinyDefinitions {
 
     damageTypeHash?: number;
 
-    perkGroups: DestinyTalentNodeStepGroups;
-
     boundToRelease: string;
 
     hash: number;
@@ -2407,18 +2423,6 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
-  }
-
-  export interface DestinyTalentNodeStepGroups {
-    weaponPerformance: DestinyTalentNodeStepWeaponPerformances;
-
-    impactEffects: DestinyTalentNodeStepImpactEffects;
-
-    guardianAttributes: DestinyTalentNodeStepGuardianAttributes;
-
-    lightAbilities: DestinyTalentNodeStepLightAbilities;
-
-    damageTypes: DestinyTalentNodeStepDamageTypes;
   }
 
   export interface DestinyProgressionDefinition {
@@ -3061,6 +3065,18 @@ export declare namespace DestinyDefinitions {
     unlockExpressions: DestinyUnlockExpressionDefinition[];
 
     exclusiveSetRequiredHash: number;
+  }
+
+  export interface DestinyTalentNodeStepGroups {
+    weaponPerformance: DestinyTalentNodeStepWeaponPerformances;
+
+    impactEffects: DestinyTalentNodeStepImpactEffects;
+
+    guardianAttributes: DestinyTalentNodeStepGuardianAttributes;
+
+    lightAbilities: DestinyTalentNodeStepLightAbilities;
+
+    damageTypes: DestinyTalentNodeStepDamageTypes;
   }
 
   export interface DestinyNodeSocketReplaceResponse {

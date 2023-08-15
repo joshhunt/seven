@@ -6,8 +6,6 @@ import { RewardsDestinyMembershipDataStore } from "@Areas/Rewards/DataStores/Rew
 import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
 import { RewardsListSection } from "@Areas/Rewards/Shared/RewardsListSection";
-import { RewardsWarning } from "@Areas/Rewards/Shared/RewardsWarning";
-import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
@@ -19,7 +17,6 @@ import {
   DestinyAccountWrapper,
   IAccountFeatures,
 } from "@UI/Destiny/DestinyAccountWrapper";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -134,7 +131,6 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
           <h1 className={stylesContainer.claimRewardsTitle}>
             {rewardLoc.ClaimRewardsPageTitleMagento}
           </h1>
-          <RewardsWarning />
           {destinyUser?.membershipData?.destinyMemberships &&
             destinyUser.membershipData.destinyMemberships.length > 1 &&
             !destinyUser.isCrossSaved && (

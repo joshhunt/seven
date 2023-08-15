@@ -578,6 +578,7 @@ export enum PlatformErrorCodes {
   PerUserThrottleExceeded = 57,
   PayloadSignatureVerificationFailure = 58,
   InvalidServiceAuthContext = 59,
+  FailedMinimumAgeCheck = 60,
   ObsoleteCredentialType = 89,
   UnableToUnPairMobileApp = 90,
   UnableToPairMobileApp = 91,
@@ -1670,6 +1671,20 @@ export enum DestinyPresentationDisplayStyle {
   Record = 4,
   SeasonalTriumph = 5,
   GuardianRank = 6,
+  CategoryCollectibles = 7,
+  CategoryCurrencies = 8,
+  CategoryEmblems = 9,
+  CategoryEmotes = 10,
+  CategoryEngrams = 11,
+  CategoryFinishers = 12,
+  CategoryGhosts = 13,
+  CategoryMisc = 14,
+  CategoryMods = 15,
+  CategoryOrnaments = 16,
+  CategoryShaders = 17,
+  CategoryShips = 18,
+  CategorySpawnfx = 19,
+  CategoryUpgradeMaterials = 20,
 }
 
 export enum DestinyRecordValueStyle {
@@ -2216,7 +2231,7 @@ export enum DestinyComponentType {
 		*/
   ItemObjectives = 301,
   /**
-		Items can have perks (DestinyPerkDefinition).  If they do, this will return info for
+		Items can have perks (DestinySandboxPerkDefinition).  If they do, this will return info for
 		what perks are active on items.
 		*/
   ItemPerks = 302,
@@ -2719,6 +2734,7 @@ export enum DestinyVendorItemState {
   Paracausal = 524288,
   Cryptarch = 1048576,
   ArtifactPerkOwned = 2097152,
+  Savings = 4194304,
 }
 
 /**
@@ -3638,6 +3654,7 @@ export enum DestinyActivityModeType {
   ZoneControl = 89,
   IronBannerRift = 90,
   IronBannerZoneControl = 91,
+  Relic = 92,
 }
 
 /**
@@ -4097,6 +4114,14 @@ export enum CompanionPermission {
 		User has owner permissions on a fireteam
 		*/
   FireteamOwner = 20,
+  /**
+		User is an adult
+		*/
+  Adult = 21,
+  /**
+		User is a teenager or an adult.
+		*/
+  NotAChild = 22,
 }
 
 export enum RendererLogLevel {

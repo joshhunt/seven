@@ -28,12 +28,13 @@ import classNames from "classnames";
 import { Form, Formik } from "formik";
 import React, { Suspense, useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
-import { Img } from "../../../Utilities/helpers";
+import { Img } from "@Helpers";
 import accountStyles from "../Account.module.scss";
 import styles from "./IdentitySettings.module.scss";
 import { Avatars } from "./Internal/Avatars";
 import { Themes } from "./Internal/Themes";
 import { EnumUtils } from "@Utilities/EnumUtils";
+import CountryBirthday from "./Internal/CountryBirthday";
 
 type NameChangeStatus =
   | "initial"
@@ -102,7 +103,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
     setSubmitting: (isSubmitting: boolean) => void
   ) => {
     const updatingName =
-      userEditRequest.displayName !== bungieName.bungieGlobalName;
+      userEditRequest?.displayName !== bungieName.bungieGlobalName;
     if (!updatingName) {
       // the server throws an error if we pass in a display name that matched the current one
       userEditRequest.displayName = null;
@@ -266,6 +267,13 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         <h3>{Localizer.account.identitySettings}</h3>
       </GridCol>
       <GridDivider cols={12} className={accountStyles.mainDivider} />
+      {isAdmin && (
+        <GridCol className={accountStyles.admin} cols={12}>
+          <h4>{Localizer.groups.admintoolsheader}</h4>
+          <CountryBirthday />
+          <GridDivider cols={12} className={accountStyles.mainDivider} />
+        </GridCol>
+      )}
       {UserUtils.isAuthenticated(globalStateData) && onPageUser && (
         <Formik
           initialValues={{
@@ -321,7 +329,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                           [styles.nameCollision]: sameNameErrorState,
                         }),
                       }}
-                      placeholder={formikProps.values.displayName}
+                      placeholder={formikProps.values?.displayName}
                     />
                     {bungieName?.bungieGlobalCodeWithHashtag && (
                       <div className={styles.code}>
@@ -410,7 +418,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                         )}
                     </Suspense>
                   }
-                  {formikProps.values.displayName !==
+                  {formikProps.values?.displayName !==
                     bungieName?.bungieGlobalName && (
                     <div className={styles.confirmButtons}>
                       <button type="submit" className={styles.textOnly}>

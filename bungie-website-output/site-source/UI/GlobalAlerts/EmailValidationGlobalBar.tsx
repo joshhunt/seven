@@ -3,7 +3,9 @@
 
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
+import { CompanionPermission } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import styles from "@UI/GlobalAlerts/EmailValidationGlobalBar.module.scss";
 import { GlobalBar } from "@UI/GlobalAlerts/GlobalBar";
@@ -15,6 +17,16 @@ export const emailLocalStorageKey = "show-email-validation-alert";
 
 export const EmailValidationGlobalBar: React.FC = (props) => {
   const { loggedInUser } = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+
+  const [isChild, setIsChild] = useState(true);
+
+  const getPermissions = () => {
+    Platform.CompanionpermissionService.GetPermission(
+      CompanionPermission.NotAChild
+    ).then((result) => {
+      setIsChild(!result);
+    });
+  };
 
   const getEmailValidationState = (): EmailValidationState => {
     if (!loggedInUser) {
@@ -46,7 +58,11 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
     }
   };
 
-  if (!loggedInUser) {
+  useEffect(() => {
+    getPermissions();
+  }, [loggedInUser]);
+
+  if (!loggedInUser || isChild) {
     return null;
   }
 

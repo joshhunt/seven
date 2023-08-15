@@ -219,25 +219,6 @@ class AuthInternal extends React.Component<Props, IAuthState> {
           <div className={styles.signInBody}>
             {label && <div className={styles.label}>{label}</div>}
             <div className={styles.buttonWrapper}>
-              {xuidSystem?.enabled && (
-                <AuthTrigger
-                  key={Globals.BungieCredentialType.Xuid}
-                  credential={Globals.BungieCredentialType.Xuid}
-                  onAuthWindowClosed={this.onAuthWindowClosed}
-                >
-                  <Button className={styles.authTriggerButton}>
-                    <div
-                      className={styles.icon}
-                      style={{
-                        backgroundImage: `url(${Img(
-                          `/bungie/icons/logos/xbox/icon.png`
-                        )})`,
-                      }}
-                    />
-                    {Localizer.Registration.networksigninoptionxbox}
-                  </Button>
-                </AuthTrigger>
-              )}
               {psnSystem?.enabled && (
                 <AuthTrigger
                   key={Globals.BungieCredentialType.Psnid}
@@ -257,25 +238,6 @@ class AuthInternal extends React.Component<Props, IAuthState> {
                   </Button>
                 </AuthTrigger>
               )}
-              {battleNetSystem?.enabled && (
-                <AuthTrigger
-                  key={Globals.BungieCredentialType.BattleNetId}
-                  credential={Globals.BungieCredentialType.BattleNetId}
-                  onAuthWindowClosed={this.onAuthWindowClosed}
-                >
-                  <Button className={styles.authTriggerButton}>
-                    <div
-                      className={styles.icon}
-                      style={{
-                        backgroundImage: `url(${Img(
-                          `/bungie/icons/logos/blizzard/icon.png`
-                        )})`,
-                      }}
-                    />
-                    {Localizer.Registration.networksigninoptionblizzard}
-                  </Button>
-                </AuthTrigger>
-              )}
               {steamSystem?.enabled && (
                 <AuthTrigger
                   key={Globals.BungieCredentialType.SteamId}
@@ -292,6 +254,44 @@ class AuthInternal extends React.Component<Props, IAuthState> {
                       }}
                     />
                     {Localizer.Registration.networksigninoptionsteam}
+                  </Button>
+                </AuthTrigger>
+              )}
+              {xuidSystem?.enabled && (
+                <AuthTrigger
+                  key={Globals.BungieCredentialType.Xuid}
+                  credential={Globals.BungieCredentialType.Xuid}
+                  onAuthWindowClosed={this.onAuthWindowClosed}
+                >
+                  <Button className={styles.authTriggerButton}>
+                    <div
+                      className={styles.icon}
+                      style={{
+                        backgroundImage: `url(${Img(
+                          `/bungie/icons/logos/xbox/icon.png`
+                        )})`,
+                      }}
+                    />
+                    {Localizer.Registration.networksigninoptionxbox}
+                  </Button>
+                </AuthTrigger>
+              )}
+              {battleNetSystem?.enabled && (
+                <AuthTrigger
+                  key={Globals.BungieCredentialType.BattleNetId}
+                  credential={Globals.BungieCredentialType.BattleNetId}
+                  onAuthWindowClosed={this.onAuthWindowClosed}
+                >
+                  <Button className={styles.authTriggerButton}>
+                    <div
+                      className={styles.icon}
+                      style={{
+                        backgroundImage: `url(${Img(
+                          `/bungie/icons/logos/blizzard/icon.png`
+                        )})`,
+                      }}
+                    />
+                    {Localizer.Registration.networksigninoptionblizzard}
                   </Button>
                 </AuthTrigger>
               )}
