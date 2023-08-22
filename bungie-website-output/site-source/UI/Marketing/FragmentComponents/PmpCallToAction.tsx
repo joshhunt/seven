@@ -63,25 +63,29 @@ export const PmpCallToAction: React.FC<PmpCallToActionProps> = (props) => {
       className={classNames(styles.root, classes?.root)}
       style={{ backgroundImage: images?.bg && `url(${images.bg})` }}
     >
-      <img
-        className={classNames(styles.logo, classes?.logo)}
-        src={images.logo}
-        alt={logo?.title}
-      />
+      {images.logo ? (
+        <img
+          className={classNames(styles.logo, classes?.logo)}
+          src={images.logo}
+          alt={logo?.title}
+        />
+      ) : null}
 
-      <div className={classNames(styles.buttonsWrap, classes?.buttonsWrap)}>
-        {buttons.map(({ uid, ...button }) => {
-          return (
-            <PmpButton
-              key={uid}
-              className={classNames(styles.button, classes?.button)}
-              {...button}
-            >
-              {button.label}
-            </PmpButton>
-          );
-        })}
-      </div>
+      {buttons.length > 0 ? (
+        <div className={classNames(styles.buttonsWrap, classes?.buttonsWrap)}>
+          {buttons.map(({ uid, ...button }) => {
+            return (
+              <PmpButton
+                key={uid}
+                className={classNames(styles.button, classes?.button)}
+                {...button}
+              >
+                {button.label}
+              </PmpButton>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 };

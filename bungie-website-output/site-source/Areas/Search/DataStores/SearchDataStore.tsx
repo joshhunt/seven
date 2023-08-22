@@ -3,6 +3,7 @@
 
 import { ISearchItemDisplayProperties } from "@Areas/Search/Shared/SearchTabContent";
 import { SearchUtils } from "@Areas/Search/Shared/SearchUtils";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { DataStore } from "@bungie/datastore";
 import { Localizer } from "@bungie/localization";
 import {
@@ -10,9 +11,13 @@ import {
   GroupDateRange,
   GroupSortBy,
   GroupType,
+  RendererLogLevel,
 } from "@Enum";
+import { Logger } from "@Global/Logger";
 import { GroupsV2, Platform, User } from "@Platform";
 import React from "react";
+import { BnetStackNewsArticle } from "../../../Generated/contentstack-types";
+import { ContentStackClient } from "../../../Platform/ContentStack/ContentStackClient";
 
 export interface SearchPayload {
   searchTerm: string;
@@ -160,49 +165,95 @@ class _SearchDataStore extends DataStore<SearchPayload> {
       page = 1
     ) => {
       let newsSearchResponse = null;
+      const articlesPerPage = 50;
 
       try {
-        newsSearchResponse = await Platform.ContentService.SearchContentWithText(
-          Localizer.CurrentCultureName,
-          false,
-          "News",
-          null,
-          page,
-          searchTerm,
-          "WebGlobal"
-        );
+        ContentStackClient()
+          .ContentType("news_article")
+          .Query()
+          .only(["subtitle", "date", "title", "url"])
+          .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+          .descending("date")
+          .includeCount()
+          .skip((page - 1) * articlesPerPage)
+          .limit(articlesPerPage)
+          .toJSON()
+          .find()
+          .then((response) => {
+            const [entries, count] = response || [];
+            newsSearchResponse = {
+              results: entries.filter(
+                (entry: BnetStackNewsArticle) =>
+                  entry.title
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase()) ||
+                  entry.subtitle
+                    .toLowerCase()
+                    .includes(searchTerm.toLowerCase())
+              ),
+              hasMore: count > page * articlesPerPage,
+              query: {
+                currentPage: page,
+              },
+            };
+            SearchDataStore.actions.addSearchTab(
+              {
+                tabLabel: Localizer.Usertools.Tab_News,
+                searchType: "news",
+                page: newsSearchResponse?.query.currentPage ?? 1,
+                hasMore: newsSearchResponse?.hasMore,
+                nextPageFunction: () =>
+                  SearchDataStore.actions.doPagedNewsSearch(
+                    searchTerm,
+                    page + 1
+                  ),
+                searchItems: SearchUtils.GetDisplayPropertiesFromNewsSearch(
+                  newsSearchResponse?.results
+                ),
+              },
+              page === 1
+            );
+
+            if (newsSearchResponse) {
+              const currentDisplayPropsList = state.searchTabContentProps?.find(
+                (t) => t.searchType === "news"
+              )?.searchItems;
+              const fetchedDisplayPropsList = SearchUtils.GetDisplayPropertiesFromNewsSearch(
+                newsSearchResponse?.results
+              );
+              const combinedList =
+                page === 1
+                  ? fetchedDisplayPropsList
+                  : [...currentDisplayPropsList, ...fetchedDisplayPropsList];
+
+              const tabContent: SearchTabContentProps = {
+                tabLabel: Localizer.Usertools.Tab_News,
+                searchType: "news",
+                page: newsSearchResponse?.query.currentPage ?? 1,
+                hasMore: newsSearchResponse?.hasMore,
+                nextPageFunction: () =>
+                  SearchDataStore.actions.doPagedNewsSearch(
+                    searchTerm,
+                    page + 1
+                  ),
+                searchItems: combinedList,
+              };
+
+              SearchDataStore.actions.addSearchTab(tabContent, page === 1);
+
+              return {
+                searchTerm: searchTerm,
+              };
+            }
+          })
+          .catch((error: Error) => {
+            Logger.logToServer(error, RendererLogLevel.Error);
+          });
       } catch {
         return {
           searchTerm: searchTerm,
         };
       }
-
-      const currentDisplayPropsList = state.searchTabContentProps?.find(
-        (t) => t.searchType === "news"
-      )?.searchItems;
-      const fetchedDisplayPropsList = SearchUtils.GetDisplayPropertiesFromNewsSearch(
-        newsSearchResponse?.results
-      );
-      const combinedList =
-        page === 1
-          ? fetchedDisplayPropsList
-          : [...currentDisplayPropsList, ...fetchedDisplayPropsList];
-
-      const tabContent: SearchTabContentProps = {
-        tabLabel: Localizer.Usertools.Tab_News,
-        searchType: "news",
-        page: newsSearchResponse?.query.currentPage ?? 1,
-        hasMore: newsSearchResponse?.hasMore,
-        nextPageFunction: () =>
-          SearchDataStore.actions.doPagedNewsSearch(searchTerm, page + 1),
-        searchItems: combinedList,
-      };
-
-      SearchDataStore.actions.addSearchTab(tabContent, page === 1);
-
-      return {
-        searchTerm: searchTerm,
-      };
     },
     doPagedUserSearch: async (
       state: SearchPayload,

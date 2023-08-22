@@ -25,7 +25,9 @@ export const ChildGate: React.FC<ChildGateProps> = (props) => {
     <>
       {isChild ? (
         <p className={props.childMessageClassName}>
-          {Localizer.Userpages.HeyGuardianItLooksLike}
+          {Localizer.Format(Localizer.Userpages.Settingsarenotavailable, {
+            BungieHelpLink: Localizer.destiny.ServiceOfflinePage_HelpLinkText,
+          })}
         </p>
       ) : (
         props.children

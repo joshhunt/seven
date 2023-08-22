@@ -1478,6 +1478,18 @@ export declare namespace Contract {
     isThemeLight?: boolean;
   }
 
+  export interface UserBirthdayAndCountryResponse {
+    birthday?: string;
+
+    country: string;
+
+    isChild: boolean;
+
+    adminBirthDateChanges: number;
+
+    adminCountryChanges: number;
+  }
+
   export interface UserBirthdayOrCountryEditRequest {
     birthday: string;
 
@@ -20468,6 +20480,27 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "EditSuccessMessageFlags",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves a user's birthdate or native country used for age gating. Requires an admin.
+   * @param membershipId
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetUserBirthdayAndCountryAdmin = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Contract.UserBirthdayAndCountryResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/User/GetUserBirthdayAndCountryAdmin/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetUserBirthdayAndCountryAdmin",
       undefined,
       clientState
     );

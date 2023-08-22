@@ -8,6 +8,8 @@ export class DestinySkuTags {
   public static SilverBundle = "silverbundle";
   public static LightfallStandard = "lightfallstandardpreorder";
   public static LightfallAnnualPass = "lightfallannualpreorder";
+  public static FinalShapeStandard = "thefinalshapestandard";
+  public static FinalShapeAnnualPass = "thefinalshapeannual";
 }
 
 export class DestinyProductFamilies {
@@ -18,4 +20,5 @@ export class DestinyProductFamilies {
   public static Forsaken = "forsaken";
   public static BeyondLight = "beyondlight";
   public static SilverBundle = "silverbundle";
+  public static FinalShape = "thefinalshape";
 }

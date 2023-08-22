@@ -8,7 +8,7 @@ import classNames from "classnames";
 import React from "react";
 import styles from "./IconActionCard.module.scss";
 
-interface IconActionCardProps {
+export interface IconActionCardProps {
   classes?: {
     root?: string;
     background?: string;

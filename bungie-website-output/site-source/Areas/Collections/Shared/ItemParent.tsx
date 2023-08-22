@@ -48,9 +48,11 @@ const ItemParent: React.FC<ItemParentProps> = (props) => {
       return null;
     }
 
-    const objectiveDef = props.definitions.DestinyObjectiveDefinition.get(
-      componentData.objective.objectiveHash
-    );
+    const objectiveDef = componentData?.objective?.objectiveHash
+      ? props.definitions.DestinyObjectiveDefinition.get(
+          componentData.objective.objectiveHash
+        )
+      : undefined;
 
     return objectiveDef ? (
       <div

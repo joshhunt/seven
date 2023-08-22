@@ -202,6 +202,7 @@ export class RouteDefs {
             isOverride: true,
           }),
         (area) => new ActionRoute(area, "Lightfall"),
+        (area) => new ActionRoute(area, "TheFinalShape"),
       ],
     }),
     Direct: new Area({
@@ -349,6 +350,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheSeraph"),
         (area) => new ActionRoute(area, "SeasonOfDefiance"),
         (area) => new ActionRoute(area, "SeasonOfTheDeep"),
+        (area) => new ActionRoute(area, "SeasonOfTheWitch"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events", { path: ":eventTag" }),

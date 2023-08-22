@@ -37,7 +37,6 @@ const Search: React.FC<SearchProps> = (props) => {
   const urlQuery = params?.query ?? queryString?.["query"] ?? "";
 
   const searchLoc = Localizer.Search;
-  const usertoolsLoc = Localizer.Usertools;
 
   const [inputString, setInputString] = useState(urlQuery);
   const [activeTab, setActiveTab] = useState<SearchType>("none");

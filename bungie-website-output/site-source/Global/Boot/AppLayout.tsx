@@ -247,6 +247,7 @@ class AppLayout extends React.Component<
 
     const { globalError } = this.state;
     const showDebugger = this.state.firehoseContentItems.length > 0;
+    const isSeasonsPage = this.state.currentPath?.includes("/Seasons");
 
     return (
       <SpinnerContainer
@@ -301,13 +302,15 @@ class AppLayout extends React.Component<
             <ScrollMemory />
           </Suspense>
 
-          {this.state.definitionsLoading && !destiny2Disabled && (
-            <SpinnerContainer
-              loading={true}
-              mode={SpinnerDisplayMode.fullPage}
-              loadingLabel={Localizer.Destiny.LoadingDestinyData}
-            />
-          )}
+          {this.state.definitionsLoading &&
+            !destiny2Disabled &&
+            !isSeasonsPage && (
+              <SpinnerContainer
+                loading={true}
+                mode={SpinnerDisplayMode.fullPage}
+                loadingLabel={Localizer.Destiny.LoadingDestinyData}
+              />
+            )}
 
           {!this.state.hideNavigation && (
             <>

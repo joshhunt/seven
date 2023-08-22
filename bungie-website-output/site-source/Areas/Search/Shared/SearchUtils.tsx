@@ -1,6 +1,7 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
+import styles from "@Areas/News/NewsPreview.module.scss";
 import { ISearchItemDisplayProperties } from "@Areas/Search/Shared/SearchTabContent";
 import { Localizer } from "@bungie/localization";
 import { BungieMembershipType } from "@Enum";
@@ -8,11 +9,14 @@ import { Img } from "@Helpers";
 import { Content, Definitions, GroupsV2, User } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
+import { Anchor } from "@UI/Navigation/Anchor";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
+import { useCSWebpImages } from "@Utilities/CSUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
-import React from "react";
+import React, { useMemo } from "react";
+import { BnetStackNewsArticle } from "../../../Generated/contentstack-types";
 
 export class SearchUtils {
   public static GetDisplayPropertiesFromItemSearch(
@@ -32,29 +36,32 @@ export class SearchUtils {
   }
 
   public static GetDisplayPropertiesFromNewsSearch(
-    newsList: Content.ContentItemPublicContract[]
+    newsList?: []
   ): ISearchItemDisplayProperties[] {
     return (
-      newsList?.map((item) => {
-        const timeDiffFromNow = DateTime.fromISO(item.creationDate).diffNow(
-          "days"
-        );
+      newsList?.map((articleData: BnetStackNewsArticle) => {
+        const { image, mobile_image, subtitle, date, title, url } = articleData;
+
+        const creationDate = date;
+        const timeDiffFromNow = DateTime.fromISO(creationDate).diffNow("days");
 
         return {
-          url: RouteHelper.NewsArticle({ articleUrl: item.contentId }),
-          title: item.properties["Title"],
-          subtitle: <SafelySetInnerHTML html={item.properties["Subtitle"]} />,
-          icon: <IconCoin iconImageUrl={item.properties["ArticleBanner"]} />,
+          url: RouteHelper.NewsArticle({
+            articleUrl: url?.hosted_url?.slice(1),
+          }),
+          title: title,
+          subtitle: <SafelySetInnerHTML html={subtitle} />,
+          icon: <IconCoin iconImageUrl={mobile_image?.url} />,
           flair:
             timeDiffFromNow.days > 7
-              ? DateTime.fromISO(item.creationDate).toLocaleString({
+              ? DateTime.fromISO(creationDate).toLocaleString({
                   month: "short",
                   day: "2-digit",
                 })
               : Localizer.Format(Localizer.Time.DaysAgo, {
                   days: Math.round(
                     Math.abs(
-                      DateTime.fromISO(item.creationDate).diffNow("days").days
+                      DateTime.fromISO(creationDate).diffNow("days").days
                     )
                   ),
                 }),

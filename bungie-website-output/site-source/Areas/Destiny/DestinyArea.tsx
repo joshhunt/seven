@@ -34,6 +34,8 @@ class DestinyArea extends React.Component<RouteComponentProps> {
       "WitchQueenComparison"
     ).path;
     const lightfallPath = RouteDefs.Areas.Destiny.getAction("Lightfall").path;
+    const finalShapePath = RouteDefs.Areas.Destiny.getAction("TheFinalShape")
+      .path;
 
     return (
       <React.Fragment>
@@ -117,6 +119,15 @@ class DestinyArea extends React.Component<RouteComponentProps> {
               () =>
                 import(
                   "@Areas/Destiny/Lightfall/Lightfall" /* webpackChunkName: "Destiny-Lightfall" */
+                )
+            )}
+          />
+          <Route
+            path={finalShapePath}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Destiny/FinalShape/FinalShape" /* webpackChunkName: "Destiny-FinalShape" */
                 )
             )}
           />

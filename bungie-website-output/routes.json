@@ -413,6 +413,14 @@
     "areaName": "Destiny",
     "areaObjectName": "Destiny",
     "componentImportPath": "@Areas/Destiny/DestinyArea",
+    "action": "TheFinalShape",
+    "params": {},
+    "path": "/7/en/Destiny/TheFinalShape"
+  },
+  {
+    "areaName": "Destiny",
+    "areaObjectName": "Destiny",
+    "componentImportPath": "@Areas/Destiny/DestinyArea",
     "action": "WitchQueen",
     "params": {},
     "path": "/7/en/Destiny/WitchQueen"
@@ -847,6 +855,14 @@
     "action": "SeasonOfTheUndying",
     "params": {},
     "path": "/7/en/Seasons/SeasonOfTheUndying"
+  },
+  {
+    "areaName": "Seasons",
+    "areaObjectName": "Seasons",
+    "componentImportPath": "@Areas/Seasons/SeasonsArea",
+    "action": "SeasonOfTheWitch",
+    "params": {},
+    "path": "/7/en/Seasons/SeasonOfTheWitch"
   },
   {
     "areaName": "Seasons",

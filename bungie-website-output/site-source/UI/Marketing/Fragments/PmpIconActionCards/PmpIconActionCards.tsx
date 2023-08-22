@@ -5,7 +5,10 @@ import { Responsive } from "@Boot/Responsive";
 import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { IResponsiveState } from "@bungie/responsive/Responsive";
-import { IconActionCard } from "@UI/Marketing/IconActionCard";
+import {
+  IconActionCard,
+  IconActionCardProps,
+} from "@UI/Marketing/IconActionCard";
 import {
   createCustomModal,
   CustomModalProps,
@@ -20,7 +23,10 @@ type PmpIconActionCardsProps = DataReference<
   "pmp_icon_action_cards",
   BnetStackPmpIconActionCards
 > & {
-  classes?: {};
+  classes?: {
+    wrapper?: string;
+  };
+  cardProps?: Pick<IconActionCardProps, "classes" | "icon">;
 };
 
 type TCardItem = BnetStackPmpIconActionCards["action_cards"][number];
@@ -28,7 +34,7 @@ type TCardItem = BnetStackPmpIconActionCards["action_cards"][number];
 export const PmpIconActionCards: React.FC<PmpIconActionCardsProps> = (
   props
 ) => {
-  const { classes, data } = props;
+  const { classes, cardProps, data } = props;
 
   const getCardItem = (card: TCardItem) => {
     return card?.Modal_Card ?? card?.Link_Card;
@@ -47,7 +53,7 @@ export const PmpIconActionCards: React.FC<PmpIconActionCardsProps> = (
   };
 
   return (
-    <div className={classNames(styles.cardsWrapper)}>
+    <div className={classNames([styles.cardsWrapper, classes?.wrapper])}>
       {data?.action_cards?.map((card, i) => {
         const cardItem = getCardItem(card);
 
@@ -58,8 +64,10 @@ export const PmpIconActionCards: React.FC<PmpIconActionCardsProps> = (
             cardSubtitle={cardItem?.card_btn?.sub_heading}
             backgroundImage={cardItem?.card_btn?.thumb_bg?.url}
             action={getCardAction(card)}
+            {...cardProps}
             classes={{
-              root: styles.card,
+              ...cardProps?.classes,
+              root: classNames([styles.card, cardProps?.classes?.root]),
             }}
           />
         );

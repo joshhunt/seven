@@ -49,7 +49,7 @@ const TriumphsParent: React.FC<TriumphsParentProps> = (props) => {
     destinyMembership?.selectedCharacter?.characterId,
     props.profileResponse
   );
-  const objectiveDef = data?.objective
+  const objectiveDef = data?.objective?.objectiveHash
     ? props.definitions.DestinyObjectiveDefinition.get(
         data.objective.objectiveHash
       )

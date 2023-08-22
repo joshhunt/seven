@@ -25,6 +25,8 @@ type PmpSectionHeaderProps = DataReference<
     blurb?: string;
     textWrapper?: string;
     btnWrapper?: string;
+    videoBtn?: string;
+    lowerContent?: string;
   };
 };
 
@@ -90,7 +92,7 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
         </div>
         {blurb || video_btn ? (
           <div
-            className={classNames(styles.lowerContent, {
+            className={classNames(styles.lowerContent, classes?.lowerContent, {
               [styles.withVideo]: !!video_btn?.youtube_url,
             })}
           >
@@ -101,7 +103,7 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
               />
             ) : null}
             {video_btn?.youtube_url ? (
-              <div className={styles.videoBtn}>
+              <div className={classNames(styles.videoBtn, classes?.videoBtn)}>
                 <ImageVideoThumb
                   youtubeUrl={video_btn?.youtube_url}
                   image={video_btn?.thumbnail?.url}

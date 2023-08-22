@@ -269,9 +269,14 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
       <GridDivider cols={12} className={accountStyles.mainDivider} />
       {isAdmin && (
         <GridCol className={accountStyles.admin} cols={12}>
-          <h4>{Localizer.groups.admintoolsheader}</h4>
-          <CountryBirthday />
-          <GridDivider cols={12} className={accountStyles.mainDivider} />
+          <h2>{Localizer.groups.admintoolsheader}</h2>
+          <CountryBirthday
+            onPageMembershipId={
+              isSelf
+                ? globalStateData?.loggedInUser?.user?.membershipId
+                : membershipIdFromQuery
+            }
+          />
         </GridCol>
       )}
       {UserUtils.isAuthenticated(globalStateData) && onPageUser && (

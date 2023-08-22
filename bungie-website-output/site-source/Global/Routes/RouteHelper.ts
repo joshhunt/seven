@@ -450,6 +450,9 @@ export class RouteHelper {
   public static Lightfall = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Lightfall")
   );
+  public static FinalShape = BasicReactPath(
+    RouteDefs.Areas.Destiny.getAction("TheFinalShape")
+  );
   public static PurchaseHistory = LegacyPathWithQuery(
     "/Profile/PurchaseHistory"
   );
@@ -501,6 +504,9 @@ export class RouteHelper {
   );
   public static SeasonOfTheDeep = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheDeep")
+  );
+  public static SeasonOfTheWitch = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("SeasonOfTheWitch")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(

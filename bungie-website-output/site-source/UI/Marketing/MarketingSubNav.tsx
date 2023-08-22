@@ -22,7 +22,8 @@ export type NavPrimaryColors =
   | "darkBlue"
   | "plum"
   | "s18blue"
-  | "s21";
+  | "s21"
+  | "s22";
 export type NavAccentColors =
   | "gold"
   | "teal"
@@ -30,7 +31,8 @@ export type NavAccentColors =
   | "hotPink"
   | "purple"
   | "s18blue"
-  | "s21";
+  | "s21"
+  | "s22";
 
 export interface IMarketingSubNavProps {
   /** The anchors from which we're creating the menu */
