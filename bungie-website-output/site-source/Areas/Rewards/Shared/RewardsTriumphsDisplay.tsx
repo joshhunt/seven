@@ -7,6 +7,7 @@ import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Icon } from "@UIKit/Controls/Icon";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import React from "react";
 
@@ -35,8 +36,12 @@ export const RewardsTriumphsDisplay: React.FC<RewardsTriumphsDisplayProps> = (
       {hasCustomDisplay && (
         <TwoLineItem
           className={styles.twoLineItemTriumph}
-          itemTitle={props.reward.ObjectiveDisplayProperties.Name}
-          itemSubtitle={props.reward.ObjectiveDisplayProperties.Description}
+          itemTitle={StringUtils.decodeHtmlEntities(
+            props.reward.ObjectiveDisplayProperties.Name
+          )}
+          itemSubtitle={StringUtils.decodeHtmlEntities(
+            props.reward.ObjectiveDisplayProperties.Description
+          )}
           size={BasicSize.Large}
           icon={
             <IconCoin
@@ -54,8 +59,12 @@ export const RewardsTriumphsDisplay: React.FC<RewardsTriumphsDisplayProps> = (
               <TwoLineItem
                 key={`record-${index}`}
                 className={styles.twoLineItemTriumph}
-                itemTitle={record.displayProperties.name}
-                itemSubtitle={record.displayProperties.description}
+                itemTitle={StringUtils.decodeHtmlEntities(
+                  record.displayProperties.name
+                )}
+                itemSubtitle={StringUtils.decodeHtmlEntities(
+                  record.displayProperties.description
+                )}
                 icon={<IconCoin iconImageUrl={record.displayProperties.icon} />}
                 size={BasicSize.Large}
                 normalWhiteSpace={true}
