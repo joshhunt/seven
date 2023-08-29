@@ -28940,29 +28940,6 @@ class CoreServiceInternal {
       undefined,
       clientState
     );
-
-  /**
-   * Gets a dictionary of country codes and their display names in the calling locale, optionally filtered to only show age-gated countries.
-   * @param htmlstrings Determines if country names should be html encoded.
-   * @param agegated Determines if country list is only the age gated countries or just whatever is localized.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetCountryDisplayNames = (
-    htmlstrings: boolean,
-    agegated: boolean,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<any> =>
-    ApiIntermediary.doGetRequest(
-      `/CountryDisplayNames/${e(htmlstrings)}/${e(agegated)}/`,
-      [],
-      optionalQueryAppend,
-      "",
-      "GetCountryDisplayNames",
-      undefined,
-      clientState
-    );
 }
 
 export class Platform {

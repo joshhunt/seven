@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -11,7 +10,7 @@ import styles from "./EditionsStickyNav.module.scss";
 
 interface EditionsStickNavProps {
   heroRef: React.RefObject<HTMLDivElement>;
-  skus: { label: string; sku: string; url: string }[];
+  skus: { label: string; sku: string }[];
   logo: string;
   buyBtnText: string;
   dropdownTitle: string;
@@ -20,6 +19,7 @@ interface EditionsStickNavProps {
 
 export const EditionsStickyNav: React.FC<EditionsStickNavProps> = (props) => {
   const { heroRef, skus, logo, buyBtnText, dropdownTitle, dateText } = props;
+
   const [selectedSku, setSelectedSku] = useState("thefinalshapeannual");
   const [isFixed, setIsFixed] = useState(false);
 
@@ -28,17 +28,10 @@ export const EditionsStickyNav: React.FC<EditionsStickNavProps> = (props) => {
   };
 
   const handleSkuBtnClick = (sku: string) => {
-    const skuItem = skus?.find((skuItm) => skuItm?.sku === selectedSku);
-    const hasUrl = Boolean(skuItem?.url.length !== 0 || skuItem?.url);
-
-    if (!hasUrl) {
-      DestinySkuSelectorModal.show({ skuTag: sku });
-    } else {
-      window.location.href = skuItem.url;
-    }
+    DestinySkuSelectorModal.show({ skuTag: sku });
   };
 
-  return Array.isArray(skus) && skus?.length > 0 ? (
+  return (
     <StickySubNav
       onFixedChange={(status) => setIsFixed(status)}
       relockUnder={heroRef}
@@ -73,7 +66,7 @@ export const EditionsStickyNav: React.FC<EditionsStickNavProps> = (props) => {
         </div>
       </>
     </StickySubNav>
-  ) : null;
+  );
 };
 
 interface IFinalShapeNavDropdown {

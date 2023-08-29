@@ -140,7 +140,6 @@ const FinalShape: React.FC = () => {
             return {
               label: s.tfs_sku.label,
               sku: s.tfs_sku.sku_tag,
-              url: s?.tfs_sku?.url,
             };
           })}
           logo={sticky_buy_nav?.logo?.desktop_bg?.url}
