@@ -6,6 +6,7 @@ import { Tokens } from "@Platform";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import React from "react";
 
@@ -42,8 +43,10 @@ export const RewardsCollectibleDisplay: React.FC<RewardsCollectibleDisplayProps>
           <TwoLineItem
             key={`collectible-${index}`}
             className={styles.twoLineItemTriumph}
-            itemTitle={cName}
-            itemSubtitle={Localizer.BungieRewards.CollectibleGlobalDescription}
+            itemTitle={StringUtils.decodeHtmlEntities(cName)}
+            itemSubtitle={StringUtils.decodeHtmlEntities(
+              Localizer.BungieRewards.CollectibleGlobalDescription
+            )}
             size={BasicSize.Large}
             icon={<IconCoin iconImageUrl={cIcon} />}
             normalWhiteSpace={true}
