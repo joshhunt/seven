@@ -37,6 +37,7 @@ const contentReferences: string[] = [
   "hero",
   "hero.buy_button",
   "hero.trailer_button",
+  "legal_byline",
 ];
 
 const FinalShape: React.FC = () => {
@@ -75,6 +76,7 @@ const FinalShape: React.FC = () => {
     desktop_bg_bottom,
     mobile_bg_bottom,
     episodes_section,
+    legal_byline,
   } = data ?? {};
 
   const imgs = useCSWebpImages(
@@ -112,98 +114,103 @@ const FinalShape: React.FC = () => {
   );
 
   return (
-    <div className={styles.finalShapeContent}>
-      <BungieHelmet
-        title={meta?.title}
-        image={meta?.meta_img?.url}
-        description={meta?.desc}
-      >
-        <body
-          className={classNames(
-            SpecialBodyClasses(BodyClasses.NoSpacer),
-            styles.wrapper
-          )}
-        />
-      </BungieHelmet>
-
-      <ScrollToAnchorTags animate={true} />
-
-      <div ref={topContent}>
-        {/* HERO */}
-        <div ref={heroRef}>
-          <Hero {...hero} />
-        </div>
-
-        <EditionsStickyNav
-          heroRef={heroRef}
-          skus={sticky_nav_skus?.map((s: any) => {
-            return {
-              label: s.tfs_sku.label,
-              sku: s.tfs_sku.sku_tag,
-              url: s?.tfs_sku?.url,
-            };
-          })}
-          logo={sticky_buy_nav?.logo?.desktop_bg?.url}
-          buyBtnText={sticky_buy_nav?.buy_btn_text}
-          dropdownTitle={sticky_buy_nav?.dropdown_title}
-          dateText={sticky_buy_nav?.date_text}
-        />
-      </div>
-
-      <div ref={bottomContent} className={styles.bottomContent}>
-        {/* Story */}
-        <StorySection data={story_section} />
-
-        {/* Destination */}
-        <DestinationSection data={destination_section} />
-
-        {/* Supers */}
-        <SupersSection data={supers_section} />
-
-        <div
-          className={styles.activitiesWrapper}
-          style={{
-            backgroundImage: `url(${activitiesBackgroundImage.background})`,
-          }}
+    <>
+      <div className={styles.finalShapeContent}>
+        <BungieHelmet
+          title={meta?.title}
+          image={meta?.meta_img?.url}
+          description={meta?.desc}
         >
-          {/* Activities */}
-          <ActivitiesSection data={activities_section} />
+          <body
+            className={classNames(
+              SpecialBodyClasses(BodyClasses.NoSpacer),
+              styles.wrapper
+            )}
+          />
+        </BungieHelmet>
 
-          {/* Exotic */}
-          <WeaponsSection data={weapon_section} />
-        </div>
+        <ScrollToAnchorTags animate={true} />
 
-        {/* Episodes */}
-        <EpisodesSection data={episodes_section} />
-
-        <div
-          className={styles.editionsWrapper}
-          style={{
-            backgroundImage: `url(${editionBackgroundImage.background})`,
-          }}
-        >
-          {/* Editions */}
-          <EditionsSection data={editions_section} />
-
-          {/* CE */}
-          <CollectorsEditionSection data={ce} />
-        </div>
-
-        {/* MEDIA */}
-        {Array.isArray(media?.content) && media?.content?.length > 0 && (
-          <div id={"media"} className={styles.anchor}>
-            <PmpMedia
-              data={media?.content?.[0]}
-              classes={{
-                tab: styles.mediaTab,
-                selectedTab: styles.selected,
-              }}
-            />
+        <div ref={topContent}>
+          {/* HERO */}
+          <div ref={heroRef}>
+            <Hero {...hero} />
           </div>
-        )}
+
+          <EditionsStickyNav
+            heroRef={heroRef}
+            skus={sticky_nav_skus?.map((s: any) => {
+              return {
+                label: s.tfs_sku.label,
+                sku: s.tfs_sku.sku_tag,
+                url: s?.tfs_sku?.url,
+              };
+            })}
+            logo={sticky_buy_nav?.logo?.desktop_bg?.url}
+            buyBtnText={sticky_buy_nav?.buy_btn_text}
+            dropdownTitle={sticky_buy_nav?.dropdown_title}
+            dateText={sticky_buy_nav?.date_text}
+          />
+        </div>
+
+        <div ref={bottomContent} className={styles.bottomContent}>
+          {/* Story */}
+          <StorySection data={story_section} />
+
+          {/* Destination */}
+          <DestinationSection data={destination_section} />
+
+          {/* Supers */}
+          <SupersSection data={supers_section} />
+
+          <div
+            className={styles.activitiesWrapper}
+            style={{
+              backgroundImage: `url(${activitiesBackgroundImage.background})`,
+            }}
+          >
+            {/* Activities */}
+            <ActivitiesSection data={activities_section} />
+
+            {/* Exotic */}
+            <WeaponsSection data={weapon_section} />
+          </div>
+
+          {/* Episodes */}
+          <EpisodesSection data={episodes_section} />
+
+          <div
+            className={styles.editionsWrapper}
+            style={{
+              backgroundImage: `url(${editionBackgroundImage.background})`,
+            }}
+          >
+            {/* Editions */}
+            <EditionsSection data={editions_section} />
+
+            {/* CE */}
+            <CollectorsEditionSection data={ce} />
+          </div>
+
+          {/* MEDIA */}
+          {Array.isArray(media?.content) && media?.content?.length > 0 && (
+            <div id={"media"} className={styles.anchor}>
+              <PmpMedia
+                data={media?.content?.[0]}
+                classes={{
+                  tab: styles.mediaTab,
+                  selectedTab: styles.selected,
+                }}
+              />
+            </div>
+          )}
+        </div>
+        {imgs?.bg && <img src={imgs?.bg} className={styles.bumperImage} />}
       </div>
-      {imgs?.bg && <img src={imgs?.bg} className={styles.bumperImage} />}
-    </div>
+      {legal_byline?.length > 0 && (
+        <p className={styles.byline}>{legal_byline}</p>
+      )}
+    </>
   );
 };
 
