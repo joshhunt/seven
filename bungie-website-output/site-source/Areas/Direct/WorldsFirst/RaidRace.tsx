@@ -33,6 +33,10 @@ const redirectToNebula = () => {
  * @constructor
  */
 const WorldsFirst: React.FC = () => {
+  useEffect(() => {
+    window.location.href = "https://www.destinythegame.com/raidrace";
+  });
+
   const { mobile } = useDataStore(Responsive);
   const [data, setData] = useState<BnetStackDisciplesRaidRacePage>();
 
