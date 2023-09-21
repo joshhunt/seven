@@ -231,126 +231,126 @@ const Collections: React.FC<CollectionsProps> = (props) => {
     }
   }, [destinyMembership]);
 
-  if (!membershipType || !membershipId) {
-    //no destiny membership - show some message
-    return null;
-  }
-
-  if (!destinyMembership || (!profileResponse && hasDestinyAccount)) {
-    return null;
-  }
-
   return (
-    <SystemDisabledHandler systems={[SystemNames.Destiny2]}>
+    <SystemDisabledHandler
+      systems={[SystemNames.Destiny2, SystemNames.CoreAreaCollections]}
+    >
       <BungieHelmet
         title={Localizer.PresentationNodes.CollectionsPageName}
         description={Localizer.PresentationNodes.CollectionsPageName}
       />
       <ContainerBackground />
       <Grid className={styles.presentationNodesContent}>
-        {!hasDestinyAccount && (
-          <GridCol cols={12}>
-            {Localizer.PresentationNodes.ADestinyAccountIsRequired}
-          </GridCol>
-        )}
-        {hasDestinyAccount && (
-          <div>
-            <GridCol cols={12} className={styles.nodesHeader}>
-              <Breadcrumb
-                pageType={"collections"}
-                rootHash={rootHash}
-                parentNodeHash={parentNodeHash}
-                categoryNodeHash={catNodeHash}
-                subCategoryHash={subCatNodeHash}
-                filter={filter}
-                sort={sort}
-              />
-              <GridCol cols={8}>
-                {characterId && (
-                  <DestinyAccountWrapper
-                    membershipDataStore={
-                      PresentationNodeDestinyMembershipDataStore
-                    }
-                    showCrossSaveBanner={true}
-                  >
-                    {({
-                      bnetProfile,
-                      platformSelector,
-                      characterSelector,
-                    }: IAccountFeatures) => (
-                      <div>
-                        {bnetProfile}
-                        <div
-                          className={
-                            presentationNodesStyles.dropdownFlexWrapper
-                          }
-                        >
-                          {platformSelector}
-                          {characterSelector}
-                        </div>
-                      </div>
+        {!membershipType ||
+        !membershipId ||
+        !destinyMembership ||
+        (!profileResponse && hasDestinyAccount) ? null : (
+          <>
+            {!hasDestinyAccount && (
+              <GridCol cols={12}>
+                {Localizer.PresentationNodes.ADestinyAccountIsRequired}
+              </GridCol>
+            )}
+            {hasDestinyAccount && (
+              <div>
+                <GridCol cols={12} className={styles.nodesHeader}>
+                  <Breadcrumb
+                    pageType={"collections"}
+                    rootHash={rootHash}
+                    parentNodeHash={parentNodeHash}
+                    categoryNodeHash={catNodeHash}
+                    subCategoryHash={subCatNodeHash}
+                    filter={filter}
+                    sort={sort}
+                  />
+                  <GridCol cols={8}>
+                    {characterId && (
+                      <DestinyAccountWrapper
+                        membershipDataStore={
+                          PresentationNodeDestinyMembershipDataStore
+                        }
+                        showCrossSaveBanner={true}
+                      >
+                        {({
+                          bnetProfile,
+                          platformSelector,
+                          characterSelector,
+                        }: IAccountFeatures) => (
+                          <div>
+                            {bnetProfile}
+                            <div
+                              className={
+                                presentationNodesStyles.dropdownFlexWrapper
+                              }
+                            >
+                              {platformSelector}
+                              {characterSelector}
+                            </div>
+                          </div>
+                        )}
+                      </DestinyAccountWrapper>
                     )}
-                  </DestinyAccountWrapper>
-                )}
-              </GridCol>
-              <ScoreBlock
-                characterId={characterId}
-                profileResponse={profileResponse}
-              />
-            </GridCol>
-            {collectionType !== "stats" && collectionType !== "lore" && (
-              <GridCol cols={8} mobile={12}>
-                <GridCol
-                  cols={12}
-                  className={classNames(styles.categories, {
-                    [styles.mini]: !!parentNodeHash,
-                  })}
-                >
-                  {(collectionType === "none" ||
-                    (collectionType === "item" && !!parentNodeHash)) && (
-                    <ItemParents
-                      profileResponse={profileResponse}
-                      collectionItemsRootHash={collectionItemsRootHash}
-                      activeParentPresentationNodeHash={parentNodeHash}
-                      isMini={!!parentNodeHash}
-                      sort={sort}
-                    />
-                  )}
-                  {(collectionType === "none" ||
-                    (collectionType === "badge" && !!parentNodeHash)) && (
-                    <BadgeParents
-                      collectionBadgesRootHash={collectionBadgesRootHash}
-                      activeParentPresentationNodeHash={parentNodeHash}
-                      profileResponse={profileResponse}
-                      isMini={!!parentNodeHash}
-                      sort={sort}
-                    />
-                  )}
-                  {globalState.responsive.mobile &&
-                    collectionType !== "badge" &&
-                    collectionType !== "item" && <BannersParents />}
+                  </GridCol>
+                  <ScoreBlock
+                    characterId={characterId}
+                    profileResponse={profileResponse}
+                  />
                 </GridCol>
-              </GridCol>
-            )}
-            {!globalState.responsive.mobile &&
-              !parentNodeHash &&
-              collectionType !== "badge" &&
-              collectionType !== "item" && <BannersParents />}
-            {!!parentNodeHash && (
-              <DetailContainer
-                collectionType={collectionType}
-                parentHash={parentNodeHash}
-                categoryHash={catNodeHash}
-                profileResponse={profileResponse}
-                collectionRootHash={getRootHashFromCollectionType(
-                  collectionType
+                {collectionType !== "stats" && collectionType !== "lore" && (
+                  <GridCol cols={8} mobile={12}>
+                    <GridCol
+                      cols={12}
+                      className={classNames(styles.categories, {
+                        [styles.mini]: !!parentNodeHash,
+                      })}
+                    >
+                      {(collectionType === "none" ||
+                        (collectionType === "item" && !!parentNodeHash)) && (
+                        <ItemParents
+                          profileResponse={profileResponse}
+                          collectionItemsRootHash={collectionItemsRootHash}
+                          activeParentPresentationNodeHash={parentNodeHash}
+                          isMini={!!parentNodeHash}
+                          sort={sort}
+                        />
+                      )}
+                      {(collectionType === "none" ||
+                        (collectionType === "badge" && !!parentNodeHash)) && (
+                        <BadgeParents
+                          collectionBadgesRootHash={collectionBadgesRootHash}
+                          activeParentPresentationNodeHash={parentNodeHash}
+                          profileResponse={profileResponse}
+                          isMini={!!parentNodeHash}
+                          sort={sort}
+                        />
+                      )}
+                      {globalState.responsive.mobile &&
+                        collectionType !== "badge" &&
+                        collectionType !== "item" && <BannersParents />}
+                    </GridCol>
+                  </GridCol>
                 )}
-                subCategoryHash={subCatNodeHash}
-                filter={filter}
-                sort={sort}
-              />
+                {!globalState.responsive.mobile &&
+                  !parentNodeHash &&
+                  collectionType !== "badge" &&
+                  collectionType !== "item" && <BannersParents />}
+                {!!parentNodeHash && (
+                  <DetailContainer
+                    collectionType={collectionType}
+                    parentHash={parentNodeHash}
+                    categoryHash={catNodeHash}
+                    profileResponse={profileResponse}
+                    collectionRootHash={getRootHashFromCollectionType(
+                      collectionType
+                    )}
+                    subCategoryHash={subCatNodeHash}
+                    filter={filter}
+                    sort={sort}
+                  />
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
       </Grid>
     </SystemDisabledHandler>

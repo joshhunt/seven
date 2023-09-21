@@ -76,7 +76,14 @@ export const ReportItem: React.FC<ReportItemProps> = (props) => {
       requestedBlastBan: false,
     })
       .then(() => {
-        props.onReset();
+        const successModal = Modal.open(
+          Localizer.Groups.ThankYouForYourProfileReport,
+          {
+            onClose: () => {
+              props.onReset();
+            },
+          }
+        );
       })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {

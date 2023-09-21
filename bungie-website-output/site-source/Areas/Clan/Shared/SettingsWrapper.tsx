@@ -103,6 +103,11 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
     setShowTheSideNav(false);
   }, [history]);
 
+  useEffect(() => {
+    //somewhere the clan meta changed, so update
+    getClanInfo();
+  }, [globalState.loggedInUserClans]);
+
   if (!ClanUtils.canViewAdmin(clanMembership, globalState)) {
     history.push(RouteHelper.NewClanProfile({ clanId: clanId }).url);
   }
@@ -182,7 +187,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
                     </p>
                     <ul className={styles.navList}>
                       <li className={styles.chatLink}>
-                        <Anchor url={RouteHelper.Clan(clanId)}>
+                        <Anchor url={RouteHelper.ClanChat(clanId)}>
                           <BsChatFill />
                           {clansLoc.ClanChat}
                         </Anchor>

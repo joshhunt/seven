@@ -48,7 +48,7 @@ export const CultureFields: React.FC = () => {
     setSubmitting: (isSubmitting: boolean) => void
   ) => {
     const groupEditAction: GroupsV2.GroupEditAction = {
-      name: values.name,
+      name: values.clanName,
       motto: values.motto,
       about: values.about,
       callsign: values.callSign,
@@ -64,6 +64,8 @@ export const CultureFields: React.FC = () => {
     Platform.GroupV2Service.EditGroup(groupEditAction, clanId)
       .then((result) => {
         Modal.open(<p>{clansLoc.ChangesHaveBeenSuccessfully}</p>);
+
+        GlobalStateDataStore.actions.refreshLoggedInUserClans();
 
         setSubmitting(false);
       })
@@ -148,12 +150,7 @@ export const CultureFields: React.FC = () => {
                   >
                     <FormikTextInput name={"clanName"} type={"text"} />
                     <FaTimes
-                      onClick={() =>
-                        formikProps.setFieldValue(
-                          "clanName",
-                          formikProps.initialValues.clanName
-                        )
-                      }
+                      onClick={() => formikProps.setFieldValue("clanName", "")}
                     />
                   </div>
                 </div>
@@ -167,12 +164,7 @@ export const CultureFields: React.FC = () => {
                   >
                     <FormikTextInput name={"callSign"} type={"text"} />
                     <FaTimes
-                      onClick={() =>
-                        formikProps.setFieldValue(
-                          "callSign",
-                          formikProps.initialValues.callSign
-                        )
-                      }
+                      onClick={() => formikProps.setFieldValue("callSign", "")}
                     />
                   </div>
                 </div>
@@ -186,12 +178,7 @@ export const CultureFields: React.FC = () => {
                   >
                     <FormikTextInput name={"motto"} type={"text"} />
                     <FaTimes
-                      onClick={() =>
-                        formikProps.setFieldValue(
-                          "motto",
-                          formikProps.initialValues.motto
-                        )
-                      }
+                      onClick={() => formikProps.setFieldValue("motto", "")}
                     />
                   </div>
                 </div>
@@ -206,13 +193,12 @@ export const CultureFields: React.FC = () => {
                     maxLength={aboutMaxLength}
                   />
                 </div>
-                <button type={"submit"} className={styles.submitWrapper}>
-                  <Button
-                    buttonType={formikProps.isSubmitting ? "disabled" : "gold"}
-                  >
-                    {Localizer.Actions.Save}
-                  </Button>
-                </button>
+                <Button
+                  submit={true}
+                  buttonType={formikProps.isSubmitting ? "disabled" : "gold"}
+                >
+                  {Localizer.Actions.Save}
+                </Button>
               </Form>
             );
           }}

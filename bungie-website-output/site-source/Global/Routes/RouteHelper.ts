@@ -334,6 +334,8 @@ export class RouteHelper {
   );
   public static Clan = (clanId: string) =>
     LegacyPath(`/ClanV2?groupid=${clanId}`);
+  public static ClanChat = (clanId: string) =>
+    LegacyPath(`/ClanV2/Chat?groupid=${clanId}`);
   public static NewClanProfile = BasicReactPath<IClanParams>(
     RouteDefs.Areas.Clan.getAction("Profile")
   );
