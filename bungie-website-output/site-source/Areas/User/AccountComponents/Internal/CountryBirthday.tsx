@@ -3,11 +3,14 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { Contract, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { useEffect, useState } from "react";
+import styles from ".././IdentitySettings.module.scss";
 
 interface UserBirthdayOrCountryEditRequest {
   country: string;
@@ -27,6 +30,9 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
   const [adminCountryChanges, setAdminCountryChanges] = useState(0);
   const [adminBirthDateChanges, setAdminBirthdateChanges] = useState(0);
   const [isChild, setIsChild] = useState(true);
+  const testString =
+    "This will delete the country and birthdate values for the user completely.";
+  // const deleteFieldsEnabled = ConfigUtils.SystemStatus("RemoveBirthdayAndCountry");
 
   const updateStateWithResponse = (
     data: Contract.UserBirthdayAndCountryResponse
@@ -111,6 +117,28 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
       .catch((e: Error) => Modal.error(e));
   };
 
+  const handleDelete = () => {
+    Platform.UserService.RemoveBirthdayAndCountryAdmin(props.onPageMembershipId)
+      .then((response: number) => {
+        if (response === 1) {
+          Modal.open(Localizer.clans.ChangesHaveBeenSuccessfully);
+
+          !!props.onPageMembershipId &&
+            props.onPageMembershipId.length > 0 &&
+            Platform.UserService.GetUserBirthdayAndCountryAdmin(
+              props.onPageMembershipId
+            )
+              .then((data: any) => {
+                updateStateWithResponse(data);
+              })
+              .catch(ConvertToPlatformError)
+              .catch((e: Error) => Modal.error(e));
+        }
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e: Error) => Modal.error(e));
+  };
+
   return (
     <div>
       <label>{Localizer.Usertools.Country}</label>
@@ -118,7 +146,7 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
         value={selectedCountry}
         onChange={(e) => setSelectedCountry(e.target.value)}
       >
-        <option value="">{Localizer.Usertools.SelectCountry}</option>
+        <option value="">{Localizer.Usertools.Country}</option>
         {mapCountries()}
       </select>
       <h4>
@@ -142,13 +170,30 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
           <p>{Localizer.Usertools.IsNotChild}</p>
         )}
       </div>
-      <Button
-        className="update-button"
-        onClick={handleUpdate}
-        size={BasicSize.Small}
-      >
-        {Localizer.Usertools.Update}
-      </Button>
+      <div className={styles.buttonContainer}>
+        <Button
+          className={styles.updateButton}
+          onClick={handleUpdate}
+          size={BasicSize.Small}
+        >
+          {Localizer.Usertools.Update}
+        </Button>
+        {
+          // deleteFieldsEnabled &&
+          <Button
+            className={styles.deleteButton}
+            onClick={handleDelete}
+            size={BasicSize.Small}
+            buttonType={"red"}
+          >
+            {Localizer.Actions.Delete}
+          </Button>
+        }
+      </div>
+      {
+        // deleteFieldsEnabled &&
+        <div>{testString}</div>
+      }
     </div>
   );
 };

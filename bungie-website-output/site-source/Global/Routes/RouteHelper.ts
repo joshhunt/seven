@@ -19,6 +19,7 @@ import {
   IFireteamSearchParams,
   IFireteamParams,
   IClanParams,
+  IApplicationParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -623,7 +624,13 @@ export class RouteHelper {
     RouteDefs.Areas.Legal.getAction("PaymentServicesAct")
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
-  public static Applications = LegacyPathWithQuery("/Application");
-  public static ApplicationDetail = (applicationId: string) =>
-    LegacyPath(`/Application/Detail/${applicationId}`);
+  public static Applications = BasicReactPath(
+    RouteDefs.Areas.Application.getAction("Index")
+  );
+  public static ApplicationCreate = BasicReactPath(
+    RouteDefs.Areas.Application.getAction("Create")
+  );
+  public static ApplicationDetail = BasicReactPath<IApplicationParams>(
+    RouteDefs.Areas.Application.getAction("Detail")
+  );
 }

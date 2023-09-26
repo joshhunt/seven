@@ -18,6 +18,32 @@
     "path": "/7/en/Admin/Reports"
   },
   {
+    "areaName": "Application",
+    "areaObjectName": "Application",
+    "componentImportPath": "@Areas/Application/ApplicationArea",
+    "action": "index",
+    "params": {},
+    "path": "/7/en/Application"
+  },
+  {
+    "areaName": "Application",
+    "areaObjectName": "Application",
+    "componentImportPath": "@Areas/Application/ApplicationArea",
+    "action": "Create",
+    "params": {},
+    "path": "/7/en/Application/Create"
+  },
+  {
+    "areaName": "Application",
+    "areaObjectName": "Application",
+    "componentImportPath": "@Areas/Application/ApplicationArea",
+    "action": "Detail",
+    "params": {
+      "path": ":appId"
+    },
+    "path": "/7/en/Application/Detail/:appId"
+  },
+  {
     "areaName": "BungieTech",
     "areaObjectName": "BungieTech",
     "componentImportPath": "@Areas/BungieTech/BungieTechArea",

@@ -17,6 +17,7 @@ export interface ILocaleParams {
 export class RouteDefs {
   private static readonly AreaNames = {
     Admin: "Admin",
+    Application: "Application",
     BeyondLight: "BeyondLight",
     BungieTech: "BungieTech",
     Clan: "Clan",
@@ -52,6 +53,20 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Reports"),
         (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
+      ],
+    }),
+    Application: new Area({
+      name: RouteDefs.AreaNames.Application,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Application/ApplicationArea" /* webpackChunkName: "Application" */
+          )
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "index"),
+        (area) => new ActionRoute(area, "Create"),
+        (area) => new ActionRoute(area, "Detail", { path: ":appId" }),
       ],
     }),
     BungieTech: new Area({

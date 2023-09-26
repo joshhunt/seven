@@ -27,35 +27,46 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = (props) => {
   );
 
   const canViewSettings = ClanUtils.canViewAdmin(clan, globalState);
+  const isMember = !!globalState.loggedInUserClans?.results?.find(
+    (c) => c.group?.groupId === props.clanId
+  );
+
+  const path = window.location.pathname.toLowerCase();
+  const isSettingsPage = path.includes("/settings");
+  const isProfilePage = path.includes("/profile");
 
   const getLink = () => {
-    const path = window.location.pathname.toLowerCase();
-
-    const profileAnchor = (
-      <Anchor url={RouteHelper.NewClanProfile({ clanId: props.clanId })}>
-        <FaAngleLeft />
-        {clansLoc.ClanProfile}
-      </Anchor>
-    );
     const settingsAnchor = (
       <Anchor url={RouteHelper.NewClanSettings({ clanId: props.clanId })}>
         <FaAngleLeft />
         {clansLoc.ClanSettings}
       </Anchor>
     );
+    const chatAnchor = (
+      <Anchor url={RouteHelper.ClanChat(props.clanId)}>
+        <FaAngleLeft />
+        {clansLoc.ClanMember}
+      </Anchor>
+    );
 
-    if (path.includes("/settings")) {
-      return profileAnchor;
-    } else if (path.includes("/profile")) {
+    if (!canViewSettings && isMember) {
+      return chatAnchor;
+    }
+
+    if (isProfilePage) {
       if (canViewSettings) {
         return settingsAnchor;
       }
-
-      return profileAnchor;
     } else {
       return settingsAnchor;
     }
+
+    return null;
   };
+
+  if (isSettingsPage) {
+    return null;
+  }
 
   return <div className={styles.breadcrumb}>{getLink()}</div>;
 };

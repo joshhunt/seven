@@ -102,7 +102,9 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
       } else if (anchor.hasAttribute("data-applicationid")) {
         const applicationId = anchor.getAttribute("data-applicationid");
 
-        anchor.href = RouteHelper.ApplicationDetail(applicationId).url;
+        anchor.href = RouteHelper.ApplicationDetail({
+          appId: applicationId.toString(),
+        }).url;
       }
     });
 

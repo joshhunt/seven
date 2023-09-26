@@ -20548,6 +20548,27 @@ class UserServiceInternal {
     );
 
   /**
+   * Removes a user's birthdate and native country from their user details. Requires an admin.
+   * @param membershipId
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RemoveBirthdayAndCountryAdmin = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<number> =>
+    ApiIntermediary.doPostRequest(
+      `/User/RemoveBirthdayAndCountry/${e(membershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "RemoveBirthdayAndCountryAdmin",
+      undefined,
+      clientState
+    );
+
+  /**
    * Gets user details of signed-in user.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.

@@ -122,4 +122,12 @@ export const SystemNames = {
   Fireteams: "ClanFireteams",
   ReactFireteamUI: "ReactFireteamUI",
   ClanReactUI: "ClanReactUI",
+  RemoveBirthdayAndCountry: "RemoveBirthdayAndCountry",
+  OpenAuthentication: "OpenAuthentication",
+  ApplicationCorsSupport: "ApplicationCorsSupport",
+  OAuthType: "OAuthType",
+  AvailableScopes: "AvailableScopes",
+  DisabledScopes: "DisabledScopes",
+  MaximumApiKeysPerApplication: "MaximumApiKeysPerApplication",
+  ApplicationsReactUI: "ApplicationsReactUI",
 } as const;
