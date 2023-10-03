@@ -2,11 +2,13 @@
 // Copyright Bungie, Inc.
 
 import { ActivityOutputFormat, BungieMembershipType } from "@Enum";
+import { SystemNames } from "@Global/SystemNames";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Contracts, Platform } from "@Platform";
-import { RouteHelper } from "@Routes/RouteHelper";
+import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import { OneLineItem } from "@UIKit/Companion/OneLineItem";
 import { Icon } from "@UIKit/Controls/Icon";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { useAsyncError } from "@Utilities/ReactUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./BungieView.module.scss";
@@ -102,9 +104,11 @@ export const BungieNetActivity: React.FC<BungieNetActivityProps> = (props) => {
       } else if (anchor.hasAttribute("data-applicationid")) {
         const applicationId = anchor.getAttribute("data-applicationid");
 
-        anchor.href = RouteHelper.ApplicationDetail({
-          appId: applicationId.toString(),
-        }).url;
+        anchor.href = ConfigUtils.SystemStatus(SystemNames.ApplicationsReactUI)
+          ? RouteHelper.ApplicationDetailReact({
+              appId: applicationId.toString(),
+            }).url
+          : RouteHelper.ApplicationDetail(applicationId.toString()).url;
       }
     });
 

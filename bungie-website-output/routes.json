@@ -521,6 +521,22 @@
     "path": "/7/en/Direct/Video/:title"
   },
   {
+    "areaName": "Emails",
+    "areaObjectName": "Emails",
+    "componentImportPath": "@Areas/Emails/EmailsArea",
+    "action": "Unsubscribe",
+    "params": {},
+    "path": "/7/en/Emails/Unsubscribe"
+  },
+  {
+    "areaName": "Emails",
+    "areaObjectName": "Emails",
+    "componentImportPath": "@Areas/Emails/EmailsArea",
+    "action": "Verify",
+    "params": {},
+    "path": "/7/en/Emails/Verify"
+  },
+  {
     "areaName": "Fireteams",
     "areaObjectName": "Fireteams",
     "componentImportPath": "@Areas/Fireteams/FireteamsArea",

@@ -188,7 +188,9 @@ export class RouteHelper {
   public static EmailAndSms = BasicReactPath(
     RouteDefs.AreaGroups.User.areas.Account.getAction("EmailSms")
   );
-
+  public static Notifications = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("Notifications")
+  );
   public static ReferAFriend = LegacyPathWithQuery("/Profile/ReferAFriend");
   public static CrossSave = BasicReactPath(
     RouteDefs.Areas.CrossSave.getAction()
@@ -624,13 +626,16 @@ export class RouteHelper {
     RouteDefs.Areas.Legal.getAction("PaymentServicesAct")
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
-  public static Applications = BasicReactPath(
+  public static ApplicationsReact = BasicReactPath(
     RouteDefs.Areas.Application.getAction("Index")
   );
+  public static Applications = LegacyPathWithQuery("/Application");
   public static ApplicationCreate = BasicReactPath(
     RouteDefs.Areas.Application.getAction("Create")
   );
-  public static ApplicationDetail = BasicReactPath<IApplicationParams>(
+  public static ApplicationDetail = (appId: string) =>
+    LegacyPath(`/Application/Detail/${appId}`);
+  public static ApplicationDetailReact = BasicReactPath<IApplicationParams>(
     RouteDefs.Areas.Application.getAction("Detail")
   );
 }

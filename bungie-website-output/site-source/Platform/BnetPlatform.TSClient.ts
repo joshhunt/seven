@@ -1478,6 +1478,10 @@ export declare namespace Contract {
     isThemeLight?: boolean;
   }
 
+  export interface UserEmailVerificationRequest {
+    tokenGuid: string;
+  }
+
   export interface UserBirthdayAndCountryResponse {
     birthday?: string;
 
@@ -15711,6 +15715,70 @@ export declare namespace Social {
 
     commendationScoresByHash: { [key: number]: number };
   }
+
+  export interface DestinySocialCommendationNodeDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    /**
+		The color associated with this group of commendations.
+		*/
+    color: Misc.DestinyColor;
+
+    /**
+		A version of the displayProperties icon tinted with the color of this node.
+		*/
+    tintedIcon: string;
+
+    parentCommendationNodeHash: number;
+
+    /**
+		A list of hashes that map to child commendation nodes.
+		Only the root commendations node is expected to have child nodes.
+		*/
+    childCommendationNodeHashes: number[];
+
+    /**
+		A list of hashes that map to child commendations.
+		*/
+    childCommendationHashes: number[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinySocialCommendationDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    cardImagePath: string;
+
+    color: Misc.DestinyColor;
+
+    displayPriority: number;
+
+    activityGivingLimit: number;
+
+    parentCommendationNodeHash: number;
+
+    /**
+		The display properties for the the activities that this commendation is available in.
+		*/
+    displayActivities: Common.DestinyDisplayPropertiesDefinition[];
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinySocialCommendationValuePredicate {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    recentCommendationWeight: number;
+  }
 }
 
 export declare namespace Loadouts {
@@ -15732,6 +15800,36 @@ export declare namespace Loadouts {
     itemInstanceId: string;
 
     plugItemHashes: number[];
+  }
+
+  export interface DestinyLoadoutColorDefinition {
+    colorImagePath: string;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyLoadoutIconDefinition {
+    iconImagePath: string;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+
+  export interface DestinyLoadoutNameDefinition {
+    name: string;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
   }
 }
 
@@ -18360,7 +18458,7 @@ export declare namespace Renderer {
       [key: number]: Unlocks.DestinyUnlockExpressionMappingDefinition;
     };
 
-    perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
+    sandboxPerks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
     damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
 
@@ -18470,9 +18568,27 @@ export declare namespace Renderer {
 
     eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
 
+    guardianRanks: {
+      [key: number]: GuardianRanks.DestinyGuardianRankDefinition;
+    };
+
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
+    socialCommendationNodes: {
+      [key: number]: Social.DestinySocialCommendationNodeDefinition;
+    };
+
+    socialCommendations: {
+      [key: number]: Social.DestinySocialCommendationDefinition;
+    };
+
     races: { [key: number]: Definitions.DestinyRaceDefinition };
+
+    loadoutColors: { [key: number]: Loadouts.DestinyLoadoutColorDefinition };
+
+    loadoutIcons: { [key: number]: Loadouts.DestinyLoadoutIconDefinition };
+
+    loadoutNames: { [key: number]: Loadouts.DestinyLoadoutNameDefinition };
 
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
@@ -18508,7 +18624,7 @@ export declare namespace Renderer {
       [key: number]: Unlocks.DestinyUnlockExpressionMappingDefinition;
     };
 
-    perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
+    sandboxPerks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
     damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
 
@@ -18618,9 +18734,27 @@ export declare namespace Renderer {
 
     eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
 
+    guardianRanks: {
+      [key: number]: GuardianRanks.DestinyGuardianRankDefinition;
+    };
+
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
+    socialCommendationNodes: {
+      [key: number]: Social.DestinySocialCommendationNodeDefinition;
+    };
+
+    socialCommendations: {
+      [key: number]: Social.DestinySocialCommendationDefinition;
+    };
+
     races: { [key: number]: Definitions.DestinyRaceDefinition };
+
+    loadoutColors: { [key: number]: Loadouts.DestinyLoadoutColorDefinition };
+
+    loadoutIcons: { [key: number]: Loadouts.DestinyLoadoutIconDefinition };
+
+    loadoutNames: { [key: number]: Loadouts.DestinyLoadoutNameDefinition };
 
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
@@ -19251,6 +19385,28 @@ export declare namespace ActivityModifiers {
     displayInNavMode: boolean;
 
     displayInActivitySelection: boolean;
+
+    hash: number;
+
+    index: number;
+
+    redacted: boolean;
+  }
+}
+
+export declare namespace GuardianRanks {
+  export interface DestinyGuardianRankDefinition {
+    displayProperties: Common.DestinyDisplayPropertiesDefinition;
+
+    rankNumber: number;
+
+    presentationNodeHash: number;
+
+    foregroundImagePath: string;
+
+    overlayImagePath: string;
+
+    overlayMaskImagePath: string;
 
     hash: number;
 
@@ -20342,43 +20498,41 @@ class UserServiceInternal {
 
   /**
    * Validates a users email.
-   * @param tokenGuid Email Validation Token
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static ValidateEmail = (
-    tokenGuid: string,
+    input: Contract.UserEmailVerificationRequest,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<User.UserEmailVerificationResponse> =>
     ApiIntermediary.doPostRequest(
-      `/User/ValidateEmail/${e(tokenGuid)}/`,
+      `/User/ValidateEmail/`,
       [],
       optionalQueryAppend,
       "User",
       "ValidateEmail",
-      undefined,
+      input,
       clientState
     );
 
   /**
    * Unsubscribes a users email.
-   * @param tokenGuid Email Unsubscribe Token
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static UnsubscribeEmail = (
-    tokenGuid: string,
+    input: Contract.UserEmailVerificationRequest,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<User.UserEmailVerificationResponse> =>
     ApiIntermediary.doPostRequest(
-      `/User/UnsubscribeEmail/${e(tokenGuid)}/`,
+      `/User/UnsubscribeEmail/`,
       [],
       optionalQueryAppend,
       "User",
       "UnsubscribeEmail",
-      undefined,
+      input,
       clientState
     );
 

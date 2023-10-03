@@ -25,7 +25,7 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
 import { Form, Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import accountStyles from "../Account.module.scss";
 
@@ -33,6 +33,9 @@ interface EmailAndSmsProps {}
 
 export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
   const globalStateData = useDataStore(GlobalStateDataStore, ["loggedinuser"]);
+  const [resendVerificationLoading, setResendVerificationLoading] = useState(
+    false
+  );
 
   const verifyYourEmail = Localizer.Registrationbenefits.VerifyYourEmail;
   const resendEmail = Localizer.Registrationbenefits.ResendEmail;
@@ -114,6 +117,26 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
       })
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e));
+  };
+
+  const showResendVerificatiomToast = () => {
+    Toast.show(Localizer.emails.ResendingVerificationContent, {
+      position: "br",
+    });
+  };
+
+  const resendVerification = () => {
+    setResendVerificationLoading(true);
+    Platform.UserService.RevalidateEmail()
+      .then((data) => {
+        data && showResendVerificatiomToast();
+        setResendVerificationLoading(false);
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => {
+        setResendVerificationLoading(false);
+        Modal.error(e);
+      });
   };
 
   return (
@@ -217,9 +240,9 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                           <Button
                             buttonType={"gold"}
                             size={BasicSize.Small}
-                            url={RouteHelper.ResendEmailVerification(
-                              globalStateData?.loggedInUser?.user?.membershipId
-                            )}
+                            onClick={resendVerification}
+                            loading={resendVerificationLoading}
+                            disabled={resendVerificationLoading}
                           >
                             {resendEmail}
                           </Button>

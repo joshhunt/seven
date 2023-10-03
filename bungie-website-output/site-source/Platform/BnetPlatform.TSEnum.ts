@@ -720,6 +720,7 @@ export enum PlatformErrorCodes {
   EmailValidationFailOldCode = 246,
   EmailValidationFailBadLink = 247,
   EmailUnsubscribeFail = 248,
+  EmailUnsubscribeFailNew = 249,
   MessagingUnknownError = 300,
   MessagingSelfError = 301,
   MessagingSendThrottle = 302,

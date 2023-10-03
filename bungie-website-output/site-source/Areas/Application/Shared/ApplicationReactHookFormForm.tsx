@@ -214,7 +214,7 @@ export const ApplicationReactHookFormForm: React.FC<ApplicationReactHookFormForm
       .then((result) => {
         //redirect to new app details
         history.push(
-          RouteHelper.ApplicationDetail({ appId: result.toString() }).url
+          RouteHelper.ApplicationDetailReact({ appId: result.toString() }).url
         );
       })
       .catch(ConvertToPlatformError)

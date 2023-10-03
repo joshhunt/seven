@@ -3,12 +3,14 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization/Localizer";
+import { PlatformErrorCodes } from "@Enum";
 import { SystemNames } from "@Global/SystemNames";
 import { Contract, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { useEffect, useState } from "react";
 import styles from ".././IdentitySettings.module.scss";
 
@@ -32,7 +34,10 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
   const [isChild, setIsChild] = useState(true);
   const testString =
     "This will delete the country and birthdate values for the user completely.";
-  // const deleteFieldsEnabled = ConfigUtils.SystemStatus("RemoveBirthdayAndCountry");
+  const deleteFieldsEnabled = ConfigUtils.SystemStatus(
+    SystemNames.RemoveBirthdayAndCountry
+  );
+  const countryArray = Object.entries(countries);
 
   const updateStateWithResponse = (
     data: Contract.UserBirthdayAndCountryResponse
@@ -46,18 +51,6 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
     setAdminBirthdateChanges(data.adminBirthDateChanges);
   };
 
-  const mapCountries = () => {
-    const countryArray = Object.entries(countries);
-
-    return countryArray.map((country: any) => {
-      return (
-        <option key={country[0]} value={country[0]}>
-          {country[1]}
-        </option>
-      );
-    });
-  };
-
   useEffect(() => {
     !!props.onPageMembershipId &&
       props.onPageMembershipId.length > 0 &&
@@ -66,7 +59,6 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
       )
         .then((data: any) => {
           updateStateWithResponse(data);
-          mapCountries();
         })
         .catch(ConvertToPlatformError)
         .catch((e: Error) => Modal.error(e));
@@ -98,7 +90,13 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
       props.onPageMembershipId
     )
       .then((response: number) => {
-        if (response === 1) {
+        if (
+          EnumUtils.looseEquals(
+            response,
+            PlatformErrorCodes.Success,
+            PlatformErrorCodes
+          )
+        ) {
           Modal.open(Localizer.clans.ChangesHaveBeenSuccessfully);
 
           !!props.onPageMembershipId &&
@@ -147,7 +145,13 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
         onChange={(e) => setSelectedCountry(e.target.value)}
       >
         <option value="">{Localizer.Usertools.Country}</option>
-        {mapCountries()}
+        {countryArray.map((country: any) => {
+          return (
+            <option key={country[0]} value={country[0]}>
+              {country[1]}
+            </option>
+          );
+        })}
       </select>
       <h4>
         {Localizer.Usertools.NumberOfUpdates}
@@ -178,8 +182,7 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
         >
           {Localizer.Usertools.Update}
         </Button>
-        {
-          // deleteFieldsEnabled &&
+        {deleteFieldsEnabled && (
           <Button
             className={styles.deleteButton}
             onClick={handleDelete}
@@ -188,12 +191,9 @@ const CountryBirthday: React.FC<CountryBirthdayProps> = (props) => {
           >
             {Localizer.Actions.Delete}
           </Button>
-        }
+        )}
       </div>
-      {
-        // deleteFieldsEnabled &&
-        <div>{testString}</div>
-      }
+      {deleteFieldsEnabled && <div>{testString}</div>}
     </div>
   );
 };

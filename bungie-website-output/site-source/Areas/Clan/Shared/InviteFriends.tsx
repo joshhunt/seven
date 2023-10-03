@@ -178,6 +178,11 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
         {searchTerm === "" && hasFriendsWithDestinyAccountsNotPending && (
           <ul className={classNames(styles.listCards)}>
             {clanPendingInvitesData?.friendsListResponse?.friends?.map((b) => {
+              if (!b.bungieNetUser) {
+                //doesn't have a bungieNet account, cannot invite
+                return null;
+              }
+
               if (
                 clanPendingInvitesData?.invitationsResponse?.results?.length &&
                 clanPendingInvitesData?.invitationsResponse?.results?.find(

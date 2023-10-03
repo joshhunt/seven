@@ -27,6 +27,7 @@ export class RouteDefs {
     CrossSave: "CrossSave",
     Destiny: "Destiny",
     Direct: "Direct",
+    Emails: "Emails",
     Fireteams: "Fireteams",
     Guide: "Guide",
     Legal: "Legal",
@@ -157,6 +158,17 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Redeem"),
         (area) => new ActionRoute(area, "History", { path: ":membershipId?" }),
         (area) => new ActionRoute(area, "Partners", { path: ":membershipId?" }),
+      ],
+    }),
+    Emails: new Area({
+      name: RouteDefs.AreaNames.Emails,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import("@Areas/Emails/EmailsArea" /* webpackChunkName: "Emails" */)
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "Unsubscribe", {}),
+        (area) => new ActionRoute(area, "Verify", {}),
       ],
     }),
     Destiny: new Area({

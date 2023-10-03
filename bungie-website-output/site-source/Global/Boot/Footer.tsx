@@ -127,7 +127,9 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               )}
               {appsEnabled &&
                 this.renderLink(
-                  RouteHelper.Applications(),
+                  ConfigUtils.SystemStatus(SystemNames.ApplicationsReactUI)
+                    ? RouteHelper.ApplicationsReact()
+                    : RouteHelper.Applications(),
                   navLoc.DeveloperPortal
                 )}
             </ul>

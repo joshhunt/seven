@@ -19,7 +19,7 @@ export const ApplicationsList: React.FC<ApplicationsListProps> = (props) => {
     return (
       <li>
         <Anchor
-          url={RouteHelper.ApplicationDetail({
+          url={RouteHelper.ApplicationDetailReact({
             appId: app.applicationId.toString(),
           })}
         >

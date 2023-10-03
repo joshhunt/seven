@@ -300,6 +300,7 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
                     blurb: styles.activitiesCalloutBlurb,
                     upperContent: styles.activitiesCalloutUpperContent,
                     asideImg: styles.activitiesCalloutAsideImg,
+                    thumbsWrapper: styles.freeForAllCalloutThumbsWrapper,
                   }}
                 />
               ),
