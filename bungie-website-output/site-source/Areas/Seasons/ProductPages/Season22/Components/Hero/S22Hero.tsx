@@ -27,17 +27,15 @@ type S22HeroProps = {
 };
 
 type S22ScrollButtonProps = {
-  bottom_label: string;
-  images: BnetStackFile[];
-  mobile_label: string;
-  top_label: string;
+  label: string;
+  layer_1: BnetStackFile;
+  layer_2: BnetStackFile;
 };
 
 export const S22Hero: React.FC<S22HeroProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, showCTA, scrollToEvent, openBuyModal, showEventButton } =
-    props ?? {};
+  const { data, scrollToEvent, showEventButton } = props ?? {};
 
   const {
     bg_desktop_poster,
@@ -100,59 +98,28 @@ export const S22Hero: React.FC<S22HeroProps> = (props) => {
             className={classNames({
               [styles.btns]: !paidMediaVideoHero,
               [styles.videoBtns]: paidMediaVideoHero,
+              [styles.btnBottomMargin]: showEventButton,
             })}
           >
-            <div>
-              <Button
-                onClick={handleTrailerBtnClick}
-                buttonType={"gold"}
-                icon={
-                  <Icon
-                    className={styles.icon}
-                    iconType={"material"}
-                    iconName={"play_arrow"}
-                  />
-                }
-              >
-                {trailer_btn?.text}
-              </Button>
-            </div>
-
-            {showEventButton && (
-              <ScrollButton {...scroll_button} scrollToEvent={scrollToEvent} />
-            )}
+            <Button
+              onClick={handleTrailerBtnClick}
+              buttonType={"gold"}
+              icon={
+                <Icon
+                  className={styles.icon}
+                  iconType={"material"}
+                  iconName={"play_arrow"}
+                />
+              }
+            >
+              {trailer_btn?.text}
+            </Button>
           </div>
         </div>
       </div>
-      {showCTA ? <HeroCTA cta={cta} scrollToEvent={scrollToEvent} /> : null}
-    </div>
-  );
-};
-
-const HeroCTA: React.FC<any & { scrollToEvent: () => void }> = (props) => {
-  const { scrollToEvent, cta } = props;
-
-  const { graphic, logo, text } = cta || {};
-
-  return (
-    <div className={styles.bugWrapper}>
-      <button
-        className={styles.bugContent}
-        onClick={scrollToEvent}
-        style={{
-          backgroundImage: graphic ? `url(${graphic.url})` : undefined,
-        }}
-      >
-        <img src={logo?.url} alt={""} className={styles.bugIcon} />
-        <span dangerouslySetInnerHTML={sanitizeHTML(text)} />
-        <DestinyArrows
-          classes={{
-            root: styles.arrows,
-            base: styles.arrowsBase,
-            animatedArrow: styles.animatedArrow,
-          }}
-        />
-      </button>
+      {showEventButton && (
+        <ScrollButton {...scroll_button} scrollToEvent={scrollToEvent} />
+      )}
     </div>
   );
 };
@@ -160,34 +127,34 @@ const HeroCTA: React.FC<any & { scrollToEvent: () => void }> = (props) => {
 const ScrollButton: React.FC<
   S22ScrollButtonProps & { scrollToEvent: () => void }
 > = (props) => {
-  const { mobile } = useDataStore(Responsive);
-
-  const {
-    scrollToEvent,
-    top_label,
-    bottom_label,
-    mobile_label,
-    images,
-  } = props;
+  const { scrollToEvent, label, layer_1, layer_2 } = props;
 
   return (
     <div className={styles.eventBugWrapper}>
       <button className={styles.eventBugContent} onClick={scrollToEvent}>
-        {!mobile && <p className={styles.title}>{top_label}</p>}
         <div className={styles.iconOuterWrapper}>
           <div className={styles.iconWrapper}>
-            {images?.map((image, i) => (
-              <div
-                className={styles.eventIcon}
-                style={{ backgroundImage: bgImage(image?.url) }}
-                key={i}
+            {layer_2?.url && (
+              <span className={styles.topWrapper}>
+                <img className={styles.topImage} src={layer_2?.url} alt={""} />
+              </span>
+            )}
+            {label && (
+              <p
+                className={styles.title}
+                dangerouslySetInnerHTML={sanitizeHTML(label)}
               />
-            ))}
+            )}
+            <DestinyArrows
+              classes={{
+                root: styles.arrows,
+                base: styles.arrowsBase,
+                animatedArrow: styles.animatedArrow,
+              }}
+            />
+            {layer_1?.url && <img src={layer_1?.url} alt={""} />}
           </div>
         </div>
-        <p className={styles.title}>{mobile ? mobile_label : bottom_label}</p>
-
-        <DestinyArrows classes={{ root: styles.arrows }} />
       </button>
     </div>
   );

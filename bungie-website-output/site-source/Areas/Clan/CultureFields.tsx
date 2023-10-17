@@ -2,6 +2,7 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { NonMemberClanSettingsDataStore } from "@Areas/Clan/DataStores/NonMemberClanSettingsDataStore";
 import { ClanUtils } from "@Areas/Clan/Shared/ClanUtils";
 import { SettingsWrapper } from "@Areas/Clan/Shared/SettingsWrapper";
 import { FaTimes } from "@react-icons/all-files/fa/FaTimes";
@@ -18,7 +19,7 @@ import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import classNames from "classnames";
 import { Form, Formik, FormikValues } from "formik";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";
 import * as Yup from "yup";
 
@@ -34,10 +35,15 @@ export const CultureFields: React.FC = () => {
     "loggedInUser",
     "loggedInUserClans",
   ]);
+  const isBnetAdmin = ClanUtils.isBnetAdmin(globalState.loggedInUser);
 
   const clan = globalState.loggedInUserClans?.results?.find(
     (c) => c.group.groupId === clanId
   );
+  const nonMemberClanSettingsData = useDataStore(
+    NonMemberClanSettingsDataStore
+  );
+  const nonMemberClanResponse = nonMemberClanSettingsData?.clanResponse;
   const canEditFields = ClanUtils.canEditClanCulture(
     clan,
     globalState?.loggedInUser
@@ -85,13 +91,15 @@ export const CultureFields: React.FC = () => {
 
   return (
     <SettingsWrapper>
-      {clan && (
+      {((isBnetAdmin && nonMemberClanResponse) || clan) && ( //clan comes from the loggedInUser clans list, a non-member bnet admin will not have this
         <Formik
           initialValues={{
-            clanName: clan.group.name,
-            callSign: clan.group.clanInfo.clanCallsign,
-            motto: clan.group.motto,
-            about: clan.group.about,
+            clanName: clan?.group?.name ?? nonMemberClanResponse?.detail?.name,
+            callSign:
+              clan?.group?.clanInfo?.clanCallsign ??
+              nonMemberClanResponse?.detail?.clanInfo?.clanCallsign,
+            motto: clan?.group?.motto ?? nonMemberClanResponse?.detail?.motto,
+            about: clan?.group?.about ?? nonMemberClanResponse?.detail?.about,
           }}
           enableReinitialize
           validationSchema={Yup.object({

@@ -26,8 +26,7 @@ import { useHistory } from "react-router";
 import { Anchor } from "./Anchor";
 import styles from "./MainNavigation.module.scss";
 import { NotificationSidebar } from "./NotificationSidebar";
-
-declare var NavigationConfig: INavigationConfig;
+import { NavigationConfig } from "../../Generated/navigation-config";
 
 export enum NavigationConfigRequirements {
   None = 0,
@@ -100,13 +99,12 @@ export const MainNavigation: React.FC<PropsWithChildren<
   ]);
   const history = useHistory();
   const navWrapperRef = useRef(null);
-  const navConfig = useMemo(() => NavigationConfig, NavigationConfig);
 
   const linksToShow = useMemo(() => {
     const linksList: IMenuParentItem[] = [];
 
-    if (navConfig) {
-      navConfig.forEach((linkItem) => {
+    if (NavigationConfig?.length > 0) {
+      NavigationConfig.forEach((linkItem) => {
         if (linkItem.Enabled) {
           linksList.push(linkItem);
         }
@@ -114,7 +112,7 @@ export const MainNavigation: React.FC<PropsWithChildren<
     }
 
     return linksList;
-  }, [navConfig]);
+  }, [NavigationConfig]);
 
   if (
     document.getElementById("main-content")?.getBoundingClientRect()?.top < 0

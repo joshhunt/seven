@@ -131,6 +131,9 @@ const Unsubscribe: React.FC = () => {
   return (
     <SpinnerContainer loading={!unsubscribeResponse}>
       <div className={styles.emailContainer}>
+        <h1 className="section-header">
+          {Localizer.emails.UnsubscribeSuccess}
+        </h1>
         <h4>{Localizer.emails.UnsubscribeMessage}</h4>
         <div className={styles.socialContainer}>
           {Array.isArray(socialLinks) && socialLinks?.length > 0 && (

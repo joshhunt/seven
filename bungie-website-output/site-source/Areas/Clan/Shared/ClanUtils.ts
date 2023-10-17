@@ -27,15 +27,17 @@ export class ClanUtils {
     });
   };
 
+  public static isBnetAdmin = (userDetail: Contract.UserDetail) => {
+    return userDetail?.userAcls?.includes(AclEnum.BNextFounderInAllGroups);
+  };
+
   public static canViewAdmin = (
     clan: GroupsV2.GroupMembership,
     globalState: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) => {
     return (
       UserUtils.isAuthenticated(globalState) &&
-      (globalState.loggedInUser?.userAcls?.includes(
-        AclEnum.BNextFounderInAllGroups
-      ) ||
+      (ClanUtils.isBnetAdmin(globalState.loggedInUser) ||
         clan?.member?.memberType > RuntimeGroupMemberType.Member)
     );
   };
@@ -46,10 +48,7 @@ export class ClanUtils {
   ) => {
     return (
       UserUtils.isAuthenticated(globalState) &&
-      (globalState.loggedInUser?.userAcls?.includes(
-        AclEnum.BNextFounderInAllGroups
-      ) ||
-        clan?.member?.memberType > RuntimeGroupMemberType.Admin)
+      clan?.member?.memberType > RuntimeGroupMemberType.Admin
     );
   };
 
@@ -61,7 +60,7 @@ export class ClanUtils {
       clan?.group?.features?.updateCulturePermissionOverride;
 
     return (
-      userDetail?.userAcls?.includes(AclEnum.BNextFounderInAllGroups) ||
+      ClanUtils.isBnetAdmin(userDetail) ||
       clan?.member?.memberType > RuntimeGroupMemberType.Admin ||
       (clan?.member?.memberType > RuntimeGroupMemberType.Member &&
         adminsCanEdit)

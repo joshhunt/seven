@@ -1,13 +1,11 @@
 import BeyondLight from "@Areas/Destiny/BeyondLight/BeyondLight";
-import { BeyondLightFlickerWrapper } from "@Areas/Destiny/BeyondLight/BeyondLightFlickerWrapper";
 import Home from "@Areas/Destiny/Home";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
-import { Redirect, Route, RouteComponentProps } from "react-router-dom";
+import { Route, RouteComponentProps } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import EventsRouter from "@Areas/Seasons/Events/EventsRouter";
 import Reveal from "./Reveal";
 import { Companion } from "./Companion/Companion";
 
@@ -18,13 +16,8 @@ class DestinyArea extends React.Component<RouteComponentProps> {
     const buyDetailPath = RouteDefs.Areas.Destiny.getAction("BuyDetail").path;
     const newLightPath = RouteDefs.Areas.Destiny.getAction("NewLight").path;
     const freeToPlayPath = RouteDefs.Areas.Destiny.getAction("FreeToPlay").path;
-    const newLightUrl = RouteDefs.Areas.Destiny.getAction("NewLight").resolve()
-      .url;
     const forsakenPath = RouteDefs.Areas.Destiny.getAction("Forsaken").path;
     const shadowkeepPath = RouteDefs.Areas.Destiny.getAction("Shadowkeep").path;
-    const stadiaRegister = RouteDefs.Areas.Destiny.getAction("StadiaRegister")
-      .path;
-    const infoFlowUrl = RouteDefs.Areas.Destiny.getAction("Info").path;
     const revealPath = RouteDefs.Areas.Destiny.getAction("Reveal").path;
     const companionPath = RouteDefs.Areas.Destiny.getAction("Companion").path;
     const beyondLightPath = RouteDefs.Areas.Destiny.getAction("BeyondLight")
@@ -133,7 +126,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           />
           <Route path={beyondLightPath} component={BeyondLight} />
           <Route path={companionPath} component={Companion} />
-          <Route path={infoFlowUrl} component={EventsRouter} />
           <Route path={revealPath} component={Reveal} />
           <Route path={indexPath} component={Home} />
         </SwitchWithErrors>

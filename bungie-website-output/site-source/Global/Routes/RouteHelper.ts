@@ -229,6 +229,7 @@ export class RouteHelper {
       window.location.pathname + window.location.search
     )}`
   );
+  public static SignOutBasic = LegacyPath(`/User/SignOut`);
   public static Messages = (iframeMode = false) => {
     const messages = UrlUtils.GetUrlForLocale("/Messages");
 

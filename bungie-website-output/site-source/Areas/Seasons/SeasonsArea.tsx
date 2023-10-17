@@ -1,11 +1,11 @@
 import { SeasonsIndex } from "@Areas/Seasons/SeasonsIndex";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { RouteComponentProps, Route, Redirect } from "react-router-dom";
 import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { NotFoundError } from "@CustomErrors";
-import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import EventsRouter from "./Events/EventsRouter";
+import { createAsyncComponent } from "@Routes/AsyncRoute";
 import SeasonsProgress from "./SeasonsProgress";
 import PreviousSeason from "./PreviousSeason";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
@@ -162,10 +162,6 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
           )}
         />
         <Route
-          path={RouteDefs.Areas.Seasons.getAction("Events").path}
-          component={EventsRouter}
-        />
-        <Route
           path={RouteDefs.Areas.Seasons.getAction("PreviousSeason").path}
           component={PreviousSeason}
         />
@@ -174,7 +170,10 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
           component={SeasonsProgress}
         />
         <Route
-          exact={true}
+          path={RouteDefs.Areas.Seasons.getAction("Events").path}
+          component={() => <Redirect to={RouteHelper.Seasons().url} />}
+        />
+        <Route
           path={RouteDefs.Areas.Seasons.getAction("Index").path}
           component={SeasonsIndex}
         />

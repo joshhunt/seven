@@ -752,21 +752,9 @@
     "areaName": "Seasons",
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
-    "action": "Event",
-    "params": {
-      "path": ":slug"
-    },
-    "path": "/7/en/Seasons/Event/:slug"
-  },
-  {
-    "areaName": "Seasons",
-    "areaObjectName": "Seasons",
-    "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "Events",
-    "params": {
-      "path": ":eventTag"
-    },
-    "path": "/7/en/Seasons/Events/:eventTag"
+    "params": {},
+    "path": "/7/en/Seasons/Events"
   },
   {
     "areaName": "Seasons",

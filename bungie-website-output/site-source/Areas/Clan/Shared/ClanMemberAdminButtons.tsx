@@ -6,6 +6,7 @@ import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDesti
 import { ClanMembersDataStore } from "@Areas/Clan/DataStores/ClanMembersDataStore";
 import { BanButton } from "@Areas/Clan/Shared/BanButton";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
+import { ClanUtils } from "@Areas/Clan/Shared/ClanUtils";
 import { KickButton } from "@Areas/Clan/Shared/KickButton";
 import { SetAsFounderWarningModal } from "@Areas/Clan/Shared/SetAsFounderWarningModal";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -38,21 +39,21 @@ export const ClanMemberAdminButtons: React.FC<ClanMemberAdminButtonsProps> = (
   const isViewerSelf = !!destinyMembership?.memberships?.find(
     (m) => m.membershipId === props.clanMember.destinyUserInfo.membershipId
   );
-  const isViewerFounder = !!globalState.loggedInUserClans.results.find(
+  const isViewerFounder = !!globalState.loggedInUserClans?.results.find(
     (c) =>
       c.member.memberType > RuntimeGroupMemberType.Admin &&
       c.group.groupId === props.clanId
   );
   const isViewerAdmin =
     isViewerFounder ||
-    !!globalState.loggedInUserClans.results.find(
+    !!globalState.loggedInUserClans?.results.find(
       (c) =>
         c.member.memberType > RuntimeGroupMemberType.Member &&
         c.group.groupId === props.clanId
     );
 
-  const adminFounderInAllGroups = globalState.loggedInUser.userAcls.includes(
-    AclEnum.BNextFounderInAllGroups
+  const adminFounderInAllGroups = ClanUtils.isBnetAdmin(
+    globalState.loggedInUser
   );
   const canBanMembers = adminFounderInAllGroups || isViewerAdmin;
   const canChangeMembers = adminFounderInAllGroups || isViewerAdmin;

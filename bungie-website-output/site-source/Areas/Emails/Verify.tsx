@@ -29,19 +29,18 @@ const VerifyPlatformErrorToLocaleString = (
   errorCode: PlatformErrorCodes
 ): string => {
   switch (errorCode) {
-    case PlatformErrorCodes.UserEmailValidationUnknown:
-    case PlatformErrorCodes.TokenInvalidMembership:
-    case PlatformErrorCodes.UserCannotSaveUserProfileData:
-      return Localizer.userpages.ValidateEmailFailNew;
     case PlatformErrorCodes.EmailValidationOffline:
       return Localizer.userpages.ValidateEmailOff;
     case PlatformErrorCodes.EmailValidationFailBadLink:
       return Localizer.userpages.ValidateEmailFailBadLink;
     case PlatformErrorCodes.EmailValidationFailOldCode:
       return Localizer.userpages.ValidateEmailFailOldCode;
+    // case PlatformErrorCodes.UserEmailValidationUnknown:
+    // case PlatformErrorCodes.TokenInvalidMembership:
+    // case PlatformErrorCodes.UserCannotSaveUserProfileData:
     // case PlatformErrorCodes.FailedMinimumAgeCheck:
     default:
-      return Localizer.emails.VerificationError;
+      return Localizer.userpages.ValidateEmailFailNew;
   }
 };
 const Verify: React.FC = () => {

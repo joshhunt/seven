@@ -6,6 +6,9 @@
       "@Areas/*": [
         "./bungie-website-output/site-source/Areas/*"
       ],
+      "@Generated/*": [
+        "./bungie-website-output/site-source/Generated/*"
+      ],
       "@Global/*": [
         "./bungie-website-output/site-source/Global/*"
       ],

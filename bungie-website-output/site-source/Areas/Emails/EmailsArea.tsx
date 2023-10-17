@@ -15,31 +15,27 @@ class EmailsArea extends React.Component<RouteComponentProps> {
 
     return (
       <React.Fragment>
-        <Grid className={styles.pageContent}>
-          <GridCol cols={12}>
-            <SwitchWithErrors>
-              <Route
-                path={unsubscribePath}
-                exact={true}
-                component={createAsyncComponent(
-                  () =>
-                    import(
-                      "@Areas/Emails/Unsubscribe" /* webpackChunkName: "Emails-Unsubscribe" */
-                    )
-                )}
-              />
-              <Route
-                path={verifyPath}
-                component={createAsyncComponent(
-                  () =>
-                    import(
-                      "@Areas/Emails/Verify" /* webpackChunkName: "Emails-Verify" */
-                    )
-                )}
-              />
-            </SwitchWithErrors>
-          </GridCol>
-        </Grid>
+        <SwitchWithErrors>
+          <Route
+            path={unsubscribePath}
+            exact={true}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Emails/Unsubscribe" /* webpackChunkName: "Emails-Unsubscribe" */
+                )
+            )}
+          />
+          <Route
+            path={verifyPath}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/Emails/Verify" /* webpackChunkName: "Emails-Verify" */
+                )
+            )}
+          />
+        </SwitchWithErrors>
       </React.Fragment>
     );
   }

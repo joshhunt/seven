@@ -1,6 +1,14 @@
 // Created by ahipp, 2023
 // Copyright Bungie, Inc.
 
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import classNames from "classnames";
 import {
   DefaultPmpComponents,
   extendDefaultComponents,
@@ -12,6 +20,7 @@ import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { WithContentTypeUids } from "@Utilities/ContentStackUtils";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import DestinySkuSelectorModal from "@UI/Destiny/SkuSelector/DestinySkuSelectorModal";
@@ -28,21 +37,16 @@ import { PmpStackedInfoThumbBlocks } from "@UI/Marketing/Fragments/PmpStackedInf
 import { PmpCallToAction } from "@UI/Marketing/FragmentComponents/PmpCallToAction";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { BuyButton } from "@UIKit/Controls/Button/BuyButton";
-import { WithContentTypeUids } from "@Utilities/ContentStackUtils";
-import classNames from "classnames";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import cardStyles from "@UI/Marketing/IconActionCard.module.scss";
 import { BnetStackS18ProductPage } from "../../../../Generated/contentstack-types";
 import { ContentStackClient } from "../../../../Platform/ContentStack/ContentStackClient";
-import styles from "./SeasonOfTheWitch.module.scss";
-import cardStyles from "@UI/Marketing/IconActionCard.module.scss";
+import EventCallout from "@Areas/Seasons/ProductPages/Season22/Components/EventCallout/EventCallout";
+import FeaturedImage from "@Areas/Seasons/ProductPages/Season22/Components/FeaturedImage/FeaturedImage";
 import { S22Hero } from "@Areas/Seasons/ProductPages/Season22/Components/Hero/S22Hero";
 import RewardsAndCalendar21 from "@Areas/Seasons/ProductPages/Season22/Components/SeasonPassRewards/S22SeasonPassRewards";
+
+import styles from "./SeasonOfTheWitch.module.scss";
+
 interface SeasonOfTheWitchProps {}
 
 /* All pmp component overrides can be specified globally here since they all reference the same stylesheet */
@@ -87,7 +91,7 @@ const pmpComponentOverrides: PartialPmpReferenceMap = {
 
 const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
   const [data, setData] = useState<null | any>(null);
-  const { mobile } = useDataStore(Responsive);
+  const { medium, mobile } = useDataStore(Responsive);
 
   const eventRef = useRef<HTMLDivElement | null>(null);
 
@@ -104,6 +108,11 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
     "free_for_all_section",
     "free_for_all_section.content",
     "season_pass_section.content",
+    "s22_section.content",
+    "s22_section.featured.copy",
+    "s22_section.featured.image",
+    "s22_section.bg_assets",
+    "s22_section.bg_assets.layer_1",
     "bundle_section.content",
     "cta_section.content",
     "cta_section.content.buttons",
@@ -140,14 +149,13 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
   );
 
   const getResponsiveImg = useCallback(
-    (bg: TResponsiveBg): string => {
-      const img = mobile ? bg?.mobile_bg : bg?.desktop_bg;
+    (image: TResponsiveBg) => {
+      const img = medium ? image?.mobile_bg : image?.desktop_bg;
 
       return img?.url || undefined;
     },
-    [mobile]
+    [medium]
   );
-
   const {
     title,
     hero,
@@ -163,14 +171,16 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
     cta_section,
     media_section,
     learn_more_section,
+    s22_section,
   } = data ?? {};
 
   const openBuyModal = () => {
     DestinySkuSelectorModal.show({ skuTag: DestinySkuTags.SilverBundle });
   };
 
-  const params = new URLSearchParams(location.search);
-  const paidMediaDefault = !params.get("hero") || !mobile;
+  const showEvent = hero?.scroll_button?.label?.length > 0;
+  const { layer_1, layer_2, layer_3 } = s22_section?.bg_assets || {};
+  const eventBottomBg = getResponsiveImg(s22_section?.bottom_bg);
 
   return (
     <div className={styles.seasonOfDefiance}>
@@ -191,6 +201,7 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
           scrollToEvent={scrollToEventSection}
           showCTA={false}
           openBuyModal={openBuyModal}
+          showEventButton={showEvent}
         />
 
         {/* SUB NAV */}
@@ -347,6 +358,74 @@ const SeasonOfTheWitch = (props: SeasonOfTheWitchProps) => {
             }}
           />
         </div>
+
+        {/* Event */}
+        {showEvent && (
+          <div id={"event"} ref={eventRef} className={styles.eventContainer}>
+            {s22_section?.content?.find(
+              (itm: any) => itm?._content_type_uid === "pmp_section_header"
+            )?.uid && (
+              <PmpSectionHeader
+                data={s22_section?.content?.find(
+                  (itm: any) => itm?._content_type_uid === "pmp_section_header"
+                )}
+                classes={{
+                  root: styles.sectionHeaderRoot,
+                  heading: styles.sectionHeaderHeadingEvent,
+                  videoBtn: styles.sectionHeaderVidButtonEvent,
+                }}
+              />
+            )}
+            {s22_section?.content?.find(
+              (itm: any) =>
+                itm?._content_type_uid === "pmp_info_thumbnail_group"
+            )?.uid && (
+              <div className={styles.candyContainer}>
+                <PmpInfoThumbnailGroup
+                  data={s22_section?.content?.find(
+                    (itm: any) =>
+                      itm?._content_type_uid === "pmp_info_thumbnail_group"
+                  )}
+                />
+                {layer_3 && (
+                  <img src={layer_3?.url} className={styles.candy_3} />
+                )}
+                {layer_2 && (
+                  <img src={layer_2?.url} className={styles.candy_2} />
+                )}
+              </div>
+            )}
+
+            <FeaturedImage
+              image={s22_section?.featured?.image}
+              content={s22_section?.featured?.copy?.[0]}
+              candy={layer_1}
+            />
+            <EventCallout
+              data={s22_section?.content?.find(
+                (itm: any) => itm?._content_type_uid === "pmp_callout"
+              )}
+            />
+            {s22_section?.content?.find(
+              (itm: any) =>
+                itm?._content_type_uid === "pmp_stacked_info_thumb_blocks"
+            )?.uid && (
+              <PmpStackedInfoThumbBlocks
+                data={s22_section?.content?.find(
+                  (itm: any) =>
+                    itm?._content_type_uid === "pmp_stacked_info_thumb_blocks"
+                )}
+                classes={{
+                  blurb: styles.infoThumbBlurbEvent,
+                  heading: styles.infoThumbHeadingEvent,
+                }}
+              />
+            )}
+            {eventBottomBg && (
+              <img src={eventBottomBg} className={styles.bottomBgEvent} />
+            )}
+          </div>
+        )}
 
         {/* Free For All */}
         <div
