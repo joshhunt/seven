@@ -13,12 +13,12 @@ import {
 import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Environment } from "@Helpers";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { FirehoseDebugger } from "@UI/Content/FirehoseDebugger";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 import { GlobalAlerts } from "@UI/GlobalAlerts/GlobalAlerts";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
+import { StadiaSunsetGlobalBar } from "@UI/GlobalAlerts/StadiaSunsetGlobalBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
 import {
@@ -29,8 +29,6 @@ import {
 import { NavVisibilityListener } from "@UIKit/Controls/NavVisibilityListener";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import {
   FirehoseDebuggerDataStore,
@@ -38,7 +36,7 @@ import {
 } from "Platform/FirehoseDebuggerDataStore";
 import React, { Suspense } from "react";
 import Helmet from "react-helmet";
-import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 // @ts-ignore
 import ScrollMemory from "react-router-scroll-memory";
 import { ErrorBnetOffline } from "@UI/Errors/ErrorBnetOffline";
@@ -54,7 +52,7 @@ interface AppLayoutProps extends RouteComponentProps<ILocaleParams> {
 interface IInternalAppLayoutState {
   currentPath: string;
   error: string;
-  globalState: GlobalState<"responsive" | "loggedInUser">;
+  globalState: GlobalState<"responsive">;
   stringsLoaded: boolean;
   noWebP: boolean;
   definitionsLoading: boolean;
@@ -116,7 +114,7 @@ class AppLayout extends React.Component<
             () => this.state.globalState.coreSettings && this.initTrackingOnce()
           );
         },
-        ["responsive", "loggedInUser"]
+        ["responsive"]
       ),
       StringFetcher.observe((data) => {
         this.setState({
@@ -144,9 +142,7 @@ class AppLayout extends React.Component<
       }),
       GlobalFatalDataStore.observe((data) => {
         if (data.error?.length > 0) {
-          this.setState({
-            globalError: data.error,
-          });
+          this.setState({ globalError: data.error });
         }
       })
     );
@@ -159,9 +155,7 @@ class AppLayout extends React.Component<
 
     // The mobile app and any sources that might embed one of our pages can provide this query param to hide the header, footer, global alerts -- anything applied globally to the website that navigates you away from the current page.
     const queryParams = new URLSearchParams(this.props.location?.search);
-    this.setState({
-      hideNavigation: queryParams.get("hidenav") === "true",
-    });
+    this.setState({ hideNavigation: queryParams.get("hidenav") === "true" });
   }
 
   private initTrackingOnce() {
@@ -188,9 +182,11 @@ class AppLayout extends React.Component<
   private get systemEnabled() {
     return (
       this.settingsLoaded &&
-      this.state.globalState?.coreSettings?.systems?.[
+      this.state.globalState.coreSettings.systems[
         this.rendererCoreSystemName
-      ]?.enabled
+      ] &&
+      this.state.globalState.coreSettings.systems[this.rendererCoreSystemName]
+        .enabled
     );
   }
 
@@ -206,21 +202,6 @@ class AppLayout extends React.Component<
         ]?.enabled !== null
       ) {
         return <ErrorBnetOffline />;
-      }
-    }
-
-    //Check if the user is logged in and if they are, check if they have a valid birthdate and country of residence
-    //If our auth system ever changes, this will need to be updated
-    if (
-      this.state.globalState &&
-      UserUtils?.isAuthenticated(this.state.globalState)
-    ) {
-      const user = this.state.globalState?.loggedInUser;
-      const link = RouteHelper.SignOut();
-
-      if (!user?.countryOfResidence || !user?.birthDate) {
-        //Otherwise log them out (for legal reasons)
-        UrlUtils.PushRedirect(link, { history: this.props.history });
       }
     }
 
