@@ -752,6 +752,68 @@ export declare namespace DestinyDefinitions {
     Badge = 2,
   }
 
+  enum FireteamFinderLabelFieldType {
+    Title = 0,
+    Label = 1,
+  }
+
+  enum FireteamFinderCodeOptionType {
+    None = 0,
+    ApplicationOnly = 1,
+    OnlineOnly = 2,
+    PlayerCount = 3,
+    Title = 4,
+    Tags = 5,
+    FinderActivityGraph = 6,
+    MicrophoneRequired = 7,
+  }
+
+  enum FireteamFinderOptionAvailability {
+    None = 0,
+    CreateListingBuilder = 1,
+    SearchListingBuilder = 2,
+    ListingViewer = 4,
+    LobbyViewer = 8,
+  }
+
+  enum FireteamFinderOptionVisibility {
+    Always = 0,
+    ShowWhenChangedFromDefault = 1,
+  }
+
+  enum FireteamFinderOptionControlType {
+    None = 0,
+    ValueCollection = 1,
+    RadioButton = 2,
+  }
+
+  enum FireteamFinderOptionSearchFilterType {
+    None = 0,
+    All = 1,
+    Any = 2,
+    InRangeInclusive = 3,
+    InRangeExclusive = 4,
+    GreaterThan = 5,
+    GreaterThanOrEqualTo = 6,
+    LessThan = 7,
+    LessThanOrEqualTo = 8,
+  }
+
+  enum FireteamFinderOptionDisplayFormat {
+    Text = 0,
+    Integer = 1,
+    Bool = 2,
+    FormatString = 3,
+  }
+
+  enum FireteamFinderOptionValueProviderType {
+    None = 0,
+    Values = 1,
+    PlayerCount = 2,
+    FireteamFinderLabels = 3,
+    FireteamFinderActivityGraph = 4,
+  }
+
   enum ActivityGraphNodeHighlightType {
     None = 0,
     Normal = 1,
@@ -3833,6 +3895,14 @@ export declare namespace DestinyDefinitions {
     value: DestinyUnlockState;
   }
 
+  export interface DestinyBitVector {
+    bits: DestinyBitVectorEntry[];
+  }
+
+  export interface DestinyBitVectorEntry {
+    element: number;
+  }
+
   export interface DestinyPositionDefinition {
     x: number;
 
@@ -5727,6 +5797,194 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinyFireteamFinderActivityGraphDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    isPlayerElectedDifficultyNode: boolean;
+
+    parentHash: number;
+
+    children: number[];
+
+    selfAndAllDescendants: DestinyBitVector;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyFireteamFinderActivitySetDefinition {
+    maximumPartySize: number;
+
+    options: DestinyBitVector;
+
+    optionHashes: number[];
+
+    labels: DestinyBitVector;
+
+    labelHashes: number[];
+
+    graphReferences: DestinyBitVector;
+
+    activityGraphHashes: number[];
+
+    activities: DestinyBitVector;
+
+    activityHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyFireteamFinderLabelDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    requirement: DestinyFireteamFinderLabelRequirement;
+
+    descendingSortPriority: number;
+
+    groupHash: number;
+
+    allowInFields: FireteamFinderLabelFieldType;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyFireteamFinderLabelRequirement {
+    unlockExpression: DestinyUnlockExpressionDefinition;
+
+    displayIcon: string;
+
+    displayString: string;
+
+    dialogSet: number;
+  }
+
+  export interface DestinyFireteamFinderLabelGroupDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    descendingSortPriority: number;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyFireteamFinderOptionDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    descendingSortPriority: number;
+
+    groupHash: number;
+
+    codeOptionType: FireteamFinderCodeOptionType;
+
+    availability: FireteamFinderOptionAvailability;
+
+    visibility: FireteamFinderOptionVisibility;
+
+    uiDisplayStyle: string;
+
+    creatorSettings: DestinyFireteamFinderOptionCreatorSettings;
+
+    searcherSettings: DestinyFireteamFinderOptionSearcherSettings;
+
+    values: DestinyFireteamFinderOptionValues;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyFireteamFinderOptionCreatorSettings {
+    control: DestinyFireteamFinderOptionSettingsControl;
+  }
+
+  export interface DestinyFireteamFinderOptionSettingsControl {
+    type: FireteamFinderOptionControlType;
+
+    minSelectedItems: number;
+
+    maxSelectedItems: number;
+  }
+
+  export interface DestinyFireteamFinderOptionSearcherSettings {
+    control: DestinyFireteamFinderOptionSettingsControl;
+
+    searchFilterType: FireteamFinderOptionSearchFilterType;
+  }
+
+  export interface DestinyFireteamFinderOptionValues {
+    optionalNull: DestinyDisplayPropertiesDefinition;
+
+    optionalFormatString: string;
+
+    displayFormatType: FireteamFinderOptionDisplayFormat;
+
+    type: FireteamFinderOptionValueProviderType;
+  }
+
+  export interface DestinyFireteamFinderOptionGroupDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    descendingSortPriority: number;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DestinyEnergyTypeDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
 
@@ -6326,6 +6584,30 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyFactionDefinition?: {
     [key: string]: DestinyDefinitions.DestinyFactionDefinition;
   };
+  DestinyFireteamFinderActivityGraphDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition;
+  };
+  DestinyFireteamFinderActivitySetDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyFireteamFinderActivitySetDefinition;
+  };
+  DestinyFireteamFinderLabelDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyFireteamFinderLabelDefinition;
+  };
+  DestinyFireteamFinderLabelGroupDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyFireteamFinderLabelGroupDefinition;
+  };
+  DestinyFireteamFinderOptionDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyFireteamFinderOptionDefinition;
+  };
+  DestinyFireteamFinderOptionGroupDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyFireteamFinderOptionGroupDefinition;
+  };
   DestinyGenderDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGenderDefinition;
   };
@@ -6573,6 +6855,12 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyItemTierTypeDefinition?: DestinyDefinitions.DestinyItemTierTypeDefinition;
   DestinyGuardianRankConstantsDefinition?: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
   DestinyGuardianRankDefinition?: DestinyDefinitions.DestinyGuardianRankDefinition;
+  DestinyFireteamFinderActivityGraphDefinition?: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition;
+  DestinyFireteamFinderActivitySetDefinition?: DestinyDefinitions.DestinyFireteamFinderActivitySetDefinition;
+  DestinyFireteamFinderLabelDefinition?: DestinyDefinitions.DestinyFireteamFinderLabelDefinition;
+  DestinyFireteamFinderLabelGroupDefinition?: DestinyDefinitions.DestinyFireteamFinderLabelGroupDefinition;
+  DestinyFireteamFinderOptionDefinition?: DestinyDefinitions.DestinyFireteamFinderOptionDefinition;
+  DestinyFireteamFinderOptionGroupDefinition?: DestinyDefinitions.DestinyFireteamFinderOptionGroupDefinition;
   DestinyEnergyTypeDefinition?: DestinyDefinitions.DestinyEnergyTypeDefinition;
   DestinyActivityGraphDefinition?: DestinyDefinitions.DestinyActivityGraphDefinition;
   DestinyCollectibleDefinition?: DestinyDefinitions.DestinyCollectibleDefinition;
@@ -6656,6 +6944,12 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyItemTierTypeDefinition",
   "DestinyGuardianRankConstantsDefinition",
   "DestinyGuardianRankDefinition",
+  "DestinyFireteamFinderActivityGraphDefinition",
+  "DestinyFireteamFinderActivitySetDefinition",
+  "DestinyFireteamFinderLabelDefinition",
+  "DestinyFireteamFinderLabelGroupDefinition",
+  "DestinyFireteamFinderOptionDefinition",
+  "DestinyFireteamFinderOptionGroupDefinition",
   "DestinyEnergyTypeDefinition",
   "DestinyActivityGraphDefinition",
   "DestinyCollectibleDefinition",

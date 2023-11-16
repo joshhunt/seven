@@ -1,6 +1,4 @@
 import { Content } from "@Platform";
-import moment from "moment";
-import { IDestinySkuSale } from "@UI/Destiny/SkuSelector/DestinySkuConfigDataStore";
 import { ContentStackClient } from "../Platform/ContentStack/ContentStackClient";
 
 export interface IMarketingMediaAsset {
