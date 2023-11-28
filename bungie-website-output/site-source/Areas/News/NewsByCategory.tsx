@@ -18,21 +18,19 @@ import { NewsCategory } from "./News";
 import styles from "./NewsByCategory.module.scss";
 import { NewsPreview } from "./NewsPreview";
 
-interface NewsByCategoryProps {
-  page: string;
-}
+interface NewsByCategoryProps {}
 
 const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const responsive = useDataStore(Responsive);
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const location = useLocation();
   const history = useHistory();
-  const params = useParams<NewsByCategoryProps>();
+  const qs = new URLSearchParams(location.search);
   const pageCategory = UrlUtils.GetUrlAction(location);
   const categoryIsInvalid = !EnumUtils.getStringKeys(NewsCategory).includes(
     UrlUtils.GetUrlAction(location)
   );
-  const pageQueryToNumber = parseInt(params.page);
+  const pageQueryToNumber = parseInt(qs.get("page"));
   const [page, setPage] = useState(pageQueryToNumber || 1);
   const [articles, setArticles] = useState(null);
   const articlesPerPage = 25;
@@ -107,7 +105,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
         {/* Pager */}
         {totalPages > 1 && (
           <ReactPaginate
-            forcePage={pageQueryToNumber - 1 ?? 1}
+            forcePage={page - 1 ?? 1}
             onPageChange={(selectedItem) =>
               history.push({ search: `?page=${selectedItem.selected + 1}` })
             }
