@@ -8,7 +8,7 @@ import { Localizer } from "@bungie/localization";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useHistory, useLocation } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 import { Logger } from "@Global/Logger";
 import { RendererLogLevel } from "@Enum";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
@@ -18,19 +18,21 @@ import { NewsCategory } from "./News";
 import styles from "./NewsByCategory.module.scss";
 import { NewsPreview } from "./NewsPreview";
 
-interface NewsByCategoryProps {}
+interface NewsByCategoryProps {
+  page: string;
+}
 
 const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const responsive = useDataStore(Responsive);
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const location = useLocation();
   const history = useHistory();
-  const params = new URLSearchParams(location.search);
+  const params = useParams<NewsByCategoryProps>();
   const pageCategory = UrlUtils.GetUrlAction(location);
   const categoryIsInvalid = !EnumUtils.getStringKeys(NewsCategory).includes(
     UrlUtils.GetUrlAction(location)
   );
-  const pageQueryToNumber = Number(params.get("page"));
+  const pageQueryToNumber = parseInt(params.page);
   const [page, setPage] = useState(pageQueryToNumber || 1);
   const [articles, setArticles] = useState(null);
   const articlesPerPage = 25;
@@ -41,7 +43,15 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
     return ContentStackClient()
       .ContentType("news_article")
       .Query()
-      .only(["image", "mobile_image", "subtitle", "date", "title", "url"])
+      .only([
+        "image",
+        "mobile_image",
+        "banner_image",
+        "subtitle",
+        "date",
+        "title",
+        "url",
+      ])
       .language(locale)
       .descending("date")
       .includeCount()

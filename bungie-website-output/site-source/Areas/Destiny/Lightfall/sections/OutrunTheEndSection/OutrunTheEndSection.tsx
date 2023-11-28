@@ -4,17 +4,8 @@
 import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/LightfallSectionHeader/LightfallSectionHeader";
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { DestinySkuTags } from "@UI/Destiny/SkuSelector/DestinySkuConstants";
 import { PmpStackedInfoThumbBlocks } from "@UI/Marketing/Fragments/PmpStackedInfoThumbBlocks";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { Button } from "@UIKit/Controls/Button/Button";
-import {
-  bgImage,
-  responsiveBgImageFromStackFile,
-} from "@Utilities/ContentStackUtils";
 import React, { useMemo } from "react";
-import { BnetStackNebulaProductPage } from "../../../../../Generated/contentstack-types";
 import styles from "./OutrunTheEndSection.module.scss";
 import { useCSWebpImages } from "@Utilities/CSUtils";
 
@@ -27,15 +18,8 @@ export const OutrunTheEndSection: React.FC<OutrunTheEndSectionProps> = (
   props
 ) => {
   const { data } = props;
-  const {
-    bottom_header,
-    desktop_bg,
-    mobile_bg,
-    heading,
-    blurb,
-    weapon_img,
-    content,
-  } = data ?? {};
+  const { desktop_bg, mobile_bg, heading, blurb, weapon_img, content } =
+    data ?? {};
 
   const { mobile } = useDataStore(Responsive);
 
@@ -62,7 +46,6 @@ export const OutrunTheEndSection: React.FC<OutrunTheEndSectionProps> = (
             content: styles.content,
           }}
         />
-
         <PmpStackedInfoThumbBlocks
           data={content?.[0]}
           classes={{
@@ -74,7 +57,7 @@ export const OutrunTheEndSection: React.FC<OutrunTheEndSectionProps> = (
             thumb: styles.thumbnail,
             thumbWrapper: styles.thumbWrapper,
           }}
-          reverseAlignment={true}
+          reverseAlignment={false}
         />
       </div>
     </div>

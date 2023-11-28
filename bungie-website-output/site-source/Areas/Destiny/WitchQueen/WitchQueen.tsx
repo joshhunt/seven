@@ -158,7 +158,8 @@ const WitchQueen: React.FC = () => {
                     )}
                   >
                     {image_and_text_blocks?.map((blockObj: any, j: number) => {
-                      const isFlexReverse = j % 2 !== 0;
+                      const isFlexReverse =
+                        identifier === "activities" ? j % 2 === 0 : j % 2 !== 0;
 
                       const screenshotsInSection = image_and_text_blocks.filter(
                         (b: any) => !b.video_id

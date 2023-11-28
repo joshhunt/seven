@@ -370,9 +370,32 @@ class SeasonOfTheWitch extends SeasonDefinition {
   }
 }
 
+class SeasonOfTheWish extends SeasonDefinition {
+  public static instance = new SeasonOfTheWish();
+
+  public get title(): string {
+    return Localizer.Seasons.SeasonOfTheWish;
+  }
+
+  public image = "/7/ca/destiny/bgs/season23/S23_Key_Art_-16-9.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season23/seasonbackground_23.jpg";
+  public smallIcon = "/7/ca/destiny/bgs/season23/seasonicon_23.png";
+
+  public productPageLink = RouteHelper.SeasonOfTheWitch();
+  public calendarContentItem: string;
+  public calendarBackgroundImage = "";
+  public seasonNumber = 23;
+  public actionRouteString = "SeasonOfTheWish";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreSeasonOfTheWish;
+  }
+}
+
 export class SeasonsDefinitions {
-  public static previousSeason = SeasonOfTheDeep.instance;
-  public static currentSeason = SeasonOfTheWitch.instance;
+  public static previousSeason = SeasonOfTheWitch.instance;
+  public static currentSeason = SeasonOfTheWish.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -388,9 +411,11 @@ export class SeasonsDefinitions {
   public static seasonOfTheSeraph = SeasonOfTheSeraph.instance;
   public static seasonOfTheDeep = SeasonOfTheDeep.instance;
   public static seasonOfTheWitch = SeasonOfTheWitch.instance;
+  public static seasonOfTheWish = SeasonOfTheWish.instance;
 }
 
 export const SeasonsArray = [
+  SeasonOfTheWish.instance,
   SeasonOfTheWitch.instance,
   SeasonOfTheDeep.instance,
   SeasonOfDefiance.instance,

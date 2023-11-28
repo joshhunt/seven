@@ -1,7 +1,9 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
+import { Responsive } from "@Boot/Responsive";
 import { useCSWebpImages } from "@Utilities/CSUtils";
 import { DateTime } from "luxon";
 import React, { useMemo } from "react";
@@ -16,12 +18,24 @@ interface NewsPreviewItemProps {
 export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
   articleData,
 }) => {
-  const { image, mobile_image, subtitle, date, title, url } = articleData;
+  const responsiveState = useDataStore(Responsive);
+  const isMobile = responsiveState.mobile;
+  const {
+    image,
+    mobile_image,
+    banner_image,
+    subtitle,
+    date,
+    title,
+    url,
+  } = articleData;
 
   const images = useCSWebpImages(
     useMemo(
       () => ({
-        previewImg: mobile_image?.url ?? image?.url,
+        previewImg: isMobile
+          ? banner_image?.url ?? mobile_image?.url
+          : banner_image?.url ?? image?.url,
       }),
       [articleData]
     )

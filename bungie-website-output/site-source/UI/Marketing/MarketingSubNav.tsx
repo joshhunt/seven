@@ -23,7 +23,8 @@ export type NavPrimaryColors =
   | "plum"
   | "s18blue"
   | "s21"
-  | "s22";
+  | "s22"
+  | "s23";
 export type NavAccentColors =
   | "gold"
   | "teal"

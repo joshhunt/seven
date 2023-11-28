@@ -12,6 +12,7 @@ import styles from "./ImageThumb.module.scss";
 
 type BaseImageThumbProps<TClasses extends { [key: string]: string } = {}> = {
   image: string;
+  logo?: string;
   classes?: {
     imageContainer?: string;
     image?: string;
@@ -25,7 +26,7 @@ export type ImageThumbProps = BaseImageThumbProps;
 export const ImageThumb: React.FC<PropsWithChildren<ImageThumbProps>> = (
   props
 ) => {
-  const { classes, image, children, style } = props;
+  const { classes, image, children, style, logo } = props;
 
   const getImageUrl = (img: string | undefined) => {
     return img ? `url(${img})` : undefined;
@@ -40,6 +41,7 @@ export const ImageThumb: React.FC<PropsWithChildren<ImageThumbProps>> = (
         style={{ backgroundImage: getImageUrl(image) }}
         className={classNames(styles.image, classes?.image)}
       />
+      {logo ? <img className={styles.logo} src={logo} /> : null}
       <div className={styles.childrenContainer}>{children}</div>
     </div>
   );

@@ -1,6 +1,4 @@
-// Created by a-bphillips, 2022
-// Copyright Bungie, Inc.
-
+import React from "react";
 import { Responsive } from "@Boot/Responsive";
 import { DataReference } from "@bungie/contentstack/ReferenceMap/ReferenceMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
@@ -8,14 +6,16 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { ImageVideoThumb } from "@UI/Marketing/ImageThumb";
 import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
-import React from "react";
-import { BnetStackPmpSectionHeader } from "../../../Generated/contentstack-types";
-import styles from "./PmpSectionHeader.module.scss";
+import {
+  BnetStackFile,
+  BnetStackPmpSectionHeader,
+} from "../../../../../../Generated/contentstack-types";
 
-type PmpSectionHeaderProps = DataReference<
-  "pmp_info_thumbnail_group",
-  BnetStackPmpSectionHeader
-> & {
+import styles from "./MediaObject.module.scss";
+
+interface MediaObjectProps extends BnetStackPmpSectionHeader {
+  data?: BnetStackPmpSectionHeader;
+  featuredImage?: BnetStackFile;
   id?: string;
   classes?: {
     root?: string;
@@ -28,13 +28,15 @@ type PmpSectionHeaderProps = DataReference<
     btnWrapper?: string;
     videoBtn?: string;
     lowerContent?: string;
+    featuredImage?: string;
+    featuredImageWrapper?: string;
   };
-};
+}
 
-export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
+export const MediaObject: React.FC<MediaObjectProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, classes, id } = props;
+  const { data, classes, id, featuredImage } = props;
 
   if (!data) {
     return null;
@@ -43,8 +45,6 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
   const {
     heading,
     blurb,
-    left_small_title,
-    right_small_title,
     secondary_heading,
     mobile_bg,
     desktop_bg,
@@ -52,13 +52,27 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
   } = data ?? {};
 
   const bgImage = responsiveBgImageFromStackFile(desktop_bg, mobile_bg, mobile);
+  const featuredImg = featuredImage?.url;
 
-  return (
+  return data?.heading && data?.blurb ? (
     <div
-      {...(id && { id: id })}
+      id={id}
       className={classNames(styles.headerWrapper, classes?.root)}
       style={{ backgroundImage: bgImage }}
     >
+      {featuredImg && (
+        <div
+          className={classNames(
+            styles.featuredImgWrapper,
+            classes?.featuredImageWrapper
+          )}
+        >
+          <img
+            className={classNames(classes?.featuredImage, styles.featuredImg)}
+            src={featuredImg}
+          />
+        </div>
+      )}
       <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
         <div
           className={classNames(
@@ -81,16 +95,6 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
               dangerouslySetInnerHTML={sanitizeHTML(heading)}
             />
           </div>
-          {(left_small_title ?? right_small_title) && (
-            <div className={styles.smallTitles}>
-              <p className={classNames(classes?.smallTitle)}>
-                {left_small_title}
-              </p>
-              <p className={classNames(classes?.smallTitle)}>
-                {right_small_title}
-              </p>
-            </div>
-          )}
         </div>
         {blurb || video_btn ? (
           <div
@@ -125,5 +129,5 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
         ) : null}
       </div>
     </div>
-  );
+  ) : null;
 };

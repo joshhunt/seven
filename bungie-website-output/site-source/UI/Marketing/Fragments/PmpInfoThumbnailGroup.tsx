@@ -44,9 +44,7 @@ export const PmpInfoThumbnailGroup: React.FC<PmpInfoThumbnailGroupProps> = (
       {data && (
         <div className={classNames(styles.flexWrapper, classes?.root)}>
           {thumbnail_blocks?.map((t, i) => {
-            // TODO: v-ahipp needs to update the types so caption is available
-            // @ts-ignore
-            const { heading, caption, blurb } = getThumbBlockItem(t);
+            const { heading, caption, blurb, logo } = getThumbBlockItem(t);
 
             return (
               <div
@@ -122,6 +120,7 @@ const InfoBlockThumbnail: React.FC<InfoBlockThumbnailProps> = (props) => {
       imageContainer: classNames([styles.thumbnail, classes?.thumbnail]),
     },
     image: getThumbBlockItem(thumbItem)?.thumbnail?.url,
+    logo: getThumbBlockItem(thumbItem)?.logo?.url,
   };
 
   if (screenshot_thumb) {

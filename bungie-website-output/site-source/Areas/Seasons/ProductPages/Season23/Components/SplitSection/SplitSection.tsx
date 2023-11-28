@@ -9,14 +9,17 @@ import { ImageVideoThumb } from "@UI/Marketing/ImageThumb";
 import { responsiveBgImageFromStackFile } from "@Utilities/ContentStackUtils";
 import classNames from "classnames";
 import React from "react";
-import { BnetStackPmpSectionHeader } from "../../../Generated/contentstack-types";
-import styles from "./PmpSectionHeader.module.scss";
+import {
+  BnetStackFile,
+  BnetStackPmpSectionHeader,
+} from "../../../../../../Generated/contentstack-types";
+import styles from "./SplitSection.module.scss";
 
-type PmpSectionHeaderProps = DataReference<
+type SplitSectionProps = DataReference<
   "pmp_info_thumbnail_group",
   BnetStackPmpSectionHeader
 > & {
-  id?: string;
+  backgroundColor?: string;
   classes?: {
     root?: string;
     headingsFlexWrapper?: string;
@@ -31,10 +34,10 @@ type PmpSectionHeaderProps = DataReference<
   };
 };
 
-export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
+export const SplitSection: React.FC<SplitSectionProps> = (props) => {
   const { mobile } = useDataStore(Responsive);
 
-  const { data, classes, id } = props;
+  const { data, classes, backgroundColor } = props;
 
   if (!data) {
     return null;
@@ -43,8 +46,6 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
   const {
     heading,
     blurb,
-    left_small_title,
-    right_small_title,
     secondary_heading,
     mobile_bg,
     desktop_bg,
@@ -53,54 +54,52 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
 
   const bgImage = responsiveBgImageFromStackFile(desktop_bg, mobile_bg, mobile);
 
+  const responsiveBgImage = (
+    desktopImg: BnetStackFile,
+    mobileImg: BnetStackFile,
+    mobileVp: boolean
+  ) => {
+    return mobileVp ? mobileImg?.url : desktopImg?.url;
+  };
+
   return (
-    <div
-      {...(id && { id: id })}
-      className={classNames(styles.headerWrapper, classes?.root)}
-      style={{ backgroundImage: bgImage }}
+    <section
+      className={styles.sectionWrapper}
+      style={{ backgroundColor: backgroundColor }}
     >
-      <div className={classNames(styles.textWrapper, classes?.textWrapper)}>
+      <div className={styles.shadowTop} />
+      {mobile ? (
+        <div className={styles.backgroundContainer}>
+          <img src={responsiveBgImage(desktop_bg, mobile_bg, mobile)} />
+        </div>
+      ) : (
         <div
-          className={classNames(
-            styles.headingsFlexWrapper,
-            classes?.headingsFlexWrapper
-          )}
-        >
-          <div className={styles.leftHeadings}>
-            {secondary_heading ? (
-              <h3
-                className={classNames(
-                  styles.smallHeading,
-                  classes?.secondaryHeading
-                )}
-                dangerouslySetInnerHTML={sanitizeHTML(secondary_heading)}
-              />
-            ) : null}
-            <h2
-              className={classNames(styles.heading, classes?.heading)}
-              dangerouslySetInnerHTML={sanitizeHTML(heading)}
+          className={styles.backgroundContainer}
+          style={{ backgroundImage: bgImage }}
+        />
+      )}
+      <div className={styles.copyContainer}>
+        <div>
+          {secondary_heading ? (
+            <h3
+              className={classNames(classes?.secondaryHeading)}
+              dangerouslySetInnerHTML={sanitizeHTML(secondary_heading)}
             />
-          </div>
-          {(left_small_title ?? right_small_title) && (
-            <div className={styles.smallTitles}>
-              <p className={classNames(classes?.smallTitle)}>
-                {left_small_title}
-              </p>
-              <p className={classNames(classes?.smallTitle)}>
-                {right_small_title}
-              </p>
-            </div>
-          )}
+          ) : null}
+          <h2
+            className={classNames(classes?.heading)}
+            dangerouslySetInnerHTML={sanitizeHTML(heading)}
+          />
         </div>
         {blurb || video_btn ? (
           <div
-            className={classNames(styles.lowerContent, classes?.lowerContent, {
+            className={classNames(classes?.lowerContent, {
               [styles.withVideo]: !!video_btn?.youtube_url,
             })}
           >
             {blurb ? (
               <p
-                className={classNames(styles.blurb, classes?.blurb)}
+                className={classNames(classes?.blurb)}
                 dangerouslySetInnerHTML={sanitizeHTML(blurb)}
               />
             ) : null}
@@ -124,6 +123,7 @@ export const PmpSectionHeader: React.FC<PmpSectionHeaderProps> = (props) => {
           </div>
         ) : null}
       </div>
-    </div>
+      <div className={styles.shadowBottom} />
+    </section>
   );
 };
