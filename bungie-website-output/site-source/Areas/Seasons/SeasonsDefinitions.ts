@@ -382,7 +382,7 @@ class SeasonOfTheWish extends SeasonDefinition {
     "/7/ca/destiny/bgs/season23/seasonbackground_23.jpg";
   public smallIcon = "/7/ca/destiny/bgs/season23/seasonicon_23.png";
 
-  public productPageLink = RouteHelper.SeasonOfTheWitch();
+  public productPageLink = RouteHelper.SeasonOfTheWish();
   public calendarContentItem: string;
   public calendarBackgroundImage = "";
   public seasonNumber = 23;
