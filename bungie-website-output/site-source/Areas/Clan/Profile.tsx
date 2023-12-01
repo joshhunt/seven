@@ -9,7 +9,6 @@ import { ClanFeaturesList } from "@Areas/Clan/Shared/ClanFeaturesList";
 import { ClanMembersList } from "@Areas/Clan/Shared/ClanMembersList";
 import { ClanProgression } from "@Areas/Clan/Shared/ClanProgression";
 import { ClanWithSideBannerView } from "@Areas/Clan/Shared/ClanWithSideBannerView";
-import { OathKeeperScore } from "@Areas/Clan/Shared/OathKeeperScore";
 import { ProfileClanMembershipButtons } from "@Areas/Clan/Shared/ProfileClanMembershipButtons";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
@@ -137,11 +136,6 @@ export const Profile: React.FC = () => {
                 />
                 <div className={styles.clanGameStatus}>
                   <ClanProgression
-                    clanProgression={
-                      clanResponse.detail.clanInfo.d2ClanProgressions
-                    }
-                  />
-                  <OathKeeperScore
                     clanProgression={
                       clanResponse.detail.clanInfo.d2ClanProgressions
                     }

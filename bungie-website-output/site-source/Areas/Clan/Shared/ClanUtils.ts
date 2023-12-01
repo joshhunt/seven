@@ -8,24 +8,6 @@ import { UserUtils } from "@Utilities/UserUtils";
 
 export class ClanUtils {
   public static PROGRESSION_HASH_CLAN_LEVEL = "584850370";
-  public static PROGRESSION_HASH_CLAN_FITNESS_RAID = "3381682691";
-  public static PROGRESSION_HASH_CLAN_FITNESS_TRIALS = "3759191272";
-  public static PROGRESSION_HASH_CLAN_FITNESS_NIGHTFALL = "1273404180";
-
-  public static orderByLastSeen = (
-    applicableMembershipTypes: BungieMembershipType[],
-    lastSeenDisplayNameType: BungieMembershipType
-  ) => {
-    return applicableMembershipTypes?.sort((a, b) => {
-      if (b === lastSeenDisplayNameType) {
-        return 1;
-      } else if (a === lastSeenDisplayNameType) {
-        return -1;
-      }
-
-      return 0;
-    });
-  };
 
   public static isBnetAdmin = (userDetail: Contract.UserDetail) => {
     return userDetail?.userAcls?.includes(AclEnum.BNextFounderInAllGroups);
