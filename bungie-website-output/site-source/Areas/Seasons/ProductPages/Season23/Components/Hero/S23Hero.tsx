@@ -126,30 +126,23 @@ const ScrollButton: React.FC<
   const { scrollToEvent, label, layer_1, layer_2 } = props;
 
   return (
-    <div className={styles.eventBugWrapper}>
-      <button className={styles.eventBugContent} onClick={scrollToEvent}>
-        <div className={styles.iconOuterWrapper}>
-          <div className={styles.iconWrapper}>
-            {layer_2?.url && (
-              <span className={styles.topWrapper}>
-                <img className={styles.topImage} src={layer_2?.url} alt={""} />
-              </span>
-            )}
-            {label && (
-              <p
-                className={styles.title}
-                dangerouslySetInnerHTML={sanitizeHTML(label)}
-              />
-            )}
-            <DestinyArrows
-              classes={{
-                root: styles.arrows,
-                base: styles.arrowsBase,
-                animatedArrow: styles.animatedArrow,
-              }}
+    <div className={classNames(styles.eventBugWrapper, styles.gradient)}>
+      <button className={styles.eventBugButton} onClick={scrollToEvent}>
+        <div className={styles.iconWrapper}>
+          {layer_1?.url && <img src={layer_1?.url} alt={""} />}
+          {label && (
+            <p
+              className={styles.title}
+              dangerouslySetInnerHTML={sanitizeHTML(label)}
             />
-            {layer_1?.url && <img src={layer_1?.url} alt={""} />}
-          </div>
+          )}
+          <DestinyArrows
+            classes={{
+              root: styles.arrows,
+              base: styles.arrowsBase,
+              animatedArrow: styles.animatedArrow,
+            }}
+          />
         </div>
       </button>
     </div>
