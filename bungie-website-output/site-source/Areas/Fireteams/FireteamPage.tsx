@@ -208,7 +208,7 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
     );
   };
 
-  const fireteamDirectLink = RouteHelper.NewFireteam({
+  const fireteamDirectLink = RouteHelper.DeprecatedReactFireteam({
     fireteamId: fireteam?.Summary?.fireteamId ?? "",
   });
 
@@ -327,7 +327,6 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
                     {isAdmin && <span>{fireteamsLoc.ModActions}</span>}
                     <Button
                       buttonType={"gold"}
-                      className={styles.goldButton}
                       size={BasicSize.Small}
                       onClick={() => inviteAll()}
                     >
@@ -349,7 +348,6 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
                       <Button
                         buttonType={"gold"}
                         size={BasicSize.Small}
-                        className={styles.goldButton}
                         onClick={() => openJoinFireteam()}
                       >
                         {fireteamsLoc.JoinFireteam}
@@ -359,7 +357,6 @@ export const FireteamPage: React.FC<FireteamProps> = (props) => {
                       <Button
                         buttonType={"gold"}
                         size={BasicSize.Small}
-                        className={styles.goldButton}
                         onClick={() => leaveFireteam()}
                       >
                         {fireteamsLoc.LeaveFireteam}

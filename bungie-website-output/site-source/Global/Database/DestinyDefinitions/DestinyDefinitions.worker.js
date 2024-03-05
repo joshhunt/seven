@@ -1,3 +1,3 @@
 module.exports = function () {
-  return new Worker(__webpack_public_path__ + "abc04f70412b286b3390.worker.js");
+  return new Worker(__webpack_public_path__ + "477fcb94fa9897b57367.worker.js");
 };

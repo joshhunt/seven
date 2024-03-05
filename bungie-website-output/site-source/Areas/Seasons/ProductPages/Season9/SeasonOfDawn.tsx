@@ -228,7 +228,7 @@ class SeasonOfDawnInternal extends React.Component<
 
     const lore: any[] = [];
     this.state.lore &&
-      this.state.lore.forEach((li) => {
+      this.state.lore.forEach((li: any) => {
         const lorePath = RouteHelper.NewsArticle({ articleUrl: li.contentId });
 
         lore.push({

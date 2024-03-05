@@ -52,7 +52,7 @@ const Verify: React.FC = () => {
   const [errorResponse, setErrorResponse] = useState<PlatformError>();
 
   useEffect(() => {
-    const validateEmailInput: Contract.UserEmailVerificationRequest = {
+    const validateEmailInput: User.UserEmailVerificationRequest = {
       tokenGuid: params.get("id"),
     };
     Platform.UserService.ValidateEmail(validateEmailInput)

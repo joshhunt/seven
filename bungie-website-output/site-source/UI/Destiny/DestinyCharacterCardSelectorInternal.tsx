@@ -19,7 +19,6 @@ interface DestinyCharacterCardSelectorInternalProps
   extends D2DatabaseComponentProps<
     | "DestinyClassDefinition"
     | "DestinyRaceDefinition"
-    | "DestinyGenderDefinition"
     | "DestinyInventoryItemLiteDefinition"
   > {
   characters: { [p: string]: Characters.DestinyCharacterComponent };
@@ -38,7 +37,6 @@ interface ICharacterProps {
   backgroundPath: string;
   class: string;
   race: string;
-  gender: string;
   light: ReactElement;
 }
 
@@ -75,9 +73,6 @@ const DestinyCharacterCardSelectorInternal: React.FC<DestinyCharacterCardSelecto
           id: charComponent.characterId,
           race: props.definitions.DestinyRaceDefinition.get(
             charComponent?.raceHash
-          ).displayProperties.name,
-          gender: props.definitions.DestinyGenderDefinition.get(
-            charComponent?.genderHash
           ).displayProperties.name,
         });
       }
@@ -126,7 +121,7 @@ const DestinyCharacterCardSelectorInternal: React.FC<DestinyCharacterCardSelecto
           <h4>{characterProps.class}</h4>
           <h5>{characterProps.race}</h5>
         </div>
-        {characterProps.light}
+        <div className={styles.light}>{characterProps.light}</div>
       </Anchor>
     );
   };
@@ -158,7 +153,6 @@ export default withDestinyDefinitions(DestinyCharacterCardSelectorInternal, {
   types: [
     "DestinyClassDefinition",
     "DestinyRaceDefinition",
-    "DestinyGenderDefinition",
     "DestinyInventoryItemLiteDefinition",
   ],
 });

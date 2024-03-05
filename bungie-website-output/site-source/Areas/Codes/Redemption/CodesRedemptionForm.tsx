@@ -3,7 +3,7 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
-import * as Globals from "@Enum";
+import { BungieMembershipType, OfferRedeemMode } from "@Enum";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
 import {
@@ -146,9 +146,7 @@ class CodesRedemptionForm extends React.Component<
       redeemedOffer: null,
     });
 
-    CodesDataStore.actions.updateSelectedMembership(
-      Globals.BungieMembershipType.None
-    );
+    CodesDataStore.actions.updateSelectedMembership(BungieMembershipType.None);
   };
 
   private readonly handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,21 +242,18 @@ class CodesRedemptionForm extends React.Component<
       });
   };
 
-  private readonly selectMembership = (
-    membership: Globals.BungieMembershipType
-  ) => {
+  private readonly selectMembership = (membership: BungieMembershipType) => {
     CodesDataStore.actions.updateSelectedMembership(membership);
   };
 
   public render() {
     const platformSelected =
       this.state.codesDataStorePayload.selectedMembership !==
-      Globals.BungieMembershipType.None;
+      BungieMembershipType.None;
     const codeRedeemed = this.state.redeemedOffer !== null;
     const redeemedOfferIsConsumable =
       codeRedeemed &&
-      this.state.redeemedOffer.RedeemType ===
-        Globals.OfferRedeemMode.Consumable;
+      this.state.redeemedOffer.RedeemType === OfferRedeemMode.Consumable;
     const codeValid = this.codeValidate.test(
       this._removeDashes(this.state.inputValue)
     );
@@ -266,7 +261,7 @@ class CodesRedemptionForm extends React.Component<
 
     const hasDestinyAccount =
       userMemberships?.length > 0 &&
-      userMemberships?.[0] !== Globals.BungieMembershipType.None;
+      userMemberships?.[0] !== BungieMembershipType.None;
 
     const noDestinyAccountsErrorMessage = (
       <>
@@ -395,19 +390,24 @@ class CodesRedemptionForm extends React.Component<
                           <div>
                             <h2> {Localizer.Coderedemption.WhichPlatform} </h2>
                             <div className={styles.platformItems}>
-                              {userMemberships.map((membership, i) => (
-                                <UserPlatform
-                                  key={membership}
-                                  selectedMembershipType={
-                                    this.state.codesDataStorePayload
-                                      .selectedMembership
-                                  }
-                                  membershipType={membership}
-                                  onClick={() =>
-                                    this.selectMembership(membership)
-                                  }
-                                />
-                              ))}
+                              {userMemberships.map(
+                                (
+                                  membership: BungieMembershipType,
+                                  i: number
+                                ) => (
+                                  <UserPlatform
+                                    key={membership}
+                                    selectedMembershipType={
+                                      this.state.codesDataStorePayload
+                                        .selectedMembership
+                                    }
+                                    membershipType={membership}
+                                    onClick={() =>
+                                      this.selectMembership(membership)
+                                    }
+                                  />
+                                )
+                              )}
                             </div>
 
                             <h3 className={styles.pickUp}>
@@ -464,9 +464,9 @@ class CodesRedemptionForm extends React.Component<
 }
 
 interface IUserPlatform {
-  membershipType: Globals.BungieMembershipType;
-  selectedMembershipType: Globals.BungieMembershipType;
-  onClick: (mt: Globals.BungieMembershipType) => void;
+  membershipType: BungieMembershipType;
+  selectedMembershipType: BungieMembershipType;
+  onClick: (mt: BungieMembershipType) => void;
 }
 
 const UserPlatform = (props: IUserPlatform) => {
@@ -480,7 +480,7 @@ const UserPlatform = (props: IUserPlatform) => {
     <div onClick={() => onClick(membershipType)} className={classes}>
       {
         Localizer.Shortplatforms[
-          EnumUtils.getStringValue(membershipType, Globals.BungieMembershipType)
+          EnumUtils.getStringValue(membershipType, BungieMembershipType)
         ]
       }
     </div>

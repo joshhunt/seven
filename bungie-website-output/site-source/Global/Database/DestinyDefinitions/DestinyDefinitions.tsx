@@ -1,7 +1,7 @@
 import { DataStore } from "@bungie/datastore";
 import { BroadcasterObserver } from "@bungie/datastore/Broadcaster";
 import { Localizer } from "@bungie/localization";
-import { DefinitionNotFoundError, InvalidPropsError } from "@CustomErrors";
+import { InvalidPropsError } from "@CustomErrors";
 import { DestinyDatabase } from "@Database/Database";
 import { DestinyDefinitionsWorkerMessages } from "@Database/DestinyDefinitions/DestinyDefinitionsWorkerMessages";
 import {
@@ -254,8 +254,9 @@ class DestinyDefinitionsInternal extends DataStore<
     const filteredTypes = props.types.filter(
       (type) => !this.requestedTypes.includes(type)
     );
+    const typesAreLoaded = this.typesAreLoaded(filteredTypes);
 
-    if (filteredTypes.length === 0 && !localeUpdated) {
+    if ((typesAreLoaded || filteredTypes.length === 0) && !localeUpdated) {
       // All these types have already been requested!
 
       return;

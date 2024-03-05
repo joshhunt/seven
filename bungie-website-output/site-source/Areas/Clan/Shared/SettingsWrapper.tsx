@@ -198,7 +198,9 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
                       {ConfigUtils.SystemStatus("ClanFireteams") && (
                         <li className={styles.fireteamsLink}>
                           <Anchor
-                            url={RouteHelper.NewFireteams({ groupId: clanId })}
+                            url={RouteHelper.DeprecatedReactFireteams({
+                              groupId: clanId,
+                            })}
                           >
                             {clansLoc.Fireteams}
                           </Anchor>

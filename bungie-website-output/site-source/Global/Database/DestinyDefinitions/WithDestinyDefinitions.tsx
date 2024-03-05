@@ -9,7 +9,6 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { ConfirmationModalInline } from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import React from "react";
 import {
   AllDefinitionsFetcherized,
@@ -51,15 +50,9 @@ export const withDestinyDefinitions = <
     ) > -1 &&
     !acknowledgeItemDefinitionsAreHeavy
   ) {
-    return class extends React.Component<P, D2DatabaseComponentState> {
-      public render() {
-        throw new Error(
-          "You cannot use DestinyInventoryItemDefinition without acknowledging that you know you are going to force users to download a large file. If you don't KNOW FOR SURE that you need these large files, you should DestinyInventoryItemLiteDefinition instead"
-        );
-
-        return <React.Fragment />;
-      }
-    };
+    throw new Error(
+      "You cannot use DestinyInventoryItemDefinition without acknowledging that you know you are going to force users to download a large file. If you don't KNOW FOR SURE that you need these large files, you should DestinyInventoryItemLiteDefinition instead"
+    );
   }
 
   return class extends React.Component<P, D2DatabaseComponentState> {
@@ -68,17 +61,24 @@ export const withDestinyDefinitions = <
 
     constructor(props: P) {
       super(props);
-
       this.state = {
-        isLoading: DestinyDefinitions.state.isLoading,
-        isLoaded: DestinyDefinitions.state.isLoaded,
-        locale: DestinyDefinitions.state.locale,
+        isLoading: false,
+        isLoaded: false,
+        locale: Localizer.CurrentCultureName,
         receivedInitialState: false,
         indexedDBNotSupported: false,
       };
     }
 
     public componentDidMount() {
+      const initialState: D2DatabaseComponentState = {
+        isLoading: DestinyDefinitions.state.isLoading,
+        isLoaded: DestinyDefinitions.state.isLoaded,
+        locale: DestinyDefinitions.state.locale,
+        receivedInitialState: false,
+        indexedDBNotSupported: false,
+      };
+      this.setState(initialState);
       this.checkIndexedDBSupport();
       this.tryRequestDefinitions();
     }
@@ -97,7 +97,7 @@ export const withDestinyDefinitions = <
         !this.state.receivedInitialState
       ) {
         const updatedLocale =
-          Localizer.CurrentCultureName !== DestinyDefinitions.state.locale;
+          this.state.locale !== DestinyDefinitions.state.locale;
 
         const loadedDefinitions = Object.keys(DestinyDefinitions.definitions);
 
@@ -119,9 +119,9 @@ export const withDestinyDefinitions = <
         this.destroyer = DestinyDefinitions.observe(
           (data) => {
             this.setState({
-              ...data,
+              isLoaded: data.isLoaded,
+              isLoading: data.isLoading,
               receivedInitialState: true,
-              locale: Localizer.CurrentCultureName,
             });
           },
           observerProps,

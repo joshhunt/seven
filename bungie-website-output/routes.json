@@ -537,6 +537,44 @@
     "path": "/7/en/Emails/Verify"
   },
   {
+    "areaName": "FireteamFinder",
+    "areaObjectName": "FireteamFinder",
+    "componentImportPath": "@Areas/FireteamFinder/FireteamFinderArea",
+    "action": "Browse",
+    "params": {
+      "path": ":graphId?/:activityId?"
+    },
+    "path": "/7/en/FireteamFinder/Browse/:graphId?/:activityId?"
+  },
+  {
+    "areaName": "FireteamFinder",
+    "areaObjectName": "FireteamFinder",
+    "componentImportPath": "@Areas/FireteamFinder/FireteamFinderArea",
+    "action": "Create",
+    "params": {
+      "path": ":graphId?/:activityId?"
+    },
+    "path": "/7/en/FireteamFinder/Create/:graphId?/:activityId?"
+  },
+  {
+    "areaName": "FireteamFinder",
+    "areaObjectName": "FireteamFinder",
+    "componentImportPath": "@Areas/FireteamFinder/FireteamFinderArea",
+    "action": "Dashboard",
+    "params": {},
+    "path": "/7/en/FireteamFinder/Dashboard"
+  },
+  {
+    "areaName": "FireteamFinder",
+    "areaObjectName": "FireteamFinder",
+    "componentImportPath": "@Areas/FireteamFinder/FireteamFinderArea",
+    "action": "Detail",
+    "params": {
+      "path": ":lobbyId?"
+    },
+    "path": "/7/en/FireteamFinder/Detail/:lobbyId?"
+  },
+  {
     "areaName": "Fireteams",
     "areaObjectName": "Fireteams",
     "componentImportPath": "@Areas/Fireteams/FireteamsArea",

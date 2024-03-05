@@ -23,7 +23,9 @@ export interface IAreaParams {
 export interface IArea {
   readonly render: () => JSX.Element;
   readonly routes: ActionRoute[];
+
   webmasterSystem?: ValidSystemNames;
+  fallbackRoute?: IMultiSiteLink;
 
   getAction(actionName?: string): ActionRoute;
 

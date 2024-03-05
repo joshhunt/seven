@@ -14,6 +14,7 @@ export interface IDropdownPrettyOptionsProps {
   className?: string;
   childrenClassName?: string;
   optionItemClassName?: string;
+  hoveredValue?: string;
 }
 
 const optionsContainer = document.createElement("div");
@@ -28,6 +29,7 @@ export const DropdownPrettyOptions: React.FC<IDropdownPrettyOptionsProps> = ({
   className,
   childrenClassName,
   optionItemClassName,
+  hoveredValue,
 }) => {
   useEffect(() => {
     const portalEl = document.getElementById("dropdown-options-container");
@@ -50,6 +52,7 @@ export const DropdownPrettyOptions: React.FC<IDropdownPrettyOptionsProps> = ({
             className={optionItemClassName}
             onClick={onOptionClick}
             selected={currentValue === option.value}
+            hovered={hoveredValue === option.value}
             option={option}
             key={i}
           />
@@ -63,6 +66,7 @@ export const DropdownPrettyOptions: React.FC<IDropdownPrettyOptionsProps> = ({
 export interface IDropdownPrettyOption {
   option: IDropdownOption;
   selected: boolean;
+  hovered?: boolean;
   onClick?: (value: string) => void;
   children?: undefined;
   className?: string;
@@ -74,6 +78,7 @@ export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
   children,
   onClick,
   selected,
+  hovered,
   option,
   className,
 }) => {
@@ -86,7 +91,11 @@ export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
   return (
     <div
       aria-selected={selected}
-      className={classNames([styles.selectOption, className])}
+      className={classNames([
+        styles.selectOption,
+        className,
+        { [styles.hovered]: hovered },
+      ])}
       data-value={option.value}
       style={option.style}
       onClick={() => onClick?.(option.value)}

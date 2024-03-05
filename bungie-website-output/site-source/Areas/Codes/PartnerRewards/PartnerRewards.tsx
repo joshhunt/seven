@@ -27,6 +27,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import styles from "./PartnerRewards.module.scss";
 import { FaTwitch } from "@react-icons/all-files/fa/FaTwitch";
+import { StringUtils } from "@Utilities/StringUtils";
 
 interface IPartnerRewardsRouteParams {
   membershipId: string;
@@ -258,8 +259,10 @@ export const PartnerRewards: React.FC = () => {
                 return (
                   <div key={index}>
                     <TwoLineItem
-                      itemTitle={tw.Title}
-                      itemSubtitle={tw.Description}
+                      itemTitle={StringUtils.decodeHtmlEntities(tw.Title)}
+                      itemSubtitle={StringUtils.decodeHtmlEntities(
+                        tw.Description
+                      )}
                       flair={
                         tw.ClaimState &&
                         tw.ClaimState === DropStateEnum.Fulfilled ? (
@@ -277,8 +280,12 @@ export const PartnerRewards: React.FC = () => {
                 return (
                   <div key={index}>
                     <TwoLineItem
-                      itemTitle={po.LocalizedName}
-                      itemSubtitle={po.LocalizedDescription}
+                      itemTitle={StringUtils.decodeHtmlEntities(
+                        po.LocalizedName
+                      )}
+                      itemSubtitle={StringUtils.decodeHtmlEntities(
+                        po.LocalizedDescription
+                      )}
                       flair={
                         po.AllOffersApplied ? (
                           <div>{makeDateString(po.ClaimDate)}</div>

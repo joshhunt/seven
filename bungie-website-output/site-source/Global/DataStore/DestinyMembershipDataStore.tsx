@@ -94,7 +94,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       if (!force) {
         if (isSameUser && this.isInitialized) {
-          return;
+          return { loaded: true };
         }
       }
 
@@ -120,6 +120,10 @@ export abstract class DestinyMembershipDataStore extends DataStore<
           : this.state.membershipData;
 
       if (!membershipData) {
+        loggedInUserIsDefined
+          ? console.log("loading new character data ")
+          : console.log("loding existing character data");
+
         try {
           membershipData = loggedInUserIsDefined
             ? await Platform.UserService.GetMembershipDataById(
@@ -127,6 +131,13 @@ export abstract class DestinyMembershipDataStore extends DataStore<
                 user?.membershipType
               )
             : await Platform.UserService.GetMembershipDataForCurrentUser();
+
+          console.log(
+            this.state.membershipData,
+            loggedInUserIsDefined,
+            "**************",
+            "try"
+          );
         } catch {
           const loadedForWho = loggedInUserIsDefined
             ? `${user?.membershipType}/${user?.membershipId}`

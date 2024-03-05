@@ -63,7 +63,7 @@ class GlobalAlertsInner extends React.Component<
   public render() {
     return (
       <div className={styles.wrapper}>
-        {this.state.contentItem?.map((firehoseItem, i) => {
+        {this.state.contentItem?.map((firehoseItem: any, i: number) => {
           return (
             <GlobalAlert
               key={i}

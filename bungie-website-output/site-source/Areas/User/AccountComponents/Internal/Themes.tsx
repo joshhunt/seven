@@ -1,18 +1,14 @@
 // Created by larobinson, 2021
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization/Localizer";
+import { Config, Platform, User } from "@Platform";
 import classNames from "classnames";
 import { Field, FormikProps, FormikValues } from "formik";
 import React, { useEffect, useState } from "react";
-import { ConvertToPlatformError } from "../../../../Platform/ApiIntermediary";
-import {
-  Config,
-  Platform,
-  User,
-} from "../../../../Platform/BnetPlatform.TSClient";
-import { Modal } from "../../../../UI/UIKit/Controls/Modal/Modal";
-import { GridCol } from "../../../../UI/UIKit/Layout/Grid/Grid";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import styles from "../IdentitySettings.module.scss";
 import { IdentityPagination } from "./IdentityPagination";
 

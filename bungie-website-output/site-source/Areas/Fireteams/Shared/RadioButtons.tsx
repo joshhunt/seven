@@ -48,7 +48,7 @@ export const RadioButtons: React.FC<RadioButtonsProps> = (props) => {
       role={"group"}
       aria-labelledby={`${props.radioGroupName}-radio-group`}
     >
-      {props.radioOptions.map((r) => {
+      {props.radioOptions.map((r, i) => {
         return radioInput(r.id, r.value, r.label, props.radioGroupName);
       })}
     </div>

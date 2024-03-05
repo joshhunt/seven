@@ -127,9 +127,15 @@ const ScrollButton: React.FC<
 
   return (
     <div className={classNames(styles.eventBugWrapper, styles.gradient)}>
-      <button className={styles.eventBugButton} onClick={scrollToEvent}>
+      <button
+        className={styles.eventBugButton}
+        onClick={scrollToEvent}
+        style={{ backgroundImage: `url(${layer_1?.url})` }}
+      >
         <div className={styles.iconWrapper}>
-          {layer_1?.url && <img src={layer_1?.url} alt={""} />}
+          {layer_2?.url && (
+            <img className={styles.layerTwo} src={layer_2?.url} alt={""} />
+          )}
           {label && (
             <p
               className={styles.title}

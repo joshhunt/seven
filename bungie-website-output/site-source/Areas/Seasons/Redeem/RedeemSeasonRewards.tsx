@@ -135,7 +135,7 @@ class RedeemSeasonRewards extends React.Component<
               dangerouslySetInnerHTML={sanitizeHTML(desc)}
             />
             <div className={styles.listUnClaimed}>
-              {this.state.rewardItems.map((value) => (
+              {this.state.rewardItems.map((value: any) => (
                 <RedeemSeasonRewardItem
                   itemHash={value.itemHash}
                   key={value.rewardIndex}
@@ -266,7 +266,7 @@ class RedeemSeasonRewards extends React.Component<
     // remove it from the array
     this.setState({
       rewardItems: this.state.rewardItems.filter(
-        (i) => !(i.itemHash === itemHash && i.rewardIndex === rewardIndex)
+        (i: any) => !(i.itemHash === itemHash && i.rewardIndex === rewardIndex)
       ),
     });
   }

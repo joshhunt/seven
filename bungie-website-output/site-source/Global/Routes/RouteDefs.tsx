@@ -28,6 +28,7 @@ export class RouteDefs {
     Destiny: "Destiny",
     Direct: "Direct",
     Emails: "Emails",
+    FireteamFinder: "FireteamFinder",
     Fireteams: "Fireteams",
     Guide: "Guide",
     Legal: "Legal",
@@ -247,8 +248,23 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Reveal"),
       ],
     }),
+    FireteamFinder: new Area({
+      name: RouteDefs.AreaNames.FireteamFinder,
+      lazyComponent: createAsyncComponent(
+        () => import("@Areas/FireteamFinder/FireteamFinderArea")
+      ),
+      routes: [
+        (area) => new ActionRoute(area, "Dashboard"),
+        (area) =>
+          new ActionRoute(area, "Browse", { path: ":graphId?/:activityId?" }),
+        (area) => new ActionRoute(area, "Detail", { path: ":lobbyId?" }),
+        (area) =>
+          new ActionRoute(area, "Create", { path: ":graphId?/:activityId?" }),
+      ],
+    }),
     Fireteams: new Area({
       name: RouteDefs.AreaNames.Fireteams,
+      webmasterSystem: SystemNames.ReactFireteamUI,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Fireteams/FireteamsArea")
       ),

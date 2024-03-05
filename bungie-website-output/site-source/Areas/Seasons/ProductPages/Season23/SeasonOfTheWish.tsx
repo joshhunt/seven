@@ -1,11 +1,5 @@
-import FeaturedImage from "@Areas/Seasons/ProductPages/Season23/Components/FeaturedImage/FeaturedImage";
-import React, {
-  RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import GuardianGames from "@Areas/Seasons/ProductPages/Season23/Sections/GuardianGames";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import {
   DefaultPmpComponents,
@@ -41,7 +35,6 @@ import { ContentStackClient } from "../../../../Platform/ContentStack/ContentSta
 import { S23Hero } from "./Components/Hero/S23Hero";
 import S23SeasonPassRewards from "@Areas/Seasons/ProductPages/Season23/Components/SeasonPassRewards/S23SeasonPassRewards";
 import { MediaObject } from "@Areas/Seasons/ProductPages/Season23/Components/MediaObject/MediaObject";
-import { DawningSection } from "./Sections";
 
 import styles from "./SeasonOfTheWish.module.scss";
 
@@ -325,16 +318,13 @@ const SeasonOfTheWish = (props: SeasonOfTheWishProps) => {
           </div>
         ) : null}
 
-        {/* Dawning */}
-        {showEvent && (
-          <div id={"dawning"} ref={eventRef} className={styles.dawningSection}>
-            <div
-              className={styles.sectionDivider}
-              style={{ background: "#8D5BB0" }}
-            />
-            <DawningSection data={free_for_all_section} showEvent={showEvent} />
+        {/* Guardian Games */}
+
+        {showEvent ? (
+          <div ref={eventRef} id={"guardian-games"}>
+            <GuardianGames data={free_for_all_section} />
           </div>
-        )}
+        ) : null}
 
         {/* GEAR */}
         {gear_section?.content?.length > 0 ? (

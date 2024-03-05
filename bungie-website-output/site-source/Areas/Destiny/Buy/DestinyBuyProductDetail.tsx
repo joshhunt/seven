@@ -105,7 +105,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
   public componentDidMount() {
     this.subs.push(
-      DestinySkuConfigDataStore.observe((skuConfig) =>
+      DestinySkuConfigDataStore.observe((skuConfig: any) =>
         this.setState(
           {
             skuConfig,
@@ -176,7 +176,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
   private readonly onSkuConfigLoaded = () => {
     if (this.state.skuConfig.loaded) {
       const section = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinySkus"
+        (a: any) => a.key === "DestinySkus"
       );
 
       // Load the Firehose content item for the specified tag
@@ -196,11 +196,11 @@ class DestinyBuyProductDetailInternal extends React.Component<
           contentSet.properties["ContentItems"];
         if (allItems) {
           const skuItems = allItems
-            .filter((a) => a.cType === "DestinySkuItem")
-            .map((contentItem) =>
+            .filter((a: any) => a.cType === "DestinySkuItem")
+            .map((contentItem: any) =>
               DestinySkuUtils.skuDefinitionFromContent(contentItem)
             )
-            .filter((skuItem) =>
+            .filter((skuItem: any) =>
               DestinySkuUtils.productExists(
                 skuItem.skuTag,
                 this.state.skuConfig
@@ -228,7 +228,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
 
             const indexOfQueryParamSku =
               editionSelectorSkus?.findIndex(
-                (sku) => sku.skuTag === skuFromQuery
+                (sku: any) => sku.skuTag === skuFromQuery
               ) ?? 0;
 
             DestinyBuyDataStore.actions.setSelectedSkuIndex(
@@ -306,7 +306,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
         );
       const detailItems =
         destinyProductFamily.detailSection &&
-        destinyProductFamily.detailSection.map((di) =>
+        destinyProductFamily.detailSection.map((di: any) =>
           ContentUtils.marketingMediaAssetFromContent(di)
         );
 
@@ -324,7 +324,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
         editionSelectorSkus[0] &&
         skuItems[0] &&
         skuItems.find(
-          (sku) => sku.skuTag === editionSelectorSkus[selectedSkuIndex].skuTag
+          (sku: any) =>
+            sku.skuTag === editionSelectorSkus[selectedSkuIndex].skuTag
         )?.edition;
 
       // gradient needs to be slightly darker on mobile to make logo stand out more
@@ -573,7 +574,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                     classes={{ wrapper: styles.borderSpacing }}
                   />
 
-                  {detailItems.map((mma, i) => {
+                  {detailItems.map((mma: any, i: number) => {
                     return (
                       mma && (
                         <GridCol
@@ -583,7 +584,8 @@ class DestinyBuyProductDetailInternal extends React.Component<
                         >
                           <DestinyBuyDetailItem
                             imagesForPagination={detailItems?.map(
-                              (item) => item.largeImage || item.imageThumbnail
+                              (item: any) =>
+                                item.largeImage || item.imageThumbnail
                             )}
                             imgIndexInPagination={i}
                             orientation={"vertical"}
@@ -605,7 +607,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       />
 
                       {comparisonSkus.map(
-                        (a, i) =>
+                        (a: any, i: number) =>
                           a && (
                             <GridCol
                               cols={detailItems.length === 4 ? 3 : 4}
@@ -614,7 +616,7 @@ class DestinyBuyProductDetailInternal extends React.Component<
                             >
                               <DestinyBuyDetailItem
                                 imagesForPagination={comparisonSkus.map(
-                                  (sku) => sku.imagePath
+                                  (sku: any) => sku.imagePath
                                 )}
                                 imgIndexInPagination={i}
                                 orientation={"vertical"}

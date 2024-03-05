@@ -14,13 +14,13 @@ import {
   GroupsV2,
   Ignores,
   Platform,
+  Responses,
   User,
 } from "@Platform";
 import Cookies from "js-cookie";
 // @ts-ignore
 import * as h from "history";
 import { DateTime } from "luxon";
-
 import { ConfigUtils } from "./ConfigUtils";
 import { EnumUtils } from "./EnumUtils";
 
@@ -237,6 +237,7 @@ export class UserUtils {
       return UserUtils.emptyBungieNameObject;
     }
   };
+
   public static getBungieNameFromBnetBungieFriend = (
     friend: Friends.BungieFriend
   ): IBungieName => {

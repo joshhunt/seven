@@ -22,6 +22,7 @@ interface ReactHookFormCheckboxProps extends UseControllerProps {
     error?: string;
     label?: string;
     labelAndCheckbox?: string;
+    isChecked?: string;
   };
 }
 
@@ -45,7 +46,8 @@ export const ReactHookFormCheckbox = ({
 
   const wrapperClasses = classNames(
     styles.checkboxWrapper,
-    classes?.checkboxWrapper
+    classes?.checkboxWrapper,
+    { [classes?.isChecked]: checked }
   );
   const labelClasses = classNames(styles.label, classes?.label);
 

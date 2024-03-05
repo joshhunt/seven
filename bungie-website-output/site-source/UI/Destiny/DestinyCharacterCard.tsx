@@ -82,9 +82,6 @@ class DestinyCharacterCard extends React.Component<
             <div className={styles.light}>
               {StringUtils.LightIcon} {character.light}
             </div>
-            <div className={styles.level}>
-              {character.levelProgression.level}
-            </div>
           </div>
         </div>
       </div>

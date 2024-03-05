@@ -53,6 +53,8 @@ export interface IDropdownOption<T = any> {
 interface IDropdownState {
   isOpen: boolean;
   currentValue: string;
+  typedCharacters: string;
+  pendingValue: string;
 }
 
 /**
@@ -72,11 +74,18 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
       currentValue: props.placeholderValue
         ? null
         : props.selectedValue || props.options[0].value,
+      typedCharacters: "",
+      pendingValue: "",
     };
   }
 
-  public componentDidUpdate() {
-    this.updateIfNeeded();
+  public componentDidMount() {
+    //listener for keydown that updates the typed characters
+    document.addEventListener("keydown", this.onKeyDown);
+  }
+
+  public componentWillUnmount() {
+    document.removeEventListener("keydown", this.onKeyDown);
   }
 
   public render() {
@@ -152,11 +161,53 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
             triggerClientRect={this.containerRef.current.getBoundingClientRect()}
             options={this.props.options}
             onOptionClick={this.onOptionClick}
+            hoveredValue={this.state.pendingValue}
           />
         )}
       </div>
     );
   }
+
+  public onKeyDown = (e: KeyboardEvent) => {
+    if (this.state.isOpen) {
+      if (e.key === "Escape") {
+        this.close();
+      } else if (e.key === "Enter") {
+        this.state.pendingValue?.length > 0 &&
+          this.onOptionClick(this.state.pendingValue);
+
+        this.setState({
+          typedCharacters: "",
+          pendingValue: "",
+        });
+
+        this.close();
+      } else if (e.key.length === 1) {
+        e.preventDefault();
+        const newTypedCharacters = this.state.typedCharacters + e.key;
+        const matchingOption = this.props.options.find(
+          (option) =>
+            option.label
+              .toString()
+              .toLowerCase()
+              .startsWith(newTypedCharacters.toLowerCase()) ||
+            option.value
+              .toString()
+              .toLowerCase()
+              .startsWith(newTypedCharacters.toLowerCase())
+        );
+
+        if (matchingOption) {
+          this.setState({
+            typedCharacters: newTypedCharacters,
+            pendingValue: matchingOption.value,
+          });
+        } else {
+          this.setState({ typedCharacters: newTypedCharacters });
+        }
+      }
+    }
+  };
 
   private get selectedOption() {
     let selectedOption = this.props.options.find(
@@ -184,7 +235,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
         this.close();
       }
     } catch (e) {
-      // ignore
+      return true;
     }
   };
 
@@ -198,6 +249,10 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
       () => {
         if (this.state.isOpen) {
           document.addEventListener("click", this.closeOnOutsideClick);
+          this.setState({
+            typedCharacters: "",
+            pendingValue: "",
+          });
         } else {
           document.removeEventListener("click", this.closeOnOutsideClick);
         }
@@ -212,19 +267,4 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
     this.close();
     this.props.onChange && this.props.onChange(value);
   };
-
-  public updateIfNeeded() {
-    const selectedValue = this.props.selectedValue;
-    const currentValue = this.state.currentValue ?? this.props.initialValue;
-
-    if (!selectedValue || !currentValue) {
-      return;
-    }
-
-    if (selectedValue !== currentValue) {
-      this.setState({
-        currentValue: selectedValue,
-      });
-    }
-  }
 }

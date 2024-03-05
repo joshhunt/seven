@@ -5,7 +5,7 @@ import classNames from "classnames";
 import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./Accordion.module.scss";
 
-interface IAccordionItem {
+export interface IAccordionItem {
   triggerElement: ReactNode;
   collapsibleElement: ReactNode;
   className?: string;
@@ -36,6 +36,14 @@ interface AccordionProps {
    * If provided, the first collapsible will be open on load
    */
   defaultOpenFirst?: boolean;
+  /**
+   * a className given to all the open collapsible elements
+   */
+  openClassName?: string;
+  /**
+   * Disable autoscroll into view when item clicked
+   */
+  disableAutoscroll?: boolean;
 }
 
 export const Accordion: React.FC<AccordionProps> = (props) => {
@@ -46,8 +54,8 @@ export const Accordion: React.FC<AccordionProps> = (props) => {
   const findOpenItems = () => {
     setOpenItems(
       props.items
-        .map((i, index) => {
-          if (!i.defaultOpen) {
+        ?.map((section, index) => {
+          if (!section.defaultOpen) {
             return undefined;
           }
 
@@ -63,9 +71,15 @@ export const Accordion: React.FC<AccordionProps> = (props) => {
 
   return (
     <div className={classNames(styles.accordion, props.className)}>
-      {props.items.map((i, index) => {
+      {props.items?.map((i, index) => {
         return (
-          <div key={index} className={classNames(styles.item, i.className)}>
+          <div
+            key={index}
+            id={`accordion-section-${index}`}
+            className={classNames(styles.item, i.className, {
+              [props.openClassName]: openItems.includes(index),
+            })}
+          >
             <div
               className={classNames(
                 styles.trigger,
@@ -75,16 +89,29 @@ export const Accordion: React.FC<AccordionProps> = (props) => {
               onClick={() => {
                 const isOpen = openItems.includes(index);
 
+                if (!isOpen && !props.disableAutoscroll) {
+                  const section = document.getElementById(
+                    `accordion-section-${index}`
+                  );
+                  if (section) {
+                    section.scrollIntoView({ behavior: "smooth" });
+                  }
+                }
+
                 setOpenItems(
                   isOpen
-                    ? [...openItems.filter((o) => o !== index)]
+                    ? [
+                        ...openItems.filter(
+                          (sectionIndex) => sectionIndex !== index
+                        ),
+                      ]
                     : [...openItems, index]
                 );
               }}
             >
               {i.triggerElement}
             </div>
-            {openItems.includes(index) && (
+            {openItems?.includes(index) && (
               <div
                 className={classNames(
                   styles.collapsible,

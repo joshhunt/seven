@@ -3,6 +3,7 @@ import { Localizer } from "@bungie/localization";
 import { IMultiSiteLink, RouteHelper } from "@Global/Routes/RouteHelper";
 import { SystemNames } from "@Global/SystemNames";
 import { Models } from "@Platform";
+import { IoIosArrowDropupCircle } from "@react-icons/all-files/io/IoIosArrowDropupCircle";
 import {
   SafelySetInnerHTML,
   sanitizeHTML,
@@ -12,7 +13,6 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import moment from "moment";
 import * as React from "react";
-import { IoIosArrowDropupCircle } from "@react-icons/all-files/io/IoIosArrowDropupCircle";
 import styles from "./Footer.module.scss";
 
 interface IFooterProps {
@@ -120,9 +120,14 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.Seasons(), navLoc.TopNavSeasons)}
               {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
               {this.renderLink(
-                ConfigUtils.SystemStatus(SystemNames.ReactFireteamUI)
-                  ? RouteHelper.NewFireteams()
-                  : RouteHelper.Fireteams(),
+                ConfigUtils.SystemStatus(SystemNames.FireteamFinder)
+                  ? //game integrated fireteam finder
+                    RouteHelper.FireteamFinder()
+                  : ConfigUtils.SystemStatus(SystemNames.ReactFireteamUI)
+                  ? //bnet only fireteam finder react
+                    RouteHelper.DeprecatedReactFireteams()
+                  : //bnet only fireteam finder razor
+                    RouteHelper.Fireteams(),
                 navLoc.ClanFireteams
               )}
               {appsEnabled &&
@@ -276,7 +281,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
           <div className={styles.followUs}>
             <p>{Localizer.HelpText.FollowUs}</p>
             <ul>
-              <li className={styles.facebook}>
+              <li>
                 <a
                   href={facebookUrl}
                   className="ir"

@@ -177,7 +177,13 @@ export const Notifications: React.FC = () => {
       <Grid>
         {EnumUtils.getStringKeys(NotificationGrouping).map(
           (grouping: string) => {
-            return grouping.toLowerCase() !== "none" ? (
+            // Filter notifications for the current grouping
+            const groupingNotifications = notifications.filter(
+              (ns) => ns.grouping === grouping
+            );
+
+            return grouping.toLowerCase() !== "none" &&
+              groupingNotifications.length > 0 ? (
               <>
                 <GridDivider cols={12} className={accountStyles.mainDivider} />
                 <GridCol
@@ -207,85 +213,81 @@ export const Notifications: React.FC = () => {
                       <p>{Localizer.Helptext.NotificationHeaderWeb}</p>
                     </GridCol>
                   </div>
-                  {notifications
-                    .filter((ns) => ns.grouping === grouping)
-                    .map((notification, i) => {
-                      return (
-                        <>
-                          {i !== 0 ? (
-                            <GridDivider
-                              cols={12}
-                              className={styles.optionsRowDivider}
-                            />
-                          ) : (
-                            <div className={styles.firstRowSpace} />
-                          )}
-                          <GridCol cols={6} key={notification.name.toString()}>
-                            <p className={styles.notificationTitle}>
-                              {notification.name}
-                            </p>
-                          </GridCol>
-                          {EnumUtils.getStringKeys(NotificationMethods).map(
-                            (specificMethod) => {
-                              if (
-                                NotificationMethods[
-                                  specificMethod as EnumStrings<
-                                    typeof NotificationMethods
-                                  >
-                                ] === NotificationMethods.None
-                              ) {
-                                return null;
-                              }
-                              {
-                                /* We have specifically set this to null above if we don't want a checkbox for this option to show at all */
-                              }
-
-                              return notification[specificMethod.toString()] !==
-                                null ? (
-                                <GridCol
-                                  cols={2}
-                                  className={styles.centered}
-                                  key={
-                                    notification.name +
-                                    specificMethod.toString()
-                                  }
+                  {groupingNotifications.map((notification, i) => {
+                    return (
+                      <>
+                        {i !== 0 ? (
+                          <GridDivider
+                            cols={12}
+                            className={styles.optionsRowDivider}
+                          />
+                        ) : (
+                          <div className={styles.firstRowSpace} />
+                        )}
+                        <GridCol cols={6} key={notification.name.toString()}>
+                          <p className={styles.notificationTitle}>
+                            {notification.name}
+                          </p>
+                        </GridCol>
+                        {EnumUtils.getStringKeys(NotificationMethods).map(
+                          (specificMethod) => {
+                            if (
+                              NotificationMethods[
+                                specificMethod as EnumStrings<
+                                  typeof NotificationMethods
                                 >
-                                  <div>
-                                    <Checkbox
-                                      checked={
-                                        notifications.find(
-                                          (x) => x.name === notification.name
-                                        )?.[specificMethod.toString()]
-                                      }
-                                      onChecked={(checked) => {
-                                        handleChange(
-                                          checked,
-                                          notification.type,
-                                          NotificationMethods[
-                                            specificMethod as EnumStrings<
-                                              typeof NotificationMethods
-                                            >
-                                          ]
-                                        );
-                                      }}
-                                    />
-                                  </div>
-                                </GridCol>
-                              ) : (
-                                <GridCol
-                                  cols={2}
-                                  className={styles.centered}
-                                  key={
-                                    notification.name +
-                                    specificMethod.toString()
-                                  }
-                                />
-                              );
+                              ] === NotificationMethods.None
+                            ) {
+                              return null;
                             }
-                          )}
-                        </>
-                      );
-                    })}
+                            {
+                              /* We have specifically set this to null above if we don't want a checkbox for this option to show at all */
+                            }
+
+                            return notification[specificMethod.toString()] !==
+                              null ? (
+                              <GridCol
+                                cols={2}
+                                className={styles.centered}
+                                key={
+                                  notification.name + specificMethod.toString()
+                                }
+                              >
+                                <div>
+                                  <Checkbox
+                                    checked={
+                                      notifications.find(
+                                        (x) => x.name === notification.name
+                                      )?.[specificMethod.toString()]
+                                    }
+                                    onChecked={(checked) => {
+                                      handleChange(
+                                        checked,
+                                        notification.type,
+                                        NotificationMethods[
+                                          specificMethod as EnumStrings<
+                                            typeof NotificationMethods
+                                          >
+                                        ]
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              </GridCol>
+                            ) : (
+                              <GridCol
+                                cols={2}
+                                className={styles.centered}
+                                key={
+                                  notification.name + specificMethod.toString()
+                                }
+                              />
+                            );
+                          }
+                        )}
+                      </>
+                    );
+                  })}
                 </GridCol>
               </>
             ) : null;

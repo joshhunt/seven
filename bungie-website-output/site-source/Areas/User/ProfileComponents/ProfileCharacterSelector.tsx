@@ -19,7 +19,6 @@ interface CharactersProps
   extends D2DatabaseComponentProps<
     | "DestinyClassDefinition"
     | "DestinyRaceDefinition"
-    | "DestinyGenderDefinition"
     | "DestinyInventoryItemLiteDefinition"
   > {
   characters: { [p: string]: Characters.DestinyCharacterComponent };
@@ -34,7 +33,6 @@ interface ICharacterProps {
   backgroundPath: string;
   class: string;
   race: string;
-  gender: string;
   light: ReactElement;
 }
 
@@ -72,9 +70,6 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
           id: charComponent.characterId,
           race: props.definitions.DestinyRaceDefinition.get(
             charComponent?.raceHash
-          ).displayProperties.name,
-          gender: props.definitions.DestinyGenderDefinition.get(
-            charComponent?.genderHash
           ).displayProperties.name,
         });
       }
@@ -151,7 +146,6 @@ export default withDestinyDefinitions(ProfileCharacterSelector, {
   types: [
     "DestinyClassDefinition",
     "DestinyRaceDefinition",
-    "DestinyGenderDefinition",
     "DestinyInventoryItemLiteDefinition",
   ],
 });

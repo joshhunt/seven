@@ -18,6 +18,7 @@ import {
   PresentationNodeParams,
   IFireteamSearchParams,
   IFireteamParams,
+  IFireteamFinderParams,
   IClanParams,
   IApplicationParams,
 } from "@Routes/RouteParams";
@@ -371,16 +372,36 @@ export class RouteHelper {
   public static Fireteams = LegacyPathWithQuery(
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );
-  public static NewFireteams = BasicReactPath<IFireteamSearchParams>(
-    RouteDefs.Areas.Fireteams.getAction("Search")
-  );
-  public static NewFireteam = BasicReactPath<IFireteamParams>(
-    RouteDefs.Areas.Fireteams.getAction("Fireteam")
-  );
   public static Fireteam = (groupId: string, fireteamId: string) =>
     LegacyPath(
       `ClanV2/PublicFireteam?groupId=${groupId}&fireteamId=${fireteamId}`
     );
+  public static DeprecatedReactFireteams = BasicReactPath<
+    IFireteamSearchParams
+  >(RouteDefs.Areas.Fireteams.getAction("Search"));
+  public static DeprecatedReactFireteam = BasicReactPath<IFireteamParams>(
+    RouteDefs.Areas.Fireteams.getAction("Fireteam")
+  );
+
+  public static FireteamFinderCreate = BasicReactPath<IFireteamFinderParams>(
+    RouteDefs.Areas.FireteamFinder.getAction("Create")
+  );
+  public static FireteamFinderCreateSelectActivity = BasicReactPath(
+    RouteDefs.Areas.FireteamFinder.getAction("Create")
+  );
+  public static FireteamFinder = BasicReactPath(
+    RouteDefs.Areas.FireteamFinder.getAction("Index")
+  );
+  public static FireteamFinderBrowse = BasicReactPath<IFireteamFinderParams>(
+    RouteDefs.Areas.FireteamFinder.getAction("Browse")
+  );
+  public static FireteamFinderDetail = BasicReactPath<IFireteamFinderParams>(
+    RouteDefs.Areas.FireteamFinder.getAction("Detail")
+  );
+  public static FireteamFinderHelp = LegacyPathWithQuery(
+    "/Forums/Topics?pNumber=0&tg=Help%20FireteamFinderBetaHelp&tSort=0&tType=0&d=0"
+  );
+
   public static Groups = LegacyPathWithQuery("/Groups");
   public static Group = (groupId: string) =>
     LegacyPath(`/Groups/Chat?groupId=${groupId}`);

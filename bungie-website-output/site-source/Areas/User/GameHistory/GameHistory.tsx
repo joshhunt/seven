@@ -19,10 +19,7 @@ import {
 } from "@UI/Destiny/DestinyAccountWrapper";
 import DestinyActivityModesSelector from "@UI/Destiny/DestinyActivityModeSelector";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import classNames from "classnames";
 import React, { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
 import styles from "./GameHistory.module.scss";
 
 interface GameHistoryProps

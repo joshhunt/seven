@@ -109,11 +109,9 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
 
   return (
     <li
-      className={classNames(
-        styles.itemFireteam,
-        { [styles.isPublic]: props.fireteamSummary.isPublic },
-        { [styles.isNotValid]: !props.fireteamSummary.isValid }
-      )}
+      className={classNames(styles.itemFireteam, {
+        [styles.isNotValid]: !props.fireteamSummary.isValid,
+      })}
       key={props.fireteamSummary.fireteamId}
     >
       {updating && (
@@ -160,9 +158,8 @@ export const FireteamListItem: React.FC<FireteamListItemProps> = (props) => {
                 </span>
               )}
               <Anchor
-                className={styles.permaLink}
                 onClick={(e) => e.stopPropagation()}
-                url={RouteHelper.NewFireteam({
+                url={RouteHelper.DeprecatedReactFireteam({
                   fireteamId: props.fireteamSummary?.fireteamId,
                 })}
                 target={"_blank"}

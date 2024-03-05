@@ -10,6 +10,7 @@ import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
+  BungieMembershipType,
   FireteamDateRange,
   FireteamPlatform,
   FireteamPublicSearchOption,
@@ -95,7 +96,7 @@ export const Fireteams: React.FC = (props) => {
     scheduled: boolean
   ) => {
     history.push(
-      RouteHelper.NewFireteams({
+      RouteHelper.DeprecatedReactFireteams({
         platform: platform,
         lang: lang,
         activityType: activity,
@@ -375,7 +376,7 @@ export const Fireteams: React.FC = (props) => {
             )
           }
         >
-          <Grid className={styles.headerGrid}>
+          <Grid>
             <GridCol className={styles.headerContent} cols={12}>
               <h2 className={styles.findFireteam}>
                 {fireteamsLoc.FindFireteam}
@@ -395,10 +396,6 @@ export const Fireteams: React.FC = (props) => {
                 <p className={styles.resultsHeaderLabel}>
                   {!isMine && (
                     <Dropdown
-                      className={classNames(
-                        styles.filterDropdown,
-                        styles.activityDropdown
-                      )}
                       options={FireteamUtils.activityOptions(
                         globalState.coreSettings,
                         false
@@ -426,7 +423,7 @@ export const Fireteams: React.FC = (props) => {
                 </p>
                 <Button
                   onClick={handleCreateFireteamButton}
-                  className={classNames(styles.buttonCreateFireteam, {
+                  className={classNames({
                     [styles.fakeDisable]: !canCreateFireteam,
                   })}
                   buttonType={canCreateFireteam ? "gold" : "clear"}
@@ -631,10 +628,6 @@ export const Fireteams: React.FC = (props) => {
               >
                 <h4>{fireteamsLoc.Filters}</h4>
                 <Dropdown
-                  className={classNames(
-                    styles.filterDropdown,
-                    styles.platformDropdown
-                  )}
                   options={FireteamUtils.platformOptions()}
                   iconPath={
                     "/7/ca/destiny/bgs/fireteams/icon_fireteamPlatforms.svg"
@@ -656,10 +649,6 @@ export const Fireteams: React.FC = (props) => {
                   }
                 />
                 <Dropdown
-                  className={classNames(
-                    styles.filterDropdown,
-                    styles.langDropdown
-                  )}
                   options={FireteamUtils.langOptions()}
                   iconPath={
                     "/7/ca/destiny/bgs/fireteams/icon_fireteamLanguages.svg"
@@ -702,10 +691,6 @@ export const Fireteams: React.FC = (props) => {
               <div className={styles.resultsHeader}>
                 {!isMine && (
                   <Dropdown
-                    className={classNames(
-                      styles.filterDropdown,
-                      styles.activityDropdown
-                    )}
                     options={FireteamUtils.activityOptions(
                       globalState.coreSettings,
                       false
@@ -732,7 +717,7 @@ export const Fireteams: React.FC = (props) => {
                 )}
                 <Button
                   onClick={handleCreateFireteamButton}
-                  className={classNames(styles.buttonCreateFireteam, {
+                  className={classNames({
                     [styles.fakeDisable]: !canCreateFireteam,
                   })}
                   buttonType={canCreateFireteam ? "gold" : "clear"}
@@ -849,12 +834,7 @@ export const Fireteams: React.FC = (props) => {
             {noFireteamResults && (
               <div className={styles.emptyStateContainer}>
                 <div className={styles.emptyStateIcon} />
-                <h4
-                  className={classNames(
-                    styles.emptyHeader,
-                    styles.sectionHeader
-                  )}
-                >
+                <h4 className={classNames(styles.emptyHeader)}>
                   {clansLoc.NoFireteamsFound}
                 </h4>
                 <p>{clansLoc.CreateOneOrTryChanging}</p>

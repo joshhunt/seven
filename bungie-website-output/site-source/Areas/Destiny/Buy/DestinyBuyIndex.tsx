@@ -105,13 +105,13 @@ export default class DestinyBuyInternal extends React.Component<
     const bundlesCategoryName = "category3";
 
     const getStartedProducts = productFamilies?.filter(
-      (product) => product.landingPageCategory === getStartedCategoryName
+      (product: any) => product.landingPageCategory === getStartedCategoryName
     );
     const expansionProducts = productFamilies?.filter(
-      (product) => product.landingPageCategory === expansionsCategoryName
+      (product: any) => product.landingPageCategory === expansionsCategoryName
     );
     const bundleProducts = productFamilies?.filter(
-      (product) => product.landingPageCategory === bundlesCategoryName
+      (product: any) => product.landingPageCategory === bundlesCategoryName
     );
 
     //url is ?version=Promo
@@ -155,7 +155,7 @@ export default class DestinyBuyInternal extends React.Component<
             isPaused={this.state.isCarouselPaused}
             setIsPaused={this.setIsCarouselPaused}
           >
-            {carouselItems?.map((slide, i) => {
+            {carouselItems?.map((slide: any, i: number) => {
               const bgImage = this.state.responsive.mobile
                 ? slide.imageThumbnail
                 : slide.largeImage;
@@ -212,7 +212,7 @@ export default class DestinyBuyInternal extends React.Component<
             />
 
             <div className={styles.banner}>
-              {getStartedProducts.map((productFamily, i) => {
+              {getStartedProducts.map((productFamily: any, i: number) => {
                 const isFreeToPlayItem =
                   productFamily.productFamilyTag === "playforfree";
                 const bgImage =
@@ -274,10 +274,10 @@ export default class DestinyBuyInternal extends React.Component<
   private readonly onSkuConfigLoaded = () => {
     if (this.state.skuConfig.loaded) {
       const skuSection = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinySkus"
+        (a: any) => a.key === "DestinySkus"
       );
       const familySection = this.state.skuConfig.sections.find(
-        (a) => a.key === "DestinyProductFamilies"
+        (a: any) => a.key === "DestinyProductFamilies"
       );
 
       /* Load the Firehose content item for the specified tags */
@@ -336,7 +336,7 @@ export default class DestinyBuyInternal extends React.Component<
           contentSet.properties["ContentItems"];
         if (allItems) {
           const skuItems: IDestinyProductDefinition[] = allItems
-            .filter((a) => a.cType === "DestinySkuItem")
+            .filter((a: any) => a.cType === "DestinySkuItem")
             .map((contentItem) =>
               DestinySkuUtils.skuDefinitionFromContent(contentItem)
             )

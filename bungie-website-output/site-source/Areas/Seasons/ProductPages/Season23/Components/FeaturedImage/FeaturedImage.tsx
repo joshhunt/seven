@@ -33,7 +33,7 @@ const FeaturedImage: React.FC<FeaturedImageProps> = (props) => {
   );
 
   return content?.heading && content?.blurb ? (
-    <div id="weapon" className={styles.featuredContainer}>
+    <div className={styles.featuredContainer}>
       <img src={image?.url} />
       <PmpSectionHeader
         data={content}

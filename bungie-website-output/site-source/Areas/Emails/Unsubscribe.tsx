@@ -82,7 +82,7 @@ const Unsubscribe: React.FC = () => {
   ];
 
   useEffect(() => {
-    const unsubscribeEmailInput: Contract.UserEmailVerificationRequest = {
+    const unsubscribeEmailInput: User.UserEmailVerificationRequest = {
       tokenGuid: params.get("id"),
     };
     Platform.UserService.UnsubscribeEmail(unsubscribeEmailInput)

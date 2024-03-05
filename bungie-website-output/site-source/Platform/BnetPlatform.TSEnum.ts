@@ -434,6 +434,7 @@ export enum NotificationGrouping {
   USER = 1,
   GROUPS = 2,
   COMMUNITY = 3,
+  FIRETEAM_FINDER = 4,
 }
 
 export enum NotificationType {
@@ -496,6 +497,11 @@ export enum NotificationType {
   CLAN_FIRETEAM_BANNED = 57,
   CLAN_FIRETEAM_BANNED_PERMANENT = 58,
   EMAIL_DELIVERY_FAILURE = 59,
+  FIRETEAM_FINDER_NEW_APPLICATION = 60,
+  FIRETEAM_FINDER_APPLICATION_ACCEPTED = 61,
+  FIRETEAM_FINDER_APPLICATION_REJECTED = 62,
+  FIRETEAM_FINDER_LOBBY_ACTIVATED = 63,
+  FIRETEAM_FINDER_LOBBY_UPDATED = 64,
 }
 
 export enum RealTimeEventType {
@@ -1296,6 +1302,27 @@ export enum PlatformErrorCodes {
   ClanFireteamPurchaseRequiredCreate = 3036,
   ClanFireteamSMSOrPurchaseRequiredJoin = 3037,
   ClanFireteamPurchaseRequiredJoin = 3038,
+  FireteamFinderInvalidMembershipType = 3100,
+  FireteamFinderInvalidMembershipId = 3101,
+  FireteamFinderInvalidCharacterId = 3102,
+  FireteamFinderInvalidListingOptions = 3103,
+  FireteamFinderInvalidRequestData = 3104,
+  FireteamFinderListingApplicationFailed = 3105,
+  FireteamFinderListingAutoJoinFailed = 3106,
+  FireteamFinderPlayerApplicationsParsingFailed = 3107,
+  FireteamFinderJoinLobbyHostFailed = 3108,
+  FireteamFinderPlayerNotInGame = 3109,
+  FireteamFinderActivationFailed = 3110,
+  FireteamFinderResponseUndefined = 3150,
+  FireteamFinderResponseMoved = 3151,
+  FireteamFinderResponseLoggingIn = 3152,
+  FireteamFinderResponseBadRequest = 3153,
+  FireteamFinderResponseUnauthorized = 3154,
+  FireteamFinderResponseForbidden = 3155,
+  FireteamFinderResponseNotFound = 3156,
+  FireteamFinderInternalServerError = 3157,
+  FireteamFinderServiceUnavailable = 3158,
+  FireteamFinderInternalServerErrorNonFatal = 3159,
   CrossSaveOverriddenAccountNotFound = 3200,
   CrossSaveTooManyOverriddenPlatforms = 3201,
   CrossSaveNoOverriddenPlatforms = 3202,
@@ -1382,6 +1409,23 @@ export enum PhoneValidationStatusEnum {
   Validated = 3,
   Invalidated = 4,
   Banned = 5,
+}
+
+/**
+	This is the Bungie.net version Bungie.SharedDefinitions.Network.AgeGateFeatures.
+	It should match it exactly.  It exists to make sure we're not exposing SharedDefinition interals to the outside world.
+	*/
+export enum BungieAgeGateFeatures {
+  None = 0,
+  EververseRecommendations = 1,
+  RankPurchasing = 2,
+  CommerceDialogsAndUpsells = 4,
+  CommerceBuySilver = 8,
+  AccessTextChat = 16,
+  AccessVoiceChat = 32,
+  CharacterSelectOffers = 64,
+  TextChatEnabledByDefault = 128,
+  VoiceChatEnabledByDefault = 256,
 }
 
 export enum GlobalAcknowledgementItem {
@@ -2737,6 +2781,7 @@ export enum DestinyVendorItemState {
   Cryptarch = 1048576,
   ArtifactPerkOwned = 2097152,
   Savings = 4194304,
+  Ineligible = 8388608,
 }
 
 /**
@@ -3171,6 +3216,7 @@ export enum EntityType {
   Tag = 8,
   Application = 9,
   ClanFireteam = 10,
+  FireteamFinder = 11,
 }
 
 export enum ContentSortBy {
@@ -3994,6 +4040,81 @@ export enum FireteamActivityType {
   Expunge = 30,
   AstralAlignment = 31,
   ShatteredRealm = 32,
+}
+
+export enum DestinyFireteamFinderApplicationType {
+  Unknown = 0,
+  Creator = 1,
+  Search = 2,
+  Invite = 3,
+  Friend = 4,
+  Encounter = 5,
+  Public = 6,
+}
+
+export enum DestinyFireteamFinderApplicationState {
+  Unknown = 0,
+  WaitingForApplicants = 1,
+  WaitingForLobbyOwner = 2,
+  Accepted = 3,
+  Rejected = 4,
+  Deleted = 5,
+  Expired = 6,
+}
+
+export enum DestinyFireteamFinderLobbyPrivacyScope {
+  Unknown = 0,
+  Open = 1,
+  Applications = 2,
+  Clan = 3,
+  Friends = 4,
+}
+
+export enum DestinyFireteamFinderLobbyState {
+  Unknown = 0,
+  Inactive = 1,
+  Active = 2,
+  Expired = 3,
+  Closed = 4,
+  Canceled = 5,
+  Deleted = 6,
+}
+
+export enum DestinyFireteamFinderPlayerReadinessState {
+  Unknown = 0,
+  Reserved = 1,
+  Disconnected = 2,
+  InLobbyUnready = 3,
+  InLobbyReady = 4,
+  Summoned = 5,
+}
+
+export enum DestinyFireteamFinderOfferState {
+  Unknown = 0,
+  Pending = 1,
+  Accepted = 2,
+  Rejected = 3,
+  Deleted = 4,
+  Expired = 5,
+}
+
+export enum DestinyFireteamFinderListingFilterRangeType {
+  Unknown = 0,
+  All = 1,
+  Any = 2,
+  InRangeInclusive = 3,
+  InRangeExclusive = 4,
+  GreaterThan = 5,
+  GreaterThanOrEqualTo = 6,
+  LessThan = 7,
+  LessThanOrEqualTo = 8,
+}
+
+export enum DestinyFireteamFinderListingFilterMatchType {
+  Unknown = 0,
+  MustNot = 1,
+  Should = 2,
+  Filter = 3,
 }
 
 /**

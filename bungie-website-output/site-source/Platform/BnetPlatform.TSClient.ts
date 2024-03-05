@@ -161,6 +161,10 @@ export declare namespace User {
     Message: string;
   }
 
+  export interface UserEmailVerificationRequest {
+    tokenGuid: string;
+  }
+
   export interface DestinyEmblemSourceRequest {
     MembershipType: Globals.BungieMembershipType;
 
@@ -321,6 +325,12 @@ export declare namespace User {
 
   export interface UserSearchPrefixRequest {
     displayNamePrefix: string;
+  }
+
+  export interface SetParentalControlFlagsRequest {
+    UnsetParentalControls: boolean;
+
+    ParentalControlFlags: Globals.BungieAgeGateFeatures;
   }
 
   /**
@@ -1476,10 +1486,6 @@ export declare namespace Contract {
     adultMode?: boolean;
 
     isThemeLight?: boolean;
-  }
-
-  export interface UserEmailVerificationRequest {
-    tokenGuid: string;
   }
 
   export interface UserBirthdayAndCountryResponse {
@@ -5316,6 +5322,8 @@ export declare namespace Models {
 
     guardianRankConstantsHash: number;
 
+    fireteamFinderConstantsHash: number;
+
     guardianRanksRootNodeHash: number;
 
     currentRankProgressionHashes: number[];
@@ -5323,6 +5331,8 @@ export declare namespace Models {
     insertPlugFreeProtectedPlugItemHashes: number[];
 
     insertPlugFreeBlockedSocketTypeHashes: number[];
+
+    enabledFireteamFinderActivityGraphHashes: number[];
 
     undiscoveredCollectibleImage: string;
 
@@ -10390,6 +10400,8 @@ export declare namespace Definitions {
 		*/
     optionalUnlockStrings: Definitions.DestinyActivityUnlockStringDefinition[];
 
+    requirements: Definitions.DestinyActivityRequirementsBlock;
+
     /**
 		Represents all of the possible activities that could be played in the Playlist, along with information
 		that we can use to determine if they are active at the present time.
@@ -10531,6 +10543,22 @@ export declare namespace Definitions {
     /**
 		The string to be displayed if the conditions are met.
 		*/
+    displayString: string;
+  }
+
+  export interface DestinyActivityRequirementsBlock {
+    /**
+		If being a fireteam Leader in this activity is gated, this is the gate being checked.
+		*/
+    leaderRequirementLabels: Definitions.DestinyActivityRequirementLabel[];
+
+    /**
+		If being a fireteam member in this activity is gated, this is the gate being checked.
+		*/
+    fireteamRequirementLabels: Definitions.DestinyActivityRequirementLabel[];
+  }
+
+  export interface DestinyActivityRequirementLabel {
     displayString: string;
   }
 
@@ -15715,70 +15743,6 @@ export declare namespace Social {
 
     commendationScoresByHash: { [key: number]: number };
   }
-
-  export interface DestinySocialCommendationNodeDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    /**
-		The color associated with this group of commendations.
-		*/
-    color: Misc.DestinyColor;
-
-    /**
-		A version of the displayProperties icon tinted with the color of this node.
-		*/
-    tintedIcon: string;
-
-    parentCommendationNodeHash: number;
-
-    /**
-		A list of hashes that map to child commendation nodes.
-		Only the root commendations node is expected to have child nodes.
-		*/
-    childCommendationNodeHashes: number[];
-
-    /**
-		A list of hashes that map to child commendations.
-		*/
-    childCommendationHashes: number[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinySocialCommendationDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    cardImagePath: string;
-
-    color: Misc.DestinyColor;
-
-    displayPriority: number;
-
-    activityGivingLimit: number;
-
-    parentCommendationNodeHash: number;
-
-    /**
-		The display properties for the the activities that this commendation is available in.
-		*/
-    displayActivities: Common.DestinyDisplayPropertiesDefinition[];
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinySocialCommendationValuePredicate {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    recentCommendationWeight: number;
-  }
 }
 
 export declare namespace Loadouts {
@@ -15800,36 +15764,6 @@ export declare namespace Loadouts {
     itemInstanceId: string;
 
     plugItemHashes: number[];
-  }
-
-  export interface DestinyLoadoutColorDefinition {
-    colorImagePath: string;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyLoadoutIconDefinition {
-    iconImagePath: string;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-
-  export interface DestinyLoadoutNameDefinition {
-    name: string;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
   }
 }
 
@@ -18273,6 +18207,377 @@ export declare namespace Fireteam {
   }
 }
 
+export declare namespace FireteamFinder {
+  export interface DestinyFireteamFinderApplyToListingResponse {
+    isApplied: boolean;
+
+    application: FireteamFinder.DestinyFireteamFinderApplication;
+
+    listing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderApplication {
+    applicationId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderApplicationState;
+
+    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
+
+    applicationType: Globals.DestinyFireteamFinderApplicationType;
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderPlayerId {
+    membershipId: string;
+
+    membershipType: Globals.BungieMembershipType;
+
+    characterId: string;
+  }
+
+  export interface DestinyFireteamFinderApplicantSet {
+    applicants: FireteamFinder.DestinyFireteamFinderApplicant[];
+  }
+
+  export interface DestinyFireteamFinderApplicant {
+    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+  }
+
+  export interface DestinyFireteamFinderListing {
+    listingId: string;
+
+    revision: number;
+
+    ownerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+
+    availableSlots: number;
+
+    lobbyId: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderLobbySettings {
+    maxPlayerCount: number;
+
+    onlinePlayersOnly: boolean;
+
+    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
+
+    scheduledDateTime: string;
+
+    clanId: string;
+
+    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
+
+    activityGraphHash: number;
+
+    activityHash: number;
+  }
+
+  export interface DestinyFireteamFinderListingValue {
+    valueType: number;
+
+    values: number[];
+  }
+
+  export interface DestinyFireteamFinderBulkGetListingStatusResponse {
+    listingStatus: FireteamFinder.DestinyFireteamFinderListingStatus[];
+  }
+
+  export interface DestinyFireteamFinderListingStatus {
+    listingId: string;
+
+    listingRevision: number;
+
+    availableSlots: number;
+  }
+
+  export interface DestinyFireteamFinderBulkGetListingStatusRequest {
+    lobbyListingReferences: FireteamFinder.DestinyFireteamFinderLobbyListingReference[];
+  }
+
+  export interface DestinyFireteamFinderLobbyListingReference {
+    lobbyId: string;
+
+    listingId: string;
+  }
+
+  export interface DestinyFireteamFinderGetApplicationResponse {
+    applicationId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderApplicationState;
+
+    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
+
+    applicationType: Globals.DestinyFireteamFinderApplicationType;
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderGetListingApplicationsResponse {
+    applications: FireteamFinder.DestinyFireteamFinderApplication[];
+
+    pageSize: number;
+
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderLobbyResponse {
+    lobbyId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderLobbyState;
+
+    owner: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+
+    players: FireteamFinder.DestinyFireteamFinderLobbyPlayer[];
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderLobbyPlayer {
+    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    state: Globals.DestinyFireteamFinderPlayerReadinessState;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerLobbiesResponse {
+    /**
+		All available lobbies that this player has created or is a member of.
+		*/
+    lobbies: FireteamFinder.DestinyFireteamFinderLobbyResponse[];
+
+    /**
+		The number of results requested.
+		*/
+    pageSize: number;
+
+    /**
+		A string token required to get the next page of results. This will be null or empty if there are no more results.
+		*/
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerApplicationsResponse {
+    /**
+		All applications that this player has sent.
+		*/
+    applications: FireteamFinder.DestinyFireteamFinderApplication[];
+
+    /**
+		String token to request next page of results.
+		*/
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerOffersResponse {
+    /**
+		All offers that this player has recieved.
+		*/
+    offers: FireteamFinder.DestinyFireteamFinderOffer[];
+  }
+
+  export interface DestinyFireteamFinderOffer {
+    offerId: string;
+
+    lobbyId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderOfferState;
+
+    targetId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    applicationId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderGetCharacterActivityAccessResponse {
+    /**
+		A map of fireteam finder activity graph hashes to visibility and availability states.
+		*/
+    fireteamFinderActivityGraphStates: {
+      [key: number]: FireteamFinder.DestinyFireteamFinderActivityGraphState;
+    };
+  }
+
+  export interface DestinyFireteamFinderActivityGraphState {
+    /**
+		Indicates if this fireteam finder activity graph node is visible for this character.
+		*/
+    isVisible: boolean;
+
+    /**
+		Indicates if this fireteam finder activity graph node is available to select for this character.
+		*/
+    isAvailable: boolean;
+  }
+
+  export interface DestinyFireteamFinderGetLobbyOffersResponse {
+    offers: FireteamFinder.DestinyFireteamFinderOffer[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderHostLobbyResponse {
+    lobbyId: string;
+
+    listingId: string;
+
+    applicationId: string;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderHostLobbyRequest {
+    maxPlayerCount: number;
+
+    onlinePlayersOnly: boolean;
+
+    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
+
+    scheduledDateTime: string;
+
+    clanId: string;
+
+    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
+
+    activityGraphHash: number;
+
+    activityHash: number;
+  }
+
+  export interface DestinyFireteamFinderJoinLobbyRequest {
+    lobbyId: string;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderKickPlayerRequest {
+    targetBungieId: string;
+
+    targetMembershipType: Globals.BungieMembershipType;
+
+    targetCharacterId: string;
+  }
+
+  export interface DestinyFireteamFinderRespondToApplicationResponse {
+    applicationId: string;
+
+    applicationRevision: number;
+  }
+
+  export interface DestinyFireteamFinderRespondToApplicationRequest {
+    accepted: boolean;
+  }
+
+  export interface DestinyFireteamFinderRespondToAuthenticationResponse {
+    applicationId: string;
+
+    applicationRevision: number;
+
+    offer: FireteamFinder.DestinyFireteamFinderOffer;
+
+    listing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderRespondToAuthenticationRequest {
+    confirmed: boolean;
+  }
+
+  export interface DestinyFireteamFinderRespondToOfferResponse {
+    offerId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderOfferState;
+  }
+
+  export interface DestinyFireteamFinderRespondToOfferRequest {
+    accepted: boolean;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByClanResponse {
+    listings: FireteamFinder.DestinyFireteamFinderListing[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByClanRequest {
+    pageSize: number;
+
+    pageToken: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByFiltersResponse {
+    listings: FireteamFinder.DestinyFireteamFinderListing[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByFiltersRequest {
+    filters: FireteamFinder.DestinyFireteamFinderListingFilter[];
+
+    pageSize: number;
+
+    pageToken: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+  }
+
+  export interface DestinyFireteamFinderListingFilter {
+    listingValue: FireteamFinder.DestinyFireteamFinderListingValue;
+
+    rangeType: Globals.DestinyFireteamFinderListingFilterRangeType;
+
+    matchType: Globals.DestinyFireteamFinderListingFilterMatchType;
+  }
+
+  export interface DestinyFireteamFinderUpdateLobbySettingsResponse {
+    updatedLobby: FireteamFinder.DestinyFireteamFinderLobbyResponse;
+
+    updatedListing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderUpdateLobbySettingsRequest {
+    updatedSettings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+  }
+}
+
 export declare namespace Explore {
   /**
 	Represents a section with items in Explore Destiny 2.0.
@@ -18458,7 +18763,7 @@ export declare namespace Renderer {
       [key: number]: Unlocks.DestinyUnlockExpressionMappingDefinition;
     };
 
-    sandboxPerks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
+    perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
     damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
 
@@ -18568,27 +18873,9 @@ export declare namespace Renderer {
 
     eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
 
-    guardianRanks: {
-      [key: number]: GuardianRanks.DestinyGuardianRankDefinition;
-    };
-
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
-    socialCommendationNodes: {
-      [key: number]: Social.DestinySocialCommendationNodeDefinition;
-    };
-
-    socialCommendations: {
-      [key: number]: Social.DestinySocialCommendationDefinition;
-    };
-
     races: { [key: number]: Definitions.DestinyRaceDefinition };
-
-    loadoutColors: { [key: number]: Loadouts.DestinyLoadoutColorDefinition };
-
-    loadoutIcons: { [key: number]: Loadouts.DestinyLoadoutIconDefinition };
-
-    loadoutNames: { [key: number]: Loadouts.DestinyLoadoutNameDefinition };
 
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
@@ -18624,7 +18911,7 @@ export declare namespace Renderer {
       [key: number]: Unlocks.DestinyUnlockExpressionMappingDefinition;
     };
 
-    sandboxPerks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
+    perks: { [key: number]: Definitions.DestinySandboxPerkDefinition };
 
     damageTypes: { [key: number]: Definitions.DestinyDamageTypeDefinition };
 
@@ -18734,27 +19021,9 @@ export declare namespace Renderer {
 
     eventCards: { [key: number]: Seasons.DestinyEventCardDefinition };
 
-    guardianRanks: {
-      [key: number]: GuardianRanks.DestinyGuardianRankDefinition;
-    };
-
     checklists: { [key: number]: Checklists.DestinyChecklistDefinition };
 
-    socialCommendationNodes: {
-      [key: number]: Social.DestinySocialCommendationNodeDefinition;
-    };
-
-    socialCommendations: {
-      [key: number]: Social.DestinySocialCommendationDefinition;
-    };
-
     races: { [key: number]: Definitions.DestinyRaceDefinition };
-
-    loadoutColors: { [key: number]: Loadouts.DestinyLoadoutColorDefinition };
-
-    loadoutIcons: { [key: number]: Loadouts.DestinyLoadoutIconDefinition };
-
-    loadoutNames: { [key: number]: Loadouts.DestinyLoadoutNameDefinition };
 
     milestones: { [key: number]: Milestones.DestinyMilestoneDefinition };
 
@@ -19385,28 +19654,6 @@ export declare namespace ActivityModifiers {
     displayInNavMode: boolean;
 
     displayInActivitySelection: boolean;
-
-    hash: number;
-
-    index: number;
-
-    redacted: boolean;
-  }
-}
-
-export declare namespace GuardianRanks {
-  export interface DestinyGuardianRankDefinition {
-    displayProperties: Common.DestinyDisplayPropertiesDefinition;
-
-    rankNumber: number;
-
-    presentationNodeHash: number;
-
-    foregroundImagePath: string;
-
-    overlayImagePath: string;
-
-    overlayMaskImagePath: string;
 
     hash: number;
 
@@ -20502,7 +20749,7 @@ class UserServiceInternal {
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static ValidateEmail = (
-    input: Contract.UserEmailVerificationRequest,
+    input: User.UserEmailVerificationRequest,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<User.UserEmailVerificationResponse> =>
@@ -20522,7 +20769,7 @@ class UserServiceInternal {
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static UnsubscribeEmail = (
-    input: Contract.UserEmailVerificationRequest,
+    input: User.UserEmailVerificationRequest,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<User.UserEmailVerificationResponse> =>
@@ -21416,6 +21663,26 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "SearchByGlobalNamePost",
+      input,
+      clientState
+    );
+
+  /**
+   * Sets the parental control attribute flags for the authenticated user.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SetParentalControlFlags = (
+    input: User.SetParentalControlFlagsRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/SetFlags/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "SetParentalControlFlags",
       input,
       clientState
     );
@@ -28415,6 +28682,750 @@ class FireteamServiceInternal {
     );
 }
 
+class FireteamfinderServiceInternal {
+  /**
+   * Activates a lobby and initializes it as an active Fireteam.
+   * @param lobbyId The ID of the lobby to activate.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param forceActivation Optional boolean to forcibly activate the lobby, kicking pending applicants.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ActivateLobby = (
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    forceActivation: boolean,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/Activate/${e(lobbyId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [["forceActivation", forceActivation]],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "ActivateLobby",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Applies to have a character join a fireteam.
+   * @param listingId The id of the listing to apply to
+   * @param applicationType The type of application to apply
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ApplyToListing = (
+    listingId: string,
+    applicationType: Globals.DestinyFireteamFinderApplicationType,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderApplyToListingResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Listing/${e(listingId)}/Apply/${e(applicationType)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "ApplyToListing",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves Fireteam listing statuses in bulk.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static BulkGetListingStatus = (
+    input: FireteamFinder.DestinyFireteamFinderBulkGetListingStatusRequest,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderBulkGetListingStatusResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Listing/BulkStatus/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "BulkGetListingStatus",
+      input,
+      clientState
+    );
+
+  /**
+   * Retrieves a Fireteam application.
+   * @param applicationId
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetApplication = (
+    applicationId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderGetApplicationResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Application/${e(applicationId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetApplication",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves a Fireteam listing.
+   * @param listingId The ID of the listing to retrieve.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetListing = (
+    listingId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderListing> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Listing/${e(listingId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetListing",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves all applications to a Fireteam Finder listing.
+   * @param listingId The ID of the listing whose applications to retrieve.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param pageSize The maximum number of results to be returned with this page.
+   * @param nextPageToken An optional token from a previous response to fetch the next page of results.
+   * @param flags Optional flag representing a filter on the state of the application.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetListingApplications = (
+    listingId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    pageSize: number,
+    nextPageToken: string,
+    flags: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderGetListingApplicationsResponse
+  > =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Listing/${e(listingId)}/Applications/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [
+        ["pageSize", pageSize],
+        ["nextPageToken", nextPageToken],
+        ["flags", flags],
+      ],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetListingApplications",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves the information for a Fireteam lobby.
+   * @param lobbyId The ID of the lobby to retrieve.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetLobby = (
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderLobbyResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Lobby/${e(lobbyId)}/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetLobby",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves the information for a Fireteam lobby.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param pageSize The maximum number of results to be returned with this page.
+   * @param nextPageToken An optional token from a previous response to fetch the next page of results.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerLobbies = (
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    pageSize: number,
+    nextPageToken: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderGetPlayerLobbiesResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/PlayerLobbies/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [
+        ["pageSize", pageSize],
+        ["nextPageToken", nextPageToken],
+      ],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetPlayerLobbies",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves Fireteam applications that this player has sent or recieved.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param pageSize The maximum number of results to be returned with this page.
+   * @param nextPageToken An optional token from a previous response to fetch the next page of results.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerApplications = (
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    pageSize: number,
+    nextPageToken: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderGetPlayerApplicationsResponse
+  > =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/PlayerApplications/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [
+        ["pageSize", pageSize],
+        ["nextPageToken", nextPageToken],
+      ],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetPlayerApplications",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves Fireteam offers that this player has recieved.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param pageSize The maximum number of results to be returned with this page.
+   * @param nextPageToken An optional token from a previous response to fetch the next page of results.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerOffers = (
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    pageSize: number,
+    nextPageToken: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderGetPlayerOffersResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/PlayerOffers/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [
+        ["pageSize", pageSize],
+        ["nextPageToken", nextPageToken],
+      ],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetPlayerOffers",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves the information for a Fireteam lobby.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetCharacterActivityAccess = (
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderGetCharacterActivityAccessResponse
+  > =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/CharacterActivityAccess/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetCharacterActivityAccess",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves an offer to a Fireteam lobby.
+   * @param offerId The unique ID of the offer.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetOffer = (
+    offerId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderOffer> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Offer/${e(offerId)}/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetOffer",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves all offers relevant to a Fireteam lobby.
+   * @param lobbyId The unique ID of the lobby.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param pageSize The maximum number of results to be returned with this page.
+   * @param nextPageToken An optional token from a previous response to fetch the next page of results.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetLobbyOffers = (
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    pageSize: number,
+    nextPageToken: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderGetLobbyOffersResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/FireteamFinder/Lobby/${e(lobbyId)}/Offers/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [
+        ["pageSize", pageSize],
+        ["nextPageToken", nextPageToken],
+      ],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "GetLobbyOffers",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Creates a new Fireteam lobby and Fireteam Finder listing.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static HostLobby = (
+    input: FireteamFinder.DestinyFireteamFinderHostLobbyRequest,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderHostLobbyResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/Host/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "HostLobby",
+      input,
+      clientState
+    );
+
+  /**
+   * Sends a request to join an available Fireteam lobby.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static JoinLobby = (
+    input: FireteamFinder.DestinyFireteamFinderJoinLobbyRequest,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderLobbyResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/Join/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "JoinLobby",
+      input,
+      clientState
+    );
+
+  /**
+   * Kicks a player from a Fireteam Finder lobby.
+   * @param lobbyId The ID of the lobby to kick the player from.
+   * @param targetMembershipId A valid Destiny membership ID of the player to kick.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static KickPlayer = (
+    input: FireteamFinder.DestinyFireteamFinderKickPlayerRequest,
+    lobbyId: string,
+    targetMembershipId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/${e(lobbyId)}/KickPlayer/${e(
+        targetMembershipId
+      )}/${e(destinyMembershipType)}/${e(destinyMembershipId)}/${e(
+        destinyCharacterId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "KickPlayer",
+      input,
+      clientState
+    );
+
+  /**
+   * Sends a request to leave a Fireteam listing application.
+   * @param applicationId The ID of the application to leave.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static LeaveApplication = (
+    applicationId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Application/Leave/${e(applicationId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "LeaveApplication",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Sends a request to leave a Fireteam lobby.
+   * @param lobbyId The ID of the lobby to leave.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static LeaveLobby = (
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/Leave/${e(lobbyId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "LeaveLobby",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Responds to an application sent to a Fireteam lobby.
+   * @param applicationId The application ID to respond to.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RespondToApplication = (
+    input: FireteamFinder.DestinyFireteamFinderRespondToApplicationRequest,
+    applicationId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderRespondToApplicationResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Application/Respond/${e(applicationId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "RespondToApplication",
+      input,
+      clientState
+    );
+
+  /**
+   * Responds to an authentication request for a Fireteam.
+   * @param applicationId The ID of the application whose authentication to confirm.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RespondToAuthentication = (
+    input: FireteamFinder.DestinyFireteamFinderRespondToAuthenticationRequest,
+    applicationId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderRespondToAuthenticationResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Authentication/Respond/${e(applicationId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "RespondToAuthentication",
+      input,
+      clientState
+    );
+
+  /**
+   * Responds to a Fireteam lobby offer.
+   * @param offerId The unique ID of the offer.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static RespondToOffer = (
+    input: FireteamFinder.DestinyFireteamFinderRespondToOfferRequest,
+    offerId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderRespondToOfferResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Offer/Respond/${e(offerId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "RespondToOffer",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns search results for available Fireteams provided a clan.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SearchListingsByClan = (
+    input: FireteamFinder.DestinyFireteamFinderSearchListingsByClanRequest,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderSearchListingsByClanResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Search/Clan/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "SearchListingsByClan",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns search results for available Fireteams provided search filters.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SearchListingsByFilters = (
+    input: FireteamFinder.DestinyFireteamFinderSearchListingsByFiltersRequest,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    FireteamFinder.DestinyFireteamFinderSearchListingsByFiltersResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Search/${e(destinyMembershipType)}/${e(
+        destinyMembershipId
+      )}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "SearchListingsByFilters",
+      input,
+      clientState
+    );
+
+  /**
+   * Updates the settings for a Fireteam lobby.
+   * @param lobbyId The ID of the lobby to update.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UpdateLobbySettings = (
+    input: FireteamFinder.DestinyFireteamFinderUpdateLobbySettingsRequest,
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<FireteamFinder.DestinyFireteamFinderUpdateLobbySettingsResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/UpdateSettings/${e(lobbyId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "UpdateLobbySettings",
+      input,
+      clientState
+    );
+}
+
 class ExploreServiceInternal {
   /**
    * Retrieves the 'calls to action' that constitute the Explore features of our Companion apps.  Probably not really useful for anyone else.
@@ -29159,6 +30170,7 @@ export class Platform {
   public static CommunitycontentService = CommunitycontentServiceInternal;
   public static TrendingService = TrendingServiceInternal;
   public static FireteamService = FireteamServiceInternal;
+  public static FireteamfinderService = FireteamfinderServiceInternal;
   public static ExploreService = ExploreServiceInternal;
   public static CompanionpermissionService = CompanionpermissionServiceInternal;
   public static RendererService = RendererServiceInternal;
