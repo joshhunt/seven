@@ -18486,8 +18486,6 @@ export declare namespace FireteamFinder {
   }
 
   export interface DestinyFireteamFinderKickPlayerRequest {
-    targetBungieId: string;
-
     targetMembershipType: Globals.BungieMembershipType;
 
     targetCharacterId: string;
