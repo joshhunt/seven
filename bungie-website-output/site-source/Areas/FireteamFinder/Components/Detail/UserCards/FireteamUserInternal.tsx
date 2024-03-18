@@ -85,6 +85,7 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
 
   const kickUser = () => {
     const input = {
+      targetBungieId: props.member?.membershipId,
       targetCharacterId: props.member?.characterId,
       targetMembershipType: props.member?.membershipType,
     };

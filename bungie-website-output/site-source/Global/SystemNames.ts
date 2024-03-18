@@ -130,5 +130,5 @@ export const SystemNames = {
   DisabledScopes: "DisabledScopes",
   MaximumApiKeysPerApplication: "MaximumApiKeysPerApplication",
   ApplicationsReactUI: "ApplicationsReactUI",
-  FireteamFinderWebUI: "FireteamFinderWebUI",
+  FireteamFinder: "FireteamFinder",
 } as const;

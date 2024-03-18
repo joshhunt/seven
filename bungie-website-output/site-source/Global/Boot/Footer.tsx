@@ -120,7 +120,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.Seasons(), navLoc.TopNavSeasons)}
               {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
               {this.renderLink(
-                ConfigUtils.SystemStatus(SystemNames.FireteamFinderWebUI)
+                ConfigUtils.SystemStatus(SystemNames.FireteamFinder)
                   ? //game integrated fireteam finder
                     RouteHelper.FireteamFinder()
                   : ConfigUtils.SystemStatus(SystemNames.ReactFireteamUI)

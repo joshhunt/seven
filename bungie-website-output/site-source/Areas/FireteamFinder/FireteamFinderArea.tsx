@@ -20,7 +20,7 @@ const FireteamFinderArea: React.FC = () => {
   const createPath = RouteDefs.Areas.FireteamFinder.getAction("Create").path;
   const indexPath = RouteDefs.Areas.FireteamFinder.getAction("Index").path;
   const fireteamFinderSystemDisabled = !ConfigUtils.SystemStatus(
-    "FireteamFinderWebUI"
+    "FireteamFinder"
   );
 
   return (
