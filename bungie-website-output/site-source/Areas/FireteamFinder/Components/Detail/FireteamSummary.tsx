@@ -35,7 +35,7 @@ const FireteamSummary: React.FC<FireteamSummaryProps> = (props) => {
 
   const {
     applicationRequired,
-    allowOfflinePlayers,
+    joinSetting,
     platform,
     hasMic,
     locale,
@@ -52,7 +52,7 @@ const FireteamSummary: React.FC<FireteamSummaryProps> = (props) => {
       </ul>
       <ul className={styles.list}>
         <li>
-          {allowOfflinePlayers
+          {joinSetting === 0
             ? Localizer.Fireteams.AllowOfflinePlayers
             : Localizer.Fireteams.OnlinePlayersOnly}
         </li>

@@ -13,7 +13,14 @@ import {
 import DestinyCharacterCard from "@UI/Destiny/DestinyCharacterCard";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, { useEffect } from "react";
+import React, {
+  RefCallback,
+  RefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styles from "./CharacterSelect.module.scss";
 
 interface CharacterSelectProps
@@ -29,6 +36,10 @@ interface CharacterSelectProps
     | "DestinyInventoryItemLiteDefinition"
   > {}
 
+interface CharacterModalProps {
+  onClose: () => void;
+}
+
 /* NOTE: This is not the final ui or final implementation; for development purposes only*/
 
 const CharacterSelect: React.FC<CharacterSelectProps> = () => {
@@ -39,8 +50,7 @@ const CharacterSelect: React.FC<CharacterSelectProps> = () => {
   const autoSave = fireteamsLoc.changesAutoSave;
   const currentChararacter = fireteamsLoc.currentCharacter;
   const edit = `(${fireteamsLoc.Edit})`;
-  const modalRef = React.useRef(null);
-
+  const [modalRef, setModalRef] = useState<RefObject<Modal>>(null);
   const ModalView: React.FC = () => {
     return (
       <div className={styles.selectModalWrapper}>
@@ -50,7 +60,6 @@ const CharacterSelect: React.FC<CharacterSelectProps> = () => {
         <DestinyAccountWrapper
           membershipDataStore={FireteamsDestinyMembershipDataStore}
           showCrossSaveBanner={false}
-          onCharacterChange={() => modalRef.current.close()}
         >
           {({ platformSelector, characterCardSelector }: IAccountFeatures) => (
             <div>
@@ -64,7 +73,7 @@ const CharacterSelect: React.FC<CharacterSelectProps> = () => {
   };
 
   const onClickCharacterEdit = () => {
-    modalRef.current = Modal.open(<ModalView />);
+    setModalRef(Modal.open(<ModalView />));
   };
 
   useEffect(() => {
@@ -72,6 +81,10 @@ const CharacterSelect: React.FC<CharacterSelectProps> = () => {
       FireteamsDestinyMembershipDataStore.actions.loadUserData();
     }
   }, [UserUtils.isAuthenticated(globalState)]);
+
+  useEffect(() => {
+    modalRef?.current.close();
+  }, [destinyMembership?.selectedCharacter]);
 
   if (destinyMembership?.selectedMembership && !destinyMembership?.characters) {
     return <p>{Localizer.Clans.adestiny2characterisrequired}</p>;

@@ -31,6 +31,7 @@ export class FireteamUtils {
     microphone: number,
     platform: number,
     applicationRequirement: number,
+    joinSetting: number,
     size?: number
   ): FireteamFinder.DestinyFireteamFinderListingValue[] {
     const listingValues: FireteamFinder.DestinyFireteamFinderListingValue[] = [];
@@ -90,6 +91,11 @@ export class FireteamUtils {
         values: [size],
       });
     }
+
+    listingValues.push({
+      valueType: parseInt(FireteamFinderValueTypes.joinSetting),
+      values: [joinSetting],
+    });
 
     return listingValues;
   }
@@ -186,6 +192,7 @@ export class FireteamUtils {
     const defaultBnetFireteamDefinition: BnetFireteamDefinition = {
       id: "",
       lobbyId: "",
+      lobbyState: 0,
       owner: {
         membershipId: "",
         membershipType: BungieMembershipType.BungieNext,
@@ -208,7 +215,6 @@ export class FireteamUtils {
         "applicationRequirement",
         fireteamOptionTree
       ),
-      allowOfflinePlayers: true,
       platform: this.getDefaultOptionFromOptionsTree(
         "platform",
         fireteamOptionTree
@@ -223,6 +229,7 @@ export class FireteamUtils {
         "minGuardianRank",
         fireteamOptionTree
       ),
+      joinSetting: 1,
     };
 
     const fireteam = defaultBnetFireteamDefinition;
@@ -272,7 +279,6 @@ export class FireteamUtils {
       "applicationRequirement",
       listingValueDefinitions
     );
-    fireteam.allowOfflinePlayers = !listing.settings?.onlinePlayersOnly;
     fireteam.isPublic =
       listing?.settings?.privacyScope === 1 ||
       listing?.settings?.privacyScope === 0;
@@ -313,6 +319,12 @@ export class FireteamUtils {
       title: activityGraphDefinition?.displayProperties?.name || "Redacted",
       playerElectedDifficulty: playerElectedDifficulty,
     };
+    fireteam.lobbyState = listing?.lobbyState;
+    fireteam.joinSetting = this.getValuesByCategoryFromListingValues(
+      listing?.settings?.listingValues,
+      FireteamFinderValueTypes.joinSetting,
+      listingValueDefinitions
+    )?.[0];
     const localeValue = this.getValuesByCategoryFromListingValues(
       listing?.settings?.listingValues,
       FireteamFinderValueTypes.locale,

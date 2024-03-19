@@ -9,6 +9,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import React from "react";
 import styles from "./ScheduledListings.module.scss";
+import { Icon } from "@UIKit/Controls/Icon";
 
 interface ScheduledListingProps
   extends D2DatabaseComponentProps<
@@ -43,7 +44,10 @@ const ScheduledListings: React.FC<ScheduledListingProps> = (props) => {
 
   return (
     <div className={styles.wrapper}>
-      <h3>{fireteamsLoc.myScheduledListings}</h3>
+      <h3>
+        <Icon iconType={"material"} iconName={"schedule"} />
+        {fireteamsLoc.MyPendingfireteams}
+      </h3>
       {props?.playerLobbies?.length > 0 ? (
         <div>
           {props?.playerLobbies?.map((listing, index) => (

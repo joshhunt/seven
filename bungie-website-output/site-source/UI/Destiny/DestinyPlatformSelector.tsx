@@ -19,6 +19,7 @@ interface IDestinyPlatformSelectorProps {
   isViewingOthers?: boolean;
   showCrossSaveBanner?: boolean;
   showAllCrossSavedPlatforms?: boolean;
+  currentOptionClassName?: string;
 }
 
 // Default props - these will have values set in DestinyPlatformSelector.defaultProps
@@ -55,19 +56,6 @@ export class DestinyPlatformSelector extends React.Component<
 
   public static defaultProps: DefaultProps = {};
 
-  private readonly getSanitizedNames = () => {
-    Platform.UserService.GetSanitizedPlatformDisplayNames(
-      this.props.userMembershipData?.bungieNetUser?.membershipId ??
-        this.props.userMembershipData?.destinyMemberships?.[0]?.membershipId
-    ).then((names) =>
-      this.setState({
-        credentialNameMap: UserUtils.getStringKeyedMapForSanitizedCredentialNames(
-          names
-        ),
-      })
-    );
-  };
-
   private readonly getLoggedInCredential = () => {
     //only for non-crosssaved accounts
     if (
@@ -93,20 +81,12 @@ export class DestinyPlatformSelector extends React.Component<
 
   public componentDidMount() {
     this.getLoggedInCredential();
-    this.getSanitizedNames();
   }
 
   public shouldComponentUpdate(
     nextProps: Readonly<Props>,
     nextState: Readonly<IDestinyPlatformSelectorState>
   ) {
-    if (
-      nextProps.userMembershipData.bungieNetUser !==
-      this.props.userMembershipData.bungieNetUser
-    ) {
-      this.getSanitizedNames();
-    }
-
     if (
       nextProps.selectedValue &&
       nextProps.selectedValue !== this.props.selectedValue
@@ -163,13 +143,16 @@ export class DestinyPlatformSelector extends React.Component<
                 ),
                 BungieCredentialType
               );
-              const sanitizedPlatformName = this.state.credentialNameMap?.[
-                bCredentialTypeString
-              ];
 
               return {
                 iconPath: value.iconPath,
-                label: `${sanitizedPlatformName} : ${Localizer.Platforms[bMembershipTypeString]}`,
+                label: `${
+                  UserUtils.getBungieNameFromUserInfoCard(value)
+                    ?.bungieGlobalName
+                }${
+                  UserUtils.getBungieNameFromUserInfoCard(value)
+                    ?.bungieGlobalCodeWithHashtag
+                } : ${Localizer.Platforms[bMembershipTypeString]}`,
                 value: bMembershipTypeString,
               };
             });
@@ -184,6 +167,7 @@ export class DestinyPlatformSelector extends React.Component<
         onChange={(newValue: string) => this.onDropdownChange(newValue)}
         options={platformOptions}
         selectedValue={this.state.selectedValue}
+        currentOptionClassName={this.props.currentOptionClassName}
       />
     );
   }

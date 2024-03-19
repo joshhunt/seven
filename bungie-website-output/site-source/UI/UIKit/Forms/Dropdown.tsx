@@ -116,18 +116,18 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
           ))}
         </select>
         <div
-          className={classNames([
+          className={classNames(
             styles.selectBox,
-            this.props.selectBoxClassName,
-          ])}
+            this.props.selectBoxClassName
+          )}
           onClick={() => this.toggle()}
           role={"presentation"}
         >
           <div
-            className={classNames([
+            className={classNames(
               styles.currentOption,
-              this.props.currentOptionClassName,
-            ])}
+              this.props.currentOptionClassName
+            )}
           >
             {this.props.placeholderValue && !this.state.currentValue ? (
               <DropdownPrettyOptionItem

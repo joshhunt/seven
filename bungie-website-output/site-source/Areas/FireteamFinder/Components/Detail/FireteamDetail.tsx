@@ -50,8 +50,10 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     destinyMembership?.memberships?.findIndex(
       (membership) => membership?.membershipId === lobby?.owner?.membershipId
     ) !== -1;
-  const { updateApplicationId } = useContext(PlayerFireteamDispatchContext);
-  const { applicationId } = useContext(PlayerFireteamContext);
+  const { updateMatchingApplication } = useContext(
+    PlayerFireteamDispatchContext
+  );
+  const { matchingApplication } = useContext(PlayerFireteamContext);
   const [refresh, setRefresh] = useState(false);
   const availableSlots = (availableNumSlots: number) => {
     const slots = [];
@@ -67,24 +69,6 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
           </div>
         );
       } else {
-        // slots.push(<Button buttonType={"clear"} size={BasicSize.FullSize} key={i} className={classNames(userStyles.emptyUser, userStyles.user, userStyles.button)} onClick={
-        // 	() =>
-        // 	{
-        // 		Platform.FireteamfinderService.ApplyToListing(
-        // 			fireteam?.listingId,
-        // 			DestinyFireteamFinderApplicationType.Public,
-        // 			destinyMembership?.selectedMembership?.membershipType,
-        // 			destinyMembership?.selectedMembership?.membershipId,
-        // 			destinyMembership?.selectedCharacter?.characterId ?? "0",
-        // 		).then(response => updateApplicationId(response.application?.applicationId))
-        // 			.catch(ConvertToPlatformError)
-        // 			.catch(e =>
-        // 			{
-        // 				Modal.error(e);
-        // 			});
-        //
-        // 	}}>{getEmptySlotButtonText()}</Button>);
-
         slots.push(
           <div
             key={i}
@@ -109,15 +93,14 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
       destinyMembership?.selectedMembership?.membershipType,
       destinyMembership?.selectedMembership?.membershipId,
       destinyMembership?.selectedCharacter?.characterId,
-      20,
+      100,
       "",
       "0"
     ).then((result) => {
-      setPendingApplications(result?.applications ?? []);
-      result?.applications?.length > 0 &&
-        !pendingApplications &&
-        isOwner &&
-        setRefresh((x) => !x);
+      // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
+      setPendingApplications(
+        result?.applications.filter((app) => app?.state === 2)
+      );
 
       // should add button to get next page of applications
     });
@@ -130,21 +113,21 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
           {Localizer.fireteams.activatehelptext}
         </div>
       )}
-      {requiresApplication && !isOwner && !applicationId && (
-        <div className={styles.helpText}>
-          {Localizer.fireteams.FireteamRequiresApplication}
-        </div>
-      )}
-      {requiresApplication && !isOwner && applicationId && (
-        <div className={classNames(styles.helpText, styles.applied)}>
-          {Localizer.fireteams.ApplicationSubmittedToast}
-        </div>
-      )}
-      <FireteamListingCard
-        fireteam={fireteam}
-        onlineStatus={lobby?.state}
-        largeActivityName={true}
-      />
+      {requiresApplication &&
+        !isOwner &&
+        !(matchingApplication?.listingId === lobby?.listingId) && (
+          <div className={styles.helpText}>
+            {Localizer.fireteams.FireteamRequiresApplication}
+          </div>
+        )}
+      {requiresApplication &&
+        !isOwner &&
+        matchingApplication?.listingId === lobby?.listingId && (
+          <div className={classNames(styles.helpText)}>
+            {Localizer.fireteams.ApplicationSubmittedToast}
+          </div>
+        )}
+      <FireteamListingCard fireteam={fireteam} largeActivityName={true} />
       <div className={styles.membersAndSummaryContainer}>
         <div className={styles.members}>
           <h4>{Localizer.fireteams.Members.toUpperCase()}</h4>
@@ -179,50 +162,39 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
             })}
           {availableSlots(fireteam?.availableSlots)}
           <br />
-          <div className={styles.pendingMembers}>
-            {isOwner && (
-              <Button
-                buttonType={"gold"}
-                onClick={() => window.location.reload()}
-              >
-                {Localizer.fireteams.checkForApplications}
-              </Button>
-            )}
-            {pendingApplications && pendingApplications.length > 0 && (
-              <>
-                <div className={styles.pending}>
-                  {Localizer.Fireteams.PendingApplications}
-                </div>
-                {pendingApplications.map((application) => {
-                  const isSelf = !!destinyMembership.memberships?.find(
-                    (dm) =>
-                      dm.membershipId === application?.submitterId.membershipId
-                  );
+          {isOwner && pendingApplications && pendingApplications.length > 0 && (
+            <div>
+              <h4>{Localizer.Fireteams.PendingApplications}</h4>
+              {pendingApplications.map((application) => {
+                const isSelf = !!destinyMembership.memberships?.find(
+                  (dm) =>
+                    dm.membershipId === application?.submitterId.membershipId
+                );
 
-                  return (
-                    <ApplicationCard
-                      key={applicationId}
-                      application={application}
-                      lobbyId={lobby?.lobbyId}
-                      memberCard={
-                        <FireteamUser
-                          key={application?.submitterId?.membershipId}
-                          isHost={viewerIsHost}
-                          invited={true}
-                          isSelf={isSelf}
-                          member={application?.submitterId}
-                          refreshFireteam={() => setRefresh((x) => !x)}
-                          fireteam={lobby}
-                          hideKick={true}
-                        />
-                      }
-                    />
-                  );
-                })}
-              </>
-            )}
-          </div>
+                return (
+                  <ApplicationCard
+                    key={lobby?.lobbyId}
+                    application={application}
+                    lobbyId={lobby?.lobbyId}
+                    memberCard={
+                      <FireteamUser
+                        key={application?.submitterId?.membershipId}
+                        isHost={viewerIsHost}
+                        invited={true}
+                        isSelf={isSelf}
+                        member={application?.submitterId}
+                        refreshFireteam={null}
+                        fireteam={lobby}
+                        hideKick={true}
+                      />
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
+
         <div className={styles.summary}>
           <h4>{Localizer.fireteams.ExtraInfo.toUpperCase()}</h4>
           <FireteamSummary fireteam={fireteam} />

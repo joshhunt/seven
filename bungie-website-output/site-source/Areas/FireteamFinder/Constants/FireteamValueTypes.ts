@@ -9,6 +9,7 @@ export const FireteamFinderValueTypes = {
   title: "41817931",
   tags: "596184710",
   applicationRequirement: "3211435268",
+  //join setting is whether offline players are allowed (0) or not (1)
   joinSetting: "848039488",
   platform: "3154631366",
   size: "3171466570",

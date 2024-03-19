@@ -16,6 +16,7 @@ export type ButtonTypes =
   | "text"
   | "disabled"
   | "darkblue"
+  | "darkblue2"
   | "green"
   | "teal"
   | "slateblue"

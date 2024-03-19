@@ -70,7 +70,10 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
     }
   };
 
-  const [resultsList, setResultsList] = useState<
+  const [resultsListInactive, setResultsListInactive] = useState<
+    FireteamFinder.DestinyFireteamFinderListing[]
+  >([]);
+  const [resultsListActive, setResultsListActive] = useState<
     FireteamFinder.DestinyFireteamFinderListing[]
   >([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -88,9 +91,10 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   const [showingLobbyState, setShowingLobbyState] = useState<
     DestinyFireteamFinderLobbyState
   >(
-    getParams().lobbyState === "1"
-      ? DestinyFireteamFinderLobbyState.Inactive
-      : DestinyFireteamFinderLobbyState.Active
+    (parseIntAndTestForNumber(
+      getParams().lobbyState
+    ) as DestinyFireteamFinderLobbyState) ||
+      DestinyFireteamFinderLobbyState.Active
   );
 
   const needsIgnoreValue = (key: string) =>
@@ -135,10 +139,11 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
     if (formMethods.getValues()) {
       loadFireteams(getParams());
     }
-  }, [tags, window.location.search]);
+  }, [tags, useParams(), showingLobbyState]);
 
   const loadFireteams: SubmitHandler<FieldValues> = (data: FieldValues) => {
     const listingValues: { values: number[]; valueType: number }[] = [];
+    let lobbyStateRequested = showingLobbyState;
 
     Object.keys(data)?.forEach((key: string) => {
       if (data[key] !== "-1" && data[key] !== [] && key !== "lobbyState") {
@@ -154,6 +159,10 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
             valueType: optionCategory.hash,
           });
         }
+      } else if (key === "lobbyState") {
+        lobbyStateRequested = parseIntAndTestForNumber(
+          data[key]
+        ) as DestinyFireteamFinderLobbyState;
       }
     });
 
@@ -193,9 +202,9 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
 
     const input = {
       filters: requestFilters,
-      pageSize: 20,
+      pageSize: 50,
       pageToken: "",
-      lobbyState: showingLobbyState,
+      lobbyState: lobbyStateRequested,
     };
 
     if (
@@ -211,7 +220,9 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
         destinyMembership?.selectedCharacter?.characterId
       )
         .then((response) => {
-          setResultsList(response.listings);
+          lobbyStateRequested === DestinyFireteamFinderLobbyState.Active
+            ? setResultsListActive(response.listings)
+            : setResultsListInactive(response.listings);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => {
@@ -249,7 +260,6 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
                   onChange={(value) => {
                     updateUrlWithoutRefresh(key, value);
                     formMethods.setValue(key, value);
-                    loadFireteams(getParams());
                   }}
                 />
               </div>
@@ -298,6 +308,47 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
     setTags(newTags);
   };
 
+  type allowedLobbyState =
+    | DestinyFireteamFinderLobbyState.Active
+    | DestinyFireteamFinderLobbyState.Inactive
+    | DestinyFireteamFinderLobbyState.Unknown;
+
+  const FilterTabAndListings: React.FC<{
+    matchingLobbyState: allowedLobbyState;
+  }> = ({ matchingLobbyState }) => {
+    const lobbyStateLabelMap: Record<allowedLobbyState, string> = {
+      [DestinyFireteamFinderLobbyState.Active]: Localizer.fireteams.active,
+      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.inactive,
+      [DestinyFireteamFinderLobbyState.Unknown]: Localizer.fireteams.Any,
+    };
+
+    return (
+      <a
+        className={classNames(styles.tabHeaderItemText, {
+          [styles.selected]: showingLobbyState === matchingLobbyState,
+        })}
+        onClick={() => {
+          setShowingLobbyState(matchingLobbyState);
+          updateUrlWithoutRefresh("lobbyState", matchingLobbyState.toString());
+        }}
+      >
+        {lobbyStateLabelMap[matchingLobbyState]}
+      </a>
+    );
+  };
+
+  const NoFireteamsFound: React.FC = () => {
+    return (
+      <div className={styles.emptyStateContainer}>
+        <div className={styles.emptyStateIcon} />
+        <h4 className={classNames(styles.emptyHeader)}>
+          {Localizer.clans.NoFireteamsFound}
+        </h4>
+        <p>{Localizer.clans.CreateOneOrTryChanging}</p>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className={styles.browseFilterTagContainer}>
@@ -324,61 +375,53 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
           <Filters />
         </GridCol>
         <GridCol cols={7}>
-          <div className={styles.tabHeader}>
-            <a
-              className={classNames(styles.tabHeaderItemText, {
-                [styles.selected]:
-                  showingLobbyState === DestinyFireteamFinderLobbyState.Active,
-              })}
-              onClick={() => {
-                setShowingLobbyState(DestinyFireteamFinderLobbyState.Active);
-                updateUrlWithoutRefresh(
-                  "lobbyState",
-                  DestinyFireteamFinderLobbyState.Active.toString()
-                );
-                loadFireteams(formMethods.getValues());
-              }}
-            >
-              {Localizer.fireteams.active}
-            </a>
-            <a
-              className={classNames(styles.tabHeaderItemText, {
-                [styles.selected]:
-                  showingLobbyState ===
-                  DestinyFireteamFinderLobbyState.Inactive,
-              })}
-              onClick={() => {
-                setShowingLobbyState(DestinyFireteamFinderLobbyState.Inactive);
-                updateUrlWithoutRefresh(
-                  "lobbyState",
-                  DestinyFireteamFinderLobbyState.Inactive.toString()
-                );
-                loadFireteams(formMethods.getValues());
-              }}
-            >
-              {Localizer.fireteams.inactive}
-            </a>
-          </div>
+          <>
+            <div className={styles.tabHeader}>
+              <FilterTabAndListings
+                matchingLobbyState={DestinyFireteamFinderLobbyState.Active}
+              />
+              <FilterTabAndListings
+                matchingLobbyState={DestinyFireteamFinderLobbyState.Inactive}
+              />
+            </div>
+          </>
           <div>
-            {resultsList?.length > 0 ? (
-              <div>
-                {resultsList.map((listing, index) => (
-                  <FireteamListingCard
-                    key={index}
-                    fireteam={listing}
-                    linkToDetails={true}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyStateContainer}>
-                <div className={styles.emptyStateIcon} />
-                <h4 className={classNames(styles.emptyHeader)}>
-                  {Localizer.clans.NoFireteamsFound}
-                </h4>
-                <p>{Localizer.clans.CreateOneOrTryChanging}</p>
-              </div>
-            )}
+            {showingLobbyState === DestinyFireteamFinderLobbyState.Active &&
+              (resultsListActive?.length > 0 ? (
+                <div>
+                  {resultsListActive.map((listing, index) => (
+                    <FireteamListingCard
+                      key={index}
+                      fireteam={listing}
+                      linkToDetails={true}
+                      showHover={true}
+                      lobbyStateOverride={
+                        DestinyFireteamFinderLobbyState.Active
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <NoFireteamsFound />
+              ))}
+            {showingLobbyState === DestinyFireteamFinderLobbyState.Inactive &&
+              (resultsListInactive?.length > 0 ? (
+                <div>
+                  {resultsListInactive.map((listing, index) => (
+                    <FireteamListingCard
+                      key={index}
+                      fireteam={listing}
+                      linkToDetails={true}
+                      showHover={true}
+                      lobbyStateOverride={
+                        DestinyFireteamFinderLobbyState.Inactive
+                      }
+                    />
+                  ))}
+                </div>
+              ) : (
+                <NoFireteamsFound />
+              ))}
           </div>
         </GridCol>
       </div>

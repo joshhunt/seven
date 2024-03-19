@@ -1,6 +1,7 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
+import { __ } from "@Utilities/LocalLocWorkaround";
 import classNames from "classnames";
 import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./Accordion.module.scss";
@@ -50,7 +51,6 @@ export const Accordion: React.FC<AccordionProps> = (props) => {
   const [openItems, setOpenItems] = useState<number[]>(
     props.defaultOpenFirst ? [0] : []
   );
-
   const findOpenItems = () => {
     setOpenItems(
       props.items

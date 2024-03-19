@@ -12,7 +12,7 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/RouteParams";
 import { DateTime } from "luxon";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
 interface CreateProps {
@@ -25,7 +25,7 @@ export const Create: React.FC<CreateProps> = (props) => {
   const [createStep, setCreateStep] = React.useState(
     graphId && activityId ? 1 : 0
   );
-
+  const [activityFilterCreate, setActivityFilterCreate] = useState("");
   //subtitle is dependent on the creation step
   const subtitle = (step: number) => {
     switch (step) {
@@ -76,6 +76,8 @@ export const Create: React.FC<CreateProps> = (props) => {
   return (
     <>
       <Layout
+        activityFilterString={activityFilterCreate}
+        setActivityFilterString={setActivityFilterCreate}
         breadcrumbConfig={graphId && activityId ? "create" : "create-select"}
         buttonConfig={"none"}
         title={title(createStep)}
@@ -90,6 +92,8 @@ export const Create: React.FC<CreateProps> = (props) => {
           />
         ) : (
           <SelectActivity
+            activityFilterString={activityFilterCreate}
+            setActivityFilterString={setActivityFilterCreate}
             linkClick={createLink}
             activityType={SelectActivityType.CREATE}
           />

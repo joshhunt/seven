@@ -142,6 +142,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
         .defaultCreateValue ?? "3212108350",
     isPublic: "1",
     scheduledTime: dateTimeValue,
+    joinSetting: "0",
   };
 
   const validationSchema = Yup.object({
@@ -219,6 +220,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
             parseInt(data.hasMic),
             parseInt(data.platform),
             parseInt(data.applicationRequirement),
+            parseInt(data.joinSetting),
             parseInt(data.players)
           ),
           {
@@ -483,6 +485,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                                 .membershipType
                             }
                             showAllCrossSavedPlatforms={true}
+                            currentOptionClassName={styles.currentOption}
                           />
                         </div>
                         {characterCardSelector}

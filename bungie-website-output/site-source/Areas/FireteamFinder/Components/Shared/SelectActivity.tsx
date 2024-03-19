@@ -1,3 +1,4 @@
+import { NoResultsBanner } from "@Areas/FireteamFinder/Components/Shared/NoResultsBanner";
 import styles from "@Areas/FireteamFinder/Components/Shared/SelectActivity.module.scss";
 import { FireteamFinderColors } from "@Areas/FireteamFinder/Constants/FireteamFinderColors";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
@@ -22,19 +23,11 @@ export enum SelectActivityType {
   BROWSE,
 }
 
-interface characterAccessDataReasons {
-  failedLeaderRequirementLabelIndex: number;
-  failedFireteamRequirementLabelIndex: number;
-}
-
 interface FireteamGraphExplorerNode {
   title: string;
   graphDefinition: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition;
-  parentGraphDefinition: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition | null;
-  allGraphDefinitions: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition[];
   applicableSets: DestinyDefinitions.DestinyFireteamFinderActivitySetDefinition[];
   children: FireteamGraphExplorerNode[];
-  error: string | null;
 }
 
 interface SelectActivityProps
@@ -43,6 +36,7 @@ interface SelectActivityProps
     | "DestinyFireteamFinderActivityGraphDefinition"
     | "DestinyFireteamFinderOptionDefinition"
     | "DestinyActivityDefinition"
+    | "DestinyFireteamFinderConstantsDefinition"
   > {
   className?: string;
   updateStep?: (step: number) => void;
@@ -52,6 +46,8 @@ interface SelectActivityProps
     activityIdHash: number
   ) => IMultiSiteLink;
   activityType: SelectActivityType;
+  activityFilterString: string;
+  setActivityFilterString: (s: string) => void;
 }
 
 enum ItemTemplateEnum {
@@ -69,31 +65,22 @@ export interface ActivityItemProps {
 
 const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
-  const [characterAccess, setCharacterAccess] = useState<
-    Record<number, characterAccessDataReasons>
-  >({});
   const allFireteamSets = props.definitions?.DestinyFireteamFinderActivitySetDefinition?.all();
   const allFireteamActivityGraphDefs = props.definitions?.DestinyFireteamFinderActivityGraphDefinition?.all();
   const [allNodes, setAllNodes] = useState<
     Record<number, FireteamGraphExplorerNode>
   >({});
   const [rootNodes, setRootNodes] = useState<FireteamGraphExplorerNode[]>([]);
+  const [activeActivityAccess, setActiveActivityAccess] = useState<
+    FireteamFinder.DestinyFireteamFinderGetCharacterActivityAccessResponse
+  >(null);
+  const { activityFilterString, setActivityFilterString } = props;
 
   useEffect(() => {
     if (destinyMembership && !destinyMembership.selectedMembership) {
       FireteamsDestinyMembershipDataStore.actions.loadUserData();
     } else {
       if (destinyMembership?.selectedCharacter?.characterId) {
-        Platform.FireteamfinderService.GetPlayerLobbies(
-          destinyMembership.selectedMembership.membershipType,
-          destinyMembership.selectedMembership.membershipId,
-          destinyMembership?.selectedCharacter?.characterId,
-          100,
-          ""
-        ).then((response) => {
-          console.log("GetPlayerLobbies", response);
-        });
-
         fetchCharacterAccess();
       }
     }
@@ -106,42 +93,6 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   }, [props.definitions]);
 
   const fireteamsLoc = Localizer.Fireteams;
-
-  const setFailedLeaderRequirementLabelIndexByActivityHash = (access: any) => {
-    access?.forEach((activityHash: number) => {
-      const newCharacterAccess = { ...characterAccess };
-
-      if (!newCharacterAccess[activityHash]) {
-        newCharacterAccess[activityHash] = {
-          failedLeaderRequirementLabelIndex: 0,
-          failedFireteamRequirementLabelIndex: 0,
-        };
-      }
-
-      newCharacterAccess[activityHash].failedLeaderRequirementLabelIndex =
-        access[activityHash]?.failedLeaderRequirementLabelIndex;
-      setCharacterAccess(newCharacterAccess);
-    });
-  };
-
-  const setFailedFireteamRequirementLabelIndexByActivityHash = (
-    access: any
-  ) => {
-    access?.forEach((activityHash: number) => {
-      const newCharacterAccess = { ...characterAccess };
-      if (!newCharacterAccess[activityHash]) {
-        newCharacterAccess[activityHash] = {
-          failedLeaderRequirementLabelIndex: 0,
-          failedFireteamRequirementLabelIndex: 0,
-        };
-      }
-
-      newCharacterAccess[activityHash].failedFireteamRequirementLabelIndex =
-        access[activityHash]?.failedFireteamRequirementLabelIndex;
-      setCharacterAccess(newCharacterAccess);
-    });
-  };
-
   const fetchCharacterAccess = () => {
     if (destinyMembership?.selectedCharacter?.characterId) {
       Platform.FireteamfinderService.GetCharacterActivityAccess(
@@ -149,13 +100,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         destinyMembership.selectedMembership.membershipId,
         destinyMembership?.selectedCharacter?.characterId
       ).then((response) => {
-        // this should be replaced by checking activity graph node visibility and availability states
-        // setFailedLeaderRequirementLabelIndexByActivityHash(
-        // 	Object.keys(response?.failedLeaderRequirementLabelIndexByActivityHash).map(a => Number(a))
-        // );
-        // setFailedFireteamRequirementLabelIndexByActivityHash(
-        // 	Object.keys(response?.failedFireteamRequirementLabelIndexByActivityHash).map(a => Number(a))
-        // )
+        setActiveActivityAccess(response);
       });
     }
   };
@@ -164,7 +109,6 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
 
   const fetchActivities = () => {
     const updatedNodes: Record<number, FireteamGraphExplorerNode> = {};
-    const updatedRootNodes: FireteamGraphExplorerNode[] = [];
 
     Object.values(allFireteamSets).forEach((set) => {
       set.activityGraphHashes.forEach((hash) => {
@@ -177,182 +121,43 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     });
 
     Object.values(allFireteamActivityGraphDefs).forEach((graphDef) => {
-      const pointer: FireteamGraphExplorerNode = {
+      updatedNodes[graphDef.hash] = {
         title: graphDef.displayProperties.name,
         graphDefinition: graphDef,
-        parentGraphDefinition: null,
-        allGraphDefinitions: [],
         applicableSets: leafMapToActivitySet[graphDef.hash] || [],
         children: [],
-        error: null,
       };
-
-      if (
-        graphDef.parentHash &&
-        Object.keys(allNodes).includes(graphDef.parentHash.toString())
-      ) {
-        allNodes[graphDef.parentHash]?.children?.push(pointer);
-        pointer.parentGraphDefinition =
-          allNodes[graphDef.parentHash]?.graphDefinition;
-      }
-
-      graphDef.children?.forEach((childHash) => {
-        if (Object.keys(allNodes).includes(childHash.toString())) {
-          pointer.children.push(allNodes[childHash]);
-          allNodes[childHash].parentGraphDefinition = pointer.graphDefinition;
-        }
-      });
-
-      updatedNodes[graphDef.hash] = pointer;
     });
 
     Object.values(allFireteamActivityGraphDefs).forEach((def) => {
       const pointerNode = updatedNodes[def.hash];
 
-      let parentageNodeHash = pointerNode.graphDefinition.parentHash;
-      let currentChildNodeHash = pointerNode.graphDefinition.hash;
+      pointerNode.children = def.children?.map(
+        (childHash) => updatedNodes[childHash]
+      );
 
-      while (parentageNodeHash) {
-        const parentageNode = updatedNodes[parentageNodeHash];
-        const currentChildNode = updatedNodes[currentChildNodeHash];
-        parentageNodeHash = null;
-        currentChildNodeHash = null;
+      updatedNodes[def.hash] = pointerNode;
+    });
 
-        if (!parentageNode.children.includes(currentChildNode)) {
-          parentageNode.children.push(currentChildNode);
-        }
+    let rootNodeHashes = props?.definitions?.DestinyFireteamFinderConstantsDefinition?.all()?.[
+      "1"
+    ]?.fireteamFinderActivityGraphRootCategoryHashes;
 
-        parentageNodeHash = parentageNode.graphDefinition.parentHash;
-        currentChildNodeHash = parentageNode.graphDefinition.hash;
-      }
+    if (!rootNodeHashes) {
+      rootNodeHashes = Object.values(allFireteamActivityGraphDefs)
+        ?.filter((node) => !node.parentHash && node.hash)
+        ?.map((node) => node.hash);
+    }
 
-      if (!def.parentHash) {
-        updatedRootNodes.push(pointerNode);
-      }
+    let updatedRootNodes: FireteamGraphExplorerNode[] = [];
+
+    updatedRootNodes = rootNodeHashes?.map((hash) => {
+      return updatedNodes[hash];
     });
 
     setAllNodes(updatedNodes);
     setRootNodes(updatedRootNodes);
   };
-
-  function updateActivityAccess(
-    activityAccess: FireteamFinder.DestinyFireteamFinderGetCharacterActivityAccessResponse
-  ): void {
-    const mapOfActivityToErrorFireteam: Record<number, string> = {};
-    const mapOfActivityToErrorLead: Record<number, string> = {};
-
-    // this should be replaced by checking activity graph node visibility and availability states
-
-    // if (activityAccess.failedFireteamRequirementLabelIndexByActivityHash)
-    // {
-    // 	for (const key in activityAccess.failedFireteamRequirementLabelIndexByActivityHash)
-    // 	{
-    // 		const activityDef = props.definitions.DestinyActivityDefinition.get(Number(key));
-    // 		const value = activityAccess.failedFireteamRequirementLabelIndexByActivityHash[key];
-    //
-    // 		if (activityDef && value < (activityDef.requirements?.fireteamRequirementLabels?.length ?? 0))
-    // 		{
-    // 			const errorLabel = activityDef.requirements?.fireteamRequirementLabels[value]?.displayString;
-    //
-    // 			if (errorLabel && errorLabel.trim() !== "")
-    // 			{
-    // 				mapOfActivityToErrorFireteam[Number(key)] = errorLabel;
-    // 			}
-    // 		}
-    // 	}
-    // }
-
-    // if (activityAccess.failedLeaderRequirementLabelIndexByActivityHash)
-    // {
-    // 	for (const key in activityAccess.failedLeaderRequirementLabelIndexByActivityHash)
-    // 	{
-    // 		const activityDef = props.definitions.DestinyActivityDefinition.get(Number(key));
-    // 		const value = activityAccess.failedLeaderRequirementLabelIndexByActivityHash[key];
-    //
-    // 		if (activityDef && value < (activityDef.requirements?.fireteamRequirementLabels?.length ?? 0))
-    // 		{
-    // 			const errorLabel = activityDef.requirements?.fireteamRequirementLabels[value]?.displayString;
-    //
-    // 			if (errorLabel && errorLabel.trim() !== "")
-    // 			{
-    // 				mapOfActivityToErrorLead[Number(key)] = errorLabel;
-    // 			}
-    // 		}
-    // 	}
-    // }
-
-    // for (const key in allNodes) {
-    //	const node = allNodes[key];
-    //
-    //	if (node && node.parentGraphDefinition === null) {
-    //		for (const child of node.children) {
-    //			checkNodesForErrorsRecursive(child, mapOfActivityToErrorFireteam, mapOfActivityToErrorLead);
-    // 		}
-    // 	}
-    // }
-  }
-
-  const checkNodesForErrorsRecursive = (
-    node: FireteamGraphExplorerNode,
-    mapOfActivityToErrorFireteam: Record<number, string>,
-    mapOfActivityToErrorLead: Record<number, string>
-  ): void => {
-    const errorStringForNode: string | null = doesNodeHaveErrors(
-      node,
-      mapOfActivityToErrorFireteam,
-      mapOfActivityToErrorLead
-    );
-
-    if (errorStringForNode === null) {
-      for (const child of node.children) {
-        checkNodesForErrorsRecursive(
-          child,
-          mapOfActivityToErrorFireteam,
-          mapOfActivityToErrorLead
-        );
-      }
-    } else {
-      setErrorRecursive(node, errorStringForNode);
-    }
-  };
-
-  function setErrorRecursive(
-    node: FireteamGraphExplorerNode,
-    errorString: string
-  ): void {
-    if (node.graphDefinition.hash !== undefined) {
-      allNodes[node.graphDefinition.hash].error = errorString;
-    }
-
-    for (const child of node.children) {
-      setErrorRecursive(child, errorString);
-    }
-  }
-
-  function doesNodeHaveErrors(
-    node: FireteamGraphExplorerNode,
-    mapOfActivityToErrorFireteam: Record<number, string>,
-    mapOfActivityToErrorLead: Record<number, string>
-  ): string | null {
-    let error: string | null = null;
-
-    for (const hash of node.graphDefinition.relatedActivityHashes ?? []) {
-      if (
-        mapOfActivityToErrorFireteam[hash] &&
-        mapOfActivityToErrorFireteam[hash].trim() !== ""
-      ) {
-        error = mapOfActivityToErrorFireteam[hash];
-      }
-      if (
-        mapOfActivityToErrorLead[hash] &&
-        mapOfActivityToErrorLead[hash].trim() !== ""
-      ) {
-        error = mapOfActivityToErrorLead[hash];
-      }
-    }
-
-    return error;
-  }
 
   const classNameActivityItemTemplate = (itemTemplate: ItemTemplateEnum) => {
     switch (itemTemplate) {
@@ -374,7 +179,6 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         return null;
     }
   };
-
   const ActivityItem = ({
     itemTemplate,
     node,
@@ -386,7 +190,9 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     const icon = node?.graphDefinition.displayProperties.hasIcon
       ? node?.graphDefinition.displayProperties.icon
       : defaultIcon;
-    const count = node?.children?.length;
+    const count =
+      node?.children?.filter((thisNode) => nodeIsVisible(thisNode))?.length ??
+      0;
     const genericOfPlayerElected = node?.children?.some(
       (child) => child?.graphDefinition?.isPlayerElectedDifficultyNode
     );
@@ -413,6 +219,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
               firstValidRootActivity?.activityHashes[0]
             )}
             buttonType={"clear"}
+            disabled={activeActivityAccess && !nodeIsAvailable(node)}
           >
             {fireteamsLoc.SelectActivity}
           </Button>
@@ -443,7 +250,8 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       <div
         className={classNames(
           styles.activityRow,
-          classNameActivityItemTemplate(itemTemplate)
+          classNameActivityItemTemplate(itemTemplate),
+          { [styles.unavailable]: !nodeIsAvailable(node) }
         )}
       >
         {
@@ -463,34 +271,82 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       </div>
     );
   };
+  const allItems: any[] = [];
+  const parentHashArr: number[] = [];
+  const nodeIsVisible = (node: FireteamGraphExplorerNode) => {
+    return (
+      activeActivityAccess &&
+      activeActivityAccess?.fireteamFinderActivityGraphStates[
+        node?.graphDefinition.hash
+      ] &&
+      activeActivityAccess?.fireteamFinderActivityGraphStates[
+        node?.graphDefinition.hash
+      ]?.isVisible
+    );
+  };
 
+  const nodeIsAvailable = (node: FireteamGraphExplorerNode) => {
+    return (
+      activeActivityAccess &&
+      activeActivityAccess?.fireteamFinderActivityGraphStates[
+        node?.graphDefinition.hash
+      ] &&
+      activeActivityAccess?.fireteamFinderActivityGraphStates[
+        node?.graphDefinition.hash
+      ]?.isAvailable
+    );
+  };
   const mapAccordionItems = (
     itemTemplate: ItemTemplateEnum,
     nodes: FireteamGraphExplorerNode[],
-    rootNode?: FireteamGraphExplorerNode
+    rootNode?: FireteamGraphExplorerNode,
+    filterName = ""
   ) => {
-    const accordionItems = Object.values(nodes)?.map((node) => {
+    const activeFilter = filterName.trim() !== "";
+    const shouldIncludeNode = (
+      node: FireteamGraphExplorerNode,
+      addChildren = false
+    ) => {
+      if (node) {
+        const isSubStr = node.title
+          .toLowerCase()
+          .includes(filterName.toLowerCase());
+        const isSelectableChild = parentHashArr.includes(
+          node.graphDefinition.hash
+        );
+
+        if (nodeIsVisible(node)) {
+          if (isSubStr || isSelectableChild) {
+            parentHashArr.push(
+              ...node.graphDefinition.selfAndAllDescendantHashes
+            );
+
+            return true;
+          }
+        }
+
+        for (const childNode of node.children) {
+          if (shouldIncludeNode(childNode)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    };
+    const filteredNodes = nodes.filter((node) => shouldIncludeNode(node));
+    const accordionItems: {
+      triggerElement: JSX.Element;
+      collapsibleElement: JSX.Element;
+      collapsibleClassName: string;
+      defaultOpen: boolean;
+      className: string;
+      triggerClassName: any;
+    }[] = filteredNodes.map((node) => {
       const icon = node.graphDefinition.displayProperties.hasIcon
         ? node.graphDefinition.displayProperties.icon
         : null;
-      const sortedChildren = node?.children.sort((a, b) => {
-        if (
-          a.graphDefinition.isPlayerElectedDifficultyNode &&
-          b.graphDefinition.isPlayerElectedDifficultyNode
-        ) {
-          const nameA = a.title;
-          const nameB = b.title;
-
-          if (nameA > nameB) {
-            return -1;
-          }
-          if (nameA < nameB) {
-            return 1;
-          }
-
-          return 0;
-        }
-      });
+      allItems.push(node.children);
 
       return {
         className: classNames(
@@ -508,24 +364,37 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
             }
           />
         ),
-        triggerClassName: styles.trigger,
+        triggerClassName: classNames(styles.trigger),
+        defaultOpen: activeFilter,
         collapsibleClassName: classNames({
           [styles.collapsible]: node?.children?.length > 0,
         }),
         collapsibleElement: node.children.length
-          ? mapAccordionItems(ItemTemplateEnum.SECONDARY, sortedChildren, node)
+          ? mapAccordionItems(
+              ItemTemplateEnum.SECONDARY,
+              node.children,
+              node,
+              filterName.toLowerCase()
+            )
           : null,
       };
     });
 
     return (
-      <Accordion
-        items={accordionItems}
-        className={styles.activityAccordion}
-        openClassName={styles.open}
-        limitOneOpen={false}
-        disableAutoscroll={true}
-      />
+      <>
+        {" "}
+        {allItems.length ? (
+          <Accordion
+            items={accordionItems}
+            className={styles.activityAccordion}
+            openClassName={styles.open}
+            limitOneOpen={false}
+            disableAutoscroll={true}
+          />
+        ) : (
+          <NoResultsBanner clearSearch={() => setActivityFilterString("")} />
+        )}
+      </>
     );
   };
 
@@ -533,7 +402,13 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     <div className={styles.selectActivityContainer}>
       {rootNodes &&
         allNodes &&
-        mapAccordionItems(ItemTemplateEnum.PRIMARY, Object.values(rootNodes))}
+        activeActivityAccess &&
+        mapAccordionItems(
+          ItemTemplateEnum.PRIMARY,
+          Object.values(rootNodes),
+          undefined,
+          activityFilterString
+        )}
     </div>
   );
 };
@@ -544,5 +419,6 @@ export default withDestinyDefinitions(SelectActivity, {
     "DestinyFireteamFinderActivityGraphDefinition",
     "DestinyFireteamFinderOptionDefinition",
     "DestinyActivityDefinition",
+    "DestinyFireteamFinderConstantsDefinition",
   ],
 });

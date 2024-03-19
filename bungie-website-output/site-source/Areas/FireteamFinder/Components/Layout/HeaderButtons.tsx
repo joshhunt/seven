@@ -11,11 +11,16 @@ import {
 } from "@Areas/FireteamFinder/Detail";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { DestinyFireteamFinderLobbyState } from "@Enum";
+import {
+  DestinyFireteamFinderApplicationType,
+  DestinyFireteamFinderLobbyState,
+} from "@Enum";
 import { Platform } from "@Platform";
 import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
+import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { IFireteamFinderParams } from "@Routes/RouteParams";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,
@@ -24,8 +29,8 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import React, { useContext } from "react";
+import { useHistory, useParams } from "react-router";
 import modalStyles from "../Dashboard/CharacterSelect/CharacterSelect.module.scss";
 import styles from "./HeaderButtons.module.scss";
 
@@ -37,8 +42,10 @@ export type ButtonConfiguration =
   | "detail"
   | "detail-applied"
   | "admin";
+export type CloseFireteamType = "close" | "leave";
 
 interface HeaderButtonsProps {
+  className?: string;
   buttonConfig: ButtonConfiguration;
   isLoggedIn?: boolean;
 }
@@ -51,6 +58,8 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const isActive =
     context &&
     context?.fireteamLobby?.state === DestinyFireteamFinderLobbyState.Active;
+  const { lobbyId } = useParams<IFireteamFinderParams>();
+  const history = useHistory();
 
   const copyToClipboard = () => {
     //copy url to clipboard and show success toast
@@ -68,13 +77,13 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   };
 
   const joinFireteam = () => {
-    if (context?.fireteamListing?.lobbyId) {
+    if (context?.fireteamListing?.listingId) {
       Platform.FireteamfinderService.ApplyToListing(
         context?.fireteamListing?.listingId,
-        0,
+        DestinyFireteamFinderApplicationType.Public,
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId ?? "0"
+        fireteamDestinyData?.selectedCharacter?.characterId
       )
         .then(() => {
           //reload the page
@@ -90,13 +99,13 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const cancelApplication = () => {
     if (context?.fireteamListing?.lobbyId) {
       Platform.FireteamfinderService.LeaveApplication(
-        context?.applicationId,
+        context?.matchingApplication?.applicationId,
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId ?? "0"
+        fireteamDestinyData?.selectedCharacter?.characterId
       )
         .then(() => {
-          contextDispatch.updateApplicationId(null);
+          contextDispatch.updateMatchingApplication(null);
         })
         .catch(ConvertToPlatformError)
         .catch((e) => {
@@ -105,15 +114,19 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     }
   };
 
-  const closeFireteam = () => {
+  const closeFireteam = (closingType: CloseFireteamType) => {
     Platform.FireteamfinderService.LeaveLobby(
       context?.fireteamLobby?.lobbyId,
       fireteamDestinyData?.selectedMembership?.membershipType,
       fireteamDestinyData?.selectedMembership?.membershipId,
-      fireteamDestinyData?.selectedCharacter?.characterId ?? "0"
+      fireteamDestinyData?.selectedCharacter?.characterId
     )
       .then(() => {
-        window.location.reload();
+        closingType === "close"
+          ? history.push(
+              RouteDefs.Areas.FireteamFinder.getAction("Index").resolve().url
+            )
+          : window.location.reload();
       })
       .catch(ConvertToPlatformError)
       .catch((e) => {
@@ -131,7 +144,20 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
       confirmButtonProps: {
         labelOverride: fireteamsLoc.CloseFireteam,
         buttonType: "gold",
-        onClick: closeFireteam,
+        onClick: () => closeFireteam("close"),
+      },
+    });
+  };
+
+  const openLeaveModal = () => {
+    ConfirmationModal.show({
+      title: fireteamsLoc.Leave,
+      type: "warning",
+      children: fireteamsLoc.LeaveFireteamConfirm,
+      confirmButtonProps: {
+        labelOverride: fireteamsLoc.Leave,
+        buttonType: "gold",
+        onClick: () => closeFireteam("leave"),
       },
     });
   };
@@ -142,17 +168,18 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
         context?.fireteamLobby?.lobbyId,
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId ?? "0",
-        false
+        fireteamDestinyData?.selectedCharacter?.characterId,
+        true
       )
+        .then(() => {
+          window.location.reload();
+        })
         .catch(ConvertToPlatformError)
         .catch((e) => {
           Modal.error(e);
         });
     }
   };
-
-  const modalRef = React.useRef(null);
   const CharacterModal: React.FC = () => {
     return (
       <div className={modalStyles.selectModalWrapper}>
@@ -190,167 +217,168 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     });
   };
 
-  const isApplicationRequired =
-    context?.fireteamListing?.settings?.listingValues?.find(
-      (listingVal) =>
-        listingVal?.valueType?.toString() ===
+  const isAutoJoin =
+    context?.fireteamLobby?.settings?.listingValues?.find(
+      (v) =>
+        v.valueType.toString() ===
         FireteamFinderValueTypes.applicationRequirement
-    )?.values?.[0] === 1;
-  const applyLabel = isApplicationRequired
-    ? fireteamsLoc.ApplyToJoin
-    : fireteamsLoc.Join;
+    )?.values?.[0] === 0;
+  const applyLabel = isAutoJoin ? fireteamsLoc.Join : fireteamsLoc.ApplyToJoin;
+  const BrowseButton = () => (
+    <Button
+      className={styles.headerButton}
+      icon={<FaSearch />}
+      buttonType={"gold"}
+      url={RouteHelper.FireteamFinderBrowse()}
+    >
+      {fireteamsLoc.searchlistings}
+    </Button>
+  );
+  const CreateListingButton = () => (
+    <Button
+      className={styles.headerButton}
+      icon={<FaPlus />}
+      buttonType={"white"}
+      url={RouteHelper.FireteamFinderCreate()}
+    >
+      {fireteamsLoc.createListing}
+    </Button>
+  );
+  const CreateFireteamButton = () => (
+    <Button
+      className={styles.headerButton}
+      icon={<FaPlus />}
+      buttonType={"gold"}
+      url={RouteHelper.FireteamFinderCreate()}
+    >
+      {fireteamsLoc.createFireteam}
+    </Button>
+  );
+  const ShareButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"white"}
+      onClick={() => copyToClipboard()}
+    >
+      {fireteamsLoc.Share}
+    </Button>
+  );
+  const LeaveButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"red"}
+      onClick={() => openLeaveModal()}
+    >
+      {fireteamsLoc.Leave}
+    </Button>
+  );
+  const CloseButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"red"}
+      onClick={() => openCloseModal()}
+    >
+      {fireteamsLoc.CloseFireteam}
+    </Button>
+  );
+  const ApplyOrJoinButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"gold"}
+      onClick={() => openCharacterSelect()}
+    >
+      {applyLabel}
+    </Button>
+  );
+  const CancelApplicationButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"gold"}
+      onClick={() => cancelApplication()}
+    >
+      {fireteamsLoc.CancelApplication}
+    </Button>
+  );
+  const ActivateButton = () => (
+    <Button
+      className={styles.headerButton}
+      buttonType={"gold"}
+      onClick={() => activateFireteam()}
+      disabled={isActive}
+    >
+      {fireteamsLoc.Activate}
+    </Button>
+  );
+  const DashboardButtons = () => (
+    <>
+      <BrowseButton />
+      <CreateListingButton />
+    </>
+  );
+  const BrowseButtons = () => (
+    <>
+      <FireteamHelpButton />
+      <CreateFireteamButton />
+    </>
+  );
+  const MemberButtons = () => (
+    <>
+      <ShareButton />
+      <LeaveButton />
+    </>
+  );
 
-  const dashboardButtons = () => {
-    return (
-      <>
-        <Button
-          size={BasicSize.Small}
-          icon={<FaSearch />}
-          buttonType={"gold"}
-          url={RouteHelper.FireteamFinderBrowse()}
-        >
-          {fireteamsLoc.FindFireteam}
-        </Button>
-        <Button
-          size={BasicSize.Small}
-          icon={<FaPlus />}
-          buttonType={"white"}
-          url={RouteHelper.FireteamFinderCreate()}
-        >
-          {fireteamsLoc.createListing}
-        </Button>
-      </>
-    );
-  };
+  const ApplicationButtons = () => (
+    <>
+      <ShareButton />
+      <CancelApplicationButton />
+    </>
+  );
 
-  const browseButtons = () => {
-    return (
-      <>
-        <FireteamHelpButton size={BasicSize.Small} />
-        <Button
-          size={BasicSize.Small}
-          icon={<FaPlus />}
-          buttonType={"gold"}
-          url={RouteHelper.FireteamFinderCreate()}
-        >
-          {fireteamsLoc.createFireteam}
-        </Button>
-      </>
-    );
-  };
+  const SeekerButtons = () => (
+    <>
+      <ShareButton />
+      <ApplyOrJoinButton />
+    </>
+  );
+  const OwnerButtons = () => (
+    <>
+      <CloseButton />
+      <ActivateButton />
+    </>
+  );
 
-  const memberButtons = () => {
-    return (
-      <>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"white"}
-          onClick={() => copyToClipboard()}
-        >
-          {fireteamsLoc.Share}
-        </Button>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"red"}
-          onClick={() => closeFireteam()}
-        >
-          {fireteamsLoc.Leave}
-        </Button>
-      </>
-    );
-  };
+  const isMember = props.buttonConfig === "member";
+  const isOwner = props.buttonConfig === "admin";
+  const hasApplied =
+    context?.matchingApplication &&
+    context?.fireteamLobby?.lobbyId === lobbyId &&
+    context?.fireteamLobby?.listingId ===
+      context?.matchingApplication?.listingId;
 
-  const detailButtons = () => {
-    return context?.fireteamLobby && context?.fireteamListing ? (
-      <>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"white"}
-          onClick={() => copyToClipboard()}
-        >
-          {fireteamsLoc.Share}
-        </Button>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"gold"}
-          onClick={() => openCharacterSelect()}
-        >
-          {applyLabel}
-        </Button>
-      </>
-    ) : null;
-  };
+  const buttonGroups = [
+    {
+      component: DashboardButtons,
+      condition: props.buttonConfig === "dashboard",
+    },
+    { component: BrowseButtons, condition: props.buttonConfig === "browse" },
+    { component: MemberButtons, condition: isMember },
+    {
+      component: ApplicationButtons,
+      condition: lobbyId && !isMember && !isOwner && hasApplied,
+    },
+    {
+      component: SeekerButtons,
+      condition: lobbyId && !isMember && !isOwner && !hasApplied,
+    },
+    { component: OwnerButtons, condition: isOwner },
+  ];
 
-  const detailAppliedButtons = () => {
-    return context?.fireteamLobby && context?.fireteamListing ? (
-      <>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"white"}
-          onClick={() => copyToClipboard()}
-        >
-          {fireteamsLoc.Share}
-        </Button>
-        {context?.applicationId && (
-          <Button
-            size={BasicSize.Small}
-            buttonType={"gold"}
-            onClick={() => cancelApplication()}
-          >
-            {fireteamsLoc.CancelApplication}
-          </Button>
-        )}
-      </>
-    ) : null;
-  };
-
-  const adminButtons = () => {
-    return (
-      <>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"red"}
-          onClick={() => openCloseModal()}
-        >
-          {fireteamsLoc.CloseFireteam}
-        </Button>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"white"}
-          onClick={() => copyToClipboard()}
-        >
-          {fireteamsLoc.Share}
-        </Button>
-        <Button
-          size={BasicSize.Small}
-          buttonType={"gold"}
-          onClick={() => activateFireteam()}
-          disabled={isActive}
-        >
-          {fireteamsLoc.Activate}
-        </Button>
-      </>
-    );
-  };
-
-  const buttons = () => {
-    switch (props.buttonConfig) {
-      case "admin":
-        return adminButtons();
-      case "browse":
-        return browseButtons();
-      case "member":
-        return memberButtons();
-      case "detail-applied":
-        return detailAppliedButtons();
-      case "detail":
-        return detailButtons();
-      case "dashboard":
-        return dashboardButtons();
-      default:
-        return null;
-    }
-  };
-
-  return <div className={styles.buttons}>{buttons()}</div>;
+  return (
+    <div className={props.className}>
+      {buttonGroups.map(({ component: Component, condition }, index) =>
+        condition ? <Component key={index} /> : null
+      )}
+    </div>
+  );
 };

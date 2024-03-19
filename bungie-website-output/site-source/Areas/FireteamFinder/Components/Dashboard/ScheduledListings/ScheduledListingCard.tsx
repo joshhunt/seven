@@ -42,7 +42,11 @@ const ScheduledListingCard: React.FC<ActiveLobbyProps> = (props) => {
   }, [listingId]);
 
   return listingData?.listingId ? (
-    <FireteamListingCard fireteam={listingData} linkToDetails={true} />
+    <FireteamListingCard
+      fireteam={listingData}
+      linkToDetails={true}
+      showHover={true}
+    />
   ) : null;
 };
 

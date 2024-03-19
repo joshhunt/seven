@@ -22,7 +22,6 @@ interface BrowseProps
   extends D2DatabaseComponentProps<
     "DestinyFireteamFinderActivityGraphDefinition"
   > {}
-
 const Browse: React.FC<BrowseProps> = (props) => {
   const { graphId } = useParams<IFireteamFinderParams>();
   const bgImage =
@@ -38,7 +37,7 @@ const Browse: React.FC<BrowseProps> = (props) => {
   const currentRouteAction = UrlUtils.GetUrlAction(location);
   const showBrowseActivitySelection =
     currentRouteAction.toLowerCase() === "browse" && !graphId;
-
+  const [activityFilterBrowse, setActivityFilterBrowse] = useState("");
   //for search results
   useEffect(() => {
     let activityGraphDefinition = props.definitions?.DestinyFireteamFinderActivityGraphDefinition?.get(
@@ -58,6 +57,8 @@ const Browse: React.FC<BrowseProps> = (props) => {
 
   return showBrowseActivitySelection ? (
     <Layout
+      activityFilterString={activityFilterBrowse}
+      setActivityFilterString={setActivityFilterBrowse}
       breadcrumbConfig={"browse-select"}
       buttonConfig={"none"}
       title={Localizer.Fireteams.BrowseTitle}
@@ -67,6 +68,8 @@ const Browse: React.FC<BrowseProps> = (props) => {
       <SelectActivity
         linkClick={selectLink}
         activityType={SelectActivityType.BROWSE}
+        activityFilterString={activityFilterBrowse}
+        setActivityFilterString={setActivityFilterBrowse}
       />
     </Layout>
   ) : (

@@ -6,8 +6,9 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import FireteamListingCard from "@Areas/FireteamFinder/Components/Shared/FireteamListingCard";
-import OnlineStatus from "@Areas/FireteamFinder/Components/Shared/OnlineStatus";
 import styles from "./LobbyStatusCard.module.scss";
+import { Icon } from "@UIKit/Controls/Icon";
+import { DestinyFireteamFinderLobbyState } from "@Enum";
 
 interface ActiveLobbyProps
   extends D2DatabaseComponentProps<
@@ -17,7 +18,6 @@ interface ActiveLobbyProps
   > {
   activeFireteam: FireteamFinder.DestinyFireteamFinderListing;
   linkToDetails?: boolean;
-  activeStatus?: number;
 }
 
 /*
@@ -27,21 +27,21 @@ interface ActiveLobbyProps
 
 const LobbyStatus: React.FC<ActiveLobbyProps> = (props) => {
   const fireteamsLoc = Localizer.Fireteams;
+  const lobbyState = props?.activeFireteam?.lobbyState;
+  const isActive = lobbyState === DestinyFireteamFinderLobbyState?.Active;
 
   return (
     <div className={styles.wrapper}>
-      <OnlineStatus
-        activeStatus={Boolean(
-          props?.activeFireteam?.listingId || props?.activeStatus
-        )}
-        labels={{
-          online: fireteamsLoc.activeFireteam,
-          offline: fireteamsLoc.inactiveFireteam,
-        }}
-      />
-      {props?.activeFireteam?.listingId || props?.activeStatus ? (
+      <h3 className={styles.iconMsg}>
+        <Icon iconType={"bungle"} iconName={"logodestiny"} />
+        {fireteamsLoc.MyIngameFireteam}
+      </h3>
+      {isActive ? (
         <div>
-          <FireteamListingCard fireteam={props?.activeFireteam} />
+          <FireteamListingCard
+            fireteam={props?.activeFireteam}
+            showHover={true}
+          />
         </div>
       ) : (
         <div className={styles.inactiveLobby}>

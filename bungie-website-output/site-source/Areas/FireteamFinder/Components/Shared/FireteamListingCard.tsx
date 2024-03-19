@@ -2,7 +2,6 @@
 // Copyright Bungie, Inc.
 
 import { CreateTitleInput } from "@Areas/FireteamFinder/Components/Create/CreateTitleInput";
-import { Detail } from "@Areas/FireteamFinder/Detail";
 import { FireteamUtils } from "@Areas/FireteamFinder/Scripts/FireteamUtils";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
@@ -21,7 +20,9 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 import React, { useMemo } from "react";
 import { useHistory } from "react-router";
+import OnlineStatus from "@Areas/FireteamFinder/Components/Shared/OnlineStatus";
 import styles from "./FireteamListingCard.module.scss";
+import { DestinyFireteamFinderLobbyState } from "@Enum";
 
 interface FireteamListingCardProps
   extends D2DatabaseComponentProps<
@@ -30,8 +31,9 @@ interface FireteamListingCardProps
     | "DestinyFireteamFinderOptionDefinition"
   > {
   fireteam: FireteamFinder.DestinyFireteamFinderListing;
+  lobbyStateOverride?: DestinyFireteamFinderLobbyState;
   linkToDetails?: boolean;
-  onlineStatus?: number;
+  showHover?: boolean;
   largeActivityName?: boolean;
 }
 
@@ -58,7 +60,6 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
     scheduled,
     scheduledDateAndTime,
     applicationRequired,
-    allowOfflinePlayers,
     platform,
     hasMic,
     isPublic,
@@ -77,6 +78,14 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
   );
   const history = useHistory();
 
+  const lobbyState = props.fireteam.lobbyState;
+  //  Sometimes even when we request active lobbies specifically, we get back "unknown" (0) as the lobby state, but they do get sorted correctly in the UI so if it is under active we will assume it is active
+  const isActive =
+    lobbyState === DestinyFireteamFinderLobbyState?.Active ||
+    props.lobbyStateOverride === DestinyFireteamFinderLobbyState?.Active;
+  const isMicRequired = hasMic?.value === "1";
+  const isApplicationRequired = applicationRequired?.value === "1";
+
   const dateFormat: Intl.DateTimeFormatOptions = {
     month: "long",
     day: "2-digit",
@@ -87,18 +96,7 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
     zone: "utc",
   });
   const dateString = luxonDate.toLocal().toLocaleString(dateFormat);
-
-  const OnlineStatus = () => {
-    return !scheduled ? (
-      <div className={classNames(styles.inGame, styles.onlineStatus)}>
-        {Localizer.fireteams.ingame}
-      </div>
-    ) : (
-      <div className={styles.onlineStatus}>
-        {scheduled && Localizer.fireteams.Scheduled}
-      </div>
-    );
-  };
+  const fireteamsLoc = Localizer.Fireteams;
 
   const detailLink = RouteDefs.Areas.FireteamFinder.getAction(
     "Detail"
@@ -131,7 +129,7 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
             [styles.largeActivityName]: props.largeActivityName,
           })}
         >
-          <HiLockClosed />
+          {isApplicationRequired ? <HiLockClosed /> : null}
           <div
             className={classNames(styles.activityTitle, {
               [styles.largeActivityName]: props.largeActivityName,
@@ -146,8 +144,7 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
           )}
         </div>
         <div className={styles.section}>
-          <OnlineStatus />
-          {hasMic ? (
+          {isMicRequired ? (
             <FaMicrophone className={styles.micIcon} />
           ) : (
             <FaMicrophoneSlash className={styles.micIcon} />
@@ -164,16 +161,11 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
         <CreateTitleInput
           openTitleBuilderOnClick={false}
           titleStrings={titleStrings}
-          placeholder={""}
+          placeholder={fireteamsLoc.defaultTitle}
           removeOnClick={false}
           className={styles.title}
           relevantActivitySetLabelHashes={[]}
         />
-        {titleStrings?.length === 0 && (
-          <div className={styles.defaultTitle}>
-            {Localizer.fireteams.defaultTitle}
-          </div>
-        )}
         <div
           className={classNames(styles.tags, { [styles.noDate]: !scheduled })}
         >
@@ -187,23 +179,40 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
     );
   };
 
-  const DateAndTime: React.FC = () => {
+  const ActiveStatusFooter: React.FC = () => {
     return (
-      <div className={classNames(styles.dateAndTime, styles.section)}>
+      <div className={classNames(styles.cardFooter, styles.section)}>
+        <OnlineStatus
+          activeStatus={isActive}
+          labels={{
+            online: fireteamsLoc.ActiveWaitingRoomOpen,
+            offline: fireteamsLoc.inactiveFireteam,
+          }}
+        />
+      </div>
+    );
+  };
+  const DateAndTimeFooter: React.FC = () => {
+    return (
+      <div className={classNames(styles.cardFooter, styles.section)}>
         <FaRegCalendar />
-        <div className={styles.date}>{dateString}</div>
+        {Localizer.Format(Localizer.Fireteams.ScheduledStarts, {
+          startingdatetime: dateString,
+        })}
       </div>
     );
   };
 
   return (
     <div
-      className={classNames(styles.card, styles.section)}
+      className={classNames(styles.card, styles.section, {
+        [styles.showHover]: props.showHover,
+      })}
       onClick={() => UrlUtils.PushRedirect(detailLink, { history: history })}
     >
       <CardHeader />
       <TitleAndTags />
-      {scheduled && <DateAndTime />}
+      {isActive ? <ActiveStatusFooter /> : <DateAndTimeFooter />}
     </div>
   );
 };

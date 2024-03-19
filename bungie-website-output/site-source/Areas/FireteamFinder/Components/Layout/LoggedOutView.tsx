@@ -1,21 +1,22 @@
 import { FireteamFinderErrorViewType } from "@Areas/FireteamFinder/Components/Layout/Layout";
 import { FireteamHelpButton } from "@Areas/FireteamFinder/Components/Shared/FireteamHelpButton";
+import { FireteamLegacyExperienceButton } from "@Areas/FireteamFinder/Components/Shared/FireteamLegacyExperienceButton";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/Fireteams/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { DestinyComponentType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Platform, Responses } from "@Platform";
-import { Button } from "@UIKit/Controls/Button/Button";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
-import classNames from "classnames";
-import React, { useState } from "react";
 import { Localizer } from "@bungie/localization/Localizer";
+import { Img } from "@Helpers";
 import { FaRegCalendar } from "@react-icons/all-files/fa/FaRegCalendar";
 import { IoPeople } from "@react-icons/all-files/io5/IoPeople";
 import { IoSettingsSharp } from "@react-icons/all-files/io5/IoSettingsSharp";
-import { useHistory } from "react-router";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { Button } from "@UIKit/Controls/Button/Button";
+import { Icon } from "@UIKit/Controls/Icon";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { BasicSize } from "@UIKit/UIKitUtils";
+import classNames from "classnames";
+import React from "react";
 
 import styles from "./LoggedOutView.module.scss";
+
 interface LoggedOutViewProps {
   errorType: FireteamFinderErrorViewType;
   className?: string;
@@ -99,6 +100,7 @@ export const LoggedOutView: React.FC<LoggedOutViewProps> = (props) => {
             <p>{block.copy}</p>
           </div>
         ))}
+        ;
       </div>
     </div>
   );

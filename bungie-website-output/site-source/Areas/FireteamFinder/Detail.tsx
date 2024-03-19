@@ -18,10 +18,15 @@ import { useParams } from "react-router";
 
 interface DetailProps {}
 
+export interface IMatchingApplication {
+  listingId: string;
+  applicationId: string;
+}
+
 export const PlayerFireteamContext = React.createContext<PlayerFireteamData>({
   fireteamLobby: null,
   fireteamListing: null,
-  applicationId: null,
+  matchingApplication: null,
 });
 
 export const PlayerFireteamDispatchContext = React.createContext<
@@ -29,13 +34,16 @@ export const PlayerFireteamDispatchContext = React.createContext<
 >({
   updateLobby: null,
   updateListing: null,
-  updateApplicationId: null,
+  updateMatchingApplication: null,
 });
 
 interface PlayerFireteamData {
   fireteamLobby: FireteamFinder.DestinyFireteamFinderLobbyResponse;
   fireteamListing: FireteamFinder.DestinyFireteamFinderListing;
-  applicationId: string;
+  matchingApplication: {
+    listingId: string;
+    applicationId: string;
+  };
 }
 
 interface PlayerFireteamDispatch {
@@ -45,7 +53,9 @@ interface PlayerFireteamDispatch {
   updateListing: React.Dispatch<
     React.SetStateAction<FireteamFinder.DestinyFireteamFinderListing>
   >;
-  updateApplicationId: React.Dispatch<React.SetStateAction<string>>;
+  updateMatchingApplication: React.Dispatch<
+    React.SetStateAction<IMatchingApplication>
+  >;
 }
 
 export const Detail: React.FC<DetailProps> = (props) => {
@@ -67,7 +77,9 @@ export const Detail: React.FC<DetailProps> = (props) => {
   const [applications, setApplications] = useState<
     FireteamFinder.DestinyFireteamFinderApplication[]
   >([]);
-  const [applicationId, setApplicationId] = useState<string>(null);
+  const [matchingApplication, setMatchingApplication] = useState<
+    IMatchingApplication
+  >(null);
   const bgImage =
     "/7/ca/destiny/bgs/fireteamfinder/fireteam_finder_create_bg.jpg";
 
@@ -89,17 +101,17 @@ export const Detail: React.FC<DetailProps> = (props) => {
     </div>
   );
 
-  const checkAllPlayerApplicationsForMatch = (pageToken?: string) => {
+  const checkAllPlayerApplicationsForMatch = () => {
     Platform.FireteamfinderService.GetPlayerApplications(
       destinyMembership?.selectedMembership?.membershipType,
       destinyMembership?.selectedMembership?.membershipId,
       destinyMembership?.selectedCharacter?.characterId,
-      20,
-      pageToken ?? ""
+      500,
+      ""
     )
       .then((result) => {
         if (result.applications?.length > 0) {
-          const matchingApplication = result.applications?.find((app) => {
+          const matchApplication = result.applications?.find((app) => {
             return (
               app.applicantSet?.applicants?.findIndex(
                 (applicant) =>
@@ -109,12 +121,16 @@ export const Detail: React.FC<DetailProps> = (props) => {
             );
           });
 
-          if (matchingApplication) {
-            setApplicationId(matchingApplication.applicationId);
-          } else if (result.applications?.length > 20) {
-            checkAllPlayerApplicationsForMatch(result.nextPageToken);
+          if (matchApplication) {
+            setMatchingApplication({
+              listingId: matchApplication?.listingId,
+              applicationId: matchApplication?.applicationId,
+            });
+          } else {
+            setMatchingApplication(null);
           }
-          setApplications(applications.concat(result.applications));
+
+          setApplications(result.applications);
         }
       })
       .catch(ConvertToPlatformError)
@@ -123,12 +139,12 @@ export const Detail: React.FC<DetailProps> = (props) => {
       });
   };
 
-  const checkAllPlayerLobbiesForMatch = (pageToken?: string) => {
+  const checkAllPlayerLobbiesForMatch = () => {
     Platform.FireteamfinderService.GetPlayerLobbies(
       destinyMembership.selectedMembership.membershipType,
       destinyMembership.selectedMembership.membershipId,
       destinyMembership?.selectedCharacter?.characterId,
-      100,
+      500,
       ""
     )
       .then((result) => {
@@ -141,10 +157,9 @@ export const Detail: React.FC<DetailProps> = (props) => {
 
           if (matchingLobby) {
             setIsFireteamMember(true);
-          } else if (result.lobbies?.length > 20) {
-            checkAllPlayerApplicationsForMatch(result.nextPageToken);
           }
-          setMyLobbies(myLobbies.concat(result.lobbies));
+
+          setMyLobbies(result.lobbies);
         }
       })
       .catch(ConvertToPlatformError)
@@ -173,8 +188,7 @@ export const Detail: React.FC<DetailProps> = (props) => {
           setLobby(response);
           const owner = !!destinyMembership?.memberships?.find(
             (membership) =>
-              membership.membershipId === response.owner.membershipId &&
-              membership.membershipType === response.owner.membershipType
+              membership.membershipId === response.owner.membershipId
           );
           setIsOwner(owner);
 
@@ -194,7 +208,7 @@ export const Detail: React.FC<DetailProps> = (props) => {
       return "admin";
     } else if (isFireteamMember) {
       return "member";
-    } else if (!!applicationId) {
+    } else if (!!matchingApplication) {
       return "detail-applied";
     } else {
       return "detail";
@@ -206,14 +220,14 @@ export const Detail: React.FC<DetailProps> = (props) => {
       value={{
         fireteamLobby: lobby,
         fireteamListing: fireteam,
-        applicationId: applicationId,
+        matchingApplication,
       }}
     >
       <PlayerFireteamDispatchContext.Provider
         value={{
           updateLobby: setLobby,
           updateListing: setFireteam,
-          updateApplicationId: setApplicationId,
+          updateMatchingApplication: setMatchingApplication,
         }}
       >
         <Layout

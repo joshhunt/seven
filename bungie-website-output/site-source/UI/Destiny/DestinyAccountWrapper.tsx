@@ -87,7 +87,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
 
   return membershipData?.membershipData ? (
     <SystemDisabledHandler systems={["Destiny2"]}>
-      {membershipData?.memberships.length > 0 ? (
+      {membershipData?.memberships?.length > 0 ? (
         children({
           bnetProfile: (
             <div className={styles.bnetProfile}>

@@ -39,6 +39,35 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 > {
   private isInitialized = false;
 
+  private readonly inProgressOperations: Map<string, Promise<any>> = new Map();
+  private generateKey(functionName: string, args: any[]): string {
+    return `${functionName}:${JSON.stringify(args)}`;
+  }
+
+  public async callFunctionWithDeduplication<T, Args extends any[]>(
+    func: (...args: Args) => Promise<T>,
+    ...args: Args
+  ): Promise<T> {
+    const key = this.generateKey(func.name, args);
+
+    if (this.inProgressOperations.has(key)) {
+      // Casting is safe here because we know the type matches the original call
+      return this.inProgressOperations.get(key) as Promise<T>;
+    }
+
+    const operationPromise: Promise<T> = (async () => {
+      try {
+        return await func(...args);
+      } finally {
+        this.inProgressOperations.delete(key);
+      }
+    })();
+
+    this.inProgressOperations.set(key, operationPromise);
+
+    return operationPromise;
+  }
+
   protected constructor() {
     super({
       membershipData: null,
@@ -94,7 +123,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       if (!force) {
         if (isSameUser && this.isInitialized) {
-          return { loaded: true };
+          return;
         }
       }
 
@@ -120,41 +149,49 @@ export abstract class DestinyMembershipDataStore extends DataStore<
           : this.state.membershipData;
 
       if (!membershipData) {
-        loggedInUserIsDefined
-          ? console.log("loading new character data ")
-          : console.log("loding existing character data");
-
-        try {
-          membershipData = loggedInUserIsDefined
-            ? await Platform.UserService.GetMembershipDataById(
+        if (loggedInUserIsDefined) {
+          try {
+            membershipData = await this.callFunctionWithDeduplication(() =>
+              Platform.UserService.GetMembershipDataById(
                 user?.membershipId,
                 user?.membershipType
               )
-            : await Platform.UserService.GetMembershipDataForCurrentUser();
+            );
+          } catch {
+            console.error(
+              `Cannot load user data for ${user?.membershipType}/${user?.membershipId}`
+            );
 
-          console.log(
-            this.state.membershipData,
-            loggedInUserIsDefined,
-            "**************",
-            "try"
-          );
-        } catch {
-          const loadedForWho = loggedInUserIsDefined
-            ? `${user?.membershipType}/${user?.membershipId}`
-            : "Current User";
+            // rare instance of bnet users without destiny membership, show the anonymous view
+            return {
+              membershipData: null,
+              memberships: [],
+              characters: {},
+              selectedCharacter: null,
+              selectedMembership: null,
+              isCrossSaved: false,
+              loaded: true,
+            };
+          }
+        } else {
+          try {
+            membershipData = await this.callFunctionWithDeduplication(
+              Platform.UserService.GetMembershipDataForCurrentUser
+            );
+          } catch {
+            console.error(`Cannot load user data for Current User`);
 
-          console.error(`Cannot load user data for ${loadedForWho}`);
-
-          //this gives subscribers a way to react: stop spinners, load an error page
-          return {
-            membershipData,
-            memberships: [],
-            characters: {},
-            selectedCharacter: null,
-            selectedMembership: null,
-            isCrossSaved: false,
-            loaded: true,
-          };
+            // rare instance of bnet users without destiny membership, show the anonymous view
+            return {
+              membershipData: null,
+              memberships: [],
+              characters: {},
+              selectedCharacter: null,
+              selectedMembership: null,
+              isCrossSaved: false,
+              loaded: true,
+            };
+          }
         }
       }
 
@@ -165,13 +202,13 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       if (isCrossSaved && !showAllMembershipsWhenCrossaved) {
         memberships = [
-          membershipData?.destinyMemberships.find(
-            (a) => a.membershipId === membershipData?.primaryMembershipId
+          membershipData?.destinyMemberships?.find(
+            (a) => a?.membershipId === membershipData?.primaryMembershipId
           ),
         ];
       }
 
-      if (memberships?.length === 0) {
+      if (!memberships || memberships?.length === 0) {
         // rare instance of bnet users without destiny membership, show the anonymous view
         return {
           membershipData,
@@ -217,10 +254,12 @@ export abstract class DestinyMembershipDataStore extends DataStore<
 
       try {
         if (ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
-          profileResponse = await Platform.Destiny2Service.GetProfile(
-            membershipToUse?.membershipType,
-            membershipToUse?.membershipId,
-            [DestinyComponentType.Profiles, DestinyComponentType.Characters]
+          profileResponse = await this.callFunctionWithDeduplication(() =>
+            Platform.Destiny2Service.GetProfile(
+              membershipToUse?.membershipType,
+              membershipToUse?.membershipId,
+              [DestinyComponentType.Profiles, DestinyComponentType.Characters]
+            )
           );
 
           const hasCharacterData =
@@ -288,14 +327,16 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       let characterProgressions: Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent = null;
 
       try {
-        profileResponse = await Platform.Destiny2Service.GetProfile(
-          membershipToUse?.membershipType,
-          membershipToUse?.membershipId,
-          [
-            DestinyComponentType.Profiles,
-            DestinyComponentType.CharacterProgressions,
-            DestinyComponentType.Characters,
-          ]
+        profileResponse = await this.callFunctionWithDeduplication(() =>
+          Platform.Destiny2Service.GetProfile(
+            membershipToUse?.membershipType,
+            membershipToUse?.membershipId,
+            [
+              DestinyComponentType.Profiles,
+              DestinyComponentType.CharacterProgressions,
+              DestinyComponentType.Characters,
+            ]
+          )
         );
 
         const hasCharacterData =
