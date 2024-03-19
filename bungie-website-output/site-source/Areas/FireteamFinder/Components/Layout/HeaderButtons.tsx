@@ -172,11 +172,29 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
         true
       )
         .then(() => {
-          window.location.reload();
+          // get new lobby so we can update the listing value
+          Platform.FireteamfinderService.GetLobby(
+            context?.fireteamLobby?.lobbyId,
+            fireteamDestinyData?.selectedMembership?.membershipType,
+            fireteamDestinyData?.selectedMembership?.membershipId,
+            fireteamDestinyData?.selectedCharacter?.characterId
+          ).then((result) => {
+            Platform.FireteamfinderService.GetListing(result?.listingId)
+              .then((listing) => {
+                contextDispatch.updateListing(listing);
+              })
+              .catch(ConvertToPlatformError)
+              .catch((e) => {
+                Modal.error(e);
+              });
+          });
         })
         .catch(ConvertToPlatformError)
         .catch((e) => {
           Modal.error(e);
+        })
+        .finally(() => {
+          window.location.reload();
         });
     }
   };
