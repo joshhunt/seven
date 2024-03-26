@@ -203,9 +203,11 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
         maxPlayerCount: fireteamMaxSize,
         // onlinePlayersOnly will always be false for fireteam lobbies created on the site
         onlinePlayersOnly: false,
-        privacyScope: data.isPublic
-          ? DestinyFireteamFinderLobbyPrivacyScope.Open
-          : DestinyFireteamFinderLobbyPrivacyScope.Friends,
+        // applicationRequirement value of 0 means 'Auto-Join' (aka Open), value of 1 means 'Application Required)
+        privacyScope:
+          parseInt(data.applicationRequirement) === 0
+            ? DestinyFireteamFinderLobbyPrivacyScope.Open
+            : DestinyFireteamFinderLobbyPrivacyScope.Applications,
         scheduledDateTime: data.isScheduled === "1" ? dateTimeValue : null,
         activityGraphHash: parseInt(props.activityGraphId),
         activityHash: parseInt(props.activityId),
