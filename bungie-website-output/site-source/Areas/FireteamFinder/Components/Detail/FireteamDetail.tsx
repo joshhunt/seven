@@ -1,6 +1,7 @@
 // Created by larobinson, 2023
 // Copyright Bungie, Inc.
 
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ApplicationCard } from "@Areas/FireteamFinder/Components/Detail/ApplicationCard";
 import styles from "@Areas/FireteamFinder/Components/Detail/FireteamDetail.module.scss";
 import FireteamSummary from "@Areas/FireteamFinder/Components/Detail/FireteamSummary";
@@ -9,16 +10,12 @@ import { FireteamUser } from "@Areas/FireteamFinder/Components/Detail/UserCards/
 import FireteamListingCard from "@Areas/FireteamFinder/Components/Shared/FireteamListingCard";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import {
-  PlayerFireteamContext,
-  PlayerFireteamDispatchContext,
-} from "@Areas/FireteamFinder/Detail";
+import { PlayerFireteamContext } from "@Areas/FireteamFinder/Detail";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { DestinyFireteamFinderLobbyState } from "@Enum";
+import { BungieMembershipType, DestinyFireteamFinderLobbyState } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { FireteamFinder, Platform } from "@Platform";
-import { Button } from "@UIKit/Controls/Button/Button";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
@@ -50,11 +47,102 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     destinyMembership?.memberships?.findIndex(
       (membership) => membership?.membershipId === lobby?.owner?.membershipId
     ) !== -1;
-  const { updateMatchingApplication } = useContext(
-    PlayerFireteamDispatchContext
-  );
   const { matchingApplication } = useContext(PlayerFireteamContext);
-  const [refresh, setRefresh] = useState(false);
+  const [applicationCards, setApplicationCards] = useState([]);
+  const [memberCards, setMemberCards] = useState([]);
+
+  useEffect(() => {
+    async function fetchApplicationData() {
+      const cards = [];
+
+      for (const application of pendingApplications) {
+        const isSelf = !!destinyMembership.memberships?.find(
+          (dm) => dm.membershipId === application?.submitterId.membershipId
+        );
+        const response = await Platform.UserService.GetMembershipDataById(
+          application?.submitterId.membershipId,
+          BungieMembershipType.All
+        );
+        const correctMembershipType = response?.destinyMemberships?.find(
+          (dm) => dm.membershipId === application?.submitterId.membershipId
+        )?.membershipType;
+
+        cards.push(
+          <ApplicationCard
+            key={application.applicationId}
+            application={application}
+            lobbyId={lobby?.lobbyId}
+            memberCard={
+              <FireteamUser
+                key={application?.submitterId?.membershipId}
+                isHost={viewerIsHost}
+                invited={true}
+                isSelf={isSelf}
+                member={{
+                  ...application?.submitterId,
+                  membershipType: correctMembershipType,
+                }}
+                fireteam={lobby}
+                applicationId={application?.applicationId}
+              />
+            }
+          />
+        );
+      }
+
+      setApplicationCards(cards);
+    }
+
+    fetchApplicationData();
+  }, [pendingApplications, lobby, viewerIsHost, destinyMembership]);
+
+  useEffect(() => {
+    async function fetchMemberData() {
+      const cards = [];
+
+      for (const player of lobby?.players) {
+        const isSelf = !!destinyMembership.memberships?.find(
+          (dm) => dm.membershipId === player?.playerId?.membershipId
+        );
+        const thisPlayerIsHost =
+          player?.playerId?.membershipId === lobby?.owner?.membershipId;
+        let correctMembershipType = BungieMembershipType.All;
+
+        if (thisPlayerIsHost && viewerIsHost) {
+          correctMembershipType =
+            destinyMembership?.selectedMembership?.membershipType;
+        } else {
+          const response = await Platform.UserService.GetMembershipDataById(
+            player?.playerId?.membershipId,
+            BungieMembershipType.All
+          );
+          correctMembershipType = response?.destinyMemberships?.find(
+            (dm) => dm.membershipId === player?.playerId?.membershipId
+          )?.membershipType;
+        }
+
+        cards.push(
+          <FireteamUser
+            key={player?.playerId?.membershipId}
+            isHost={viewerIsHost}
+            invited={
+              player?.playerId?.membershipId !== lobby?.owner?.membershipId
+            }
+            isSelf={isSelf}
+            member={{
+              ...player.playerId,
+              membershipType: correctMembershipType,
+            }}
+            fireteam={lobby}
+          />
+        );
+      }
+
+      setMemberCards(cards);
+    }
+
+    fetchMemberData();
+  }, [lobby, viewerIsHost, destinyMembership]);
   const availableSlots = (availableNumSlots: number) => {
     const slots = [];
 
@@ -88,22 +176,24 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
   }, [UserUtils.isAuthenticated(globalState)]);
 
   useEffect(() => {
-    Platform.FireteamfinderService.GetListingApplications(
-      fireteam?.listingId,
-      destinyMembership?.selectedMembership?.membershipType,
-      destinyMembership?.selectedMembership?.membershipId,
-      destinyMembership?.selectedCharacter?.characterId,
-      100,
-      "",
-      "0"
-    ).then((result) => {
-      // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
-      setPendingApplications(
-        result?.applications.filter((app) => app?.state === 2)
-      );
+    // only fetch pending applications if the fireteam is not active
+    lobby?.state !== DestinyFireteamFinderLobbyState.Active &&
+      Platform.FireteamfinderService.GetListingApplications(
+        fireteam?.listingId,
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
+        destinyMembership?.selectedCharacter?.characterId,
+        100,
+        "",
+        "0"
+      ).then((result) => {
+        // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
+        setPendingApplications(
+          result?.applications.filter((app) => app?.state === 2)
+        );
 
-      // should add button to get next page of applications
-    });
+        // should add button to get next page of applications
+      });
   }, [fireteam?.listingId]);
 
   return (
@@ -131,66 +221,13 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
       <div className={styles.membersAndSummaryContainer}>
         <div className={styles.members}>
           <h4>{Localizer.fireteams.Members.toUpperCase()}</h4>
-          <FireteamUser
-            member={lobby?.owner}
-            isHost={isOwner}
-            fireteam={lobby}
-            refreshFireteam={() => setRefresh((x) => !x)}
-            invited={false}
-            isSelf={viewerIsHost}
-          />
-          {lobby?.players
-            .filter(
-              (m) => m.playerId.membershipId !== lobby?.owner.membershipId
-            )
-            .map((member) => {
-              const isSelf = !!destinyMembership.memberships?.find(
-                (dm) => dm.membershipId === member.playerId.membershipId
-              );
-
-              return (
-                <FireteamUser
-                  key={member.playerId.membershipId}
-                  isHost={viewerIsHost}
-                  invited={true}
-                  isSelf={isSelf}
-                  member={member.playerId}
-                  refreshFireteam={() => setRefresh((x) => !x)}
-                  fireteam={lobby}
-                />
-              );
-            })}
+          {memberCards}
           {availableSlots(fireteam?.availableSlots)}
           <br />
           {isOwner && pendingApplications && pendingApplications.length > 0 && (
             <div>
               <h4>{Localizer.Fireteams.PendingApplications}</h4>
-              {pendingApplications.map((application) => {
-                const isSelf = !!destinyMembership.memberships?.find(
-                  (dm) =>
-                    dm.membershipId === application?.submitterId.membershipId
-                );
-
-                return (
-                  <ApplicationCard
-                    key={lobby?.lobbyId}
-                    application={application}
-                    lobbyId={lobby?.lobbyId}
-                    memberCard={
-                      <FireteamUser
-                        key={application?.submitterId?.membershipId}
-                        isHost={viewerIsHost}
-                        invited={true}
-                        isSelf={isSelf}
-                        member={application?.submitterId}
-                        refreshFireteam={null}
-                        fireteam={lobby}
-                        hideKick={true}
-                      />
-                    }
-                  />
-                );
-              })}
+              {applicationCards}
             </div>
           )}
         </div>

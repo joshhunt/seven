@@ -349,14 +349,15 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                   {/*<div className={classNames(styles.tag, styles.section)}>
 										<h6>{fireteamsLoc.Tag}</h6>
 									</div>*/}
-                  <button
-                    type={"submit"}
-                    className={styles.submitButtonWrapper}
-                  >
-                    <Button buttonType={"gold"} size={BasicSize.FullSize}>
+                  <div className={styles.submitButtonWrapper}>
+                    <Button
+                      submit
+                      buttonType={"gold"}
+                      size={BasicSize.FullSize}
+                    >
                       {fireteamsLoc.OpenFireteam}
                     </Button>
-                  </button>
+                  </div>
                 </div>
               </div>
             </Form>

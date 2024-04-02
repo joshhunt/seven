@@ -3,7 +3,6 @@
 
 import { InspectPendingPlayer } from "@Areas/FireteamFinder/Components/Detail/InspectPendingPlayer";
 import { Localizer } from "@bungie/localization/Localizer";
-import { BungieMembershipType } from "@Enum";
 import { FireteamFinder, Platform, User } from "@Platform";
 import { FaArrowRight } from "@react-icons/all-files/fa/FaArrowRight";
 import { OneLineItem } from "@UIKit/Companion/OneLineItem";
@@ -46,7 +45,7 @@ export const ApplicationCard: React.FC<ApplicationCardProps> = ({
     if (application.applicationId) {
       Platform.UserService.GetMembershipDataById(
         application?.submitterId?.membershipId,
-        BungieMembershipType.All
+        application?.submitterId?.membershipType
       ).then((userData) => {
         userData && setUser(userData.bungieNetUser);
       });
