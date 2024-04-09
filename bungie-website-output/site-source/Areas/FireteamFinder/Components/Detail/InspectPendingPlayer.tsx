@@ -35,9 +35,8 @@ export const InspectPendingPlayer: React.FC<InspectPendingPlayerProps> = (
   const rejectText = props.memberHasJoined
     ? Localizer.fireteams.kickuser
     : Localizer.fireteams.Decline;
-  const blockText = props.memberHasJoined
-    ? Localizer.fireteams.kickandblockuser
-    : Localizer.fireteams.DeclineAndBlock;
+  // not implemented yet
+  // const blockText = props.memberHasJoined ? Localizer.fireteams.kickandblockuser : Localizer.fireteams.DeclineAndBlock;
   const [fireteamLobby, setFireteamLobby] = useState<
     FireteamFinder.DestinyFireteamFinderLobbyResponse
   >(null);

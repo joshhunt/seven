@@ -48,17 +48,6 @@ export const Create: React.FC<CreateProps> = (props) => {
 
   /* Get user's active listings. Setting current and inactive player lobbies */
   useEffect(() => {
-    /* Take date for scheduled item and get the diff between now and then. Must be greater than the past two days */
-    const getIsExpired = (scheduledDate: string) => {
-      if (!scheduledDate) {
-        return false;
-      }
-
-      const diff = DateTime.fromISO(scheduledDate).diffNow("days");
-
-      return diff.days > -2;
-    };
-
     if (destinyMembership && !destinyMembership?.selectedCharacter) {
       FireteamsDestinyMembershipDataStore.actions.loadUserData();
     }

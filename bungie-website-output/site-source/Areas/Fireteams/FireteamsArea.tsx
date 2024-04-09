@@ -9,13 +9,15 @@ import React from "react";
 import { Route } from "react-router-dom";
 
 const FireteamsArea: React.FC = () => {
-  const fireteamsPath = RouteDefs.Areas.Fireteams.getAction("Search").path;
-  const fireteamPath = RouteDefs.Areas.Fireteams.getAction("Fireteam").path;
+  const multipleFireteamsPath = RouteDefs.Areas.Fireteams.getAction("Search")
+    .path;
+  const individualFireteamPath = RouteDefs.Areas.Fireteams.getAction("Fireteam")
+    .path;
 
   return (
     <SwitchWithErrors>
-      <Route path={fireteamsPath} component={Fireteams} />
-      <Route path={fireteamPath} component={FireteamPage} />
+      <Route path={multipleFireteamsPath} component={Fireteams} />
+      <Route path={individualFireteamPath} component={FireteamPage} />
     </SwitchWithErrors>
   );
 };

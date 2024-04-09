@@ -187,10 +187,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
 
-      {/*
-			At least for now, the decision has been made to not include the Oath component in the bnet version of fireteam finder because whether a user has signed it or not in the game is not exposed to the web.
-			<Oath />
-			*/}
       <SpinnerContainer loading={!destinyDataLoaded}>
         {errorState === "None" ? (
           <Grid isTextContainer={true}>

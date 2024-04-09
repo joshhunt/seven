@@ -1,6 +1,7 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
+import { PlayerInteractionModal } from "@Areas/FireteamFinder/Components/Detail/Modals/PlayerInteractionModal";
 import FireteamCharacterTag from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamCharacterTag";
 import styles from "@Areas/FireteamFinder/Components/Detail/UserCards/Fireteams.module.scss";
 import { FireteamUserStatTags } from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamUserStatTags";
@@ -16,10 +17,9 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { FireteamFinder, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { Button } from "@UIKit/Controls/Button/Button";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
@@ -41,9 +41,7 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   const [profileResponse, setProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >();
-  const { loggedInUser } = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
-  const [userHasBeenInvited, setUserHasBeenInvited] = useState(props.invited);
 
   const character =
     profileResponse?.characters?.data &&
@@ -53,6 +51,10 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   const bungieName = UserUtils.getBungieNameFromUserInfoCard(
     profileResponse?.profile?.data?.userInfo
   );
+  //the usercard is the hosts card - not the viewer of the page
+  const isFireteamHost =
+    props.member.membershipId === props.fireteam.owner?.membershipId;
+  const showKick = !isFireteamHost && props.isHost && !props.isSelf;
 
   const getProfile = () => {
     Platform.Destiny2Service.GetProfile(
@@ -101,6 +103,18 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
     });
   };
 
+  const showBnetProfile = () => {
+    window.location.href =
+      "/7" +
+      RouteHelper.NewProfile({
+        mid: props.member.membershipId,
+        mtype: EnumUtils.getNumberValue(
+          props.member.membershipType,
+          BungieMembershipType
+        ).toString(),
+      }).url;
+  };
+
   useEffect(() => {
     props.member && props.fireteam && getProfile();
   }, [props.member]);
@@ -113,12 +127,32 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
     character?.emblemHash
   );
 
-  //the usercard is the hosts card - not the viewer of the page
-  const isFireteamHost =
-    props.member.membershipId === props.fireteam.owner?.membershipId;
+  const showPlayerInteractionModal = () => {
+    return Modal.open(
+      <PlayerInteractionModal
+        userNameProps={{
+          playerHash: bungieName.bungieGlobalCodeWithHashtag,
+          avatarURL: destinyMembership.memberships[0]?.iconPath,
+          platform:
+            Localizer.Platforms[
+              EnumUtils.getStringValue(
+                props.member?.membershipType,
+                BungieMembershipType
+              )
+            ],
+          name: bungieName.bungieGlobalName,
+        }}
+        userActionProps={{
+          bnetProfile: showBnetProfile,
+          kickPlayer: showKick ? kickUser : null,
+        }}
+      />
+    );
+  };
 
   return (
     <div
+      onClick={showPlayerInteractionModal}
       className={classNames(styles.userCard, styles.user, {
         [styles.emptyUser]: !profileResponse,
       })}
@@ -156,23 +190,6 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
             {bungieName.bungieGlobalName}
             <span>{bungieName.bungieGlobalCodeWithHashtag}</span>
           </Anchor>
-          <div className={styles.userButtons}>
-            {!isFireteamHost && props.isHost && !props.isSelf && (
-              <>
-                {/*<Button buttonType={"gold"} size={BasicSize.Small} onClick={() => acceptUser()}*/}
-                {/*		className={classNames(styles.btnInvite, {[styles.invited]: showInvited})}>{Localizer.fireteams.accept}</Button>*/}
-                {!props.hideKick && (
-                  <Button
-                    buttonType={"clear"}
-                    size={BasicSize.Small}
-                    onClick={() => kickUser()}
-                  >
-                    {Localizer.fireteams.kick}
-                  </Button>
-                )}
-              </>
-            )}
-          </div>
         </div>
         <div className={styles.userMeta}>
           <FireteamCharacterTag character={character} />

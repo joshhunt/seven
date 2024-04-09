@@ -12,9 +12,7 @@ interface FireteamUserProps {
   isHost: boolean;
   isSelf: boolean;
   invited: boolean;
-  refreshFireteam?: () => void;
   applicationId?: string;
-  hideKick?: boolean;
 }
 
 export const FireteamUser: React.FC<FireteamUserProps> = (props) => {
@@ -25,9 +23,7 @@ export const FireteamUser: React.FC<FireteamUserProps> = (props) => {
       member={props.member}
       fireteam={props.fireteam}
       invited={props.invited}
-      refreshFireteam={() => props.refreshFireteam()}
       applicationId={props.applicationId}
-      hideKick={props.hideKick}
     />
   );
 };

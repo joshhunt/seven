@@ -426,8 +426,9 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                   {formikProps.values?.displayName !==
                     bungieName?.bungieGlobalName && (
                     <div className={styles.confirmButtons}>
-                      <button type="submit" className={styles.textOnly}>
+                      <div className={styles.textOnly}>
                         <Button
+                          submit
                           buttonType={"gold"}
                           loading={formikProps.isSubmitting}
                         >
@@ -445,7 +446,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                         >
                           {Localizer.actions.CancelDialogButton}
                         </Button>
-                      </button>
+                      </div>
                       <p>{Localizer.userpages.namechangewarning}</p>
                     </div>
                   )}
@@ -507,11 +508,11 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                 </Suspense>
                 <SaveButtonBar
                   saveButton={
-                    <button
-                      type="submit"
+                    <div
                       className={classNames(styles.textOnly, styles.saveButton)}
                     >
                       <Button
+                        submit
                         buttonType={"gold"}
                         loading={formikProps.isSubmitting}
                         disabled={
@@ -522,7 +523,7 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
                       >
                         {Localizer.userPages.savesettings}
                       </Button>
-                    </button>
+                    </div>
                   }
                   showing={formikProps.dirty && formikProps.isValid}
                 />

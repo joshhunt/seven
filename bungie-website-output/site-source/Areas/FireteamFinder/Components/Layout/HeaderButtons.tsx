@@ -60,6 +60,10 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     context?.fireteamLobby?.state === DestinyFireteamFinderLobbyState.Active;
   const { lobbyId } = useParams<IFireteamFinderParams>();
   const history = useHistory();
+  const [
+    buttonInteractionDisabled,
+    setButtonInteractionDisabled,
+  ] = React.useState(false);
 
   const copyToClipboard = () => {
     //copy url to clipboard and show success toast
@@ -78,20 +82,35 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
 
   const joinFireteam = () => {
     if (context?.fireteamListing?.listingId) {
-      Platform.FireteamfinderService.ApplyToListing(
-        context?.fireteamListing?.listingId,
-        DestinyFireteamFinderApplicationType.Public,
+      setButtonInteractionDisabled(true);
+      Platform.FireteamfinderService.GetLobby(
+        lobbyId,
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
         fireteamDestinyData?.selectedCharacter?.characterId
       )
-        .then(() => {
-          //reload the page
-          window.location.reload();
+        .then((lobby) => {
+          Platform.FireteamfinderService.ApplyToListing(
+            lobby?.listingId,
+            DestinyFireteamFinderApplicationType.Search,
+            fireteamDestinyData?.selectedMembership?.membershipType,
+            fireteamDestinyData?.selectedMembership?.membershipId,
+            fireteamDestinyData?.selectedCharacter?.characterId
+          )
+            .then(() => {
+              window.location.reload();
+            })
+            .catch(ConvertToPlatformError)
+            .catch((e) => {
+              Modal.error(e);
+            });
         })
         .catch(ConvertToPlatformError)
         .catch((e) => {
           Modal.error(e);
+        })
+        .finally(() => {
+          setButtonInteractionDisabled(false);
         });
     }
   };
@@ -164,11 +183,12 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
 
   const activateFireteam = () => {
     if (context?.fireteamLobby) {
+      setButtonInteractionDisabled(true);
       Platform.FireteamfinderService.ActivateLobby(
         context?.fireteamLobby?.lobbyId,
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId,
+        fireteamDestinyData?.selectedCharacter?.characterId ?? "0",
         true
       )
         .then(() => {
@@ -183,9 +203,8 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
               .then((listing) => {
                 contextDispatch.updateListing(listing);
               })
-              .catch(ConvertToPlatformError)
-              .catch((e) => {
-                Modal.error(e);
+              .then(() => {
+                window.location.reload();
               });
           });
         })
@@ -194,7 +213,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
           Modal.error(e);
         })
         .finally(() => {
-          window.location.reload();
+          setButtonInteractionDisabled(false);
         });
     }
   };
@@ -304,6 +323,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
       className={styles.headerButton}
       buttonType={"gold"}
       onClick={() => openCharacterSelect()}
+      disabled={buttonInteractionDisabled}
     >
       {applyLabel}
     </Button>
@@ -322,7 +342,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
       className={styles.headerButton}
       buttonType={"gold"}
       onClick={() => activateFireteam()}
-      disabled={isActive}
+      disabled={isActive || buttonInteractionDisabled}
     >
       {fireteamsLoc.Activate}
     </Button>

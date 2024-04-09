@@ -100,7 +100,6 @@ export const LoggedOutView: React.FC<LoggedOutViewProps> = (props) => {
             <p>{block.copy}</p>
           </div>
         ))}
-        ;
       </div>
     </div>
   );

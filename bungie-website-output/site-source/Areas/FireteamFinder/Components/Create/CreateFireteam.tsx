@@ -93,7 +93,6 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const fireteamsLoc = Localizer.Fireteams;
   const history = useHistory();
-
   const activityHashId = props.activityId;
   const activityGraphDef = props.definitions.DestinyFireteamFinderActivityGraphDefinition.get(
     props.activityGraphId
@@ -155,7 +154,9 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   });
 
   useEffect(() => {
-    FireteamsDestinyMembershipDataStore.actions.loadUserData();
+    if (!destinyMembership?.selectedCharacter) {
+      FireteamsDestinyMembershipDataStore.actions.loadUserData();
+    }
   }, [destinyMembership?.characters]);
 
   const getRelevantActivitySetLabelHashes = (
@@ -274,7 +275,6 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
       return { id: i.toString(), value: opt.value, label: opt.label as string };
     });
   };
-  console.log(fireteamOptionTree[FireteamFinderValueTypes.locale].options);
 
   return (
     <div className={styles.createFireteamContainer}>
@@ -322,7 +322,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                 <div className={styles.section}>
                   <label
                     className={styles.schedulerLabel}
-                    htmlFor={"dateTimePicker"}
+                    htmlFor={"isScheduled-radio-group"}
                   >
                     {fireteamsLoc.ScheduledQuestion}
                   </label>
@@ -336,15 +336,25 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                   />
                   <div className={styles.scheduledGap}>
                     {formMethods.watch("isScheduled") === "1" ? (
-                      <FireteamScheduler
-                        dateTimeValue={dateTimeValue}
-                        setDateTimeValue={(value: string) => {
-                          setDateTimeValue(value);
-                        }}
-                      />
+                      <div className={styles.section}>
+                        <label
+                          className={styles.schedulerLabel}
+                          htmlFor={"dateTimePicker"}
+                        >
+                          {fireteamsLoc.ChooseAStartTime}
+                        </label>
+                        <div className={styles.schedulerWrapper}>
+                          <FireteamScheduler
+                            dateTimeValue={dateTimeValue}
+                            setDateTimeValue={(value: string) => {
+                              setDateTimeValue(value);
+                            }}
+                          />
+                        </div>
+                      </div>
                     ) : (
                       <p className={styles.warningBlock}>
-                        <IoIosAlert /> <>{Localizer.fireteams.nowalert}</>
+                        <IoIosAlert /> <>{fireteamsLoc.nowalert}</>
                       </p>
                     )}
                   </div>
@@ -365,12 +375,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                   </div>
                 </div>
 
-                <div
-                  className={classNames(
-                    styles.applicationRequirement,
-                    styles.section
-                  )}
-                >
+                <div className={classNames(styles.section)}>
                   <p>{fireteamsLoc.ApplicationRequirement}</p>
                   <div className={styles.section}>
                     <RadioButtons
@@ -497,11 +502,11 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                 </DestinyAccountWrapper>
               </div>
             </div>
-            <button type={"submit"} className={styles.submitButtonWrapper}>
-              <Button buttonType={"gold"} size={BasicSize.FullSize}>
+            <div className={styles.submitButtonWrapper}>
+              <Button submit buttonType={"gold"} size={BasicSize.FullSize}>
                 {fireteamsLoc.CreateListing}
               </Button>
-            </button>
+            </div>
           </div>
         </form>
       </FormProvider>

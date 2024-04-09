@@ -568,17 +568,6 @@ class SeasonOfTheUndyingInternal extends React.Component<
                   <InfoBlock articleId={Number(faq)} ignoreStyles={true} />
                 </InnerErrorBoundary>
               )}
-              <div
-                className={styles.calendar}
-                style={{
-                  backgroundImage: `url("7/ca/destiny/bgs/seasons/Destiny_Calendar_${Localizer.CurrentCultureName}.png")`,
-                }}
-                onClick={() => {
-                  this.showImage(
-                    `/seasons/Destiny_Calendar_${Localizer.CurrentCultureName}.png`
-                  );
-                }}
-              />
               <div className={styles.buttonSection}>
                 <Button
                   className={styles.seasonsButtonMore}

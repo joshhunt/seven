@@ -60,9 +60,7 @@ interface PlayerFireteamDispatch {
 
 export const Detail: React.FC<DetailProps> = (props) => {
   const { lobbyId } = useParams<IFireteamFinderParams>();
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore, [
-    "selectedMembership",
-  ]);
+  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const [fireteam, setFireteam] = useState<
     FireteamFinder.DestinyFireteamFinderListing
   >(null);

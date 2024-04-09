@@ -12,7 +12,7 @@ export const FireteamFinderValueTypes = {
   //join setting is whether offline players are allowed (0) or not (1)
   joinSetting: "848039488",
   platform: "3154631366",
-  size: "3171466570",
+  players: "3171466570",
   mic: "3027343179",
   locale: "2118214747",
   minGuardianRank: "4213007492",

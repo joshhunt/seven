@@ -296,13 +296,15 @@ const Create: React.FC<CreateProps> = (props) => {
                         </h4>
                       )}
                   </div>
-                  <button
-                    className={styles.submitButton}
-                    type="submit"
-                    disabled={!formikProps.dirty}
-                  >
-                    <Button buttonType={"gold"}>{clansLoc.CreateClan}</Button>
-                  </button>
+                  <div className={styles.submitButton}>
+                    <Button
+                      disabled={!formikProps.dirty}
+                      submit
+                      buttonType={"gold"}
+                    >
+                      {clansLoc.CreateClan}
+                    </Button>
+                  </div>
                 </Form>
               );
             }}

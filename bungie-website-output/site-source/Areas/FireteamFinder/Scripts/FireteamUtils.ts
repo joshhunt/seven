@@ -32,7 +32,7 @@ export class FireteamUtils {
     platform: number,
     applicationRequirement: number,
     joinSetting: number,
-    size?: number
+    players?: number
   ): FireteamFinder.DestinyFireteamFinderListingValue[] {
     const listingValues: FireteamFinder.DestinyFireteamFinderListingValue[] = [];
 
@@ -85,10 +85,10 @@ export class FireteamUtils {
       });
     }
 
-    if (size !== null) {
+    if (players !== null) {
       listingValues.push({
-        valueType: parseInt(FireteamFinderValueTypes.size),
-        values: [size],
+        valueType: parseInt(FireteamFinderValueTypes.players),
+        values: [players],
       });
     }
 

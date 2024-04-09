@@ -104,7 +104,7 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   const browseFilterDefinitionTree = new FireteamOptions(
     props.definitions.DestinyFireteamFinderOptionDefinition
   ).createOptionsTree();
-  browseFilterDefinitionTree[FireteamFinderValueTypes.size] = null;
+  browseFilterDefinitionTree[FireteamFinderValueTypes.players] = null;
 
   const initialFilters: Record<string, string> = {};
   selectorFilterTypes.forEach((key: string) => {
@@ -318,7 +318,7 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   }> = ({ matchingLobbyState }) => {
     const lobbyStateLabelMap: Record<allowedLobbyState, string> = {
       [DestinyFireteamFinderLobbyState.Active]: Localizer.fireteams.active,
-      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.inactive,
+      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.Scheduled,
       [DestinyFireteamFinderLobbyState.Unknown]: Localizer.fireteams.Any,
     };
 

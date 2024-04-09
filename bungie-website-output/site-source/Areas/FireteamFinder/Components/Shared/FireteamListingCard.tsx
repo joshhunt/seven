@@ -2,6 +2,8 @@
 // Copyright Bungie, Inc.
 
 import { CreateTitleInput } from "@Areas/FireteamFinder/Components/Create/CreateTitleInput";
+import { FireteamOptions } from "@Areas/FireteamFinder/Constants/FireteamOptions";
+import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
 import { FireteamUtils } from "@Areas/FireteamFinder/Scripts/FireteamUtils";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
@@ -103,15 +105,19 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
   ).resolve({ lobbyId: fireteamDefinition?.lobbyId }).url;
 
   const PlayerCount: React.FC = () => {
+    const maxPlayersForLobby = props.fireteam?.settings?.listingValues?.find(
+      (listingVal) =>
+        listingVal?.valueType?.toString() === FireteamFinderValueTypes.players
+    )?.values?.[0];
+
     return (
       <div className={classNames(styles.section, styles.players)}>
         <IoPersonSharp />
         <div>
-          {players?.maxPlayerCount -
-            fireteamDefinition?.players?.availableSlots}
+          {maxPlayersForLobby - fireteamDefinition?.players?.availableSlots}
         </div>
         <span>{"/"}</span>
-        <div>{players?.maxPlayerCount}</div>
+        <div>{maxPlayersForLobby}</div>
       </div>
     );
   };

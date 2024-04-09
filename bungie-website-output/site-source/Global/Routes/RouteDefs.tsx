@@ -264,7 +264,6 @@ export class RouteDefs {
     }),
     Fireteams: new Area({
       name: RouteDefs.AreaNames.Fireteams,
-      webmasterSystem: SystemNames.ReactFireteamUI,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Fireteams/FireteamsArea")
       ),
