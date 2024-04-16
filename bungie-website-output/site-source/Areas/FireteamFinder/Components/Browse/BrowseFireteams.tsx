@@ -104,7 +104,9 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   const browseFilterDefinitionTree = new FireteamOptions(
     props.definitions.DestinyFireteamFinderOptionDefinition
   ).createOptionsTree();
-  browseFilterDefinitionTree[FireteamFinderValueTypes.players] = null;
+  /*
+	browseFilterDefinitionTree[FireteamFinderValueTypes.size] = null;
+*/
 
   const initialFilters: Record<string, string> = {};
   selectorFilterTypes.forEach((key: string) => {
@@ -318,7 +320,7 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   }> = ({ matchingLobbyState }) => {
     const lobbyStateLabelMap: Record<allowedLobbyState, string> = {
       [DestinyFireteamFinderLobbyState.Active]: Localizer.fireteams.active,
-      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.Scheduled,
+      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.inactive,
       [DestinyFireteamFinderLobbyState.Unknown]: Localizer.fireteams.Any,
     };
 
@@ -371,10 +373,10 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
         </div>
       </div>
       <div className={styles.browseContainer}>
-        <GridCol cols={5}>
+        <GridCol cols={3} tiny={12}>
           <Filters />
         </GridCol>
-        <GridCol cols={7}>
+        <GridCol cols={9} tiny={12}>
           <>
             <div className={styles.tabHeader}>
               <FilterTabAndListings
