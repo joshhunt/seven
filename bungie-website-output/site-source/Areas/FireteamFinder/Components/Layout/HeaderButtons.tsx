@@ -15,7 +15,8 @@ import {
   DestinyFireteamFinderApplicationType,
   DestinyFireteamFinderLobbyState,
 } from "@Enum";
-import { Platform } from "@Platform";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { FireteamFinder, Platform } from "@Platform";
 import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
 import { RouteDefs } from "@Routes/RouteDefs";
@@ -29,7 +30,7 @@ import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import modalStyles from "../Dashboard/CharacterSelect/CharacterSelect.module.scss";
 import styles from "./HeaderButtons.module.scss";
@@ -59,11 +60,34 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     context &&
     context?.fireteamLobby?.state === DestinyFireteamFinderLobbyState.Active;
   const { lobbyId } = useParams<IFireteamFinderParams>();
-  const history = useHistory();
+  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
+  const [pendingApplications, setPendingApplications] = useState<
+    FireteamFinder.DestinyFireteamFinderApplication[]
+  >();
   const [
     buttonInteractionDisabled,
     setButtonInteractionDisabled,
   ] = React.useState(false);
+  const history = useHistory();
+
+  useEffect(() => {
+    if (context?.fireteamListing?.listingId) {
+      Platform.FireteamfinderService.GetListingApplications(
+        context?.fireteamListing?.listingId,
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
+        destinyMembership?.selectedCharacter?.characterId,
+        100,
+        "",
+        "0"
+      ).then((result) => {
+        // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
+        setPendingApplications(
+          result?.applications.filter((app) => app?.state === 2)
+        );
+      });
+    }
+  }, [context?.fireteamListing?.listingId]);
 
   const copyToClipboard = () => {
     //copy url to clipboard and show success toast
@@ -88,30 +112,37 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
         fireteamDestinyData?.selectedMembership?.membershipType,
         fireteamDestinyData?.selectedMembership?.membershipId,
         fireteamDestinyData?.selectedCharacter?.characterId
-      )
-        .then((lobby) => {
-          Platform.FireteamfinderService.ApplyToListing(
-            lobby?.listingId,
-            DestinyFireteamFinderApplicationType.Search,
-            fireteamDestinyData?.selectedMembership?.membershipType,
-            fireteamDestinyData?.selectedMembership?.membershipId,
-            fireteamDestinyData?.selectedCharacter?.characterId
-          )
-            .then(() => {
-              window.location.reload();
-            })
-            .catch(ConvertToPlatformError)
-            .catch((e) => {
-              Modal.error(e);
-            });
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => {
-          Modal.error(e);
-        })
-        .finally(() => {
-          setButtonInteractionDisabled(false);
-        });
+      ).then((lobby) => {
+        // I don't know why I wrote this, I think it should still apply even if it is active, but I must have had a reason so I am leaving it here for a second to rollback if I am wrong
+        // if (lobby?.state === DestinyFireteamFinderLobbyState.Active)
+        // {
+        // 	Modal.error(Localizer.fireteams.LobbyAlreadyActive);
+        //
+        // 	return;
+        // }
+        Platform.FireteamfinderService.ApplyToListing(
+          lobby?.listingId,
+          DestinyFireteamFinderApplicationType.Search,
+          fireteamDestinyData?.selectedMembership?.membershipType,
+          fireteamDestinyData?.selectedMembership?.membershipId,
+          fireteamDestinyData?.selectedCharacter?.characterId
+        )
+          .then(() => {
+            //reload the page
+            window.location.reload();
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e) => {
+            Modal.error(e);
+          })
+          .catch(ConvertToPlatformError)
+          .catch((e) => {
+            Modal.error(e);
+          })
+          .finally(() => {
+            setButtonInteractionDisabled(false);
+          });
+      });
     }
   };
 
@@ -181,42 +212,66 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     });
   };
 
-  const activateFireteam = () => {
-    if (context?.fireteamLobby) {
-      setButtonInteractionDisabled(true);
-      Platform.FireteamfinderService.ActivateLobby(
-        context?.fireteamLobby?.lobbyId,
-        fireteamDestinyData?.selectedMembership?.membershipType,
-        fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId ?? "0",
-        true
-      )
-        .then(() => {
-          // get new lobby so we can update the listing value
-          Platform.FireteamfinderService.GetLobby(
-            context?.fireteamLobby?.lobbyId,
-            fireteamDestinyData?.selectedMembership?.membershipType,
-            fireteamDestinyData?.selectedMembership?.membershipId,
-            fireteamDestinyData?.selectedCharacter?.characterId
-          ).then((result) => {
-            Platform.FireteamfinderService.GetListing(result?.listingId)
-              .then((listing) => {
-                contextDispatch.updateListing(listing);
-              })
-              .then(() => {
-                window.location.reload();
-              });
-          });
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => {
-          Modal.error(e);
-        })
-        .finally(() => {
-          setButtonInteractionDisabled(false);
+  const activateFireteam = async () => {
+    setButtonInteractionDisabled(true);
+
+    Platform.FireteamfinderService.ActivateLobby(
+      context?.fireteamLobby?.lobbyId,
+      fireteamDestinyData?.selectedMembership?.membershipType,
+      fireteamDestinyData?.selectedMembership?.membershipId,
+      fireteamDestinyData?.selectedCharacter?.characterId,
+      true
+    )
+      .then(() => {
+        // get new lobby so we can update the listing value
+        Platform.FireteamfinderService.GetLobby(
+          context?.fireteamLobby?.lobbyId,
+          fireteamDestinyData?.selectedMembership?.membershipType,
+          fireteamDestinyData?.selectedMembership?.membershipId,
+          fireteamDestinyData?.selectedCharacter?.characterId
+        ).then((result) => {
+          Platform.FireteamfinderService.GetListing(result?.listingId)
+            .then((listing) => {
+              contextDispatch.updateListing(listing);
+            })
+            .catch(ConvertToPlatformError)
+            .catch((e) => {
+              Modal.error(e);
+            });
         });
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => {
+        Modal.error(e);
+      })
+      .finally(() => {
+        setButtonInteractionDisabled(false);
+      });
+  };
+
+  const handleActivateFireteam = () => {
+    if (context?.fireteamLobby && pendingApplications.length > 0) {
+      ConfirmationModal.show({
+        title: fireteamsLoc.ThereArePendingApplicants,
+        type: "warning",
+        children: fireteamsLoc.DeclinePendingApplications,
+        confirmButtonProps: {
+          labelOverride: fireteamsLoc.Proceed,
+          buttonType: "gold",
+          onClick: () => {
+            activateFireteam();
+
+            return true;
+          },
+        },
+      });
+    }
+
+    if (context?.fireteamLobby && pendingApplications.length === 0) {
+      activateFireteam();
     }
   };
+
   const CharacterModal: React.FC = () => {
     return (
       <div className={modalStyles.selectModalWrapper}>
@@ -322,8 +377,8 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     <Button
       className={styles.headerButton}
       buttonType={"gold"}
-      onClick={() => openCharacterSelect()}
       disabled={buttonInteractionDisabled}
+      onClick={() => openCharacterSelect()}
     >
       {applyLabel}
     </Button>
@@ -341,7 +396,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     <Button
       className={styles.headerButton}
       buttonType={"gold"}
-      onClick={() => activateFireteam()}
+      onClick={() => handleActivateFireteam()}
       disabled={isActive || buttonInteractionDisabled}
     >
       {fireteamsLoc.Activate}

@@ -502,6 +502,9 @@ export enum NotificationType {
   FIRETEAM_FINDER_APPLICATION_REJECTED = 62,
   FIRETEAM_FINDER_LOBBY_ACTIVATED = 63,
   FIRETEAM_FINDER_LOBBY_UPDATED = 64,
+  FIRETEAM_FINDER_KICKED_FROM_LOBBY = 65,
+  FIRETEAM_FINDER_LOBBY_CLOSED = 66,
+  FIRETEAM_FINDER_LOBBY_EXPIRED = 67,
 }
 
 export enum RealTimeEventType {
@@ -514,6 +517,7 @@ export enum RealTimeEventType {
   Announcements = 6,
   RecruitThreadUpdate = 7,
   ClanFireteamUpdate = 8,
+  FireteamFinderUpdate = 9,
 }
 
 export enum EventConversationType {
@@ -1335,6 +1339,7 @@ export enum PlatformErrorCodes {
   FireteamFinderUserNotApplicationOwner = 3130,
   FireteamFinderInviteValidationFailed = 3131,
   FireteamFinderOwnerNotInGame = 3132,
+  FireteamFinderPlayerAtMaxLobbyLimit = 3133,
   FireteamFinderResponseUndefined = 3150,
   FireteamFinderResponseMoved = 3151,
   FireteamFinderResponseLoggingIn = 3152,

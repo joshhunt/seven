@@ -189,6 +189,11 @@ export class FireteamUtils {
       listingValueDefinitions
     ).createOptionsTree();
 
+    const maxPlayersForLobby = listing.settings?.listingValues?.find(
+      (listingVal) =>
+        listingVal?.valueType?.toString() === FireteamFinderValueTypes.players
+    )?.values?.[0];
+
     const defaultBnetFireteamDefinition: BnetFireteamDefinition = {
       id: "",
       lobbyId: "",
@@ -205,8 +210,8 @@ export class FireteamUtils {
         playerElectedDifficulty: null,
       },
       players: {
-        maxPlayerCount: 6,
-        availableSlots: 5,
+        maxPlayerCount: maxPlayersForLobby,
+        availableSlots: maxPlayersForLobby - 1,
       },
       clanId: "0",
       scheduled: false,
@@ -266,8 +271,6 @@ export class FireteamUtils {
       );
     }
 
-    fireteam.players.maxPlayerCount = listing?.settings?.maxPlayerCount;
-    fireteam.players.availableSlots = listing.availableSlots;
     fireteam.clanId = listing?.settings?.clanId;
     fireteam.scheduled = !(
       DateTime.fromISO(listing?.settings?.scheduledDateTime)?.year <= 1970

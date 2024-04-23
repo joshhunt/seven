@@ -17,6 +17,7 @@ import { Contract, Platform, User } from "@Platform";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Icon } from "@UIKit/Controls/Icon";
+import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
@@ -311,7 +312,35 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
         >
           {(formikProps) => {
             return (
-              <Form>
+              <Form
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const { values, setSubmitting } = formikProps;
+                    const desiredBungieName = values.displayName.trim();
+                    const identicalNames =
+                      bungieName.bungieGlobalName === desiredBungieName;
+                    if (identicalNames) {
+                      return;
+                    }
+                    ConfirmationModal.show({
+                      type: "warning",
+                      children: Localizer.account.NamesCanOnlyBeChanged,
+                      title: Localizer.Format(Localizer.account.AreYouSure, {
+                        desiredBungieName: desiredBungieName,
+                      }),
+                      confirmButtonProps: {
+                        buttonType: "gold",
+                        onClick: () => {
+                          trySaveSettings(values, setSubmitting);
+
+                          return true;
+                        },
+                      },
+                    });
+                  }
+                }}
+              >
                 <GridCol cols={2} medium={12} className={styles.sectionTitle}>
                   {Localizer.Userpages.BungieName}
                 </GridCol>

@@ -5,6 +5,7 @@ import { CreateTitleInput } from "@Areas/FireteamFinder/Components/Create/Create
 import { FireteamOptions } from "@Areas/FireteamFinder/Constants/FireteamOptions";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
 import { FireteamUtils } from "@Areas/FireteamFinder/Scripts/FireteamUtils";
+import { FireteamCreationTime } from "@Areas/FireteamFinder/Components/Shared/FireteamCreationTime";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
   D2DatabaseComponentProps,
@@ -180,8 +181,19 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
               {tag}
             </div>
           ))}
+          {isActive ? (
+            <div className={classNames(styles.activeDuration)}>
+              <ActiveDuration />
+            </div>
+          ) : null}
         </div>
       </div>
+    );
+  };
+
+  const ActiveDuration: React.FC = () => {
+    return (
+      <FireteamCreationTime dateCreated={props.fireteam.createdDateTime} />
     );
   };
 
@@ -218,7 +230,7 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
     >
       <CardHeader />
       <TitleAndTags />
-      {isActive ? <ActiveStatusFooter /> : <DateAndTimeFooter />}
+      {isActive ? null : <DateAndTimeFooter />}
     </div>
   );
 };

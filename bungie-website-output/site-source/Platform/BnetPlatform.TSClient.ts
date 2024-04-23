@@ -328,9 +328,19 @@ export declare namespace User {
   }
 
   export interface SetParentalControlFlagsRequest {
+    TargetChildBungieId?: string;
+
+    TargetChildMembershipId?: string;
+
+    TargetChildMembershipType?: Globals.BungieMembershipType;
+
     UnsetParentalControls: boolean;
 
     ParentalControlFlags: Globals.BungieAgeGateFeatures;
+  }
+
+  export interface ParentalControlsIdRequest {
+    InputIdentifier: string;
   }
 
   /**
@@ -21681,6 +21691,46 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "SetParentalControlFlags",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns the bungie id of a designated membership id for parental controls. Requires valid service auth context and User Pii Read scope.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieIdFromMembershipIdForParentalControls = (
+    input: User.ParentalControlsIdRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<string> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/GetBungieId/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetBungieIdFromMembershipIdForParentalControls",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns the list of all membership ids of a designated bungie id for parental controls.  Also returns Cross Save Information. Requires valid service auth context and User Pii Read scope.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetMembershipIdMappingFromBungieIdForParentalControls = (
+    input: User.ParentalControlsIdRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<User.UserInfoCard[]> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/GetMembershipIdMappingFromBungieId/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetMembershipIdMappingFromBungieIdForParentalControls",
       input,
       clientState
     );

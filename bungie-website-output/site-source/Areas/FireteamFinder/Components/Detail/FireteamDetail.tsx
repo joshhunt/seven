@@ -94,7 +94,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     }
 
     fetchApplicationData();
-  }, [pendingApplications, lobby, viewerIsHost, destinyMembership]);
+  }, [pendingApplications.length, lobby, viewerIsHost, destinyMembership]);
 
   useEffect(() => {
     async function fetchMemberData() {
@@ -176,24 +176,22 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
   }, [UserUtils.isAuthenticated(globalState)]);
 
   useEffect(() => {
-    // only fetch pending applications if the fireteam is not active
-    lobby?.state !== DestinyFireteamFinderLobbyState.Active &&
-      Platform.FireteamfinderService.GetListingApplications(
-        fireteam?.listingId,
-        destinyMembership?.selectedMembership?.membershipType,
-        destinyMembership?.selectedMembership?.membershipId,
-        destinyMembership?.selectedCharacter?.characterId,
-        100,
-        "",
-        "0"
-      ).then((result) => {
-        // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
-        setPendingApplications(
-          result?.applications.filter((app) => app?.state === 2)
-        );
+    Platform.FireteamfinderService.GetListingApplications(
+      fireteam?.listingId,
+      destinyMembership?.selectedMembership?.membershipType,
+      destinyMembership?.selectedMembership?.membershipId,
+      destinyMembership?.selectedCharacter?.characterId,
+      100,
+      "",
+      "0"
+    ).then((result) => {
+      // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
+      setPendingApplications(
+        result?.applications.filter((app) => app?.state === 2)
+      );
 
-        // should add button to get next page of applications
-      });
+      // should add button to get next page of applications
+    });
   }, [fireteam?.listingId]);
 
   return (
