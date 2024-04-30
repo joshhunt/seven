@@ -31,6 +31,13 @@ async function getFilesChanged() {
           .filter((f) => f.startsWith("bungie-website-output/site-source/"))
           .map((f) => f.replace("bungie-website-output/site-source/", ""))
       )
+      .mapValues((files) => {
+        if (files.length === 0 && files[0] === "src/index.ts") {
+          return [];
+        }
+
+        return [];
+      })
       .pickBy((files) => files.length)
       .value();
   } catch (err) {
