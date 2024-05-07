@@ -49,9 +49,6 @@ export class FireteamOptions {
         optionCategory.options = [];
         optionCategory.hash = option.hash;
 
-        const isMinGuardianRankType =
-          optionCategoryString === FireteamFinderValueTypes.minGuardianRank;
-
         option?.values.valueDefinitions.forEach((leafOption) => {
           const valueString = leafOption?.value.toString();
 
@@ -63,15 +60,9 @@ export class FireteamOptions {
             optionCategory.defaultBrowseValue = valueString;
           }
 
-          const minGuardianRankLabel = leafOption?.displayProperties?.name;
-          const label =
-            Localizer.fireteams[
-              minGuardianRankLabel.toLowerCase().replaceAll(" ", "")
-            ];
-
           optionCategory.options.push({
             value: valueString,
-            label: isMinGuardianRankType ? minGuardianRankLabel : label,
+            label: leafOption?.displayProperties?.name,
           });
         });
       });

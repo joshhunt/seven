@@ -320,7 +320,7 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   }> = ({ matchingLobbyState }) => {
     const lobbyStateLabelMap: Record<allowedLobbyState, string> = {
       [DestinyFireteamFinderLobbyState.Active]: Localizer.fireteams.active,
-      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.inactive,
+      [DestinyFireteamFinderLobbyState.Inactive]: Localizer.fireteams.scheduled,
       [DestinyFireteamFinderLobbyState.Unknown]: Localizer.fireteams.Any,
     };
 

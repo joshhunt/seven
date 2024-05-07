@@ -52,21 +52,14 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
   );
 
   const {
-    id,
-    lobbyId,
-    owner,
     titleStringHashes,
     tagHashes,
     activity,
     players,
-    clanId,
     scheduled,
     scheduledDateAndTime,
     applicationRequired,
-    platform,
     hasMic,
-    isPublic,
-    locale,
   } = fireteamDefinition ?? {};
 
   const titleStrings = titleStringHashes?.map(
@@ -106,19 +99,12 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
   ).resolve({ lobbyId: fireteamDefinition?.lobbyId }).url;
 
   const PlayerCount: React.FC = () => {
-    const maxPlayersForLobby = props.fireteam?.settings?.listingValues?.find(
-      (listingVal) =>
-        listingVal?.valueType?.toString() === FireteamFinderValueTypes.players
-    )?.values?.[0];
-
     return (
       <div className={classNames(styles.section, styles.players)}>
         <IoPersonSharp />
-        <div>
-          {maxPlayersForLobby - fireteamDefinition?.players?.availableSlots}
-        </div>
+        <div>{players.maxPlayerCount - players.availableSlots}</div>
         <span>{"/"}</span>
-        <div>{maxPlayersForLobby}</div>
+        <div>{players.maxPlayerCount}</div>
       </div>
     );
   };
@@ -226,7 +212,7 @@ const FireteamListingCard: React.FC<FireteamListingCardProps> = (props) => {
       className={classNames(styles.card, styles.section, {
         [styles.showHover]: props.showHover,
       })}
-      onClick={() => UrlUtils.PushRedirect(detailLink, { history: history })}
+      onClick={() => history.push(detailLink, { from: window.location.href })}
     >
       <CardHeader />
       <TitleAndTags />

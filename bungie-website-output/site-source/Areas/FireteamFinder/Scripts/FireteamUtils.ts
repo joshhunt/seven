@@ -1,7 +1,6 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
-import { IRadioOption } from "@Areas/FireteamFinder/Components/Shared/RadioButtons";
 import { BnetFireteamDefinition } from "@Areas/FireteamFinder/Constants/BnetFireteamDefinition";
 import { FireteamFinderColors } from "@Areas/FireteamFinder/Constants/FireteamFinderColors";
 import {
@@ -12,14 +11,10 @@ import {
   FireteamFinderValueTypes,
   FireteamFinderValueTypesKeys,
 } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { Localizer } from "@bungie/localization";
-import { DetailedError } from "@CustomErrors";
 import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
-import { BungieMembershipType, FireteamPlatform } from "@Enum";
+import { BungieMembershipType } from "@Enum";
 import { FireteamFinder } from "@Platform";
-import { IDropdownOption } from "@UIKit/Forms/Dropdown";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import { DateTime } from "luxon";
 
 export class FireteamUtils {
@@ -211,7 +206,7 @@ export class FireteamUtils {
       },
       players: {
         maxPlayerCount: maxPlayersForLobby,
-        availableSlots: maxPlayersForLobby - 1,
+        availableSlots: listing.availableSlots,
       },
       clanId: "0",
       scheduled: false,
@@ -340,47 +335,5 @@ export class FireteamUtils {
     );
 
     return fireteam;
-  }
-
-  public static BnetMembershipTypeToFireteamPlatform(
-    mtype: BungieMembershipType
-  ): FireteamPlatform {
-    switch (mtype) {
-      case BungieMembershipType.TigerXbox:
-        return FireteamPlatform.XboxOne;
-      case BungieMembershipType.TigerPsn:
-        return FireteamPlatform.Playstation4;
-      case BungieMembershipType.TigerSteam:
-        return FireteamPlatform.Steam;
-      case BungieMembershipType.TigerEgs:
-        return FireteamPlatform.Egs;
-      case BungieMembershipType.TigerStadia:
-        return FireteamPlatform.Stadia;
-      default:
-        throw new DetailedError(
-          "Invalid membership type",
-          "Only Destiny membership types are allowed in this component"
-        );
-    }
-  }
-
-  public static FireteamPlatformToBnetMembershipType(
-    platform: FireteamPlatform
-  ): BungieMembershipType {
-    switch (platform) {
-      case FireteamPlatform.XboxOne:
-        return BungieMembershipType.TigerXbox;
-      case FireteamPlatform.Playstation4:
-        return BungieMembershipType.TigerPsn;
-      case FireteamPlatform.Steam:
-        return BungieMembershipType.TigerSteam;
-      case FireteamPlatform.Egs:
-        return BungieMembershipType.TigerEgs;
-      default:
-        throw new DetailedError(
-          "Invalid membership type",
-          "Only Destiny membership types are allowed in this component"
-        );
-    }
   }
 }

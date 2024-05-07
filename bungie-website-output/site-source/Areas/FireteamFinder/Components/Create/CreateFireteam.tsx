@@ -118,7 +118,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     props.definitions.DestinyFireteamFinderOptionDefinition
   ).createOptionsTree();
 
-  const fireteamMaxSize = activityDef?.matchmaking?.maxParty;
+  const activityMaxSize = activityDef?.matchmaking?.maxParty;
 
   const initialValues = {
     membershipType: destinyMembership?.selectedMembership?.membershipType,
@@ -126,7 +126,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     fireteamActivity: activityDef.hash,
     platform:
       fireteamOptionTree[FireteamFinderValueTypes.platform].defaultCreateValue,
-    players: fireteamMaxSize?.toString(),
+    players: "",
     isScheduled: "0",
     applicationRequirement:
       fireteamOptionTree[FireteamFinderValueTypes.applicationRequirement]
@@ -201,7 +201,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
 
     Platform.FireteamfinderService.HostLobby(
       {
-        maxPlayerCount: fireteamMaxSize,
+        maxPlayerCount: data.players,
         // onlinePlayersOnly will always be false for fireteam lobbies created on the site
         onlinePlayersOnly: false,
         // applicationRequirement value of 0 means 'Auto-Join' (aka Open), value of 1 means 'Application Required)
@@ -257,7 +257,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   }
 
   const playerOptions: IRadioOption[] = [];
-  Array(fireteamMaxSize)
+  Array(activityMaxSize)
     .fill(0)
     .map((_, i) => {
       !(i === 0) &&

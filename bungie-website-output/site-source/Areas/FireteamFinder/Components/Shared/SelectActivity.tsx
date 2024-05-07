@@ -196,6 +196,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     const genericOfPlayerElected = node?.children?.some(
       (child) => child?.graphDefinition?.isPlayerElectedDifficultyNode
     );
+    const isRootNode = !node?.graphDefinition?.parentHash;
     const isBrowseView = props?.activityType === SelectActivityType.BROWSE;
     const firstValidLeafActivity =
       node?.applicableSets
@@ -209,7 +210,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     //if browse view, we want to provide a button as well as the arrow down for the generic activity
     let actionItem;
 
-    if (isBrowseView && genericOfPlayerElected) {
+    if (isBrowseView && (genericOfPlayerElected || isRootNode)) {
       actionItem = (
         <div className={styles.flex}>
           <Button

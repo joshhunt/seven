@@ -69,7 +69,7 @@ const DestinyCharacterCardSelectorInternal: React.FC<DestinyCharacterCardSelecto
           ),
           class: props.definitions.DestinyClassDefinition?.get(
             charComponent?.classHash
-          ).displayProperties.name,
+          ).genderedClassNamesByGenderHash[charComponent.genderHash],
           id: charComponent.characterId,
           race: props.definitions.DestinyRaceDefinition.get(
             charComponent?.raceHash

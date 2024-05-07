@@ -221,16 +221,14 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
           <h4>{Localizer.fireteams.Members.toUpperCase()}</h4>
           {memberCards}
           {availableSlots(fireteam?.availableSlots)}
-          <br />
+        </div>
+        <div className={styles.summary}>
           {isOwner && pendingApplications && pendingApplications.length > 0 && (
             <div>
               <h4>{Localizer.Fireteams.PendingApplications}</h4>
               {applicationCards}
             </div>
           )}
-        </div>
-
-        <div className={styles.summary}>
           <h4>{Localizer.fireteams.ExtraInfo.toUpperCase()}</h4>
           <FireteamSummary fireteam={fireteam} />
         </div>

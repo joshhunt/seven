@@ -1,13 +1,19 @@
 // Copyright Bungie, Inc.
 
+import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
+import { Platform } from "@Platform";
 import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
+import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { useLocation } from "react-router-dom";
 import styles from "./FireteamFinderBreadcrumb.module.scss";
 
 export type BreadcrumbConfiguration =
@@ -26,11 +32,11 @@ interface FireteamFinderBreadcrumbProps {
 export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> = (
   props
 ) => {
-  const { graphId, activityId } = useParams<IFireteamFinderParams>();
+  const location = useLocation<{ from: string }>();
+  const previousLocation = location.state?.from ?? document.referrer;
+  const { graphId, activityId, lobbyId } = useParams<IFireteamFinderParams>();
   const browseAnchor = (
-    <Anchor url={RouteHelper.FireteamFinderBrowse()}>
-      {Localizer.fireteams.listings}
-    </Anchor>
+    <Anchor url={previousLocation}>{Localizer.fireteams.listings}</Anchor>
   );
   const browseSelectAnchor = (
     <Anchor url={RouteHelper.FireteamFinderBrowse()}>
@@ -67,6 +73,9 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
       {Localizer.fireteams.detail}
     </Anchor>
   );
+
+  const browseAction = RouteDefs.Areas.FireteamFinder.getAction("Browse");
+  const browseActionPathSubstring = `${browseAction.urlPrefix}/${browseAction.action}`;
 
   const breadcrumbs = () => {
     switch (props.breadcrumbConfig) {
@@ -106,6 +115,11 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
         return (
           <>
             {dashboardAnchor}
+            {browseSelectAnchor}
+            {previousLocation
+              .toLowerCase()
+              .includes(browseActionPathSubstring.toLowerCase()) &&
+              browseAnchor}
             {detailAnchor}
           </>
         );

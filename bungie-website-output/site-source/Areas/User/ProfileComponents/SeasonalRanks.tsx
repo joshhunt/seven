@@ -1,8 +1,10 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
-import { Characters, Definitions, World } from "@Platform";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { Characters } from "@Platform";
 import styles from "./SeasonalRanks.module.scss";
 import React from "react";
 import classNames from "classnames";
@@ -16,6 +18,10 @@ export const SeasonalRanks: React.FC<SeasonalRanksProps> = (props) => {
   if (typeof props.characterProgressions === "undefined") {
     return null;
   }
+
+  const { coreSettings } = useDataStore(GlobalStateDataStore, ["coreSettings"]);
+  const currentRankProgressionHashes =
+    coreSettings?.destiny2CoreSettings?.currentRankProgressionHashes;
 
   const rankItem = (progressionHash: number, className: string) => {
     const progressionDef = props.definitions.DestinyProgressionDefinition.get(
@@ -91,13 +97,9 @@ export const SeasonalRanks: React.FC<SeasonalRanksProps> = (props) => {
 
   return (
     <>
-      {rankItem(1647151960, styles.glory)}
-      {rankItem(2083746873, styles.valor)}
-      {rankItem(3008065600, styles.infamy)}
-      {rankItem(527867935, styles.strangeFavor)}
-      {rankItem(1471185389, styles.gunsmith)}
-      {rankItem(457612306, styles.vanguard)}
-      {rankItem(2755675426, styles.trials)}
+      {currentRankProgressionHashes?.map((hash) =>
+        rankItem(hash, styles.currentRank)
+      )}
     </>
   );
 };
