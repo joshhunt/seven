@@ -358,3 +358,185 @@ class Schema {
 }
 
 export default Schema;
+ {
+  name: string | number;
+  prefix: string;
+  suffix: string;
+  pattern: string;
+  modifier: string;
+}
+
+/**
+ * A token is a string (nothing special) or key metadata (capture group).
+ */
+export type Token = string | Key;
+
+/**
+ * Pull out keys from a regexp.
+ */
+function regexpToRegexp(path: RegExp, keys?: Key[]): RegExp {
+  if (!keys) return path;
+
+  const groupsRegex = /\((?:\?<(.*?)>)?(?!\?)/g;
+
+  let index = 0;
+  let execResult = groupsRegex.exec(path.source);
+  while (execResult) {
+    keys.push({
+      // Use parenthesized substring match if available, index otherwise
+      name: execResult[1] || index++,
+      prefix: "",
+      suffix: "",
+      modifier: "",
+      pattern: "",
+    });
+    execResult = groupsRegex.exec(path.source);
+  }
+
+  return path;
+}
+
+/**
+ * Transform an array into a regexp.
+ */
+function arrayToRegexp(
+  paths: Array<string | RegExp>,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+): RegExp {
+  const parts = paths.map((path) => pathToRegexp(path, keys, options).source);
+  return new RegExp(`(?:${parts.join("|")})`, flags(options));
+}
+
+/**
+ * Create a path regexp from string input.
+ */
+function stringToRegexp(
+  path: string,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+) {
+  return tokensToRegexp(parse(path, options), keys, options);
+}
+
+export interface TokensToRegexpOptions {
+  /**
+   * When `true` the regexp will be case sensitive. (default: `false`)
+   */
+  sensitive?: boolean;
+  /**
+   * When `true` the regexp won't allow an optional trailing delimiter to match. (default: `false`)
+   */
+  strict?: boolean;
+  /**
+   * When `true` the regexp will match to the end of the string. (default: `true`)
+   */
+  end?: boolean;
+  /**
+   * When `true` the regexp will match from the beginning of the string. (default: `true`)
+   */
+  start?: boolean;
+  /**
+   * Sets the final character for non-ending optimistic matches. (default: `/`)
+   */
+  delimiter?: string;
+  /**
+   * List of characters that can also be "end" characters.
+   */
+  endsWith?: string;
+  /**
+   * Encode path tokens for use in the `RegExp`.
+   */
+  encode?: (value: string) => string;
+}
+
+/**
+ * Expose a function for taking tokens and returning a RegExp.
+ */
+export function tokensToRegexp(
+  tokens: Token[],
+  keys?: Key[],
+  options: TokensToRegexpOptions = {}
+) {
+  const {
+    strict = false,
+    start = true,
+    end = true,
+    encode = (x: string) => x,
+  } = options;
+  const endsWith = `[${escapeString(options.endsWith || "")}]|$`;
+  const delimiter = `[${escapeString(options.delimiter || "/#?")}]`;
+  let route = start ? "^" : "";
+
+  // Iterate over the tokens and create our regexp string.
+  for (const token of tokens) {
+    if (typeof token === "string") {
+      route += escapeString(encode(token));
+    } else {
+      const prefix = escapeString(encode(token.prefix));
+      const suffix = escapeString(encode(token.suffix));
+
+      if (token.pattern) {
+        if (keys) keys.push(token);
+
+        if (prefix || suffix) {
+          if (token.modifier === "+" || token.modifier === "*") {
+            const mod = token.modifier === "*" ? "?" : "";
+            route += `(?:${prefix}((?:${token.pattern})(?:${suffix}${prefix}(?:${token.pattern}))*)${suffix})${mod}`;
+          } else {
+            route += `(?:${prefix}(${token.pattern})${suffix})${token.modifier}`;
+          }
+        } else {
+          route += `(${token.pattern})${token.modifier}`;
+        }
+      } else {
+        route += `(?:${prefix}${suffix})${token.modifier}`;
+      }
+    }
+  }
+
+  if (end) {
+    if (!strict) route += `${delimiter}?`;
+
+    route += !options.endsWith ? "$" : `(?=${endsWith})`;
+  } else {
+    const endToken = tokens[tokens.length - 1];
+    const isEndDelimited =
+      typeof endToken === "string"
+        ? delimiter.indexOf(endToken[endToken.length - 1]) > -1
+        : // tslint:disable-next-line
+          endToken === undefined;
+
+    if (!strict) {
+      route += `(?:${delimiter}(?=${endsWith}))?`;
+    }
+
+    if (!isEndDelimited) {
+      route += `(?=${delimiter}|${endsWith})`;
+    }
+  }
+
+  return new RegExp(route, flags(options));
+}
+
+/**
+ * Supported `path-to-regexp` input types.
+ */
+export type Path = string | RegExp | Array<string | RegExp>;
+
+/**
+ * Normalize the given path string, returning a regular expression.
+ *
+ * An empty array can be passed in for the keys, which will hold the
+ * placeholder key descriptions. For example, using `/user/:id`, `keys` will
+ * contain `[{ name: 'id', delimiter: '/', optional: false, repeat: false }]`.
+ */
+export function pathToRegexp(
+  path: Path,
+  keys?: Key[],
+  options?: TokensToRegexpOptions & ParseOptions
+) {
+  if (path instanceof RegExp) return regexpToRegexp(path, keys);
+  if (Array.isArray(path)) return arrayToRegexp(path, keys, options);
+  return stringToRegexp(path, keys, options);
+}
