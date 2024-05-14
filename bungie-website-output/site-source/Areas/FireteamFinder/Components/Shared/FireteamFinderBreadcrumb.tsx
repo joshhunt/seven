@@ -1,17 +1,12 @@
 // Copyright Bungie, Inc.
 
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { Platform } from "@Platform";
-import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router";
 import { useLocation } from "react-router-dom";
 import styles from "./FireteamFinderBreadcrumb.module.scss";
@@ -33,14 +28,19 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
   props
 ) => {
   const location = useLocation<{ from: string }>();
-  const previousLocation = location.state?.from ?? document.referrer;
+  const previousLocation = location.state?.from;
   const { graphId, activityId, lobbyId } = useParams<IFireteamFinderParams>();
   const browseAnchor = (
-    <Anchor url={previousLocation}>{Localizer.fireteams.listings}</Anchor>
+    <Anchor url={RouteHelper.FireteamFinderBrowse()}>
+      {Localizer.fireteams.browsetitle}
+    </Anchor>
+  );
+  const browseListingsAnchor = (
+    <Anchor url={previousLocation}>{Localizer.fireteams.browseTitle}</Anchor>
   );
   const browseSelectAnchor = (
     <Anchor url={RouteHelper.FireteamFinderBrowse()}>
-      {Localizer.fireteams.browsetitle}
+      {Localizer.fireteams.browse}
     </Anchor>
   );
   const createSelectAnchor = (
@@ -119,7 +119,7 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
             {previousLocation
               .toLowerCase()
               .includes(browseActionPathSubstring.toLowerCase()) &&
-              browseAnchor}
+              browseListingsAnchor}
             {detailAnchor}
           </>
         );

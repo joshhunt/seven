@@ -131,4 +131,5 @@ export const SystemNames = {
   MaximumApiKeysPerApplication: "MaximumApiKeysPerApplication",
   ApplicationsReactUI: "ApplicationsReactUI",
   FireteamFinderWebUI: "FireteamFinderWebUI",
+  ParentalControlUI: "ParentalControlUI",
 } as const;

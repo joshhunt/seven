@@ -58,8 +58,8 @@ export const Create: React.FC<CreateProps> = (props) => {
 
   const createLink = (activityGraphIdHash: number, activityIdHash: number) =>
     RouteHelper.FireteamFinderCreate({
-      graphId: activityGraphIdHash.toString(),
-      activityId: activityIdHash.toString(),
+      graphId: activityGraphIdHash?.toString(),
+      activityId: activityIdHash?.toString(),
     });
 
   return (

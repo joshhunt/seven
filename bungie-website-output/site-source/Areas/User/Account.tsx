@@ -23,7 +23,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform } from "@Platform";
 import { RouteDefs } from "@Routes/RouteDefs";
-import { RouteHelper } from "@Routes/RouteHelper";
+import { RouteHelper, IMultiSiteLink } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -91,7 +91,7 @@ const Account: React.FC = () => {
   const membershipId = UrlUtils.QueryToObject().membershipId;
   const loggedInUserMembershipId =
     globalState?.loggedInUser?.user?.membershipId;
-  const useReactView = ConfigUtils.SystemStatus("CoreUserHistories");
+  const includeParentalControls = ConfigUtils.SystemStatus("ParentalControlUI");
 
   const loggedInUserIsOnPageUser = (mid: string) => {
     if (!loggedInUserMembershipId) {
@@ -137,6 +137,10 @@ const Account: React.FC = () => {
     EmailSms: area.getAction("EmailSms"),
     Notifications: area.getAction("Notifications"),
     AccountLinking: area.getAction("AccountLinking"),
+    ParentalControls: {
+      legacy: true,
+      url: Localizer.Account.ParentalControlsUrl,
+    } as IMultiSiteLink,
     Privacy: area.getAction("Privacy"),
     LanguageRegion: area.getAction("LanguageRegion"),
     BlockedUsers: area.getAction("BlockedUsers"),
@@ -170,6 +174,14 @@ const Account: React.FC = () => {
       />
     </span>
   );
+
+  const parentalControlsTabData = {
+    tabLabel: Localizer.account.ParentalControls,
+    tabRender: renderAsExternalLink,
+    contentComponent: null as React.ReactNode,
+    tabTo: actions.ParentalControls,
+    pathName: actions.ParentalControls.url,
+  };
 
   const accountTabDetails: TabData[] = [
     {
@@ -265,12 +277,19 @@ const Account: React.FC = () => {
     },
   ];
 
+  if (includeParentalControls) {
+    accountTabDetails.splice(4, 0, parentalControlsTabData);
+  }
+
   return (
     <SystemDisabledHandler systems={[SystemNames.AccountServices]}>
       <RequiresAuth
         onSignIn={() =>
           AccountDestinyMembershipDataStore.actions.loadUserData(
-            { membershipId, membershipType: BungieMembershipType.BungieNext },
+            {
+              membershipId,
+              membershipType: BungieMembershipType.BungieNext,
+            },
             true
           )
         }
