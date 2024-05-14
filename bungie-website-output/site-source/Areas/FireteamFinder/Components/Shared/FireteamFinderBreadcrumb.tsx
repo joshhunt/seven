@@ -116,9 +116,10 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
           <>
             {dashboardAnchor}
             {browseSelectAnchor}
-            {previousLocation
-              .toLowerCase()
-              .includes(browseActionPathSubstring.toLowerCase()) &&
+            {previousLocation &&
+              previousLocation
+                ?.toLowerCase()
+                ?.includes(browseActionPathSubstring?.toLowerCase()) &&
               browseListingsAnchor}
             {detailAnchor}
           </>
