@@ -1,7 +1,6 @@
 // Created by larobinson, 2023
 // Copyright Bungie, Inc.
 
-import { ConvertToPlatformError } from "@ApiIntermediary";
 import { ApplicationCard } from "@Areas/FireteamFinder/Components/Detail/ApplicationCard";
 import styles from "@Areas/FireteamFinder/Components/Detail/FireteamDetail.module.scss";
 import FireteamSummary from "@Areas/FireteamFinder/Components/Detail/FireteamSummary";
@@ -78,6 +77,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
                 isHost={viewerIsHost}
                 invited={true}
                 isSelf={isSelf}
+                isActive={isActive}
                 member={{
                   ...application?.submitterId,
                   membershipType: correctMembershipType,
@@ -129,6 +129,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
               player?.playerId?.membershipId !== lobby?.owner?.membershipId
             }
             isSelf={isSelf}
+            isActive={isActive}
             member={{
               ...player.playerId,
               membershipType: correctMembershipType,

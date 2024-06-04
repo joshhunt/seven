@@ -1,14 +1,14 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { BungieMembershipType } from "@Enum";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { Localizer } from "@bungie/localization";
+import { BungieMembershipType } from "@Enum";
 import { DestinyMembershipDataStore } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalStateComponentProps,
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
 import { DestinyCharacterCardSelector } from "@UI/Destiny/DestinyCharacterCardSelector";
 import DestinyCharacterSelector from "@UI/Destiny/DestinyCharacterSelector";
 import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";

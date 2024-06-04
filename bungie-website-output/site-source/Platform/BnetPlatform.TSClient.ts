@@ -2162,6 +2162,18 @@ export declare namespace Notifications {
 		The fireteam id being updated
 		*/
     fireteamId?: string;
+
+    /**
+		Used with FireteamFinderUpdate
+		The Fireteam Finder LobbyId being updated
+		*/
+    fireteamFinderLobbyId?: string;
+
+    /**
+		Used with FireteamFinderUpdate
+		The Fireteam Finder ListingId being updated
+		*/
+    fireteamFinderListingId?: string;
   }
 }
 
@@ -19121,6 +19133,11 @@ export declare namespace Seasons {
 
     sealPresentationNodeHash?: number;
 
+    /**
+		A list of Acts for the Episode
+		*/
+    acts: Seasons.DestinySeasonActDefinition[];
+
     seasonalChallengesPresentationNodeHash?: number;
 
     /**
@@ -19133,6 +19150,26 @@ export declare namespace Seasons {
     index: number;
 
     redacted: boolean;
+  }
+
+  /**
+	Defines the name, start time and ranks included in an Act of an Episode.
+	*/
+  export interface DestinySeasonActDefinition {
+    /**
+		The name of the Act.
+		*/
+    displayName: string;
+
+    /**
+		The start time of the Act.
+		*/
+    startTime: string;
+
+    /**
+		The number of ranks included in the Act.
+		*/
+    rankCount: number;
   }
 
   /**
@@ -28763,6 +28800,37 @@ class FireteamfinderServiceInternal {
     );
 
   /**
+   * Activates a lobby and initializes it as an active Fireteam, returning the updated Listing ID.
+   * @param lobbyId The ID of the lobby to activate.
+   * @param destinyMembershipType A valid Destiny membership type.
+   * @param destinyMembershipId A valid Destiny membership ID.
+   * @param destinyCharacterId A valid Destiny character ID.
+   * @param forceActivation Optional boolean to forcibly activate the lobby, kicking pending applicants.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ActivateLobbyForNewListingId = (
+    lobbyId: string,
+    destinyMembershipType: Globals.BungieMembershipType,
+    destinyMembershipId: string,
+    destinyCharacterId: string,
+    forceActivation: boolean,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Lobby/ActivateForNewListingId/${e(lobbyId)}/${e(
+        destinyMembershipType
+      )}/${e(destinyMembershipId)}/${e(destinyCharacterId)}/`,
+      [["forceActivation", forceActivation]],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "ActivateLobbyForNewListingId",
+      undefined,
+      clientState
+    );
+
+  /**
    * Applies to have a character join a fireteam.
    * @param listingId The id of the listing to apply to
    * @param applicationType The type of application to apply
@@ -29194,6 +29262,39 @@ class FireteamfinderServiceInternal {
       "FireteamFinder",
       "JoinLobby",
       input,
+      clientState
+    );
+
+  /**
+   * Sends a request to invite a target player directly to the fireteam.
+   * @param lobbyId The Lobby Id of the Lobby the caller is the owner of, and the target is a member of.
+   * @param ownerDestinyMembershipType A valid Destiny membership type for the owner.
+   * @param ownerDestinyCharacterId A valid Destiny character ID for the owner.
+   * @param targetDestinyMembershipType A valid Destiny membership type for the target.
+   * @param targetDestinyMembershipId A valid Destiny membership ID for the target.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static FireteamFinderNetworkSessionInvite = (
+    lobbyId: string,
+    ownerDestinyMembershipType: Globals.BungieMembershipType,
+    ownerDestinyCharacterId: string,
+    targetDestinyMembershipType: Globals.BungieMembershipType,
+    targetDestinyMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doPostRequest(
+      `/FireteamFinder/Invite/${e(lobbyId)}/${e(
+        ownerDestinyMembershipType
+      )}/${e(ownerDestinyCharacterId)}/${e(targetDestinyMembershipType)}/${e(
+        targetDestinyMembershipId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "FireteamFinder",
+      "FireteamFinderNetworkSessionInvite",
+      undefined,
       clientState
     );
 

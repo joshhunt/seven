@@ -745,6 +745,8 @@ export declare namespace DestinyDefinitions {
     GildedTitleComplete = 7,
     CraftingRecipeUnlocked = 8,
     ToastGuardianRankDetails = 9,
+    PathfinderObjectiveCompleteRituals = 10,
+    PathfinderObjectiveCompleteSchism = 11,
   }
 
   enum DestinyPresentationScreenStyle {
@@ -4897,6 +4899,8 @@ export declare namespace DestinyDefinitions {
 
     startTimeOverrideUnlockValueHash?: number;
 
+    acts: DestinySeasonActDefinition[];
+
     seasonalChallengesPresentationNodeHash?: number;
 
     memorializedBonusUnlockValueHash?: number;
@@ -4924,6 +4928,14 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
+  }
+
+  export interface DestinySeasonActDefinition {
+    displayName: string;
+
+    startTime: string;
+
+    rankCount: number;
   }
 
   export interface DestinySeasonPreviewDefinition {

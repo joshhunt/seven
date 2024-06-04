@@ -1,6 +1,8 @@
 // Created by v-rgordon, 2024
 // Copyright Bungie, Inc.
 
+import { BungieMembershipType } from "@Enum";
+import { ToastContent } from "@UIKit/Controls/Toast/Toast";
 import React, { FC } from "react";
 import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
 import { Localizer } from "@bungie/localization/Localizer";
@@ -21,23 +23,27 @@ type UserNameProps = {
 type UserActionProps = {
   bnetProfile: () => void;
   kickPlayer?: () => void;
+  invite?: () => void;
 };
 
 export const PlayerInteractionModal: FC<PlayerInteractionModalProps> = (
   props
 ) => {
   const { avatarURL, playerHash, name, platform } = props.userNameProps;
-  const { bnetProfile, kickPlayer } = props.userActionProps;
-  const { ViewProfile, Kick } = Localizer.Fireteams;
+  const { bnetProfile, kickPlayer, invite } = props.userActionProps;
 
   const UserActionArr = [
     {
-      title: ViewProfile,
+      title: Localizer.Fireteams.ViewProfile,
       callback: bnetProfile,
     },
     {
-      title: Kick,
+      title: Localizer.Fireteams.Kick,
       callback: kickPlayer,
+    },
+    {
+      title: Localizer.Fireteams.InviteToInGameFireteam,
+      callback: invite,
     },
   ];
 
@@ -56,8 +62,7 @@ export const PlayerInteractionModal: FC<PlayerInteractionModalProps> = (
       />
       {UserActionArr.map((user, index) => {
         const { title, callback } = user;
-
-        if (title === Kick && !kickPlayer) {
+        if (!callback) {
           return null;
         }
 

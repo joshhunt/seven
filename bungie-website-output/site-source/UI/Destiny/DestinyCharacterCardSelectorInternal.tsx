@@ -111,11 +111,15 @@ const DestinyCharacterCardSelectorInternal: React.FC<DestinyCharacterCardSelecto
         className={classNames(styles.character, {
           [styles.selected]: characterProps.id === props?.selectedCharacterId,
         })}
-        style={{ backgroundImage: `url(${characterProps?.backgroundPath})` }}
+        style={{
+          backgroundImage: `url(${characterProps?.backgroundPath})`,
+        }}
       >
         <div
           className={styles.icon}
-          style={{ backgroundImage: `url(${characterProps.iconPath})` }}
+          style={{
+            backgroundImage: `url(${characterProps.iconPath})`,
+          }}
         />
         <div className={styles.text}>
           <h4>{characterProps.class}</h4>

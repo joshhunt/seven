@@ -18,11 +18,12 @@ export const FireteamHelpButton: React.FC<FireteamHelpButtonProps> = (
 ) => {
   return (
     <Button
-      className={styles.helpButton}
       icon={<BsQuestionCircleFill />}
       buttonType={"clear"}
       size={props.size}
-      url={RouteHelper.FireteamFinderHelp()}
+      url={RouteHelper.HelpArticle(
+        Localizer.Fireteams.FireteamFinderHelpArticle
+      )}
     >
       {Localizer.fireteams.FireteamHelp}
     </Button>

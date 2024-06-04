@@ -15,6 +15,7 @@ interface FireteamUserLoaderProps {
   isSelf: boolean;
   invited: boolean;
   applicationId?: string;
+  isActive: boolean;
 }
 
 export const FireteamUserLoader: React.FC<FireteamUserLoaderProps> = (
@@ -34,6 +35,7 @@ export const FireteamUserLoader: React.FC<FireteamUserLoaderProps> = (
         fireteam={props.fireteam}
         invited={props.invited}
         applicationId={props.applicationId}
+        isActive={props.isActive}
         loaded={() => setIsLoaded(true)}
       />
     </SpinnerContainer>

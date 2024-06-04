@@ -12,14 +12,19 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import {
+  BungieMembershipType,
+  DestinyComponentType,
+  DestinyItemType,
+} from "@Enum";
 import { FireteamFinder, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { Toast } from "@UIKit/Controls/Toast/Toast";
+import { DestinyConstants } from "@Utilities/DestinyConstants";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
@@ -31,6 +36,7 @@ interface FireteamUserInternalProps
   isHost: boolean;
   isSelf: boolean;
   invited: boolean;
+  isActive: boolean;
   refreshFireteam?: () => void;
   loaded?: () => void;
   applicationId?: string;
@@ -54,8 +60,8 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   //the usercard is the hosts card - not the viewer of the page
   const isFireteamHost =
     props.member.membershipId === props.fireteam.owner?.membershipId;
+  const showInvite = !isFireteamHost && props.isHost && props.isActive;
   const showKick = !isFireteamHost && props.isHost && !props.isSelf;
-
   const getProfile = () => {
     Platform.Destiny2Service.GetProfile(
       props.member.membershipType,
@@ -64,6 +70,7 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
         DestinyComponentType.Characters,
         DestinyComponentType.SocialCommendations,
         DestinyComponentType.Profiles,
+        DestinyComponentType.CharacterEquipment,
       ]
     ).then((result) => {
       setProfileResponse(result);
@@ -115,6 +122,30 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
       }).url;
   };
 
+  const inviteToInGameFireteam = () => {
+    const invitedPlayer = profileResponse.profile.data.userInfo;
+
+    Platform.FireteamfinderService.FireteamFinderNetworkSessionInvite(
+      props.fireteam.lobbyId,
+      props.fireteam.owner.membershipType,
+      props.fireteam.owner.characterId,
+      invitedPlayer.membershipType,
+      invitedPlayer.membershipId
+    ).then((successfulInvite) => {
+      if (successfulInvite) {
+        return Toast.show(Localizer.fireteams.InviteSent, {
+          position: "br",
+          type: "success",
+        });
+      }
+
+      return Toast.show(Localizer.fireteams.MyInviteIsnTWorking, {
+        position: "br",
+        type: "error",
+      });
+    });
+  };
+
   useEffect(() => {
     props.member && props.fireteam && getProfile();
   }, [props.member]);
@@ -127,6 +158,24 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
     character?.emblemHash
   );
 
+  const subclassItem = profileResponse?.characterEquipment?.data?.[
+    character?.characterId
+  ]?.items?.filter((item) => {
+    const itemDef = props.definitions.DestinyInventoryItemLiteDefinition.get(
+      item.itemHash
+    );
+
+    return (
+      itemDef?.itemType === DestinyItemType.Subclass ||
+      itemDef?.inventory?.bucketTypeHash === DestinyConstants.SubclassBucketHash
+    );
+  })?.[0];
+
+  const subclassDefinition = subclassItem
+    ? props.definitions.DestinyInventoryItemLiteDefinition.get(
+        subclassItem.itemHash
+      )
+    : null;
   const showPlayerInteractionModal = () => {
     return Modal.open(
       <PlayerInteractionModal
@@ -145,6 +194,7 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
         userActionProps={{
           bnetProfile: showBnetProfile,
           kickPlayer: showKick ? kickUser : null,
+          invite: showInvite ? inviteToInGameFireteam : null,
         }}
       />
     );
@@ -192,7 +242,10 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
           </Anchor>
         </div>
         <div className={styles.userMeta}>
-          <FireteamCharacterTag character={character} />
+          <FireteamCharacterTag
+            character={character}
+            subclassDefinition={subclassDefinition}
+          />
           <FireteamUserStatTags
             mid={props.member.membershipId}
             mtype={props.member.membershipType}

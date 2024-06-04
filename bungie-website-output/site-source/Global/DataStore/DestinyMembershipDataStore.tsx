@@ -1,23 +1,23 @@
 // Created by larobinson, 2020
 // Copyright Bungie, Inc.
 
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { DataStore } from "@bungie/datastore";
+import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import {
   Characters,
+  Components,
   GroupsV2,
+  Inventory,
   Platform,
   Responses,
   User,
-  Components,
 } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import React from "react";
-import { EnumUtils } from "@Utilities/EnumUtils";
 
 export interface DestinyMembershipDataStorePayload {
   membershipData: User.UserMembershipData;
@@ -25,6 +25,7 @@ export interface DestinyMembershipDataStorePayload {
   selectedMembership: GroupsV2.GroupUserInfoCard;
   characters: { [key: string]: Characters.DestinyCharacterComponent };
   selectedCharacter: Characters.DestinyCharacterComponent;
+  equipment: { [key: string]: Inventory.DestinyInventoryComponent };
   loaded: boolean;
   isCrossSaved: boolean;
 }
@@ -38,48 +39,6 @@ export abstract class DestinyMembershipDataStore extends DataStore<
   DestinyMembershipDataStorePayload
 > {
   private isInitialized = false;
-
-  private readonly inProgressOperations: Map<string, Promise<any>> = new Map();
-  private generateKey(functionName: string, args: any[]): string {
-    return `${functionName}:${JSON.stringify(args)}`;
-  }
-
-  public async callFunctionWithDeduplication<T, Args extends any[]>(
-    func: (...args: Args) => Promise<T>,
-    ...args: Args
-  ): Promise<T> {
-    const key = this.generateKey(func.name, args);
-
-    if (this.inProgressOperations.has(key)) {
-      // Casting is safe here because we know the type matches the original call
-      return this.inProgressOperations.get(key) as Promise<T>;
-    }
-
-    const operationPromise: Promise<T> = (async () => {
-      try {
-        return await func(...args);
-      } finally {
-        this.inProgressOperations.delete(key);
-      }
-    })();
-
-    this.inProgressOperations.set(key, operationPromise);
-
-    return operationPromise;
-  }
-
-  protected constructor() {
-    super({
-      membershipData: null,
-      memberships: [],
-      selectedMembership: null,
-      characters: {},
-      selectedCharacter: null,
-      loaded: false,
-      isCrossSaved: false,
-    });
-  }
-
   public actions = this.createActions({
     /**
      * Refresh state with all valid destiny memberships for user, accounting for cross save.
@@ -99,6 +58,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
           characters: {},
           selectedCharacter: null,
           selectedMembership: null,
+          equipment: null,
           isCrossSaved: false,
           loaded: true,
         };
@@ -258,7 +218,11 @@ export abstract class DestinyMembershipDataStore extends DataStore<
             Platform.Destiny2Service.GetProfile(
               membershipToUse?.membershipType,
               membershipToUse?.membershipId,
-              [DestinyComponentType.Profiles, DestinyComponentType.Characters]
+              [
+                DestinyComponentType.Profiles,
+                DestinyComponentType.Characters,
+                DestinyComponentType.CharacterEquipment,
+              ]
             )
           );
 
@@ -284,6 +248,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         characters,
         selectedCharacter,
         selectedMembership: membershipToUse,
+        equipment: profileResponse?.characterEquipment?.data,
         isCrossSaved,
         loaded: true,
       };
@@ -335,6 +300,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
               DestinyComponentType.Profiles,
               DestinyComponentType.CharacterProgressions,
               DestinyComponentType.Characters,
+              DestinyComponentType.CharacterEquipment,
             ]
           )
         );
@@ -362,6 +328,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         characters,
         characterProgressions,
         selectedCharacter: characters[Object.keys(characters)[0]] ?? null,
+        equipment: profileResponse?.characterEquipment?.data,
       };
     },
     /**
@@ -388,6 +355,48 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       };
     },
   });
+  private readonly inProgressOperations: Map<string, Promise<any>> = new Map();
+
+  protected constructor() {
+    super({
+      membershipData: null,
+      memberships: [],
+      selectedMembership: null,
+      characters: {},
+      selectedCharacter: null,
+      equipment: null,
+      loaded: false,
+      isCrossSaved: false,
+    });
+  }
+
+  public async callFunctionWithDeduplication<T, Args extends any[]>(
+    func: (...args: Args) => Promise<T>,
+    ...args: Args
+  ): Promise<T> {
+    const key = this.generateKey(func.name, args);
+
+    if (this.inProgressOperations.has(key)) {
+      // Casting is safe here because we know the type matches the original call
+      return this.inProgressOperations.get(key) as Promise<T>;
+    }
+
+    const operationPromise: Promise<T> = (async () => {
+      try {
+        return await func(...args);
+      } finally {
+        this.inProgressOperations.delete(key);
+      }
+    })();
+
+    this.inProgressOperations.set(key, operationPromise);
+
+    return operationPromise;
+  }
+
+  private generateKey(functionName: string, args: any[]): string {
+    return `${functionName}:${JSON.stringify(args)}`;
+  }
 
   private getRequestedMembership(
     memberships: GroupsV2.GroupUserInfoCard[],

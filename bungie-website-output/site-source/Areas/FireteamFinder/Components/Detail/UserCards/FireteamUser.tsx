@@ -12,6 +12,7 @@ interface FireteamUserProps {
   isHost: boolean;
   isSelf: boolean;
   invited: boolean;
+  isActive: boolean;
   applicationId?: string;
 }
 
@@ -24,6 +25,7 @@ export const FireteamUser: React.FC<FireteamUserProps> = (props) => {
       fireteam={props.fireteam}
       invited={props.invited}
       applicationId={props.applicationId}
+      isActive={props.isActive}
     />
   );
 };

@@ -19,30 +19,27 @@ import styles from "./SeasonsIndex.module.scss";
 
 interface SeasonsIndexProps {}
 
+/*NOTE (5/30): Commenting out current season for now - @tmorris https://jira.bungie.com/browse/CTPLXP-181 */
+
 export const SeasonsIndex: React.FC<SeasonsIndexProps> = (props) => {
   const pastSeasons = SeasonsArray.filter(
     (s) => s !== SeasonsDefinitions.currentSeason
   );
-  const currentSeason = SeasonsDefinitions.currentSeason;
+  /*	const currentSeason = SeasonsDefinitions.currentSeason;*/
 
   return (
     <>
       <ScrollToAnchorTags animate={true} />
       <Grid className={styles.grid}>
-        <GridCol cols={12}>
-          <h2 className={styles.sectionHeader}>
-            {Localizer.Seasons.CurrentSeason}
-          </h2>
-        </GridCol>
+        {/*				<GridCol cols={12}>
+					<h2 className={styles.sectionHeader}>{Localizer.Seasons.CurrentSeason}</h2>
+				</GridCol>
 
-        <Anchor url={currentSeason.productPageLink}>
-          <GridCol
-            cols={12}
-            className={classNames(styles.cardWrapper, styles.currentSeason)}
-          >
-            <SeasonCard season={currentSeason} isCurrent={true} />
-          </GridCol>
-        </Anchor>
+				<Anchor url={currentSeason.productPageLink}>
+					<GridCol cols={12} className={classNames(styles.cardWrapper, styles.currentSeason)}>
+						<SeasonCard season={currentSeason} isCurrent={true}/>
+					</GridCol>
+				</Anchor>*/}
 
         <GridCol cols={12} id="past-seasons">
           <h3 className={styles.sectionHeader}>

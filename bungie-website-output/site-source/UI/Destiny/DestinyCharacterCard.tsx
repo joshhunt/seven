@@ -2,11 +2,11 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import * as React from "react";
 import { Characters } from "@Platform";
-import styles from "./DestinyCharacterCard.module.scss";
-import classNames from "classnames";
 import { StringUtils } from "@Utilities/StringUtils";
+import classNames from "classnames";
+import * as React from "react";
+import styles from "./DestinyCharacterCard.module.scss";
 
 interface IDestinyCharacterCardProps
   extends React.HTMLProps<HTMLDivElement>,
@@ -57,7 +57,9 @@ class DestinyCharacterCard extends React.Component<
     return (
       <div
         className={classes}
-        style={{ backgroundImage: `url(${emblemDef?.secondarySpecial ?? ""})` }}
+        style={{
+          backgroundImage: `url(${emblemDef?.secondarySpecial ?? ""})`,
+        }}
         {...rest}
       >
         <div className={styles.avatar}>

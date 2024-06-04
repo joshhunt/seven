@@ -93,7 +93,7 @@ export class AccountSidebar extends React.Component<
             icon={
               <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_seasons.png" />
             }
-            itemTitle={Localizer.Nav.TopNavSeasonProgress}
+            itemTitle={Localizer.Nav.TopNavSeasonPassProgress}
           />
         </Anchor>
 

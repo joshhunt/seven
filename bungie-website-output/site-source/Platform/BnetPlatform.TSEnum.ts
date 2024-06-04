@@ -1340,6 +1340,7 @@ export enum PlatformErrorCodes {
   FireteamFinderInviteValidationFailed = 3131,
   FireteamFinderOwnerNotInGame = 3132,
   FireteamFinderPlayerAtMaxLobbyLimit = 3133,
+  FireteamFinderLobbyTooFarInTheFuture = 3134,
   FireteamFinderResponseUndefined = 3150,
   FireteamFinderResponseMoved = 3151,
   FireteamFinderResponseLoggingIn = 3152,
@@ -1784,6 +1785,8 @@ export enum DestinyRecordToastStyle {
   GildedTitleComplete = 7,
   CraftingRecipeUnlocked = 8,
   ToastGuardianRankDetails = 9,
+  PathfinderObjectiveCompleteRituals = 10,
+  PathfinderObjectiveCompleteSchism = 11,
 }
 
 export enum TierType {

@@ -394,6 +394,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheDeep"),
         (area) => new ActionRoute(area, "SeasonOfTheWitch"),
         (area) => new ActionRoute(area, "SeasonOfTheWish"),
+        (area) => new ActionRoute(area, "EpisodeEchoes"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events"),

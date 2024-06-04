@@ -393,9 +393,32 @@ class SeasonOfTheWish extends SeasonDefinition {
   }
 }
 
+class EpisodeEchoes extends SeasonDefinition {
+  public static instance = new EpisodeEchoes();
+
+  public get title(): string {
+    return Localizer.Seasons.EpisodeEchoes;
+  }
+
+  public image = "/7/ca/destiny/bgs/season24/S24_Key_Art_-16-9.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season24/seasonbackground_24.jpg";
+  public smallIcon = "/7/ca/destiny/bgs/season24/seasonicon_24.png";
+
+  public productPageLink = RouteHelper.EpisodeEchoes();
+  public calendarContentItem: string;
+  public calendarBackgroundImage = "";
+  public seasonNumber = 24;
+  public actionRouteString = "EpisodeEchoes";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreEpisodeEchoes;
+  }
+}
+
 export class SeasonsDefinitions {
-  public static previousSeason = SeasonOfTheWitch.instance;
-  public static currentSeason = SeasonOfTheWish.instance;
+  public static previousSeason = SeasonOfTheWish.instance;
+  public static currentSeason = EpisodeEchoes.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -415,6 +438,7 @@ export class SeasonsDefinitions {
 }
 
 export const SeasonsArray = [
+  EpisodeEchoes.instance,
   SeasonOfTheWish.instance,
   SeasonOfTheWitch.instance,
   SeasonOfTheDeep.instance,

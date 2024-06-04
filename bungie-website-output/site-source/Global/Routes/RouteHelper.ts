@@ -538,6 +538,9 @@ export class RouteHelper {
   public static SeasonOfTheWish = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheWish")
   );
+  public static EpisodeEchoes = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("EpisodeEchoes")
+  );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")

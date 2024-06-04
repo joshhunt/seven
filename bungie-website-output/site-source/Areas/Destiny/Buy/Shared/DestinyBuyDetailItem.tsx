@@ -159,6 +159,7 @@ const TextSection = (props: ITextSectionProps) => {
       >
         {title}
       </div>
+      <br />
       <div
         className={classNames(styles.textContentWrapper, {
           [styles.reverse]: reverseBlurbAndSkuBtn,

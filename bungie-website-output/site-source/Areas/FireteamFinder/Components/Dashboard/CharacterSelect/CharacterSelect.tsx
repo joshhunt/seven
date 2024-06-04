@@ -13,14 +13,7 @@ import {
 import DestinyCharacterCard from "@UI/Destiny/DestinyCharacterCard";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, {
-  RefCallback,
-  RefObject,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { RefObject, useEffect, useState } from "react";
 import styles from "./CharacterSelect.module.scss";
 
 interface CharacterSelectProps
@@ -39,9 +32,6 @@ interface CharacterSelectProps
 interface CharacterModalProps {
   onClose: () => void;
 }
-
-/* NOTE: This is not the final ui or final implementation; for development purposes only*/
-
 const CharacterSelect: React.FC<CharacterSelectProps> = () => {
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
