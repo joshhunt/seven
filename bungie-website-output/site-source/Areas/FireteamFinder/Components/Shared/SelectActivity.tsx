@@ -96,8 +96,8 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   const fetchCharacterAccess = () => {
     if (destinyMembership?.selectedCharacter?.characterId) {
       Platform.FireteamfinderService.GetCharacterActivityAccess(
-        destinyMembership.selectedMembership.membershipType,
-        destinyMembership.selectedMembership.membershipId,
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
         destinyMembership?.selectedCharacter?.characterId
       ).then((response) => {
         setActiveActivityAccess(response);
@@ -110,30 +110,30 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   const fetchActivities = () => {
     const updatedNodes: Record<number, FireteamGraphExplorerNode> = {};
 
-    Object.values(allFireteamSets).forEach((set) => {
-      set.activityGraphHashes.forEach((hash) => {
-        if (leafMapToActivitySet[hash]) {
-          leafMapToActivitySet[hash].push(set);
+    Object.values(allFireteamSets || {}).forEach((set) => {
+      set?.activityGraphHashes?.forEach((hash) => {
+        if (leafMapToActivitySet?.[hash]) {
+          leafMapToActivitySet?.[hash]?.push(set);
         } else {
           leafMapToActivitySet[hash] = [set];
         }
       });
     });
 
-    Object.values(allFireteamActivityGraphDefs).forEach((graphDef) => {
-      updatedNodes[graphDef.hash] = {
-        title: graphDef.displayProperties.name,
+    Object.values(allFireteamActivityGraphDefs || {}).forEach((graphDef) => {
+      updatedNodes[graphDef?.hash] = {
+        title: graphDef?.displayProperties?.name,
         graphDefinition: graphDef,
-        applicableSets: leafMapToActivitySet[graphDef.hash] || [],
+        applicableSets: leafMapToActivitySet?.[graphDef?.hash] || [],
         children: [],
       };
     });
 
-    Object.values(allFireteamActivityGraphDefs).forEach((def) => {
-      const pointerNode = updatedNodes[def.hash];
+    Object.values(allFireteamActivityGraphDefs || {}).forEach((def) => {
+      const pointerNode = updatedNodes?.[def.hash];
 
-      pointerNode.children = def.children?.map(
-        (childHash) => updatedNodes[childHash]
+      pointerNode.children = def?.children?.map(
+        (childHash) => updatedNodes?.[childHash]
       );
 
       updatedNodes[def.hash] = pointerNode;
@@ -144,9 +144,9 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     ]?.fireteamFinderActivityGraphRootCategoryHashes;
 
     if (!rootNodeHashes) {
-      rootNodeHashes = Object.values(allFireteamActivityGraphDefs)
-        ?.filter((node) => !node.parentHash && node.hash)
-        ?.map((node) => node.hash);
+      rootNodeHashes = Object.values(allFireteamActivityGraphDefs || {})
+        ?.filter((node) => !node?.parentHash && node?.hash)
+        ?.map((node) => node?.hash);
     }
 
     let updatedRootNodes: FireteamGraphExplorerNode[] = [];
@@ -187,8 +187,8 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     color,
   }: ActivityItemProps) => {
     const name = node?.title;
-    const icon = node?.graphDefinition.displayProperties.hasIcon
-      ? node?.graphDefinition.displayProperties.icon
+    const icon = node?.graphDefinition?.displayProperties?.hasIcon
+      ? node?.graphDefinition?.displayProperties?.icon
       : defaultIcon;
     const count =
       node?.children?.filter((thisNode) => nodeIsVisible(thisNode))?.length ??
@@ -217,7 +217,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
             size={BasicSize.Small}
             url={props.linkClick(
               node?.graphDefinition?.hash,
-              firstValidRootActivity?.activityHashes[0]
+              firstValidRootActivity?.activityHashes?.[0]
             )}
             buttonType={"clear"}
             disabled={activeActivityAccess && !nodeIsAvailable(node)}
@@ -275,27 +275,15 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   const allItems: any[] = [];
   const parentHashArr: number[] = [];
   const nodeIsVisible = (node: FireteamGraphExplorerNode) => {
-    return (
-      activeActivityAccess &&
-      activeActivityAccess?.fireteamFinderActivityGraphStates[
-        node?.graphDefinition.hash
-      ] &&
-      activeActivityAccess?.fireteamFinderActivityGraphStates[
-        node?.graphDefinition.hash
-      ]?.isVisible
-    );
+    return activeActivityAccess?.fireteamFinderActivityGraphStates?.[
+      node?.graphDefinition?.hash
+    ]?.isVisible;
   };
 
   const nodeIsAvailable = (node: FireteamGraphExplorerNode) => {
-    return (
-      activeActivityAccess &&
-      activeActivityAccess?.fireteamFinderActivityGraphStates[
-        node?.graphDefinition.hash
-      ] &&
-      activeActivityAccess?.fireteamFinderActivityGraphStates[
-        node?.graphDefinition.hash
-      ]?.isAvailable
-    );
+    return activeActivityAccess?.fireteamFinderActivityGraphStates?.[
+      node?.graphDefinition?.hash
+    ]?.isAvailable;
   };
   const mapAccordionItems = (
     itemTemplate: ItemTemplateEnum,
@@ -303,26 +291,28 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     rootNode?: FireteamGraphExplorerNode,
     filterName = ""
   ) => {
-    const activeFilter = filterName.trim() !== "";
+    const activeFilter = filterName?.trim() !== "";
     const shouldIncludeNode = (
       node: FireteamGraphExplorerNode,
       addChildren = false
     ) => {
       if (node) {
-        const isSubStr = node.title
+        const isSubStr = node?.title
           .toLowerCase()
-          .includes(filterName.toLowerCase());
-        const isSelectableChild = parentHashArr.includes(
-          node.graphDefinition.hash
+          .includes(filterName?.toLowerCase());
+        const isSelectableChild = parentHashArr?.includes(
+          node?.graphDefinition?.hash
         );
 
         if (nodeIsVisible(node)) {
           if (isSubStr || isSelectableChild) {
-            parentHashArr.push(
-              ...node.graphDefinition.selfAndAllDescendantHashes
-            );
+            if (node?.graphDefinition?.selfAndAllDescendantHashes) {
+              parentHashArr?.push(
+                ...node?.graphDefinition?.selfAndAllDescendantHashes
+              );
 
-            return true;
+              return true;
+            }
           }
         }
 
@@ -335,7 +325,8 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
 
       return false;
     };
-    const filteredNodes = nodes.filter((node) => shouldIncludeNode(node));
+    const filteredNodes =
+      nodes?.filter((node) => shouldIncludeNode(node)) ?? [];
     const accordionItems: {
       triggerElement: JSX.Element;
       collapsibleElement: JSX.Element;
@@ -343,11 +334,11 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       defaultOpen: boolean;
       className: string;
       triggerClassName: any;
-    }[] = filteredNodes.map((node) => {
-      const icon = node.graphDefinition.displayProperties.hasIcon
-        ? node.graphDefinition.displayProperties.icon
+    }[] = filteredNodes?.map((node) => {
+      const icon = node?.graphDefinition?.displayProperties?.hasIcon
+        ? node?.graphDefinition?.displayProperties?.icon
         : null;
-      allItems.push(node.children);
+      allItems.push(node?.children);
 
       return {
         className: classNames(
@@ -370,12 +361,12 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         collapsibleClassName: classNames({
           [styles.collapsible]: node?.children?.length > 0,
         }),
-        collapsibleElement: node.children.length
+        collapsibleElement: node?.children?.length
           ? mapAccordionItems(
               ItemTemplateEnum.SECONDARY,
-              node.children,
+              node?.children,
               node,
-              filterName.toLowerCase()
+              filterName?.toLowerCase()
             )
           : null,
       };
@@ -384,7 +375,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     return (
       <>
         {" "}
-        {allItems.length ? (
+        {allItems?.length ? (
           <Accordion
             items={accordionItems}
             className={styles.activityAccordion}
@@ -406,7 +397,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         activeActivityAccess &&
         mapAccordionItems(
           ItemTemplateEnum.PRIMARY,
-          Object.values(rootNodes),
+          Object.values(rootNodes ?? {}),
           undefined,
           activityFilterString
         )}

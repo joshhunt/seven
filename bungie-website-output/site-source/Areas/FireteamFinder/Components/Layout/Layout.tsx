@@ -7,22 +7,32 @@ import { BreadcrumbConfiguration } from "@Areas/FireteamFinder/Components/Shared
 import { FireteamLegacyExperienceButton } from "@Areas/FireteamFinder/Components/Shared/FireteamLegacyExperienceButton";
 import SelectActivity from "@Areas/FireteamFinder/Components/Shared/SelectActivity";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
+import { useDynamicPolling } from "@Areas/FireteamFinder/Hooks/useDynamicPolling";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
+import {
+  BungieMembershipType,
+  DestinyComponentType,
+  RealTimeEventType,
+} from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform, Responses } from "@Platform";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { Spinner, SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, {
   Children,
   cloneElement,
   isValidElement,
   ReactElement,
+  useEffect,
+  useRef,
   useState,
 } from "react";
 import { Header } from "./Header";
@@ -62,6 +72,32 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
   const { activityFilterString, setActivityFilterString } = props;
   const [destinyDataLoaded, setDestinyDataLoaded] = useState(false);
+  const intervalTime = ConfigUtils.GetParameter(
+    SystemNames.FireteamFinderNotification,
+    "FireteamFinderPollingIntervalSeconds",
+    60
+  );
+
+  const { data: eventData, loading, error } = useDynamicPolling({
+    seconds: intervalTime,
+  });
+  const showNotifications = eventData.replaced && !error && !loading;
+
+  useEffect(() => {
+    if (showNotifications) {
+      eventData.events
+        .filter(
+          (event) =>
+            parseInt(event.type) === RealTimeEventType.FireteamFinderUpdate
+        )
+        .map((notificationEvent) => {
+          Toast.show(notificationEvent.name, {
+            position: "br",
+            type: "success",
+          });
+        });
+    }
+  }, [eventData.replaced]);
 
   const loadDestinyMembership = () => {
     Platform?.UserService?.GetMembershipDataById(

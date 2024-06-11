@@ -132,4 +132,5 @@ export const SystemNames = {
   ApplicationsReactUI: "ApplicationsReactUI",
   FireteamFinderWebUI: "FireteamFinderWebUI",
   ParentalControlUI: "ParentalControlUI",
+  FireteamFinderNotification: "FireteamFinderNotification",
 } as const;

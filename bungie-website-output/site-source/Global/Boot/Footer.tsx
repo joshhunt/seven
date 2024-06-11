@@ -117,7 +117,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 RouteHelper.DestinyBuy({ version: "Promo" }),
                 navLoc.Expansions
               )}
-              {this.renderLink(RouteHelper.Seasons(), navLoc.TopNavSeasons)}
+              {this.renderLink("/episodeechoes", navLoc.TopNavEpisodes)}
               {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
               {this.renderLink(
                 ConfigUtils.SystemStatus(SystemNames.FireteamFinderWebUI)
