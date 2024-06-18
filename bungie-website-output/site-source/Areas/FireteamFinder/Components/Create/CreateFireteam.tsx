@@ -126,7 +126,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     fireteamActivity: activityDef.hash,
     platform:
       fireteamOptionTree[FireteamFinderValueTypes.platform].defaultCreateValue,
-    players: "",
+    players: activityMaxSize.toString(),
     isScheduled: "0",
     applicationRequirement:
       fireteamOptionTree[FireteamFinderValueTypes.applicationRequirement]

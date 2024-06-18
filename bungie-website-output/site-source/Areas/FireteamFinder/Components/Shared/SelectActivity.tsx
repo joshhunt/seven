@@ -179,6 +179,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         return null;
     }
   };
+
   const ActivityItem = ({
     itemTemplate,
     node,
@@ -292,10 +293,16 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
     filterName = ""
   ) => {
     const activeFilter = filterName?.trim() !== "";
-    const shouldIncludeNode = (
-      node: FireteamGraphExplorerNode,
-      addChildren = false
-    ) => {
+    const rootNodeHashArr = rootNodes.map((node) => node.graphDefinition.hash);
+
+    const shouldIncludeNode = (node: FireteamGraphExplorerNode) => {
+      if (
+        rootNodeHashArr.includes(node.graphDefinition.hash) &&
+        !node.children.length
+      ) {
+        return false;
+      }
+
       if (node) {
         const isSubStr = node?.title
           .toLowerCase()
@@ -374,7 +381,6 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
 
     return (
       <>
-        {" "}
         {allItems?.length ? (
           <Accordion
             items={accordionItems}

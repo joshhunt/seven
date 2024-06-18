@@ -72,32 +72,22 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
   const { activityFilterString, setActivityFilterString } = props;
   const [destinyDataLoaded, setDestinyDataLoaded] = useState(false);
+  const [key, setKey] = useState(0);
   const intervalTime = ConfigUtils.GetParameter(
     SystemNames.FireteamFinderNotification,
     "FireteamFinderPollingIntervalSeconds",
     60
   );
 
-  const { data: eventData, loading, error } = useDynamicPolling({
+  const { hasNotification, data } = useDynamicPolling({
     seconds: intervalTime,
   });
-  const showNotifications = eventData.replaced && !error && !loading;
 
   useEffect(() => {
-    if (showNotifications) {
-      eventData.events
-        .filter(
-          (event) =>
-            parseInt(event.type) === RealTimeEventType.FireteamFinderUpdate
-        )
-        .map((notificationEvent) => {
-          Toast.show(notificationEvent.name, {
-            position: "br",
-            type: "success",
-          });
-        });
+    if (data.events.some((notification) => notification.type === "9")) {
+      setKey((prevKey) => prevKey + 1);
     }
-  }, [eventData.replaced]);
+  }, [hasNotification]);
 
   const loadDestinyMembership = () => {
     Platform?.UserService?.GetMembershipDataById(
@@ -215,6 +205,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     <div
       className={styles.layout}
       style={{ backgroundImage: `url(${props.backgroundImage})` }}
+      key={key}
     >
       <BungieHelmet
         title={fireteamsLoc.Fireteams}

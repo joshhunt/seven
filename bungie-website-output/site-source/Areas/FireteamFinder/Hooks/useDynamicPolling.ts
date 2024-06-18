@@ -30,6 +30,7 @@ interface DynamicPollingState {
   data: EventData;
   loading: boolean;
   error: any;
+  hasNotification: boolean;
 }
 
 const debounce = <T extends (...args: any[]) => void>(
@@ -48,6 +49,36 @@ const debounce = <T extends (...args: any[]) => void>(
   } as T;
 };
 
+const deepEqual = (obj1: any, obj2: any): boolean => {
+  if (obj1 === obj2) {
+    return true;
+  }
+
+  if (
+    typeof obj1 !== "object" ||
+    obj1 === null ||
+    typeof obj2 !== "object" ||
+    obj2 === null
+  ) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
   const [hookProps, setHookProps] = useState<DynamicPollingState>({
     data: {
@@ -58,6 +89,7 @@ export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
     },
     loading: false,
     error: null,
+    hasNotification: false,
   });
 
   const isMounted = useRef(true);
@@ -80,6 +112,7 @@ export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
         setHookProps((prev) => {
           const updatedSeq = res.seq || prev.data.seq;
           const updatedTab = res.tab || prev.data.tab;
+          const updatedNotification = !deepEqual(res, prev.data);
 
           return {
             ...prev,
@@ -89,6 +122,9 @@ export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
               tab: updatedTab,
             },
             loading: false,
+            hasNotification: updatedNotification
+              ? !prev.hasNotification
+              : prev.hasNotification,
           };
         });
       }
