@@ -1,9 +1,10 @@
 // Created by v-rgordon, 2024
 // Copyright Bungie, Inc.
 
-import { RendererLogLevel } from "@Enum";
+import { RealTimeEventType, RendererLogLevel } from "@Enum";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { useState, useEffect, useRef } from "react";
 
 interface DynamicPollingProps {
@@ -49,36 +50,6 @@ const debounce = <T extends (...args: any[]) => void>(
   } as T;
 };
 
-const deepEqual = (obj1: any, obj2: any): boolean => {
-  if (obj1 === obj2) {
-    return true;
-  }
-
-  if (
-    typeof obj1 !== "object" ||
-    obj1 === null ||
-    typeof obj2 !== "object" ||
-    obj2 === null
-  ) {
-    return false;
-  }
-
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
-
-  for (const key of keys1) {
-    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
 export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
   const [hookProps, setHookProps] = useState<DynamicPollingState>({
     data: {
@@ -108,11 +79,17 @@ export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
         null,
         { signal: abortController.current.signal }
       );
-      if (isMounted.current) {
+      const updatedNotification = res.events.some((notification) =>
+        EnumUtils.looseEquals(
+          notification.eventType,
+          RealTimeEventType.FireteamFinderUpdate,
+          RealTimeEventType
+        )
+      );
+      if (isMounted.current && updatedNotification) {
         setHookProps((prev) => {
           const updatedSeq = res.seq || prev.data.seq;
           const updatedTab = res.tab || prev.data.tab;
-          const updatedNotification = !deepEqual(res, prev.data);
 
           return {
             ...prev,
@@ -148,7 +125,6 @@ export const useDynamicPolling = ({ seconds = 60 }: DynamicPollingProps) => {
 
   useEffect(() => {
     return () => {
-      isMounted.current = false;
       if (abortController.current) {
         abortController.current.abort();
       }

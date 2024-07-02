@@ -7,7 +7,6 @@ import { BreadcrumbConfiguration } from "@Areas/FireteamFinder/Components/Shared
 import { FireteamLegacyExperienceButton } from "@Areas/FireteamFinder/Components/Shared/FireteamLegacyExperienceButton";
 import SelectActivity from "@Areas/FireteamFinder/Components/Shared/SelectActivity";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDynamicPolling } from "@Areas/FireteamFinder/Hooks/useDynamicPolling";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
@@ -16,15 +15,12 @@ import {
   RealTimeEventType,
 } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform, Responses } from "@Platform";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
-import { Toast } from "@UIKit/Controls/Toast/Toast";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, {
   Children,
@@ -72,22 +68,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
   const { activityFilterString, setActivityFilterString } = props;
   const [destinyDataLoaded, setDestinyDataLoaded] = useState(false);
-  const [key, setKey] = useState(0);
-  const intervalTime = ConfigUtils.GetParameter(
-    SystemNames.FireteamFinderNotification,
-    "FireteamFinderPollingIntervalSeconds",
-    60
-  );
-
-  const { hasNotification, data } = useDynamicPolling({
-    seconds: intervalTime,
-  });
-
-  useEffect(() => {
-    if (data.events.some((notification) => notification.type === "9")) {
-      setKey((prevKey) => prevKey + 1);
-    }
-  }, [hasNotification]);
 
   const loadDestinyMembership = () => {
     Platform?.UserService?.GetMembershipDataById(
@@ -205,7 +185,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
     <div
       className={styles.layout}
       style={{ backgroundImage: `url(${props.backgroundImage})` }}
-      key={key}
     >
       <BungieHelmet
         title={fireteamsLoc.Fireteams}

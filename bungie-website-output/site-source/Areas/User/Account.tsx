@@ -122,7 +122,7 @@ const Account: React.FC = () => {
     } else {
       AccountDestinyMembershipDataStore.actions.loadUserData();
     }
-  }, []);
+  }, [membershipId]);
 
   useEffect(() => {
     Platform.IgnoreService.GlobalIgnoreImportsAvailable().then(

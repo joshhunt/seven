@@ -1,9 +1,10 @@
 // Created by larobinson, 2021
+import { ViewerPermissionContext } from "@Areas/User/Account";
 // Copyright Bungie, Inc.
 import { Localizer } from "@bungie/localization/Localizer";
 import classNames from "classnames";
 import { Field, FormikProps, FormikValues } from "formik";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { ConvertToPlatformError } from "../../../../Platform/ApiIntermediary";
 import { Platform, User } from "../../../../Platform/BnetPlatform.TSClient";
 import { Modal } from "../../../../UI/UIKit/Controls/Modal/Modal";
@@ -11,7 +12,6 @@ import { SpinnerContainer } from "../../../../UI/UIKit/Controls/Spinner";
 import { GridCol } from "../../../../UI/UIKit/Layout/Grid/Grid";
 import styles from "../IdentitySettings.module.scss";
 import { IdentityPagination } from "./IdentityPagination";
-import { ViewerPermissionContext } from "@Areas/User/Account";
 
 interface IAvatarArrayValue {
   id: number;
@@ -28,16 +28,14 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
   const avatarsPerPage = 48;
   const [avatarOffset, setAvatarOffset] = useState(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const { membershipIdFromQuery, isSelf, isAdmin } = useContext(
-    ViewerPermissionContext
-  );
+  const { isSelf, isAdmin } = useContext(ViewerPermissionContext);
 
   const handleAvatarPageChange = (pageNumber: { selected: number }) => {
     const newOffset = Math.ceil(pageNumber.selected * avatarsPerPage);
     setAvatarOffset(newOffset);
   };
 
-  const loadAvatars = () => {
+  const loadAvatars = useCallback(() => {
     setLoading(true);
 
     //admins can only see admin avatars for themselves not other admins
@@ -62,7 +60,10 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
             if (Number(key) === initialProfilePicture) {
               avatarIndex = i;
             }
-            avatarsNewToOld[i] = { id: Number(key), value: data[Number(key)] };
+            avatarsNewToOld[i] = {
+              id: Number(key),
+              value: data[Number(key)],
+            };
           });
         setAvatars(avatarsNewToOld);
 
@@ -73,11 +74,11 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
       .catch(ConvertToPlatformError)
       .catch((e) => Modal.error(e))
       .finally(() => setLoading(false));
-  };
+  }, [isAdmin, isSelf, user]);
 
   useEffect(() => {
     loadAvatars();
-  }, [user]);
+  }, [loadAvatars, user]);
 
   return (
     <>
@@ -92,7 +93,9 @@ export const Avatars: React.FC<AvatarsProps> = ({ user, formikProps }) => {
               return (
                 <label
                   key={i}
-                  className={classNames({ [styles.hideWhileLoading]: loading })}
+                  className={classNames({
+                    [styles.hideWhileLoading]: loading,
+                  })}
                 >
                   <Field
                     type="radio"

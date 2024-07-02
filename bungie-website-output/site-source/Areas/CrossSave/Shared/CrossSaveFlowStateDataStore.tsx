@@ -11,7 +11,6 @@ import { CrossSave, GroupsV2, Platform, Renderer } from "@Platform";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SessionStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import React from "react";
 import { CrossSaveUtils } from "./CrossSaveUtils";
 
 export enum CrossSaveMode {
@@ -43,6 +42,8 @@ export const CrossSaveValidGameVersions: DestinyGameVersions[] = [
   DestinyGameVersions.BeyondLight,
   DestinyGameVersions.TheWitchQueen,
   DestinyGameVersions.Anniversary30th,
+  DestinyGameVersions.Lightfall,
+  DestinyGameVersions.TheFinalShape,
 ];
 
 class CrossSaveFlowStateDataStoreInternal extends DataStore<

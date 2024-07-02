@@ -5,20 +5,46 @@ import { Responsive } from "@Boot/Responsive";
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
+import { RendererLogLevel } from "@Enum";
+import { Logger } from "@Global/Logger";
+import { EnumUtils } from "@Utilities/EnumUtils";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useHistory, useLocation, useParams } from "react-router";
-import { Logger } from "@Global/Logger";
-import { RendererLogLevel } from "@Enum";
+import { useHistory, useLocation } from "react-router";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { EnumUtils } from "@Utilities/EnumUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
 import { NewsCategory } from "./News";
 import styles from "./NewsByCategory.module.scss";
 import { NewsPreview } from "./NewsPreview";
 
 interface NewsByCategoryProps {}
+
+const BasicNewsQuery = (
+  locale: string,
+  articlesPerPage: number,
+  currentPage: number,
+  category?: string
+) => {
+  return ContentStackClient()
+    .ContentType("news_article")
+    .Query()
+    .only([
+      "image",
+      "mobile_image",
+      "banner_image",
+      "subtitle",
+      "date",
+      "title",
+      "url",
+    ])
+    .language(locale)
+    .descending("date")
+    .includeCount()
+    .skip((currentPage - 1) * articlesPerPage)
+    .limit(articlesPerPage)
+    .toJSON();
+};
 
 const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const responsive = useDataStore(Responsive);
@@ -37,27 +63,6 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const [total, setTotal] = useState(articlesPerPage);
   const totalPages = total / articlesPerPage;
 
-  const BasicNewsQuery = (currentPage: number, category?: string) => {
-    return ContentStackClient()
-      .ContentType("news_article")
-      .Query()
-      .only([
-        "image",
-        "mobile_image",
-        "banner_image",
-        "subtitle",
-        "date",
-        "title",
-        "url",
-      ])
-      .language(locale)
-      .descending("date")
-      .includeCount()
-      .skip((currentPage - 1) * articlesPerPage)
-      .limit(articlesPerPage)
-      .toJSON();
-  };
-
   useEffect(() => {
     if (
       pageQueryToNumber < 1 &&
@@ -69,7 +74,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
 
   useEffect(() => {
     if (!pageCategory || categoryIsInvalid) {
-      BasicNewsQuery(page)
+      BasicNewsQuery(locale, articlesPerPage, page)
         .find()
         .then((response) => {
           const [entries, count] = response || [];
@@ -80,7 +85,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
           Logger.logToServer(error, RendererLogLevel.Error);
         });
     } else {
-      BasicNewsQuery(page)
+      BasicNewsQuery(locale, articlesPerPage, page)
         .where("category", pageCategory)
         .find()
         .then((response) => {
@@ -107,7 +112,9 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
           <ReactPaginate
             forcePage={page - 1 ?? 1}
             onPageChange={(selectedItem) =>
-              history.push({ search: `?page=${selectedItem.selected + 1}` })
+              history.push({
+                search: `?page=${selectedItem.selected + 1}`,
+              })
             }
             pageCount={totalPages}
             pageRangeDisplayed={responsive.mobile ? 1 : 5}

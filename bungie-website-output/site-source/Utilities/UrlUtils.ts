@@ -336,6 +336,17 @@ export class UrlUtils {
   }
 
   /**
+   * Returns the parts of a full url with the host and path as the endpoint and the query params as entries in an object
+   * @param url
+   */
+  public static parseUrl(url: string) {
+    let parts = url.split("?");
+    let result = UrlUtils.QueryToObject(parts[1]);
+    result.endpoint = parts[0];
+    return result;
+  }
+
+  /**
    * Returns true if this link is staying within Bungie.net
    * @param hrefLocation
    */

@@ -44,12 +44,20 @@ export class ConfigUtils {
 
     const system = coreSettings.systems[systemName];
 
+    if (!system) {
+      Logger.error(
+        new DetailedError(
+          "System not found",
+          `${systemName} does not exist in configuration. Is it set to be external?`
+        )
+      );
+    }
+
     return system ? system.enabled : false;
   }
 
   /**
    * Get a parameter out of config
-   * @param coreSettings Core Settings
    * @param systemName The name of the system
    * @param parameterName The name of the parameter in that system
    * @param defaultValue If no value is found, use this one instead

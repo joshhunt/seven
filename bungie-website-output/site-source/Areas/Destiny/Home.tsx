@@ -3,41 +3,38 @@
 
 import { Featured } from "@Areas/Home/Featured";
 import { Hero } from "@Areas/Home/Hero";
+import { Recent } from "@Areas/Home/Recent";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { Localizer } from "@bungie/localization";
 import * as Globals from "@Enum";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
-import styles from "./Home.module.scss";
-import { Recent } from "@Areas/Home/Recent";
-import { Footer } from "@Boot/Footer";
-import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { Localizer } from "@bungie/localization";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { RouteDataStore } from "@Global/DataStore/RouteDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { useCSWebpImages } from "@Utilities/CSUtils";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { BnetStackHomePage } from "../../Generated/contentstack-types";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
+import styles from "./Home.module.scss";
 
 interface HomeProps {}
 
 const Home: React.FC<HomeProps> = (props) => {
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [homePageData, setHomePageData] = useState<BnetStackHomePage>();
-  const [supportsWebP, setSupportsWebP] = useState(true);
   const navLoc = Localizer.Nav;
 
   const responseCacheObject: Record<string, BnetStackHomePage> = {};
+  const mounted = React.useRef(false);
 
   useEffect(() => {
+    if (mounted.current) {
+      return;
+    }
+
     if (responseCacheObject[locale]) {
       setHomePageData(responseCacheObject[locale]);
     } else {
@@ -51,13 +48,12 @@ const Home: React.FC<HomeProps> = (props) => {
         .then((result) => {
           responseCacheObject[locale] = result;
           setHomePageData(result);
+        })
+        .finally(() => {
+          mounted.current = true;
         });
     }
-
-    BrowserUtils.supportsWebp().then((supportsWebp) =>
-      setSupportsWebP(supportsWebp)
-    );
-  }, [locale]);
+  }, [locale, responseCacheObject]);
 
   const {
     featured,
@@ -84,11 +80,12 @@ const Home: React.FC<HomeProps> = (props) => {
     )
   );
 
+  const location = useHistory().location;
+
   if (!homePageData) {
     return null;
   }
 
-  const history = useHistory();
   const DESTINY_TITLE = navLoc.DestinyHomeSeoTitle;
   const DESTINY_DESC = navLoc.DestinyHomeSeoDesc;
 
@@ -136,8 +133,14 @@ const Home: React.FC<HomeProps> = (props) => {
             title,
             title_as_image: images?.titleImg,
             subtitle,
-            button_one: { label: button_one_label, link: button_one_link },
-            button_two: { label: button_two_label, link: button_two_link },
+            button_one: {
+              label: button_one_label,
+              link: button_one_link,
+            },
+            button_two: {
+              label: button_two_label,
+              link: button_two_link,
+            },
           }}
         />
         <Featured featured={featured} />

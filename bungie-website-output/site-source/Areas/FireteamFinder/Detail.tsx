@@ -5,14 +5,17 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { FireteamDetail } from "@Areas/FireteamFinder/Components/Detail/FireteamDetail";
 import { Layout } from "@Areas/FireteamFinder/Components/Layout/Layout";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
+import { useDynamicPolling } from "@Areas/FireteamFinder/Hooks/useDynamicPolling";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
+import { SystemNames } from "@Global/SystemNames";
 import { FireteamFinder, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/RouteParams";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
@@ -80,6 +83,14 @@ export const Detail: React.FC<DetailProps> = (props) => {
   >(null);
   const bgImage =
     "/7/ca/destiny/bgs/fireteamfinder/fireteam_finder_create_bg.jpg";
+  const intervalTime = ConfigUtils.GetParameter(
+    SystemNames.FireteamFinderNotification,
+    "FireteamFinderPollingIntervalSeconds",
+    60
+  );
+  const { hasNotification } = useDynamicPolling({
+    seconds: intervalTime,
+  });
 
   const FireteamNotFound = () => (
     <div
@@ -176,7 +187,6 @@ export const Detail: React.FC<DetailProps> = (props) => {
       } else {
         checkAllPlayerApplicationsForMatch();
         checkAllPlayerLobbiesForMatch();
-
         Platform.FireteamfinderService.GetLobby(
           lobbyId,
           destinyMembership.selectedMembership.membershipType,
@@ -196,7 +206,11 @@ export const Detail: React.FC<DetailProps> = (props) => {
         });
       }
     }
-  }, [lobbyId, destinyMembership?.selectedMembership?.membershipId]);
+  }, [
+    lobbyId,
+    destinyMembership?.selectedMembership?.membershipId,
+    hasNotification,
+  ]);
 
   const getButtonConfig = () => {
     if (!fireteam) {

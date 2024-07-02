@@ -1,15 +1,15 @@
+import { ConvertToPlatformError } from "@ApiIntermediary";
+import { PlatformError } from "@CustomErrors";
+import { PlatformErrorCodes } from "@Enum";
+import { Contract, Models, Platform } from "@Platform";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EventMux } from "../EventMuxBase";
-import { Platform, Contract, Models } from "@Platform";
-import { ConvertToPlatformError, PlatformResponse } from "@ApiIntermediary";
 import {
-  InternalNotificationDistributor,
   BnetNotification,
+  InternalNotificationDistributor,
   NotificationTypes,
 } from "./InternalNotificationDistributor";
 import { NotificationCountManager } from "./NotificationCountManager";
-import { PlatformError } from "@CustomErrors";
-import { PlatformErrorCodes } from "@Enum";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 export class InternalNotificationPollingDataSource {
   private readonly distributor: InternalNotificationDistributor;
@@ -22,7 +22,9 @@ export class InternalNotificationPollingDataSource {
     coreSettings: Models.CoreSettingsConfiguration
   ) {
     this.distributor = distributor;
-    this.enabled = ConfigUtils.SystemStatus("RealTimeCounts");
+
+    // If real-time counts are enabled, then the GetCountsForCurrentUser API is disabled except for mobile clients.
+    this.enabled = !ConfigUtils.SystemStatus("RealTimeCounts");
   }
 
   private isAuthenticated() {

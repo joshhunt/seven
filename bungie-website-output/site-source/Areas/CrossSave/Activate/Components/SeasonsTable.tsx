@@ -43,7 +43,7 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
   );
   const isCrossSaved = !!props.flowState.isActive;
   const primaryMembershipType = props.flowState.primaryMembershipType;
-
+  const profileSeasonsItems = entitlementsResponse?.profileSeasons?.length;
   const [allSeasons, setAllSeasons] = useState<number[]>([]);
 
   const getAllSeasons = (seasonEntitlements: {
@@ -184,7 +184,7 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
 
   useEffect(() => {
     setAllSeasons(getAllSeasons(entitlementsResponse?.profileSeasons));
-  }, [entitlementsResponse]);
+  }, [profileSeasonsItems]);
 
   if (allSeasons.length === 0 || !entitlementsResponse || !linkedProfiles) {
     return null;
