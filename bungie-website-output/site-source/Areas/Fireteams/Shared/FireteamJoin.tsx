@@ -12,7 +12,7 @@ import { PlatformError } from "@CustomErrors";
 import { FireteamPlatform } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Fireteam, Platform } from "@Platform";
-import { RouteDefs } from "@Routes/RouteDefs";
+import { RouteHelper } from "@Routes/RouteHelper";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import {
   DestinyAccountWrapper,
@@ -138,7 +138,7 @@ export const FireteamJoin: React.FC<FireteamJoinProps> = (props) => {
               <div className={styles.joinWarning}>
                 <SafelySetInnerHTML
                   html={Localizer.Format(fireteamsLoc.FireteamTeamJoinWarning, {
-                    url: RouteDefs.Areas.Legal.getAction("terms").path,
+                    url: RouteHelper.LegalPage({ pageName: "terms" }),
                   })}
                 />
               </div>
