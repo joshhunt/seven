@@ -11,7 +11,10 @@ import {
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
+import {
+  SafelySetInnerHTML,
+  sanitizeHTML,
+} from "@UI/Content/SafelySetInnerHTML";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
@@ -375,10 +378,20 @@ class CodesRedemptionForm extends React.Component<
                     <p>
                       <span className={styles.success}>
                         {Localizer.Coderedemption.Success}
-                      </span>{" "}
-                      {this.state.redeemedOffer.OfferDisplayName}
+                      </span>
+                      {
+                        <SafelySetInnerHTML
+                          html={this.state.redeemedOffer.OfferDisplayName}
+                        />
+                      }
                     </p>
-                    <p>{this.state.redeemedOffer.OfferDisplayDetail}</p>
+                    <p>
+                      {
+                        <SafelySetInnerHTML
+                          html={this.state.redeemedOffer.OfferDisplayDetail}
+                        />
+                      }
+                    </p>
                   </div>
 
                   {

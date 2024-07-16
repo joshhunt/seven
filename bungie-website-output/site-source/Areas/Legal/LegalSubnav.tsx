@@ -29,7 +29,7 @@ export const LegalSubnav: React.FC = () => {
       .then((response) => {
         setLegalPages(response[0]);
       });
-  }, []);
+  }, [locale]);
 
   if (!legalPages) {
     return null;
@@ -39,9 +39,9 @@ export const LegalSubnav: React.FC = () => {
   const links: ISubNavLink[] = Array.from(legalPages)
     .sort((a: any, b: any) => a.order - b.order)
     .map((p: any) => ({
-      current: p.url === `/${params.url}`,
+      current: p.url === `/${params.pageName}`,
       label: p.title,
-      to: RouteHelper.LegalPage({ url: p.url.slice(1) }),
+      to: RouteHelper.LegalPage({ pageName: p.url.slice(1) }),
     }));
 
   return (

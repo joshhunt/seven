@@ -282,20 +282,11 @@ export class RouteDefs {
     }),
     Legal: new Area({
       name: RouteDefs.AreaNames.Legal,
-      indexParams: { path: ":url" },
+      indexParams: { path: ":pageName" },
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Legal/LegalArea" /* webpackChunkName: "Legal" */)
       ),
-      routes: [
-        (area) => new ActionRoute(area, "terms"),
-        (area) => new ActionRoute(area, "privacypolicy"),
-        (area) => new ActionRoute(area, "licenses"),
-        (area) => new ActionRoute(area, "sla"),
-        (area) => new ActionRoute(area, "codeofconduct"),
-        (area) => new ActionRoute(area, "cookiepolicy"),
-        (area) => new ActionRoute(area, "intellectualpropertytrademarks"),
-        (area) => new ActionRoute(area, "paymentservicesact"),
-      ],
+      routes: [(area) => new ActionRoute(area, "index", { path: ":pageName" })],
     }),
     News: new Area({
       name: RouteDefs.AreaNames.News,

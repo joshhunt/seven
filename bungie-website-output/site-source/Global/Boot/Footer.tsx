@@ -171,19 +171,24 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               {this.renderLink(RouteHelper.GuideDestiny(), navLoc.Guides)}
               {this.renderLink(RouteHelper.Help(), navLoc.faq)}
 
-              <FooterLink url={RouteHelper.LegalSLA()} label={navLoc.Legal} />
               <FooterLink
-                url={RouteHelper.LegalTermsOfUse()}
+                url={RouteHelper.LegalPage({ pageName: "sla" })}
+                label={navLoc.Legal}
+              />
+              <FooterLink
+                url={RouteHelper.LegalPage({ pageName: "terms" })}
                 label={navLoc.Terms}
               />
               <FooterLink
-                url={RouteHelper.LegalPrivacyPolicy()}
+                url={RouteHelper.LegalPage({ pageName: "privacypolicy" })}
                 label={navLoc.Privacy}
               />
               {(Localizer.CurrentCultureName === "en" ||
                 Localizer.CurrentCultureName === "ja") && (
                 <FooterLink
-                  url={RouteHelper.LegalPaymentServicesAct()}
+                  url={RouteHelper.LegalPage({
+                    pageName: "paymentservicesact",
+                  })}
                   label={navLoc.paymentServicesAct}
                 />
               )}

@@ -217,7 +217,7 @@ class AppLayout extends React.Component<
     const destiny2Disabled =
       this.settingsLoaded &&
       this.state.globalState &&
-      !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+      !ConfigUtils.SystemStatus(SystemNames.Destiny2API);
 
     const platformClass = BrowserUtils.getPlatformClass();
 

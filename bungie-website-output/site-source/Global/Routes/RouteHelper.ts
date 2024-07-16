@@ -21,6 +21,7 @@ import {
   IFireteamFinderParams,
   IClanParams,
   IApplicationParams,
+  LegalRouteParams,
 } from "@Routes/RouteParams";
 
 /**
@@ -629,29 +630,8 @@ export class RouteHelper {
    * Legal Links
    *
    * */
-  public static LegalPage = BasicReactPath(
+  public static LegalPage = BasicReactPath<LegalRouteParams>(
     RouteDefs.Areas.Legal.getAction("Index")
-  );
-  public static LegalTermsOfUse = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("Terms")
-  );
-  public static LegalPrivacyPolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("PrivacyPolicy")
-  );
-  public static LegalSLA = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("SLA")
-  );
-  public static LegalLicenses = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("Licenses")
-  );
-  public static LegalCodeOfConduct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("CodeOfConduct")
-  );
-  public static LegalCookiePolicy = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("CookiePolicy")
-  );
-  public static LegalPaymentServicesAct = BasicReactPath(
-    RouteDefs.Areas.Legal.getAction("PaymentServicesAct")
   );
   public static Trademarks = LegacyPathWithQuery("/View/bungie/trademarks");
   public static ApplicationsReact = BasicReactPath(

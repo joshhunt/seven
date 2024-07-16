@@ -65,7 +65,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
   const destinyMembership = useDataStore(
     PresentationNodeDestinyMembershipDataStore
   );
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2API);
 
   const membershipType =
     (params?.mtype
@@ -254,7 +254,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
 
   return (
     <SystemDisabledHandler
-      systems={[SystemNames.Destiny2, SystemNames.CoreAreaTriumphs]}
+      systems={[SystemNames.Destiny2API, SystemNames.CoreAreaTriumphs]}
     >
       <BungieHelmet
         title={Localizer.Triumphs.PageName}

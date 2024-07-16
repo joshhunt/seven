@@ -323,9 +323,11 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
           }
         }
 
-        for (const childNode of node.children) {
-          if (shouldIncludeNode(childNode)) {
-            return true;
+        if (node.children?.length > 0) {
+          for (const childNode of node.children) {
+            if (shouldIncludeNode(childNode)) {
+              return true;
+            }
           }
         }
       }

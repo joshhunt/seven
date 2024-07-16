@@ -94,12 +94,12 @@ export class CookieConsent extends React.Component<
       <>
         {Localizer.FormatReact(baseString, {
           cookiePolicyLink: (
-            <Anchor url={RouteHelper.LegalCookiePolicy()}>
+            <Anchor url={RouteHelper.LegalPage({ pageName: "cookiepolicy" })}>
               {Localizer.Messages.CookieConsentCookiePolicyLink}
             </Anchor>
           ),
           privacyPolicyLink: (
-            <Anchor url={RouteHelper.LegalPrivacyPolicy()}>
+            <Anchor url={RouteHelper.LegalPage({ pageName: "privacypolicy" })}>
               {Localizer.Messages.CookieConsentPrivacyPolicyLink}
             </Anchor>
           ),

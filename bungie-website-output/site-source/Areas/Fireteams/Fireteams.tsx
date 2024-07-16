@@ -347,7 +347,7 @@ export const Fireteams: React.FC = (props) => {
 
   return (
     <SystemDisabledHandler
-      systems={[SystemNames.Destiny2, SystemNames.Fireteams]}
+      systems={[SystemNames.Destiny2API, SystemNames.Fireteams]}
     >
       <BungieHelmet
         title={fireteamsLoc.Fireteams}

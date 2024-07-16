@@ -12,6 +12,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Localizer } from "@bungie/localization";
 import { Contracts, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
+import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { PermissionsGate } from "@UI/User/PermissionGate";
@@ -116,8 +117,8 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
 
     const twoLineItem = (
       <TwoLineItem
-        itemTitle={offer.OfferDisplayName}
-        itemSubtitle={offer.OfferDisplayDetail}
+        itemTitle={<SafelySetInnerHTML html={offer.OfferDisplayName} />}
+        itemSubtitle={<SafelySetInnerHTML html={offer.OfferDisplayDetail} />}
         icon={<img className={styles.offerIcon} src={offer.OfferImagePath} />}
       />
     );
@@ -217,8 +218,12 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
                 return (
                   <div key={i}>
                     <TwoLineItem
-                      itemTitle={o.OfferDisplayName}
-                      itemSubtitle={o.OfferDisplayDetail}
+                      itemTitle={
+                        <SafelySetInnerHTML html={o.OfferDisplayName} />
+                      }
+                      itemSubtitle={
+                        <SafelySetInnerHTML html={o.OfferDisplayDetail} />
+                      }
                       icon={
                         <img
                           src={o.OfferImagePath}

@@ -15,7 +15,7 @@ interface RewardsAndCalendar23Props
 const RewardsAndCalendar23: React.FC<RewardsAndCalendar23Props> = ({
   definitions,
 }) => {
-  if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
+  if (!ConfigUtils.SystemStatus(SystemNames.Destiny2API)) {
     return null;
   }
 

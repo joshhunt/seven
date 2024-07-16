@@ -48,7 +48,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
   return (
     <SystemDisabledHandler
       className={viewStyles.destinyViewBlocks}
-      systems={[SystemNames.Destiny2]}
+      systems={[SystemNames.Destiny2API]}
     >
       {typeof destinyMembership.characters !== "undefined" && (
         <ProfileCharacterSelector

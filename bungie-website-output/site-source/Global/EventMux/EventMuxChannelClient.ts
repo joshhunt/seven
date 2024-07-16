@@ -1,3 +1,5 @@
+import { FireteamFinderRealTimeEventsDataStore } from "@Areas/FireteamFinder/DataStores/FireteamFinderRealTimeEventsDataStore";
+import { RealTimeEventType } from "@Enum";
 import { EventMuxStorage } from "@Global/EventMux/EventMuxStorage";
 import { Logger } from "@Global/Logger";
 import { Platform, RealTimeEventing } from "@Platform";
@@ -174,6 +176,14 @@ export class EventMuxChannelClient {
   }
 
   private onGetSuccess(response: RealTimeEventing.EventChannelResponse) {
+    if (
+      response.events.find(
+        (e) => e.eventType === RealTimeEventType.FireteamFinderUpdate
+      )
+    ) {
+      FireteamFinderRealTimeEventsDataStore.actions.setEventData(response);
+    }
+
     if (this.ackNext > response.seq) {
       // Looks like the server has restarted the sequence. Clear our shared storage to
       // logic related to finding the oldest message works.

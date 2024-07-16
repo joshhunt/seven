@@ -5,6 +5,7 @@ import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { LegalRouteParams } from "@Routes/RouteParams";
+import { Error404 } from "@UI/Errors/Error404";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
@@ -34,12 +35,12 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
     ContentStackClient()
       .ContentType("legal_page")
       .Query()
-      .where("url", `/${params.url.toLowerCase()}`)
+      .where("url", `/${params.pageName.toLowerCase()}`)
       .language(locale)
       .toJSON()
       .find()
       .then(setData);
-  }, [params]);
+  }, [locale, params]);
 
   // Assume there's only one match because otherwise we have a URL collision
   const legalPageDetail = data?.[0]?.[0];
@@ -60,6 +61,10 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
   // Don't attempt to render if we have no bannerRef yet. This happens on first render usually.
   if (!bannerRef?.current) {
     return <SpinnerContainer loading={true} />;
+  }
+
+  if (legalPageDetail.url === "/paymentservicesact") {
+    return <Error404 />;
   }
 
   return (

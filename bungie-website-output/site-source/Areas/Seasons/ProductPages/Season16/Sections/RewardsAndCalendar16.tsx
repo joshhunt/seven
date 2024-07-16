@@ -64,7 +64,7 @@ const RewardsAndCalendar16: React.FC<RewardsAndCalendar16Props> = ({
 
   const sectionBg = bgImageFromStackFile(data?.bg?.desktop);
 
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2API);
 
   return (
     <div className={classNames(styles.rewardsAndCalendar)}>

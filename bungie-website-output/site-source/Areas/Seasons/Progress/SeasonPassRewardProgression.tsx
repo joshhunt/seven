@@ -106,7 +106,6 @@ class SeasonPassRewardProgression extends React.Component<
     const rewardsDef = definitions.DestinyProgressionDefinition.get(
       seasonPassDef.rewardProgressionHash
     );
-
     const characterSeasonPassRewardProgression =
       typeof characterProgressions !== "undefined" &&
       typeof characterProgressions[seasonDef.seasonPassProgressionHash] !==
@@ -140,9 +139,8 @@ class SeasonPassRewardProgression extends React.Component<
 
     const slidesPer = globalState.responsive.mobile ? 4 : 10;
 
-    //remove the unwanted
     const adjustedSteps = rewardsDef.steps.filter((value, index) => {
-      return index < 100;
+      return index < 150;
     });
 
     const steps = adjustedSteps.map((value, i) => {

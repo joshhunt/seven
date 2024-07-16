@@ -36,6 +36,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     FireteamFinder.DestinyFireteamFinderApplication[]
   >([]);
   const isActive = lobby?.state === DestinyFireteamFinderLobbyState.Active;
+  const loggedInStatus = UserUtils.isAuthenticated(globalState);
   const requiresApplication =
     fireteam?.settings?.listingValues?.find(
       (listingVal) =>
@@ -94,7 +95,14 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     }
 
     fetchApplicationData();
-  }, [pendingApplications.length, lobby, viewerIsHost, destinyMembership]);
+  }, [
+    pendingApplications.length,
+    lobby,
+    viewerIsHost,
+    destinyMembership,
+    pendingApplications,
+    isActive,
+  ]);
 
   useEffect(() => {
     async function fetchMemberData() {
@@ -143,7 +151,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     }
 
     fetchMemberData();
-  }, [lobby, viewerIsHost, destinyMembership]);
+  }, [lobby, viewerIsHost, destinyMembership, isActive]);
   const availableSlots = (availableNumSlots: number) => {
     const slots = [];
 
@@ -174,26 +182,28 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
 
   useEffect(() => {
     FireteamsDestinyMembershipDataStore.actions.loadUserData();
-  }, [UserUtils.isAuthenticated(globalState)]);
+  }, [loggedInStatus]);
 
   useEffect(() => {
-    Platform.FireteamfinderService.GetListingApplications(
-      fireteam?.listingId,
-      destinyMembership?.selectedMembership?.membershipType,
-      destinyMembership?.selectedMembership?.membershipId,
-      destinyMembership?.selectedCharacter?.characterId,
-      100,
-      "",
-      "0"
-    ).then((result) => {
-      // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
-      setPendingApplications(
-        result?.applications.filter((app) => app?.state === 2)
-      );
+    if (fireteam?.listingId) {
+      Platform.FireteamfinderService.GetListingApplications(
+        fireteam?.listingId,
+        destinyMembership?.selectedMembership?.membershipType,
+        destinyMembership?.selectedMembership?.membershipId,
+        destinyMembership?.selectedCharacter?.characterId,
+        100,
+        "",
+        "0"
+      ).then((result) => {
+        // this will exclude accepted and declined applications, only those waiting on owner to accept or decline will show
+        setPendingApplications(
+          result?.applications.filter((app) => app?.state === 2)
+        );
 
-      // should add button to get next page of applications
-    });
-  }, [fireteam?.listingId]);
+        // should add button to get next page of applications
+      });
+    }
+  }, [fireteam, destinyMembership]);
 
   return (
     <div className={styles.container}>

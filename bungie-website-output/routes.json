@@ -606,65 +606,11 @@
     "areaName": "Legal",
     "areaObjectName": "Legal",
     "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "codeofconduct",
-    "params": {},
-    "path": "/7/en/Legal/codeofconduct"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "cookiepolicy",
-    "params": {},
-    "path": "/7/en/Legal/cookiepolicy"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "intellectualpropertytrademarks",
-    "params": {},
-    "path": "/7/en/Legal/intellectualpropertytrademarks"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "licenses",
-    "params": {},
-    "path": "/7/en/Legal/licenses"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "paymentservicesact",
-    "params": {},
-    "path": "/7/en/Legal/paymentservicesact"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "privacypolicy",
-    "params": {},
-    "path": "/7/en/Legal/privacypolicy"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "sla",
-    "params": {},
-    "path": "/7/en/Legal/sla"
-  },
-  {
-    "areaName": "Legal",
-    "areaObjectName": "Legal",
-    "componentImportPath": "@Areas/Legal/LegalArea",
-    "action": "terms",
-    "params": {},
-    "path": "/7/en/Legal/terms"
+    "action": "index",
+    "params": {
+      "path": ":pageName"
+    },
+    "path": "/7/en/Legal/:pageName"
   },
   {
     "areaName": "News",

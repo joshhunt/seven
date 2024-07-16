@@ -181,11 +181,11 @@ const Home = () => {
         label: navLoc.Foundation,
       },
       {
-        href: RouteHelper.LegalSLA(),
+        href: RouteHelper.LegalPage({ pageName: "sla" }),
         label: navLoc.Legal,
       },
       {
-        href: RouteHelper.LegalTermsOfUse(),
+        href: RouteHelper.LegalPage({ pageName: "terms" }),
         label: navLoc.Terms,
       },
       {
