@@ -86,7 +86,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
       Object.keys(membershipData?.characters)?.length < 1);
 
   return membershipData?.membershipData ? (
-    <SystemDisabledHandler systems={["Destiny2API"]}>
+    <SystemDisabledHandler systems={["Destiny2"]}>
       {membershipData?.memberships?.length > 0 ? (
         children({
           bnetProfile: (

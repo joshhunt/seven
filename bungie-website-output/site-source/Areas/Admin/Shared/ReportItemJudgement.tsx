@@ -186,7 +186,10 @@ export const ReportItemJudgement: React.FC<ReportItemJudgementProps> = (
     const instructionsCommon = (
       <>
         {instructions1}{" "}
-        <Anchor url={RouteHelper.LegalCodeOfConduct()} target={"_blank"}>
+        <Anchor
+          url={RouteHelper.LegalPage({ pageName: "codeofconduct" })}
+          target={"_blank"}
+        >
           {codeOfConduct}
         </Anchor>
       </>

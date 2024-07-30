@@ -426,7 +426,7 @@ export const ApplicationReactHookFormForm: React.FC<ApplicationReactHookFormForm
                 name={"agreedToCurrentEula"}
                 control={formMethods.control}
               />
-              <Anchor url={RouteHelper.LegalTermsOfUse()}>
+              <Anchor url={RouteHelper.LegalPage({ pageName: "terms" })}>
                 <HiExternalLink />
               </Anchor>
             </div>

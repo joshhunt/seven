@@ -54,7 +54,7 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
 
   return (
     <div>
-      <SystemDisabledHandler systems={["Destiny2API"]}>
+      <SystemDisabledHandler systems={["Destiny2"]}>
         <GridCol cols={12}>
           <CrossSaveBannerAccountLinking
             isCrossSaved={destinyMembershipData?.isCrossSaved}

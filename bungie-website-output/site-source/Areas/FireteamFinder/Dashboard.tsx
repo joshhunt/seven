@@ -88,7 +88,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
 
   return (
     <SystemDisabledHandler
-      systems={[SystemNames.Destiny2API, SystemNames.FireteamFinderWebUI]}
+      systems={[SystemNames.Destiny2, SystemNames.FireteamFinderWebUI]}
     >
       <Layout
         breadcrumbConfig={"dashboard"}

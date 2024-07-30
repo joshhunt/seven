@@ -43,7 +43,7 @@ const DestinyCommendations: React.FC<DestinyCommendationsProps> = (props) => {
       globalState.loggedInUser?.user?.membershipId;
 
   const getProfile = () => {
-    if (ConfigUtils.SystemStatus(SystemNames.Destiny2API)) {
+    if (ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
       Platform.Destiny2Service.GetProfile(
         destinyMembership?.selectedMembership?.membershipType,
         destinyMembership?.selectedMembership?.membershipId,

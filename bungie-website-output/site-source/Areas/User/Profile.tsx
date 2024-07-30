@@ -299,7 +299,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
 
   const loadExtendedDestinyProfileData = async () => {
     if (
-      ConfigUtils.SystemStatus(SystemNames.Destiny2API) &&
+      ConfigUtils.SystemStatus(SystemNames.Destiny2) &&
       destinyMembership?.selectedMembership
     ) {
       try {

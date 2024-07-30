@@ -73,7 +73,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
     Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
   >();
 
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2API);
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   useEffect(() => {
     if (!destiny2Disabled) {
@@ -233,7 +233,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
 
       <Grid>
         <GridCol cols={12}>
-          <SystemDisabledHandler systems={["Destiny2API"]}>
+          <SystemDisabledHandler systems={["Destiny2"]}>
             {!isAnonymous &&
               destinyMembership?.memberships &&
               charactersLoaded && (

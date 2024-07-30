@@ -15,7 +15,7 @@ interface RewardsAndCalendar16Props
 const RewardsAndCalendar18: React.FC<RewardsAndCalendar16Props> = ({
   definitions,
 }) => {
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2API);
+  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   if (destiny2Disabled) {
     return null;

@@ -233,7 +233,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
 
   return (
     <SystemDisabledHandler
-      systems={[SystemNames.Destiny2API, SystemNames.CoreAreaCollections]}
+      systems={[SystemNames.Destiny2, SystemNames.CoreAreaCollections]}
     >
       <BungieHelmet
         title={Localizer.PresentationNodes.CollectionsPageName}

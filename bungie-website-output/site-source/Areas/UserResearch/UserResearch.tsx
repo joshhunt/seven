@@ -123,7 +123,7 @@ class UserResearch extends React.Component<
                 <div>
                   <p className="linkPrivacy">
                     <Anchor
-                      url={RouteHelper.LegalPrivacyPolicy()}
+                      url={RouteHelper.LegalPage({ pageName: "privacypolicy" })}
                       target="_blank"
                     >
                       {viewPrivacy}

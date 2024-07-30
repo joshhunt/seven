@@ -26,7 +26,7 @@ export const SystemNames = {
   CoreHomeandNews: "CoreHomeandNews",
   CrossSave: "CrossSave",
   CrossSaveStadiaException: "CrossSaveStadiaSeasonsException",
-  Destiny2API: "Destiny2API",
+  Destiny2: "Destiny2",
   FacebookPixel: "FacebookPixel",
   Forums: "Forums",
   GamescomVideo: "GamescomVideo",

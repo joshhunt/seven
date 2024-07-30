@@ -5,13 +5,14 @@ import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { LegalRouteParams } from "@Routes/RouteParams";
-import { Error404 } from "@UI/Errors/Error404";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { useParams } from "react-router";
+import { useHistory, useParams } from "react-router";
+import { Redirect } from "react-router-dom";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
 import styles from "./LegalDetail.module.scss";
 
@@ -27,6 +28,7 @@ interface LegalDetailProps {
  */
 export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
   const params = useParams<LegalRouteParams>();
+  const history = useHistory();
 
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const [data, setData] = useState(null);
@@ -64,7 +66,9 @@ export const LegalDetail: React.FC<LegalDetailProps> = ({ bannerRef }) => {
   }
 
   if (legalPageDetail.url === "/paymentservicesact") {
-    return <Error404 />;
+    window.location.replace(
+      "https://www.playstation.com/ja-jp/legal/games/payment-services-act-jp/"
+    );
   }
 
   return (

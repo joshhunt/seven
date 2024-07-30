@@ -51,7 +51,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       force = false,
       showAllMembershipsWhenCrossaved = false
     ) => {
-      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2API)) {
+      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
         return {
           membershipData: null,
           memberships: [],
@@ -213,7 +213,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
       } = {};
 
       try {
-        if (ConfigUtils.SystemStatus(SystemNames.Destiny2API)) {
+        if (ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
           profileResponse = await this.callFunctionWithDeduplication(() =>
             Platform.Destiny2Service.GetProfile(
               membershipToUse?.membershipType,
@@ -257,7 +257,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
      * Change selected platform in state and update characters in state with characters on selected platform
      */
     updatePlatform: async (state, platformName: string) => {
-      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2API)) {
+      if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
         return;
       }
 
