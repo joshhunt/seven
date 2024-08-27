@@ -32,7 +32,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./EververseHistory.module.scss";
 
 export interface ISilverRecord {
-  rowKey: number;
+  key: number;
   order: string;
   date: string;
   status: EververseChangeEventClassification;
@@ -62,7 +62,7 @@ export const SilverBalanceHistory = () => {
     ViewerPermissionContext
   );
   const useQueryMid = membershipIdFromQuery && (isSelf || isAdmin);
-  const [history, setHistory] = useState<ISilverRecord[]>(null);
+  const [history, setHistory] = useState<ISilverRecord[]>([]);
   const [cashout, setCashout] = useState(null);
   const [emptyHistoryString, setEmptyHistoryString] = useState<string>(
     Localizer.Profile.ThisUserHasNotMadeAny
@@ -115,20 +115,44 @@ export const SilverBalanceHistory = () => {
       ();
   };
 
-  const loadHistory = (membership: MembershipPair, aggregate = false) => {
+  const loadCrossSaveHistories = (membershipType: BungieMembershipType) => {
     setLoading(true);
+    setHistory([]);
+    setSilverBalance(null);
 
+    //if Stadia is their only account, pretend like there are no results
+    if (membershipType !== BungieMembershipType.TigerStadia) {
+      // otherwise aggregate results for each membershipId for that membershipType
+      destinyMember?.memberships
+        ?.filter((m) => m.membershipType !== BungieMembershipType.TigerStadia)
+        .map((mem, i) => {
+          loadCrossSaveHistory(membershipType, mem.membershipId, true);
+        });
+
+      getSilverBalance({
+        membershipType: membershipType,
+        membershipId: selectedMembership.membershipId,
+      });
+    } else {
+      setHistory([]);
+      setSilverBalance(null);
+    }
+
+    setLoading(false);
+  };
+
+  const loadCrossSaveHistory = (
+    membershipType: BungieMembershipType,
+    membershipId: string,
+    aggregate = false
+  ) => {
     Platform.TokensService.EververseChangePurchaseHistory(
-      membership.membershipId,
-      membership.membershipType,
+      membershipId,
+      membershipType,
       currentPage
     )
       .then((response) => {
-        //if Stadia is their only account, pretend like there are no results
-        if (
-          response?.results?.length > 0 &&
-          membership.membershipType !== BungieMembershipType.TigerStadia
-        ) {
+        if (response?.results?.length > 0) {
           setHasMore(response?.hasMore);
           const bungieNameObject = useQueryMid
             ? UserUtils.getBungieNameFromUserInfoCard(selectedMembership)
@@ -139,7 +163,7 @@ export const SilverBalanceHistory = () => {
           const resultsData: ISilverRecord[] = response?.results.map(
             (x: Tokens.EververseChangeEvent, i) => {
               return {
-                rowKey: i,
+                key: history.length + i,
                 order: x.EventId,
                 date: x.Timestamp,
                 status: x.EventClassification,
@@ -155,22 +179,20 @@ export const SilverBalanceHistory = () => {
             }
           );
 
-          aggregate
-            ? setHistory(history.concat(resultsData))
-            : setHistory(resultsData);
-
-          getSilverBalance({
-            membershipType: membership?.membershipType,
-            membershipId: membership?.membershipId,
-          });
-        } else {
-          setHistory(null);
-          setSilverBalance(null);
+          if (history.length > 0) {
+            aggregate
+              ? setHistory([...history, ...resultsData])
+              : setHistory(resultsData);
+          } else if (resultsData.length > 0) {
+            setHistory(resultsData);
+          } else {
+            setHistory(null);
+            setSilverBalance(null);
+          }
         }
       })
       .catch(ConvertToPlatformError)
-      .catch((e) => Modal.error(e))
-      .finally(() => setLoading(false));
+      .catch((e) => Modal.error(e));
   };
 
   // const getEververseCashout = async (membership: MembershipPair) => {
@@ -182,13 +204,7 @@ export const SilverBalanceHistory = () => {
 
   const loadMore = () => {
     setCurrentPage(currentPage + 1);
-    loadHistory(
-      {
-        membershipType: selectedMembership?.membershipType,
-        membershipId: selectedMembership?.membershipId,
-      },
-      true
-    );
+    loadCrossSaveHistories(selectedMembership?.membershipType);
   };
 
   useEffect(() => {
@@ -206,10 +222,7 @@ export const SilverBalanceHistory = () => {
 
   useEffect(() => {
     if (destinyMember.loaded && selectedMembership) {
-      loadHistory({
-        membershipType: selectedMembership?.membershipType,
-        membershipId: selectedMembership?.membershipId,
-      });
+      loadCrossSaveHistories(selectedMembership?.membershipType);
       const noDestinyAccount =
         !selectedMembership ||
         selectedMembership?.membershipType ===
@@ -418,7 +431,6 @@ export const SilverBalanceHistory = () => {
             fixed={"left"}
           />
         </Table>
-
         {hasMore && <Button onClick={loadMore}>{profileLoc.LoadMore}</Button>}
       </GridCol>
     </>

@@ -1,28 +1,24 @@
 // Created by jlauer, 2019
 // Copyright Bungie, Inc.
 
+import { DateTime } from "luxon";
 import * as React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { World, Character } from "@Platform";
+import { World } from "@Platform";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
 import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
 import classNames from "classnames";
-import {
-  SeasonPassRewardStep,
-  CharacterClass,
-  CompleteState,
-} from "./SeasonPassRewardStep";
+import { SeasonPassRewardStep, CharacterClass } from "./SeasonPassRewardStep";
 import { Tooltip } from "@UI/UIKit/Controls/Tooltip";
 import { DestinyTooltip } from "@UI/Destiny/Tooltips/DestinyTooltip";
 import { Localizer } from "@bungie/localization";
-import { DestinyDefinitions } from "@Definitions";
 import { DestinyClass } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";
 
@@ -136,11 +132,49 @@ class SeasonPassRewardProgression extends React.Component<
       hasCharacterProgression && characterClassHash !== 0
         ? this.getCharacterClass(characterClassHash)
         : CharacterClass.Hunter;
-
+    const isPrestige =
+      typeof prestigeProgression !== "undefined" &&
+      prestigeProgression.level > 0;
     const slidesPer = globalState.responsive.mobile ? 4 : 10;
+    const maxActRankCount = getActiveActsRankCount(seasonDef.acts);
+    const isLastAct = () =>
+      DateTime.now() >
+      DateTime.fromISO(seasonDef.acts[seasonDef.acts.length - 1].startTime);
+
+    const maxSeasonRewardCount = rewardsDef.steps.length;
+
+    const handleRankDisplay = () => {
+      if (isPrestige) {
+        if (maxActRankCount >= maxSeasonRewardCount) {
+          if (isLastAct) {
+            if (characterSeasonPassProgression.level >= maxActRankCount) {
+              return prestigeProgression.level + maxActRankCount; // Adding prestige levels to max rank when at max rank
+            } else {
+              return characterSeasonPassProgression.level; // Regular season progression level when below max rank
+            }
+          } else {
+            return Math.min(
+              characterSeasonPassProgression.level,
+              maxActRankCount
+            ); // Smaller number between regular season level and max rank of current act
+          }
+        }
+      }
+      return characterSeasonPassProgression.level; // Default
+    };
+
+    function getActiveActsRankCount(acts: any[]) {
+      if (!acts) {
+        return rewardsDef.steps.length;
+      }
+      const currentTime = new Date();
+      return acts
+        .filter((act) => new Date(act?.startTime) <= currentTime)
+        .reduce((total, act) => total + act?.rankCount, 0);
+    }
 
     const adjustedSteps = rewardsDef.steps.filter((value, index) => {
-      return index < 150;
+      return index < maxActRankCount;
     });
 
     const steps = adjustedSteps.map((value, i) => {
@@ -207,8 +241,7 @@ class SeasonPassRewardProgression extends React.Component<
                 .currentSeasonHash
               ? this.getCurrentSeasonProgressBar(
                   characterSeasonPassProgression,
-                  typeof prestigeProgression !== "undefined" &&
-                    prestigeProgression.level > 0
+                  handleRankDisplay
                 )
               : null
           }
@@ -260,19 +293,15 @@ class SeasonPassRewardProgression extends React.Component<
 
   private getCurrentSeasonProgressBar(
     characterSeasonProgression: World.DestinyProgression,
-    isPrestige: boolean
+    handleDisplay: () => string
   ) {
     const seasonPass = Localizer.Seasons.SeasonPass;
     const seasonalRank = Localizer.Seasons.SeasonalRank;
-
     const rankLabel = Localizer.Format(
       Localizer.Seasons.RankCharacterseasonprogressionlevel,
-      {
-        characterSeasonProgressionLevel: isPrestige
-          ? characterSeasonProgression.level + 100
-          : characterSeasonProgression.level,
-      }
+      { characterSeasonProgressionLevel: handleDisplay() }
     );
+
     const progressLabel = `${characterSeasonProgression.progressToNextLevel.toLocaleString()}/${characterSeasonProgression.nextLevelAt.toLocaleString()}`;
 
     const progressPercentage =
