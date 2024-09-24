@@ -25,7 +25,7 @@ export const LightfallStickyNav: React.FC<LightfallStickyNavProps> = (
 ) => {
   const { heroRef, skus, logo, buyBtnText, dropdownTitle, dateText } = props;
 
-  const [selectedSku, setSelectedSku] = useState("lightfallannualpreorder");
+  const [selectedSku, setSelectedSku] = useState("lightfallstandardpreorder");
   const [isFixed, setIsFixed] = useState(false);
 
   const handleDropdownChange = (sku: string) => {
@@ -120,13 +120,17 @@ const LightfallNavDropdown: React.FC<ILightfallNavDropdown> = (props) => {
       <div className={styles.selectedValue} onClick={toggleShowDropdown}>
         <p>{selected?.label}</p>
         <Icon
-          className={classNames(styles.arrow, { [styles.up]: showDropdown })}
+          className={classNames(styles.arrow, {
+            [styles.up]: showDropdown,
+          })}
           iconName={"arrow_right"}
           iconType={"material"}
         />
       </div>
       <div
-        className={classNames(styles.options, { [styles.show]: showDropdown })}
+        className={classNames(styles.options, {
+          [styles.show]: showDropdown,
+        })}
       >
         {options?.map((opt, i) => {
           return (

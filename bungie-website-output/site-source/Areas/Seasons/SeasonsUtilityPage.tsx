@@ -60,7 +60,6 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
 
   const [itemDetailCanClaim, setItemDetailCanClaim] = useState(false);
   const [itemDetailModalOpen, setItemDetailModalOpen] = useState(false);
-  const [itemDetailLoading, setItemDetailLoading] = useState(false);
   const [itemDetailElement, setItemDetailElement] = useState<ReactNode>();
   const [itemDetailRewardIndex, setItemDetailRewardIndex] = useState(0);
   const [itemDetailHash, setItemDetailHash] = useState(0);
@@ -76,7 +75,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
   const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   useEffect(() => {
-    if (!destiny2Disabled) {
+    if (!destiny2Disabled && !destinyMembership?.selectedCharacter) {
       SeasonsDestinyMembershipDataStore.actions.loadUserData();
     }
   }, []);
@@ -144,7 +143,6 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
     setItemDetailRewardIndex(rewardIndex);
     setItemDetailCanClaim(canClaim);
 
-    setItemDetailLoading(false);
     setItemDetailElement(
       <DestinyCollectibleDetailItemContent
         itemHash={itemHash}

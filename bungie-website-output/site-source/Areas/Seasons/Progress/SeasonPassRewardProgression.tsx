@@ -95,46 +95,45 @@ class SeasonPassRewardProgression extends React.Component<
       globalState,
     } = this.props;
 
+    // this is the season definition
     const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
+
+    // this is the season pass definition
     const seasonPassDef = definitions.DestinySeasonPassDefinition.get(
       seasonDef.seasonPassHash
     );
+
+    // this is the definition for a character's progress along the rewards in the season pass
     const rewardsDef = definitions.DestinyProgressionDefinition.get(
       seasonPassDef.rewardProgressionHash
     );
-    const characterSeasonPassRewardProgression =
+
+    // Note: The season pass progression hash from the season definition is the same as the reward progression hash from the season pass definition
+
+    // this is the character's progress along the season pass
+    const characterSeasonalProgress =
       typeof characterProgressions !== "undefined" &&
       typeof characterProgressions[seasonDef.seasonPassProgressionHash] !==
         "undefined"
         ? characterProgressions[seasonDef.seasonPassProgressionHash]
         : undefined;
 
-    const prestigeProgression =
+    const characterPrestigeProgress =
       typeof characterProgressions !== "undefined" &&
-      typeof characterProgressions[seasonDef.seasonPassProgressionHash] !==
+      typeof characterProgressions[seasonPassDef.prestigeProgressionHash] !==
         "undefined" &&
-      characterProgressions[seasonDef.seasonPassProgressionHash].level > 0
+      characterProgressions[seasonPassDef.prestigeProgressionHash].level > 0
         ? characterProgressions[seasonPassDef.prestigeProgressionHash]
         : undefined;
 
-    const characterSeasonPassProgression =
-      typeof characterSeasonPassRewardProgression !== "undefined"
-        ? typeof prestigeProgression !== "undefined" &&
-          prestigeProgression.level > 0
-          ? prestigeProgression
-          : characterSeasonPassRewardProgression
-        : undefined;
-
     const hasCharacterProgression =
-      typeof characterSeasonPassProgression !== "undefined";
+      typeof characterSeasonalProgress !== "undefined";
 
-    const character: CharacterClass =
+    const characterClass: CharacterClass =
       hasCharacterProgression && characterClassHash !== 0
         ? this.getCharacterClass(characterClassHash)
         : CharacterClass.Hunter;
-    const isPrestige =
-      typeof prestigeProgression !== "undefined" &&
-      prestigeProgression.level > 0;
+
     const slidesPer = globalState.responsive.mobile ? 4 : 10;
     const maxActRankCount = getActiveActsRankCount(seasonDef.acts);
     const isLastAct = () =>
@@ -143,24 +142,31 @@ class SeasonPassRewardProgression extends React.Component<
 
     const maxSeasonRewardCount = rewardsDef.steps.length;
 
-    const handleRankDisplay = () => {
+    const handleRankDisplay = (
+      characterSeasonalProgress: World.DestinyProgression
+    ) => {
+      const characterSeasonRank =
+        hasCharacterProgression && characterSeasonalProgress.level;
+      const characterPrestigeRank =
+        characterPrestigeProgress && characterPrestigeProgress.level;
+      const isPrestige =
+        typeof characterPrestigeProgress !== "undefined" &&
+        characterPrestigeRank > 0;
+
       if (isPrestige) {
         if (maxActRankCount >= maxSeasonRewardCount) {
           if (isLastAct) {
-            if (characterSeasonPassProgression.level >= maxActRankCount) {
-              return prestigeProgression.level + maxActRankCount; // Adding prestige levels to max rank when at max rank
+            if (characterSeasonRank >= maxActRankCount) {
+              return characterPrestigeRank + maxActRankCount; // Adding prestige levels to max rank when at max rank
             } else {
-              return characterSeasonPassProgression.level; // Regular season progression level when below max rank
+              return characterSeasonRank; // Regular season progression level when below max rank
             }
           } else {
-            return Math.min(
-              characterSeasonPassProgression.level,
-              maxActRankCount
-            ); // Smaller number between regular season level and max rank of current act
+            return Math.min(characterSeasonRank, maxActRankCount); // Smaller number between regular season level and max rank of current act
           }
         }
       }
-      return characterSeasonPassProgression.level; // Default
+      return characterSeasonRank; // Default
     };
 
     function getActiveActsRankCount(acts: any[]) {
@@ -179,13 +185,13 @@ class SeasonPassRewardProgression extends React.Component<
 
     const steps = adjustedSteps.map((value, i) => {
       const completeState = hasCharacterProgression
-        ? i < characterSeasonPassRewardProgression.level
+        ? i < characterSeasonalProgress.level
           ? "Complete"
           : "Incomplete"
         : "None";
 
       const rewardItemStates = hasCharacterProgression
-        ? characterSeasonPassRewardProgression.rewardItemStates
+        ? characterSeasonalProgress.rewardItemStates
         : [];
 
       return (
@@ -198,7 +204,7 @@ class SeasonPassRewardProgression extends React.Component<
           stepIndex={i}
           progressionDef={rewardsDef}
           itemDefinitions={definitions.DestinyInventoryItemLiteDefinition}
-          character={character}
+          character={characterClass}
           completeState={completeState}
           rewardStates={rewardItemStates}
           handleClaimingClick={(
@@ -219,8 +225,6 @@ class SeasonPassRewardProgression extends React.Component<
       </div>
     ));
 
-    // @ts-ignore
-    // @ts-ignore
     return (
       <div className={styles.stepWrapper}>
         <SeasonCarousel
@@ -228,10 +232,8 @@ class SeasonPassRewardProgression extends React.Component<
           showProgress={typeof characterProgressions !== "undefined"}
           startAtPosition={
             typeof characterProgressions !== "undefined" &&
-            typeof characterSeasonPassRewardProgression !== "undefined"
-              ? Math.ceil(
-                  characterSeasonPassRewardProgression.level / slidesPer
-                ) - 1
+            typeof characterSeasonalProgress !== "undefined"
+              ? Math.ceil(characterSeasonalProgress.level / slidesPer) - 1
               : 0
           }
           topLabel={
@@ -240,7 +242,7 @@ class SeasonPassRewardProgression extends React.Component<
               this.props.globalState.coreSettings.destiny2CoreSettings
                 .currentSeasonHash
               ? this.getCurrentSeasonProgressBar(
-                  characterSeasonPassProgression,
+                  characterSeasonalProgress,
                   handleRankDisplay
                 )
               : null
@@ -292,21 +294,29 @@ class SeasonPassRewardProgression extends React.Component<
   }
 
   private getCurrentSeasonProgressBar(
-    characterSeasonProgression: World.DestinyProgression,
-    handleDisplay: () => string
+    characterSeasonalProgress: World.DestinyProgression,
+    handleDisplay: (
+      characterSeasonalProgress: World.DestinyProgression
+    ) => number
   ) {
-    const seasonPass = Localizer.Seasons.SeasonPass;
-    const seasonalRank = Localizer.Seasons.SeasonalRank;
+    if (!characterSeasonalProgress) {
+      return null;
+    }
+
     const rankLabel = Localizer.Format(
       Localizer.Seasons.RankCharacterseasonprogressionlevel,
-      { characterSeasonProgressionLevel: handleDisplay() }
+      {
+        characterSeasonProgressionLevel: handleDisplay(
+          characterSeasonalProgress
+        ),
+      }
     );
 
-    const progressLabel = `${characterSeasonProgression.progressToNextLevel.toLocaleString()}/${characterSeasonProgression.nextLevelAt.toLocaleString()}`;
+    const progressLabel = `${characterSeasonalProgress.progressToNextLevel.toLocaleString()}/${characterSeasonalProgress.nextLevelAt.toLocaleString()}`;
 
     const progressPercentage =
-      (characterSeasonProgression.progressToNextLevel /
-        characterSeasonProgression.nextLevelAt) *
+      (characterSeasonalProgress.progressToNextLevel /
+        characterSeasonalProgress.nextLevelAt) *
       100;
 
     const cssBar: React.CSSProperties = {

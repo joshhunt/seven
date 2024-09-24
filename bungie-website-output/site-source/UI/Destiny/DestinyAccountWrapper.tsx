@@ -19,6 +19,8 @@ import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import React, { ReactNode, useEffect } from "react";
 import styles from "./DestinyAccountWrapper.module.scss";
 
+import { GoAlert } from "react-icons/go/index";
+
 export interface IAccountFeatures {
   bnetProfile: ReactNode;
   platformSelector: ReactNode;
@@ -147,12 +149,18 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
               ) : (
                 <div className={styles.errors}>
                   {errorFetchingMembership && Localizer.Account.AccountError}
-                  {noCharacters &&
-                    Localizer.Format(Localizer.Crosssave.NoCharacters, {
-                      platform: LocalizerUtils.getPlatformNameFromMembershipType(
-                        membershipData?.selectedMembership?.membershipType
-                      ),
-                    })}
+                  {noCharacters && (
+                    <>
+                      <div className={styles.iconWrapper}>
+                        <GoAlert />
+                      </div>
+                      {Localizer.Format(Localizer.Crosssave.NoCharacters, {
+                        platform: LocalizerUtils.getPlatformNameFromMembershipType(
+                          membershipData?.selectedMembership?.membershipType
+                        ),
+                      })}
+                    </>
+                  )}
                 </div>
               )}
             </>

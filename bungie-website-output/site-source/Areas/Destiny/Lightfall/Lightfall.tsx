@@ -3,7 +3,6 @@
 
 import { LightfallSectionHeader } from "@Areas/Destiny/Lightfall/components/LightfallSectionHeader/LightfallSectionHeader";
 import LightfallStickyNav from "@Areas/Destiny/Lightfall/components/LightfallStickyNav/LightfallStickyNav";
-import { LightfallEditionsSection } from "@Areas/Destiny/Lightfall/sections/LightfallEditionsSection/LightfallEditionsSection";
 import { LightfallHero } from "@Areas/Destiny/Lightfall/sections/LightfallHero/LightfallHero";
 import { OurEndSection } from "@Areas/Destiny/Lightfall/sections/OurEndSection/OurEndSection";
 import { OutrunTheEndSection } from "@Areas/Destiny/Lightfall/sections/OutrunTheEndSection/OutrunTheEndSection";
@@ -46,7 +45,6 @@ const contentReferences: string[] = [
   "gear_section.button",
   "gear_section.content",
   "outrun_section.content",
-  "editions_section",
   "media.content",
   "ce.buy_button",
 ];
@@ -84,7 +82,6 @@ const Lightfall: React.FC = () => {
     quicksilver_section,
     gear_section,
     outrun_section,
-    editions_section,
     ce,
     media,
     desktop_bg_bottom,
@@ -168,10 +165,6 @@ const Lightfall: React.FC = () => {
         {/* OUT RUN THE END SECTION */}
         <div id={"outrun-the-end"} className={styles.anchor} />
         <OutrunTheEndSection data={outrun_section} />
-
-        {/* EDITIONS SELECTOR */}
-        <div id={"editions"} className={styles.anchor} />
-        <LightfallEditionsSection data={editions_section} />
 
         {/* CE */}
         <div id={"collectors-edition"} />

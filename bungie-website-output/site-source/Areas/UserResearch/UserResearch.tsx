@@ -123,7 +123,9 @@ class UserResearch extends React.Component<
                 <div>
                   <p className="linkPrivacy">
                     <Anchor
-                      url={RouteHelper.LegalPage({ pageName: "privacypolicy" })}
+                      url={RouteHelper.LegalPage({
+                        pageName: "privacypolicy",
+                      })}
                       target="_blank"
                     >
                       {viewPrivacy}
@@ -173,13 +175,10 @@ class UserResearch extends React.Component<
     const emailNotVerified = Localizer.Userresearch.EmailIsNotVerifiedOnce;
     const emailNotVerifiedBut = Localizer.Userresearch.YouHaveOptedInButYour;
 
-    const emailSettingsLink = RouteHelper.ProfileSettings(
-      this.props.globalState.loggedInUser.user.membershipId,
-      "Notifications"
-    );
+    const emailSettingsLink = RouteHelper.EmailAndSms();
 
     return (
-      <React.Fragment>
+      <>
         <div className={styles.settingsSection}>
           <div className={styles.emailContainer}>
             <p>
@@ -216,7 +215,7 @@ class UserResearch extends React.Component<
             </div>
           )}
         </div>
-      </React.Fragment>
+      </>
     );
   }
 
