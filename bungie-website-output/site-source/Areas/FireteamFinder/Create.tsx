@@ -11,7 +11,6 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/RouteParams";
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
@@ -19,7 +18,7 @@ interface CreateProps {
   activityHashId?: number;
 }
 
-export const Create: React.FC<CreateProps> = (props) => {
+export const Create: React.FC<CreateProps> = () => {
   const { graphId, activityId } = useParams<IFireteamFinderParams>();
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const [createStep, setCreateStep] = React.useState(
@@ -51,7 +50,7 @@ export const Create: React.FC<CreateProps> = (props) => {
     if (destinyMembership && !destinyMembership?.selectedCharacter) {
       FireteamsDestinyMembershipDataStore.actions.loadUserData();
     }
-  }, [destinyMembership?.selectedMembership?.membershipId]);
+  }, [destinyMembership]);
 
   const bgImage =
     "/7/ca/destiny/bgs/fireteamfinder/fireteam_finder_create_bg.jpg";

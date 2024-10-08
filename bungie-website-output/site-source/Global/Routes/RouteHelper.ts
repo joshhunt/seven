@@ -489,8 +489,6 @@ export class RouteHelper {
   );
 
   //Seasons
-  public static SeasonOfDrifterLink = LegacyPath("/pub/SeasonOfTheDrifter");
-  public static SeasonOfOpulenceLink = LegacyPath("/pub/SeasonOfOpulence");
   public static SeasonOfTheUndying = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheUndying")
   );
@@ -538,9 +536,6 @@ export class RouteHelper {
   );
   public static SeasonOfTheWish = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("SeasonOfTheWish")
-  );
-  public static EpisodeEchoes = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("EpisodeEchoes")
   );
   public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
   public static SeasonsProgress = BasicReactPath(

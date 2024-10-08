@@ -214,7 +214,7 @@ const Home = () => {
 
   if (BUNGIE_TITLE.startsWith("##") || BUNGIE_DESC.startsWith("##")) {
     Platform.RendererService.ServerLog({
-      Url: location.href,
+      Url: window.location.href,
       LogLevel: Globals.RendererLogLevel.Error,
       Message: "Bungie Strings Not Loaded",
       Stack: new Error()?.stack,

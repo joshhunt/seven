@@ -100,7 +100,7 @@ const Home: React.FC<HomeProps> = (props) => {
 
   if (DESTINY_TITLE.startsWith("##") || DESTINY_DESC.startsWith("##")) {
     Platform.RendererService.ServerLog({
-      Url: location.href,
+      Url: window.location.href,
       LogLevel: Globals.RendererLogLevel.Error,
       Message: "Bungie Strings Not Loaded",
       Stack: new Error()?.stack,

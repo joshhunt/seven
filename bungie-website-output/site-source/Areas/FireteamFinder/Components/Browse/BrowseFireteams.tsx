@@ -62,10 +62,10 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
   const updateUrlWithoutRefresh = (key: string, value: string) => {
     if (key && value) {
       const currentParams = postParam(key, value);
-      history.replaceState(
+      window.history.replaceState(
         null,
         null,
-        location.pathname + `?${UrlUtils.ObjectToQuery(currentParams)}`
+        window.location.pathname + `?${UrlUtils.ObjectToQuery(currentParams)}`
       );
     }
   };

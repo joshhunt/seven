@@ -10,8 +10,6 @@ import {
 import SeasonsUtilityPage from "./SeasonsUtilityPage";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
-import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
-import { TwoLineItem } from "@UI/UIKit/Companion/TwoLineItem";
 import { SeasonsDefinitions } from "./SeasonsDefinitions";
 
 // Required props
@@ -24,29 +22,6 @@ interface ISeasonsProgressProps extends GlobalStateComponentProps<any> {}
  * @returns
  */
 class SeasonsProgress extends React.Component<ISeasonsProgressProps, any> {
-  public componentDidMount() {
-    Toast.show(
-      <TwoLineItem
-        itemTitle={SeasonsDefinitions.currentSeason.title}
-        itemSubtitle={SeasonsDefinitions.currentSeason.toastSubtitle}
-        icon={
-          <img
-            src={SeasonsDefinitions.currentSeason.smallIcon}
-            style={{ width: "3rem", height: "3rem" }}
-          />
-        }
-      />,
-      {
-        position: "b",
-        classes: {
-          toast: styles.toast,
-        },
-        url: SeasonsDefinitions.currentSeason.productPageLink,
-        type: "none",
-      }
-    );
-  }
-
   public render() {
     const seasonHash = this.props.globalState.coreSettings.destiny2CoreSettings
       .currentSeasonHash;

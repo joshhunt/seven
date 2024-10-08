@@ -9,7 +9,7 @@ export abstract class SeasonDefinition {
   public abstract get toastSubtitle(): string;
 
   public abstract image: string;
-  public abstract productPageLink: IMultiSiteLink;
+  public abstract productPageLink: string | IMultiSiteLink;
   public abstract progressPageImage: string;
   public abstract calendarContentItem: string;
   public abstract calendarBackgroundImage: string;
@@ -405,20 +405,44 @@ class EpisodeEchoes extends SeasonDefinition {
     "/7/ca/destiny/bgs/season24/seasonbackground_24.jpg";
   public smallIcon = "/7/ca/destiny/bgs/season24/seasonicon_24.png";
 
-  public productPageLink = RouteHelper.EpisodeEchoes();
+  public productPageLink = "www.destinythegame.com/episodes/echoes";
   public calendarContentItem: string;
   public calendarBackgroundImage = "";
   public seasonNumber = 24;
-  public actionRouteString = "EpisodeEchoes";
+  public actionRouteString = "";
 
   public get toastSubtitle(): string {
     return Localizer.Seasons.LearnMoreEpisodeEchoes;
   }
 }
 
+class EpisodeRevenant extends SeasonDefinition {
+  public static instance = new EpisodeRevenant();
+
+  public get title(): string {
+    return Localizer.Seasons.EpisodeRevenant;
+  }
+
+  public image = "/7/ca/destiny/bgs/season25/S25_Key_Art_-16-9.jpg";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season25/seasonbackground_25.jpg";
+  public smallIcon = "/7/ca/destiny/bgs/season25/seasonicon_25.png";
+
+  // hosted on the product page
+  public productPageLink: IMultiSiteLink = null;
+  public calendarContentItem: string;
+  public calendarBackgroundImage = "";
+  public seasonNumber = 25;
+  public actionRouteString = "";
+
+  public get toastSubtitle(): string {
+    return Localizer.Seasons.LearnMoreEpisodeRevenant;
+  }
+}
+
 export class SeasonsDefinitions {
-  public static previousSeason = SeasonOfTheWish.instance;
-  public static currentSeason = EpisodeEchoes.instance;
+  public static previousSeason = EpisodeEchoes.instance;
+  public static currentSeason = EpisodeRevenant.instance;
 
   public static seasonOfTheUndying = SeasonOfTheUndying.instance;
   public static seasonOfDawn = SeasonOfDawn.instance;
@@ -438,6 +462,7 @@ export class SeasonsDefinitions {
 }
 
 export const SeasonsArray = [
+  EpisodeRevenant.instance,
   EpisodeEchoes.instance,
   SeasonOfTheWish.instance,
   SeasonOfTheWitch.instance,

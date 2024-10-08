@@ -115,7 +115,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
     }
 
     /**
-     * Rather than doing a typical redirect using location.href here,
+     * Rather than doing a typical redirect usingwindow.location.href here,
      * we will do a replaceState and a reload, thus effectively redirecting
      * but without adding to the history
      */

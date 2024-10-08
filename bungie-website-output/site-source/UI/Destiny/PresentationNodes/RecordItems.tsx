@@ -33,7 +33,7 @@ import { EnumUtils } from "@Utilities/EnumUtils";
 import { PresentationNodeUtils } from "@Utilities/PresentationNodeUtils";
 import classNames from "classnames";
 import React from "react";
-import { useHistory, useParams } from "react-router";
+import { useHistory } from "react-router";
 
 interface RecordItemsProps
   extends D2DatabaseComponentProps<
@@ -50,7 +50,6 @@ interface RecordItemsProps
 }
 
 const RecordItems: React.FC<RecordItemsProps> = (props) => {
-  const params = useParams<PresentationNodeParams>();
   const history = useHistory();
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(
@@ -324,21 +323,7 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
               />
             ) : null;
 
-          let flairCoin =
-            recordData?.objectives &&
-            recordData?.objectives.length &&
-            PresentationNodeUtils.ShowProgressBarForSingleObjective(
-              recordData.objectives[0],
-              firstObjectiveDef
-            ) ? (
-              <FlairCoin
-                children={
-                  <span className={styles.flairSlot}>{`${
-                    recordData?.objectives?.filter((o) => o.complete)?.length
-                  } / ${recordData?.objectives?.length}`}</span>
-                }
-              />
-            ) : null;
+          let flairCoin: JSX.Element;
 
           flairCoin =
             recordData?.intervalObjectives &&
@@ -376,12 +361,12 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
               key={r.recordHash}
               className={classNames(
                 styles.detailItem,
-                { [styles.completed]: completed },
+                { [styles.complete]: completed },
                 { [styles.redeemed]: redeemed },
                 { [styles.clickable]: !isObscured }
               )}
               onClick={() => {
-                !isObscured ? showDetailModal(recordDef.hash) : null;
+                return !isObscured ? showDetailModal(recordDef.hash) : null;
               }}
             >
               <DetailItem

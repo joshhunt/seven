@@ -10,7 +10,6 @@ import SeasonsProgress from "./SeasonsProgress";
 import PreviousSeason from "./PreviousSeason";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { SeasonsDefinitions } from "./SeasonsDefinitions";
 
 class SeasonsArea extends React.Component<RouteComponentProps> {
   public render() {
@@ -19,10 +18,6 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
     if (!systemEnabled) {
       throw new NotFoundError();
     }
-
-    const currentSeasonAction = RouteDefs.Areas.Seasons.getAction(
-      SeasonsDefinitions.currentSeason.actionRouteString
-    );
 
     return (
       <SwitchWithErrors>

@@ -4,7 +4,7 @@ import { Query } from "contentstack";
 // @ts-ignore
 import * as H from "history";
 import * as pathToRegexp from "ptr620";
-import React from "react";
+import React, { useMemo } from "react";
 import { LocalizerUtils } from "./LocalizerUtils";
 import { useLocation } from "react-router-dom";
 import { StringCompareOptions, StringUtils } from "./StringUtils";
@@ -27,7 +27,7 @@ export class UrlUtils {
    * @param q
    */
   public static QueryToObject(
-    q: string = location.search
+    q: string = window.location.search
   ): { [key: string]: string } {
     const output: { [key: string]: string } = {};
 
@@ -146,9 +146,9 @@ export class UrlUtils {
     }
     const parsed = pathToRegexp.parse(path);
     const regExp = pathToRegexp.tokensToRegexp(parsed, undefined, options);
-    const actualPathname = location.pathname.startsWith(this.AppBaseUrl)
-      ? location.pathname.slice(this.AppBaseUrl.length)
-      : location.pathname;
+    const actualPathname = window.location.pathname.startsWith(this.AppBaseUrl)
+      ? window.location.pathname.slice(this.AppBaseUrl.length)
+      : window.location.pathname;
 
     return !!actualPathname.match(regExp);
   }
@@ -191,7 +191,7 @@ export class UrlUtils {
 
     if (typeof link === "object") {
       if (link.legacy) {
-        location.href = link.url;
+        window.location.href = link.url;
 
         return;
       } else {
@@ -318,14 +318,6 @@ export class UrlUtils {
     return resolvedUrl;
   }
 
-  // A custom hook that builds on useLocation to parse
-  // the query string for you.
-  public static useQuery() {
-    const { search } = useLocation();
-
-    return React.useMemo(() => new URLSearchParams(search), [search]);
-  }
-
   /**
    * Returns true if we want this to open in a new tab
    * @param isBungieNet
@@ -385,7 +377,7 @@ export class UrlUtils {
    * @param pathname
    */
   public static redirectWithoutHistory(pathname: string) {
-    history.replaceState(null, null, pathname);
-    location.reload();
+    window.history.replaceState(null, null, pathname);
+    window.location.reload();
   }
 }

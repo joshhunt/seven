@@ -1,6 +1,6 @@
 import isEqual from "react-fast-compare";
-import React, { useEffect, useState, useRef } from "react";
-import { DataStore } from "@bungie/datastore";
+import React, { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 export class ReactUtils {
   /**
@@ -50,6 +50,14 @@ export const usePrevious = <T extends any>(value: T) => {
 
   // Return previous value (happens before update in useEffect above)
   return ref.current;
+};
+
+// A custom hook that builds on useLocation to parse
+// the query string for you.
+const useQuery = () => {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
 };
 
 /**

@@ -93,15 +93,24 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "Profile", { path: ":clanId" }),
         (area) => new ActionRoute(area, "Settings", { path: ":clanId" }),
         (area) => new ActionRoute(area, "CultureFields", { path: ":clanId" }),
-        (area) => new ActionRoute(area, "GeneralSettings", { path: ":clanId" }),
+        (area) =>
+          new ActionRoute(area, "GeneralSettings", {
+            path: ":clanId",
+          }),
         (area) => new ActionRoute(area, "EditBanner", { path: ":clanId" }),
         (area) =>
-          new ActionRoute(area, "AdminHistory", { path: ":clanId/:page?" }),
+          new ActionRoute(area, "AdminHistory", {
+            path: ":clanId/:page?",
+          }),
         (area) =>
-          new ActionRoute(area, "EditHistory", { path: ":clanId/:page?" }),
+          new ActionRoute(area, "EditHistory", {
+            path: ":clanId/:page?",
+          }),
         (area) => new ActionRoute(area, "Banned", { path: ":clanId/:page?" }),
         (area) =>
-          new ActionRoute(area, "Invitations", { path: ":clanId/:page?" }),
+          new ActionRoute(area, "Invitations", {
+            path: ":clanId/:page?",
+          }),
       ],
     }),
     Clans: new Area({
@@ -144,7 +153,9 @@ export class RouteDefs {
       ),
       routes: [
         (area) =>
-          new ActionRoute(area, "Activate", { path: ":step?/:skuName?" }),
+          new ActionRoute(area, "Activate", {
+            path: ":step?/:skuName?",
+          }),
         (area) => new ActionRoute(area, "Confirmation"),
         (area) => new ActionRoute(area, "Deactivate"),
         (area) => new ActionRoute(area, "Recap"),
@@ -157,8 +168,14 @@ export class RouteDefs {
       ),
       routes: [
         (area) => new ActionRoute(area, "Redeem"),
-        (area) => new ActionRoute(area, "History", { path: ":membershipId?" }),
-        (area) => new ActionRoute(area, "Partners", { path: ":membershipId?" }),
+        (area) =>
+          new ActionRoute(area, "History", {
+            path: ":membershipId?",
+          }),
+        (area) =>
+          new ActionRoute(area, "Partners", {
+            path: ":membershipId?",
+          }),
       ],
     }),
     Emails: new Area({
@@ -256,10 +273,14 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Dashboard"),
         (area) =>
-          new ActionRoute(area, "Browse", { path: ":graphId?/:activityId?" }),
+          new ActionRoute(area, "Browse", {
+            path: ":graphId?/:activityId?",
+          }),
         (area) => new ActionRoute(area, "Detail", { path: ":lobbyId?" }),
         (area) =>
-          new ActionRoute(area, "Create", { path: ":graphId?/:activityId?" }),
+          new ActionRoute(area, "Create", {
+            path: ":graphId?/:activityId?",
+          }),
       ],
     }),
     Fireteams: new Area({
@@ -350,7 +371,9 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, "Rewards"),
         (area) =>
-          new ActionRoute(area, "Reward", { path: ":mtype?/:rewardId?" }),
+          new ActionRoute(area, "Reward", {
+            path: ":mtype?/:rewardId?",
+          }),
       ],
     }),
     Search: new Area({
@@ -385,7 +408,6 @@ export class RouteDefs {
         (area) => new ActionRoute(area, "SeasonOfTheDeep"),
         (area) => new ActionRoute(area, "SeasonOfTheWitch"),
         (area) => new ActionRoute(area, "SeasonOfTheWish"),
-        (area) => new ActionRoute(area, "EpisodeEchoes"),
         (area) => new ActionRoute(area, "Progress"),
         (area) => new ActionRoute(area, "PreviousSeason"),
         (area) => new ActionRoute(area, "Events"),
@@ -509,7 +531,9 @@ export class RouteDefs {
           ),
           routes: [
             (urlPrefix) =>
-              new ActionRoute(urlPrefix, "index", { path: ":mtype?/:mid?" }),
+              new ActionRoute(urlPrefix, "index", {
+                path: ":mtype?/:mid?",
+              }),
           ],
         },
       },

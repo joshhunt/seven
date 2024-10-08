@@ -21,6 +21,7 @@ import { DestinyTooltip } from "@UI/Destiny/Tooltips/DestinyTooltip";
 import { Localizer } from "@bungie/localization";
 import { DestinyClass } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";
+import { DestinyDefinitions } from "@Definitions";
 
 // Required props
 interface ISeasonPassRewardProgressionProps
@@ -169,14 +170,31 @@ class SeasonPassRewardProgression extends React.Component<
       return characterSeasonRank; // Default
     };
 
-    function getActiveActsRankCount(acts: any[]) {
-      if (!acts) {
-        return rewardsDef.steps.length;
+    function getActiveActsRankCount(
+      acts: DestinyDefinitions.DestinySeasonActDefinition[]
+    ) {
+      // default to the total rewards progression rank count
+      var rankCount = rewardsDef?.steps?.length;
+
+      const actCount = acts?.length;
+      if (acts && actCount && actCount > 0) {
+        rankCount = 0;
+
+        var actIndex = 0;
+        const currentDateTime = new Date();
+
+        // if we have acts, assume we're at least on act 1, and add up the rank counts for any active acts
+        do {
+          rankCount += acts[actIndex].rankCount;
+
+          actIndex += 1;
+        } while (
+          actIndex < actCount &&
+          new Date(acts[actIndex].startTime) <= currentDateTime
+        );
       }
-      const currentTime = new Date();
-      return acts
-        .filter((act) => new Date(act?.startTime) <= currentTime)
-        .reduce((total, act) => total + act?.rankCount, 0);
+
+      return rankCount;
     }
 
     const adjustedSteps = rewardsDef.steps.filter((value, index) => {

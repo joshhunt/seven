@@ -65,7 +65,7 @@ class InnerErrorBoundaryInternal extends React.Component<
       }
 
       Platform.RendererService.ServerLog({
-        Url: location.href,
+        Url: window.location.href,
         LogLevel: Globals.RendererLogLevel.Error,
         Message: message,
         Stack: error.stack,

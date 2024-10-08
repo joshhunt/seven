@@ -3,18 +3,11 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
-import { DataStore } from "@bungie/datastore";
-import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
-import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
-import {
-  GlobalStateComponentProps,
-  GlobalStateDataStore,
-  withGlobalState,
-} from "@Global/DataStore/GlobalStateDataStore";
+import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Actions, Components, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
@@ -54,12 +47,15 @@ interface ISeasonsUtilityPageProps {
  * @param {ISeasonsUtilityPageProps} props
  * @returns
  */
-const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
+const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
+  props: ISeasonsUtilityPageProps
+) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(SeasonsDestinyMembershipDataStore);
 
   const [itemDetailCanClaim, setItemDetailCanClaim] = useState(false);
   const [itemDetailModalOpen, setItemDetailModalOpen] = useState(false);
+  const [itemDetailLoading, setItemDetailLoading] = useState(false);
   const [itemDetailElement, setItemDetailElement] = useState<ReactNode>();
   const [itemDetailRewardIndex, setItemDetailRewardIndex] = useState(0);
   const [itemDetailHash, setItemDetailHash] = useState(0);
@@ -75,10 +71,10 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
   const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   useEffect(() => {
-    if (!destiny2Disabled && !destinyMembership?.selectedCharacter) {
+    if (!destiny2Disabled) {
       SeasonsDestinyMembershipDataStore.actions.loadUserData();
     }
-  }, []);
+  }, [destiny2Disabled]);
 
   useEffect(() => {
     if (!destiny2Disabled && destinyMembership?.selectedMembership) {
@@ -143,6 +139,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (props) => {
     setItemDetailRewardIndex(rewardIndex);
     setItemDetailCanClaim(canClaim);
 
+    setItemDetailLoading(false);
     setItemDetailElement(
       <DestinyCollectibleDetailItemContent
         itemHash={itemHash}

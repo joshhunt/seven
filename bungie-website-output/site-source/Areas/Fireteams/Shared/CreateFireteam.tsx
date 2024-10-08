@@ -89,6 +89,20 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     return <p>{Localizer.Clans.adestiny2characterisrequired}</p>;
   }
 
+  const sellTranslations = [
+    /sell/i, // English
+    /vender/i, // Spanish, Portuguese
+    /verkaufen/i, // German
+    /vendre/i, // French
+    /vendere/i, // Italian
+    /продавать/i, // Russian
+    /sprzedawać/i, // Polish
+    /売る/i, // Japanese
+    /팔다/i, // Korean
+    /卖/i, // Chinese (Simplified)
+    /賣/i, // Chinese (Traditional)
+  ];
+
   const createFireteam = (values: FormikValues) => {
     const input: Fireteam.FireteamCreationRequest = {
       title: values.fireteamTitle,
@@ -161,6 +175,17 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                 minLength: titleMinLength,
                 maxLength: titleMaxLength,
               })
+            )
+            .test(
+              "no-sell-word",
+              "The title cannot contain words related to 'sell' in various languages.",
+              (value) =>
+                !sellTranslations.some((pattern) => pattern.test(value))
+            )
+            .test(
+              "no-urls",
+              "The title cannot contain URLs.",
+              (value) => !/(https?:\/\/[^\s]+)/g.test(value)
             ),
           players: Yup.string().required("Required"),
         })}
@@ -175,7 +200,9 @@ export const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
             <Form onChange={(e) => handleSchedulingEvents(e)}>
               <div
                 className={styles.header}
-                style={{ backgroundImage: `url(${fireteamBg})` }}
+                style={{
+                  backgroundImage: `url(${fireteamBg})`,
+                }}
               >
                 <h2>{fireteamsLoc.CreateFireteam}</h2>
                 <div className={styles.activities}>

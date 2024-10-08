@@ -28,8 +28,8 @@ export const FireteamFinderBreadcrumb: React.FC<FireteamFinderBreadcrumbProps> =
   props
 ) => {
   const location = useLocation<{ from: string }>();
-  const previousLocation = location.state?.from;
-  const { graphId, activityId, lobbyId } = useParams<IFireteamFinderParams>();
+  const previousLocation = window.location.state?.from;
+  const { graphId, activityId } = useParams<IFireteamFinderParams>();
   const browseAnchor = (
     <Anchor url={RouteHelper.FireteamFinderBrowse()}>
       {Localizer.fireteams.browsetitle}

@@ -69,7 +69,6 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
     //show the auth
     const signInModal = Modal.signIn(() => {
       ClanDestinyMembershipDataStore.actions.loadUserData();
-      console.log("called in join");
 
       signInModal.current.close();
     });

@@ -58,7 +58,7 @@ export const JoinUpButton: React.FC<JoinUpButtonProps> = (props) => {
         window.location.reload();
       });
     } else {
-      UserUtils.SignIn(history, location.pathname);
+      UserUtils.SignIn(history, window.location.pathname);
     }
   };
 

@@ -263,7 +263,7 @@ export class DestinySkuUtils {
     region: string,
     rcp: RouteComponentProps
   ) => {
-    const q = location.search;
+    const q = window.location.search;
     const qObj = UrlUtils.QueryToObject(q);
 
     const newObj = {
@@ -305,7 +305,9 @@ export class DestinySkuUtils {
       return null;
     }
 
-    const cachedSkuMapping: { [key: string]: IDestinyProductDefinition } = {};
+    const cachedSkuMapping: {
+      [key: string]: IDestinyProductDefinition;
+    } = {};
 
     const tryCache = (skuTag: string) => {
       if (cachedSkuMapping[skuTag]) {

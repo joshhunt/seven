@@ -117,7 +117,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 RouteHelper.DestinyBuy({ version: "Promo" }),
                 navLoc.Expansions
               )}
-              {this.renderLink("/episodeechoes", navLoc.TopNavEpisodes)}
+              {this.renderLink("/episoderevenant", navLoc.TopNavEpisodes)}
               {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
               {this.renderLink(
                 ConfigUtils.SystemStatus(SystemNames.FireteamFinderWebUI)
@@ -143,7 +143,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
             <ul>
               {this.renderLink(RouteHelper.Companion(), navLoc.topnavcompanion)}
               {this.renderLink(
-                RouteHelper.SignIn(null, location.pathname),
+                RouteHelper.SignIn(null, window.location.pathname),
                 navLoc.SignUpSignIn
               )}
               {this.renderLink(
@@ -176,11 +176,15 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 label={navLoc.Legal}
               />
               <FooterLink
-                url={RouteHelper.LegalPage({ pageName: "terms" })}
+                url={RouteHelper.LegalPage({
+                  pageName: "terms",
+                })}
                 label={navLoc.Terms}
               />
               <FooterLink
-                url={RouteHelper.LegalPage({ pageName: "privacypolicy" })}
+                url={RouteHelper.LegalPage({
+                  pageName: "privacypolicy",
+                })}
                 label={navLoc.Privacy}
               />
               {(Localizer.CurrentCultureName === "en" ||

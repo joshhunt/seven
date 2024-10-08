@@ -64,10 +64,10 @@ export const ApplicationHistory: React.FC<ApplicationHistoryProps> = (
   }, []);
 
   useEffect(() => {
-    history.replaceState(
+    window.history.replaceState(
       null,
       null,
-      location.pathname +
+      window.location.pathname +
         `?${Object.keys(filter)
           .map((k) => filter[k] && `${k}=${filter[k]}`)
           .filter((x) => x !== null)

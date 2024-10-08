@@ -174,7 +174,7 @@ export class MarketingSubNav extends React.Component<
       withGutter,
     } = this.props;
 
-    const path = location.pathname;
+    const path = window.location.pathname;
 
     this.state.fixed &&
       document.querySelector("html").classList.add("solid-header");

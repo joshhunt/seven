@@ -1,5 +1,3 @@
-// tslint:disable: variable-name
-
 export enum LogLevel {
   None = 0,
   Normal = 1,
@@ -59,6 +57,8 @@ export class BaseLogger implements ILogger {
   public errorVerbose = (content: any, ...optional: any[]) => 0;
 
   constructor(protected readonly prefix: string) {
+    //I hate just setting this here, but it's the only way to get the default log level to be verbose in local environments, if this is not suppressed, part of the dom tree doesn't render
+    //eslint-disable-next-line no-restricted-globals
     const logLevelDefault = location.hostname.endsWith("local")
       ? LogLevel.Verbose
       : LogLevel.None;

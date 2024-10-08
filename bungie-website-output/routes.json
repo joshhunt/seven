@@ -736,14 +736,6 @@
     "areaName": "Seasons",
     "areaObjectName": "Seasons",
     "componentImportPath": "@Areas/Seasons/SeasonsArea",
-    "action": "EpisodeEchoes",
-    "params": {},
-    "path": "/7/en/Seasons/EpisodeEchoes"
-  },
-  {
-    "areaName": "Seasons",
-    "areaObjectName": "Seasons",
-    "componentImportPath": "@Areas/Seasons/SeasonsArea",
     "action": "Events",
     "params": {},
     "path": "/7/en/Seasons/Events"

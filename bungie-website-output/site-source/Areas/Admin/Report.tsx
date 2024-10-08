@@ -40,7 +40,7 @@ export const Report: React.FC<ReportProps> = (props) => {
     if (reportId !== "" && !report) {
       getReportFromId();
     }
-  }, []);
+  }, [report, reportId]);
 
   if (!report) {
     return null;
@@ -61,9 +61,7 @@ export const Report: React.FC<ReportProps> = (props) => {
       </GridCol>
       <GridCol cols={8} className={styles.contentHolder}>
         <div className={styles.content}>
-          <div className={styles.mainContent}>
-            {<ReportItem report={report[0]} />}
-          </div>
+          <div>{<ReportItem report={report[0]} />}</div>
         </div>
       </GridCol>
     </Grid>

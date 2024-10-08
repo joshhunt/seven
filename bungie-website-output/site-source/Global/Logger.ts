@@ -1,19 +1,9 @@
-// tslint:disable: variable-name
-// @ts-ignore
-import { mapStackTrace } from "@bungie/sourcemapped-stacktrace";
 import { DetailedError } from "@CustomErrors";
 import { RendererLogLevel, SpamReductionLevel } from "@Enum";
 import { BaseLogger, ILogger } from "@Global/BaseLogger";
 import { Renderer } from "@Platform";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { FetchUtils } from "@Utilities/FetchUtils";
 import { StringCompareOptions, StringUtils } from "@Utilities/StringUtils";
-
-enum LogType {
-  Message,
-  Warning,
-  Error,
-}
 
 export enum LogLevel {
   None = 0,
@@ -76,47 +66,17 @@ class LoggerInternal extends BaseLogger implements IServerLogger {
       return;
     }
 
-    const mappedStack = await LoggerInternal.getStack(stack);
-
     const input: Renderer.ServerLogRequest = {
-      Url: location.href,
+      Url: window.location.href,
       LogLevel: logLevel,
       Message: message,
-      Stack: mappedStack,
+      Stack: null,
       SpamReductionLevel: spamReduction,
     };
 
     FetchUtils.ServerLog(input).then(() => {
       // Remove this message from the list
       this.logsInFlight.splice(this.logsInFlight.indexOf(message), 1);
-    });
-  }
-
-  private static getStack(ogStack: string) {
-    return new Promise<string>((resolve) => {
-      if (!ogStack) {
-        Promise.resolve(null);
-
-        return;
-      }
-
-      const sourceMapUrlTransform = ConfigUtils.EnvironmentIsLocal
-        ? undefined
-        : (url: string) => {
-            return url.replace("static/js/", "static/js/maps/");
-          };
-
-      mapStackTrace(
-        ogStack,
-        (remapped: string[]) => {
-          const mappedStack = remapped.join("\r\n");
-
-          resolve(mappedStack);
-        },
-        {
-          sourceMapUrlTransform,
-        }
-      );
     });
   }
 }

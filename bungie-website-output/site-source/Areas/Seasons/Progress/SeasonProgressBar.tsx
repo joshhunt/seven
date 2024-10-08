@@ -18,9 +18,6 @@ export const SeasonProgressBar: React.FC<SeasonProgressBarProps> = (props) => {
     return null;
   }
 
-  const seasonPass = Localizer.Seasons.SeasonPass;
-  const seasonalRank = Localizer.Seasons.SeasonalRank;
-
   const rankLabel = Localizer.Format(
     Localizer.Seasons.RankCharacterseasonprogressionlevel,
     {

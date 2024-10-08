@@ -30,13 +30,15 @@ class StaticArea extends React.Component<
     const locale = Localizer.CurrentCultureName;
 
     const pageRootFolder = `/7/StaticPages/${pageName}`;
-    const requireHtml = location.origin + `${pageRootFolder}/${pageName}.html`;
+    const requireHtml =
+      window.location.origin + `${pageRootFolder}/${pageName}.html`;
     const enStrings =
-      location.origin + `/7/StaticPages/localized/${pageName}.json`;
+      window.location.origin + `/7/StaticPages/localized/${pageName}.json`;
     let requireStrings = enStrings;
     if (locale !== "en") {
       requireStrings =
-        location.origin + `/7/StaticPages/localized/${locale}/${pageName}.json`;
+        window.location.origin +
+        `/7/StaticPages/localized/${locale}/${pageName}.json`;
     }
 
     const promises = [

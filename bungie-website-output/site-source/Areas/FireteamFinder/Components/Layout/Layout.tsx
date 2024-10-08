@@ -163,9 +163,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
       setDestinyDataLoaded(true);
     }
   }, [
-    UserUtils.isAuthenticated(globalState),
+    loggedIn,
     destinyMemberships,
-    destinyData?.loaded,
+    destinyData.selectedMembership,
+    profileResponse,
+    loadDestinyMembership,
   ]);
 
   const renderChildren = (): React.ReactNode => {
