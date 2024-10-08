@@ -73,7 +73,23 @@ export const PartnerRewards: React.FC = () => {
     false
   );
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const prevGlobalState = usePrevious(globalState);
   const { membershipId } = useParams<IPartnerRewardsRouteParams>();
+
+  useEffect(() => {
+    getRewardsHistory();
+  }, []);
+
+  useEffect(() => {
+    const wasAuthed =
+      prevGlobalState && UserUtils.isAuthenticated(prevGlobalState);
+    const isNowAuthed = UserUtils.isAuthenticated(globalState);
+
+    // if user logs in then need to load everything
+    if (!wasAuthed && isNowAuthed) {
+      getRewardsHistory();
+    }
+  }, [globalState]);
 
   const getRewardsHistory = () => {
     // Get membershipId from url if it is provided - this is so admins can view a user's partner rewards history too
@@ -114,12 +130,6 @@ export const PartnerRewards: React.FC = () => {
       }
     }
   };
-
-  useEffect(() => {
-    if (globalState.loggedInUser) {
-      getRewardsHistory();
-    }
-  }, [globalState, getRewardsHistory]);
 
   const makeDateString = (date: string) => {
     const dateObj = DateTime.fromISO(date, { zone: "utc" });
@@ -217,7 +227,7 @@ export const PartnerRewards: React.FC = () => {
         >
           <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
         </BungieHelmet>
-        <div>
+        <div className={styles.missingDropsButton}>
           <GridCol cols={12} className={styles.dropsContainer}>
             <FaTwitch />
             <div className={styles.dropsContentContainer}>
