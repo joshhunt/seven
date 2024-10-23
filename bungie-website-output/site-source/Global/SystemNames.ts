@@ -133,4 +133,5 @@ export const SystemNames = {
   FireteamFinderWebUI: "FireteamFinderWebUI",
   ParentalControlUI: "ParentalControlUI",
   FireteamFinderNotification: "FireteamFinderNotification",
+  FeatUseFunctionalAuthInternal: "FeatUseFunctionalAuthInternal",
 } as const;

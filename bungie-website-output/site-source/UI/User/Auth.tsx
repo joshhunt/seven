@@ -1,3 +1,7 @@
+import React, { useState, useEffect, RefObject } from "react";
+import { UserUtils } from "@Utilities/UserUtils";
+import { SystemNames } from "@Global/SystemNames";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import {
   GlobalStateDataStore,
   GlobalState,
@@ -15,7 +19,6 @@ import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { Img } from "@Helpers";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import React, { useState, useEffect, RefObject } from "react";
 import classNames from "classnames";
 
 export type AuthTemporaryGlobalState = GlobalState<
@@ -52,6 +55,10 @@ interface DefaultProps {
    * If you want to do something when the modal is closed
    */
   onClose?: () => void;
+  /*
+   * Passes the model ref to allow some control of the modal within a child
+   * */
+  modalRef?: React.RefObject<Modal>;
 }
 
 type Props = IAuthProps & Partial<DefaultProps>;
@@ -61,9 +68,17 @@ export const ShowAuthModal = (
   existingModalRef?: RefObject<Modal>
 ) => {
   const modalRef = existingModalRef ?? React.createRef<Modal>();
+  /* Render AuthInternal Class or functional AuthInt based on Feature Flag; To be refined after stability period & regression */
+  const AuthIntComponent = ConfigUtils.SystemStatus(
+    SystemNames.FeatUseFunctionalAuthInternal
+  ) ? (
+    <AuthInt {...authProps} modalRef={modalRef} />
+  ) : (
+    <AuthInternal {...authProps} />
+  );
 
   Modal.open(
-    <AuthInternal {...authProps} />,
+    AuthIntComponent,
     {
       isFrameless: true,
       preventUserClose: authProps.preventModalClose,
@@ -108,7 +123,7 @@ const AuthWrapper: React.FC<Props> = (props) => {
     }
   }, [props.mode]); // We are going to run this anytime the mode changes
 
-  return shouldRender ? <AuthInternal {...props} /> : null;
+  return shouldRender ? <AuthInt {...props} /> : null;
 };
 
 AuthWrapper.defaultProps = {
@@ -123,6 +138,243 @@ AuthWrapper.defaultProps = {
  * @param {IAuthProps} props
  * @returns
  */
+
+/** TODO: 10/17/24 - After period stability:
+ *	 Remove original AuthInternal
+ *   Rename this to AuthInternal in a deprecation pass of the original AuthInternal class
+ *   Remove the Feature Flag FeatUseFunctionalAuthInternal
+ * */
+const AuthInt: React.FC<Props> = (props: Props) => {
+  const globalState = useDataStore(GlobalStateDataStore, [
+    "loggedinuser",
+    "coresettings",
+  ]);
+
+  const { coreSettings } = globalState;
+  const showLearnMoreEnabled = ConfigUtils.SystemStatus("SignInLearnMore");
+  const userIsAuthed = UserUtils.isAuthenticated(globalState);
+
+  const redirectUser = () => {
+    window.location.href = props.referrer;
+  };
+
+  if (!userIsAuthed && !coreSettings) {
+    return <SpinnerContainer loading={true} />;
+  } else if (userIsAuthed) {
+    /*
+     * This triggers after the user has signed in.
+     * Execute the 'onSignIn', close the modal (if it exists)
+     *  */
+    props.onSignIn(globalState);
+    props?.modalRef?.current?.close();
+  }
+
+  const psnSystem = coreSettings.systems.PSNAuth;
+  const xuidSystem = coreSettings.systems.XuidAuth;
+  const battleNetSystem = coreSettings.systems.Blizzard;
+  const stadiaSystem = coreSettings.systems.StadiaIdAuth;
+  const steamSystem = coreSettings.systems.SteamIdAuth;
+  const egsSystem = coreSettings.systems.EpicIdAuth;
+  const twitchSystem = coreSettings.systems.Twitch;
+
+  const label = props.customLabel ?? Localizer.Registration.SelectYourPlatform;
+
+  return (
+    <SystemDisabledHandler systems={["Authentication"]}>
+      <div
+        className={classNames(styles.requiresAuth, {
+          [styles.modal]: props.mode === "modal",
+        })}
+        id={"auth-two"}
+      >
+        {props.referrer?.length > 0 && (
+          <Button onClick={() => redirectUser()} className={styles.backButton}>
+            <Icon iconType={"material"} iconName={"keyboard_arrow_left"} />
+            {Localizer.Registration.Back}
+          </Button>
+        )}
+        <div className={styles.signInHeader}>
+          <h2>{Localizer.Registration.SignIn}</h2>
+        </div>
+        <div className={styles.signInBody}>
+          {label && <div className={styles.label}>{label}</div>}
+          <div className={styles.buttonWrapper}>
+            {psnSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.Psnid}
+                credential={Globals.BungieCredentialType.Psnid}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/playstation/icon.png`
+                      )})`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionplaystation}
+                </Button>
+              </AuthTrigger>
+            )}
+            {steamSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.SteamId}
+                credential={Globals.BungieCredentialType.SteamId}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/steam/icon.png`
+                      )})`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionsteam}
+                </Button>
+              </AuthTrigger>
+            )}
+            {xuidSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.Xuid}
+                credential={Globals.BungieCredentialType.Xuid}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/xbox/icon.png`
+                      )})`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionxbox}
+                </Button>
+              </AuthTrigger>
+            )}
+            {battleNetSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.BattleNetId}
+                credential={Globals.BungieCredentialType.BattleNetId}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/blizzard/icon.png`
+                      )})`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionblizzard}
+                </Button>
+              </AuthTrigger>
+            )}
+            {stadiaSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.StadiaId}
+                credential={Globals.BungieCredentialType.StadiaId}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/stadia/icon.png`
+                      )})`,
+                      backgroundSize: `auto 2.5rem`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionstadia}
+                  {stadiaSystem && (
+                    <div className={styles.twoLine}>
+                      <span>{Localizer.Registration.stadiaauthleaving}</span>
+                    </div>
+                  )}
+                </Button>
+              </AuthTrigger>
+            )}
+            {egsSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.EgsId}
+                credential={Globals.BungieCredentialType.EgsId}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/egs/icon.png`
+                      )})`,
+                      backgroundSize: `auto 2.5rem`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptionegs}
+                </Button>
+              </AuthTrigger>
+            )}
+            {twitchSystem?.enabled && (
+              <AuthTrigger
+                key={Globals.BungieCredentialType.TwitchId}
+                credential={Globals.BungieCredentialType.TwitchId}
+              >
+                <Button className={styles.authTriggerButton}>
+                  <div
+                    className={styles.icon}
+                    style={{
+                      backgroundImage: `url(${Img(
+                        `/bungie/icons/logos/twitch/icon.png`
+                      )})`,
+                    }}
+                  />
+                  {Localizer.Registration.networksigninoptiontwitch}
+                </Button>
+              </AuthTrigger>
+            )}
+          </div>
+          {showLearnMoreEnabled && (
+            <div className={styles.learnMore}>
+              <p>{Localizer.Registration.DonTHaveABungieNetAccount}</p>
+              <ul>
+                <li>
+                  <Icon iconType={"bungle"} iconName={"socialteamengram"} />
+                  {Localizer.Registration.FreePowerfulRewards}
+                </li>
+                <li>
+                  <span className={styles.crossSaveIcon} />
+                  {Localizer.Registration.CrossSave}
+                </li>
+                <li>
+                  <Icon iconType={"bungle"} iconName={"socialteamclan"} />
+                  {Localizer.Registration.Clans}
+                </li>
+                <li>
+                  <span className={styles.gearIcon} />
+                  {Localizer.Registration.ManageGear}
+                </li>
+              </ul>
+              <p>
+                <Button
+                  analyticsId={"signin-page-learnmore"}
+                  url={`/registration`}
+                  buttonType={"text"}
+                >
+                  {Localizer.Registration.LearnMore}{" "}
+                  <Icon
+                    iconType={"material"}
+                    iconName={"keyboard_arrow_right"}
+                  />
+                </Button>
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </SystemDisabledHandler>
+  );
+};
+
 class AuthInternal extends React.Component<Props, IAuthState> {
   private destroyGlobalStateListener: DestroyCallback;
   private signInAttemptedFlag = false;
@@ -202,7 +454,10 @@ class AuthInternal extends React.Component<Props, IAuthState> {
     return (
       <SystemDisabledHandler systems={["Authentication"]}>
         <div
-          className={classNames(styles.requiresAuth, styles[this.props.mode])}
+          className={classNames(styles.requiresAuth, {
+            [styles.modal]: this.props.mode === "modal",
+          })}
+          id={"auth-one"}
         >
           {this.props.referrer?.length > 0 && (
             <Button

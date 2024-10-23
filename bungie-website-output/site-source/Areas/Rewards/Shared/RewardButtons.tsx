@@ -162,6 +162,7 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
       } else {
         return (
           <Button
+            buttonType={"gold"}
             className={classNames(styles.disabled, {
               [styles.hide]: hideAppliedOffer,
             })}
