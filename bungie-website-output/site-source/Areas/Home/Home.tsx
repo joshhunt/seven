@@ -78,7 +78,7 @@ const Home = () => {
       backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_02.jpg",
       logoImage: {
         alt: navLoc.Marathon,
-        img: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_02_L.svg",
+        img: "7/ca/marathon/logos/marathon_logo_splash.svg",
       },
       buttonData: [
         {
