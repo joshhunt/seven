@@ -7,7 +7,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IProfileParams } from "@Routes/RouteParams";
+import { IProfileParams } from "@Routes/Definitions/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Icon } from "@UIKit/Controls/Icon";
 import React, { useEffect } from "react";

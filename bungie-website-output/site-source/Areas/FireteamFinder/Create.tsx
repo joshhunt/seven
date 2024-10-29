@@ -10,7 +10,7 @@ import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataS
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamFinderParams } from "@Routes/RouteParams";
+import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 

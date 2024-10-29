@@ -13,7 +13,7 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamFinderParams } from "@Routes/RouteParams";
+import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";

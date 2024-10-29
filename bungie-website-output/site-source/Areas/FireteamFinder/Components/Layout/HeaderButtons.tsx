@@ -21,7 +21,7 @@ import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamFinderParams } from "@Routes/RouteParams";
+import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,

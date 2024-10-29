@@ -13,7 +13,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform, Tokens } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IRewardClaimParams } from "@Routes/RouteParams";
+import { IRewardClaimParams } from "@Routes/Definitions/RouteParams";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { Anchor } from "@UI/Navigation/Anchor";

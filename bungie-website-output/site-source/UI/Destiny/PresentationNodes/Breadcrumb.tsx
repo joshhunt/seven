@@ -10,7 +10,7 @@ import { BungieMembershipType } from "@Enum";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/PresentationNodeDestinyMembershipStore";
 import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import {
   filterMode,
   PageType,

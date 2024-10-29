@@ -14,7 +14,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform } from "@Platform";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { FormikTextArea } from "@UIKit/Forms/FormikForms/FormikTextArea";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import classNames from "classnames";

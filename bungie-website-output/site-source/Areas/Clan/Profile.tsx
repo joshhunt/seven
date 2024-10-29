@@ -16,7 +16,7 @@ import { IgnoredItemType, RuntimeGroupMemberType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform } from "@Platform";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { ReportItem } from "@UI/Report/ReportItem";

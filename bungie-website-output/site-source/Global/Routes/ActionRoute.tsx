@@ -1,7 +1,6 @@
-import { ILocaleParams } from "./RouteDefs";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import { IMultiSiteLink } from "./RouteHelper";
-
+import { RouteActions } from "./Definitions/RouteActions";
 export interface IActionRouteParams {
   // The React Router path
   path?: string;
@@ -18,18 +17,17 @@ export class ActionRoute {
   public get areaPath() {
     return `/${this.urlPrefix}`;
   }
-  public readonly action: string;
+  public readonly action: RouteActions;
 
   /**
    * Creates a new ActionRoute
    * @param urlPrefix The start of the URL for which this route is defined
    * @param action The action inside the area
-   * @param path Additional path parameters
-   * @param pathIsOverride If you want to override the entire path using the path parameter, set this to true
+   * @param params
    */
   constructor(
     urlPrefix: string,
-    action = "Index",
+    action: RouteActions = RouteActions.Index,
     params?: IActionRouteParams
   ) {
     this.urlPrefix = urlPrefix;

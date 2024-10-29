@@ -5,7 +5,7 @@ import stylesHistory from "@Areas/Clan/Shared/ClanHistory.module.scss";
 import { SettingsWrapper } from "@Areas/Clan/Shared/SettingsWrapper";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Platform, Queries } from "@Platform";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";

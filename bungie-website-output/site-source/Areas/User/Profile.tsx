@@ -24,7 +24,7 @@ import { SystemNames } from "@Global/SystemNames";
 import { sortUsingFilterArray } from "@Helpers";
 import { GroupsV2, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IProfileParams } from "@Routes/RouteParams";
+import { IProfileParams } from "@Routes/Definitions/RouteParams";
 import { Error404 } from "@UI/Errors/Error404";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";

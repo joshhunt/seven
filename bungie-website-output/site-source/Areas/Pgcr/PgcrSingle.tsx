@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import Pgcr from "@Areas/Pgcr/Pgcr";
-import { IPgcrParams } from "@Routes/RouteParams";
+import { IPgcrParams } from "@Routes/Definitions/RouteParams";
 import React from "react";
 import { useLocation, useParams } from "react-router";
 

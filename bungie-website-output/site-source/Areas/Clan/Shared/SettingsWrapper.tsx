@@ -21,7 +21,7 @@ import { FaAngleLeft } from "@react-icons/all-files/fa/FaAngleLeft";
 import { FaAngleRight } from "@react-icons/all-files/fa/FaAngleRight";
 import { FaChevronRight } from "@react-icons/all-files/fa/FaChevronRight";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { ClanBannerDisplay } from "@UI/Destiny/ClanBanner";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";

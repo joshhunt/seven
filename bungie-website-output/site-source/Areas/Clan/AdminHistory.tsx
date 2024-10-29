@@ -5,7 +5,7 @@ import { SettingsWrapper } from "@Areas/Clan/Shared/SettingsWrapper";
 import { Localizer } from "@bungie/localization/Localizer";
 import { AdminHistoryMembershipFlags } from "@Enum";
 import { Contracts, Platform } from "@Platform";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import { Button } from "@UIKit/Controls/Button/Button";

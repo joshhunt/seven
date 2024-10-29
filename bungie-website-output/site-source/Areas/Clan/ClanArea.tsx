@@ -12,7 +12,7 @@ import { Settings } from "@Areas/Clan/Settings";
 import { Invitations } from "@Areas/Clan/Invitations";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { ConfigUtils } from "@Utilities/ConfigUtils";

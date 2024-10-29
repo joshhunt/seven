@@ -24,7 +24,7 @@ import {
 } from "@Enum";
 import { FireteamFinder, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamFinderParams } from "@Routes/RouteParams";
+import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { ReactHookFormSelect } from "@UIKit/Forms/ReactHookFormForms/ReactHookFormSelect";

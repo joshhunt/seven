@@ -16,7 +16,7 @@ import { GroupsV2, Platform } from "@Platform";
 import { FaRegCheckSquare } from "@react-icons/all-files/fa/FaRegCheckSquare";
 import { FaRegSquare } from "@react-icons/all-files/fa/FaRegSquare";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { IDropdownOption } from "@UIKit/Forms/Dropdown";

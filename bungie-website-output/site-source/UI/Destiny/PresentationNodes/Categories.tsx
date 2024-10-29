@@ -1,7 +1,7 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import {
   PageType,
   sortMode,

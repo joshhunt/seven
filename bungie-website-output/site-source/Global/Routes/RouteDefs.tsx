@@ -1,6 +1,7 @@
-/* tslint:disable member-ordering */
 import { SystemNames } from "@Global/SystemNames";
 import { AreaGroup } from "@Routes/AreaGroup";
+import { AreaNames } from "@Routes/Definitions/AreaNames";
+import { RouteActions } from "@Routes/Definitions/RouteActions";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
@@ -15,50 +16,20 @@ export interface ILocaleParams {
 }
 
 export class RouteDefs {
-  private static readonly AreaNames = {
-    Admin: "Admin",
-    Application: "Application",
-    BeyondLight: "BeyondLight",
-    BungieTech: "BungieTech",
-    Clan: "Clan",
-    Clans: "Clans",
-    Codes: "Codes",
-    Collections: "Collections",
-    CrossSave: "CrossSave",
-    Destiny: "Destiny",
-    Direct: "Direct",
-    Emails: "Emails",
-    FireteamFinder: "FireteamFinder",
-    Fireteams: "Fireteams",
-    Guide: "Guide",
-    Legal: "Legal",
-    News: "News",
-    Newsroom: "Newsroom",
-    Pgcr: "Pgcr",
-    Registration: "Registration",
-    Rewards: "Rewards",
-    Search: "Search",
-    Seasons: "Seasons",
-    Static: "Static",
-    Sms: "Sms",
-    Triumphs: "Triumphs",
-    User: "User",
-    UserResearch: "UserResearch",
-  };
-
   public static Areas = {
     Admin: new Area({
-      name: RouteDefs.AreaNames.Admin,
+      name: AreaNames.Admin,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Admin/AdminArea" /* webpackChunkName: "Admin" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Reports"),
-        (area) => new ActionRoute(area, "Report", { path: ":reportId?" }),
+        (area) => new ActionRoute(area, RouteActions.Reports),
+        (area) =>
+          new ActionRoute(area, RouteActions.Report, { path: ":reportId?" }),
       ],
     }),
     Application: new Area({
-      name: RouteDefs.AreaNames.Application,
+      name: AreaNames.Application,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -66,13 +37,14 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
-        (area) => new ActionRoute(area, "Create"),
-        (area) => new ActionRoute(area, "Detail", { path: ":appId" }),
+        (area) => new ActionRoute(area, RouteActions.Index),
+        (area) => new ActionRoute(area, RouteActions.Create),
+        (area) =>
+          new ActionRoute(area, RouteActions.Detail, { path: ":appId" }),
       ],
     }),
     BungieTech: new Area({
-      name: RouteDefs.AreaNames.BungieTech,
+      name: AreaNames.BungieTech,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -80,52 +52,62 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
-        (area) => new ActionRoute(area, "article", { path: "articleUrl?" }),
+        (area) => new ActionRoute(area, RouteActions.Index),
+        (area) =>
+          new ActionRoute(area, RouteActions.Article, { path: "articleUrl?" }),
       ],
     }),
     Clan: new Area({
-      name: RouteDefs.AreaNames.Clan,
+      name: AreaNames.Clan,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Clan/ClanArea" /* webpackChunkName: "Clan" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Profile", { path: ":clanId" }),
-        (area) => new ActionRoute(area, "Settings", { path: ":clanId" }),
-        (area) => new ActionRoute(area, "CultureFields", { path: ":clanId" }),
         (area) =>
-          new ActionRoute(area, "GeneralSettings", {
+          new ActionRoute(area, RouteActions.Profile, { path: ":clanId" }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Settings, { path: ":clanId" }),
+        (area) =>
+          new ActionRoute(area, RouteActions.CultureFields, {
             path: ":clanId",
           }),
-        (area) => new ActionRoute(area, "EditBanner", { path: ":clanId" }),
         (area) =>
-          new ActionRoute(area, "AdminHistory", {
+          new ActionRoute(area, RouteActions.GeneralSettings, {
+            path: ":clanId",
+          }),
+        (area) =>
+          new ActionRoute(area, RouteActions.EditBanner, { path: ":clanId" }),
+        (area) =>
+          new ActionRoute(area, RouteActions.AdminHistory, {
             path: ":clanId/:page?",
           }),
         (area) =>
-          new ActionRoute(area, "EditHistory", {
+          new ActionRoute(area, RouteActions.EditHistory, {
             path: ":clanId/:page?",
           }),
-        (area) => new ActionRoute(area, "Banned", { path: ":clanId/:page?" }),
         (area) =>
-          new ActionRoute(area, "Invitations", {
+          new ActionRoute(area, RouteActions.Banned, {
+            path: ":clanId/:page?",
+          }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Invitations, {
             path: ":clanId/:page?",
           }),
       ],
     }),
     Clans: new Area({
-      name: RouteDefs.AreaNames.Clans,
+      name: AreaNames.Clans,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Clans/ClansArea" /* webpackChunkName: "Clans" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Create"),
-        (area) => new ActionRoute(area, "Suggested"),
-        (area) => new ActionRoute(area, "MyClans"),
+        (area) => new ActionRoute(area, RouteActions.Create),
+        (area) => new ActionRoute(area, RouteActions.Suggested),
+        (area) => new ActionRoute(area, RouteActions.MyClans),
       ],
     }),
     Collections: new Area({
-      name: RouteDefs.AreaNames.Collections,
+      name: AreaNames.Collections,
       indexParams: {
         path: ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
       },
@@ -137,14 +119,14 @@ export class RouteDefs {
       ),
       routes: [
         (area) =>
-          new ActionRoute(area, "index", {
+          new ActionRoute(area, RouteActions.Index, {
             path:
               ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
           }),
       ],
     }),
     CrossSave: new Area({
-      name: RouteDefs.AreaNames.CrossSave,
+      name: AreaNames.CrossSave,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -153,179 +135,188 @@ export class RouteDefs {
       ),
       routes: [
         (area) =>
-          new ActionRoute(area, "Activate", {
+          new ActionRoute(area, RouteActions.Activate, {
             path: ":step?/:skuName?",
           }),
-        (area) => new ActionRoute(area, "Confirmation"),
-        (area) => new ActionRoute(area, "Deactivate"),
-        (area) => new ActionRoute(area, "Recap"),
+        (area) => new ActionRoute(area, RouteActions.Confirmation),
+        (area) => new ActionRoute(area, RouteActions.Deactivate),
+        (area) => new ActionRoute(area, RouteActions.Recap),
       ],
     }),
     Codes: new Area({
-      name: RouteDefs.AreaNames.Codes,
+      name: AreaNames.Codes,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Codes/CodesArea" /* webpackChunkName: "Codes" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Redeem"),
+        (area) => new ActionRoute(area, RouteActions.Redeem),
         (area) =>
-          new ActionRoute(area, "History", {
+          new ActionRoute(area, RouteActions.History, {
             path: ":membershipId?",
           }),
         (area) =>
-          new ActionRoute(area, "Partners", {
+          new ActionRoute(area, RouteActions.Partners, {
             path: ":membershipId?",
           }),
       ],
     }),
     Emails: new Area({
-      name: RouteDefs.AreaNames.Emails,
+      name: AreaNames.Emails,
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Emails/EmailsArea" /* webpackChunkName: "Emails" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Unsubscribe", {}),
-        (area) => new ActionRoute(area, "Verify", {}),
+        (area) => new ActionRoute(area, RouteActions.Unsubscribe, {}),
+        (area) => new ActionRoute(area, RouteActions.Verify, {}),
       ],
     }),
     Destiny: new Area({
-      name: RouteDefs.AreaNames.Destiny,
+      name: AreaNames.Destiny,
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Destiny/DestinyArea" /* webpackChunkName: "Destiny" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
-        (area) => new ActionRoute(area, "ProductPage"),
-        (area) => new ActionRoute(area, "Buy"),
+        (area) => new ActionRoute(area, RouteActions.Index),
+        (area) => new ActionRoute(area, RouteActions.ProductPage),
+        (area) => new ActionRoute(area, RouteActions.Buy),
         (area) =>
-          new ActionRoute(area, "BuyDetail", {
+          new ActionRoute(area, RouteActions.BuyDetail, {
             path: "Buy/:productFamilyTag",
             isOverride: true,
           }),
-        (area) => new ActionRoute(area, "Companion"),
-        (area) => new ActionRoute(area, "NewLight"),
-        (area) => new ActionRoute(area, "FreeToPlay"),
-        (area) => new ActionRoute(area, "Forsaken"),
-        (area) => new ActionRoute(area, "Shadowkeep"),
-        (area) => new ActionRoute(area, "SeasonPass"),
-        (area) => new ActionRoute(area, "GameHistory"),
-        (area) => new ActionRoute(area, "StadiaRegister"),
-        (area) => new ActionRoute(area, "BeyondLight"),
+        (area) => new ActionRoute(area, RouteActions.Companion),
+        (area) => new ActionRoute(area, RouteActions.NewLight),
+        (area) => new ActionRoute(area, RouteActions.FreeToPlay),
+        (area) => new ActionRoute(area, RouteActions.Forsaken),
+        (area) => new ActionRoute(area, RouteActions.Shadowkeep),
+        (area) => new ActionRoute(area, RouteActions.SeasonPass),
+        (area) => new ActionRoute(area, RouteActions.GameHistory),
+        (area) => new ActionRoute(area, RouteActions.StadiaRegister),
+        (area) => new ActionRoute(area, RouteActions.BeyondLight),
         (area) =>
-          new ActionRoute(area, "Media", {
+          new ActionRoute(area, RouteActions.Media, {
             path: "BeyondLight/Media",
             isOverride: true,
           }),
         (area) =>
-          new ActionRoute(area, "PhaseOne", {
+          new ActionRoute(area, RouteActions.PhaseOne, {
             path: "BeyondLight/Stasis",
             isOverride: true,
           }),
         (area) =>
-          new ActionRoute(area, "PhaseTwo", {
+          new ActionRoute(area, RouteActions.PhaseTwo, {
             path: "BeyondLight/Europa",
             isOverride: true,
           }),
         (area) =>
-          new ActionRoute(area, "PhaseThree", {
+          new ActionRoute(area, RouteActions.PhaseThree, {
             path: "BeyondLight/Gear",
             isOverride: true,
           }),
         (area) =>
-          new ActionRoute(area, "BeyondLightPhaseFour", {
+          new ActionRoute(area, RouteActions.BeyondLightPhaseFour, {
             path: "BeyondLight/Story",
             isOverride: true,
           }),
-        (area) => new ActionRoute(area, "Reveal"),
-        (area) => new ActionRoute(area, "Info", { path: ":eventTag" }),
-        (area) => new ActionRoute(area, "WitchQueen"),
+        (area) => new ActionRoute(area, RouteActions.Reveal),
         (area) =>
-          new ActionRoute(area, "WitchQueenComparison", {
+          new ActionRoute(area, RouteActions.Info, { path: ":eventTag" }),
+        (area) => new ActionRoute(area, RouteActions.WitchQueen),
+        (area) =>
+          new ActionRoute(area, RouteActions.WitchQueenComparison, {
             path: "WitchQueen/Comparison",
             isOverride: true,
           }),
-        (area) => new ActionRoute(area, "Lightfall"),
-        (area) => new ActionRoute(area, "TheFinalShape"),
+        (area) => new ActionRoute(area, RouteActions.Lightfall),
+        (area) => new ActionRoute(area, RouteActions.TheFinalShape),
       ],
     }),
     Direct: new Area({
-      name: RouteDefs.AreaNames.Direct,
+      name: AreaNames.Direct,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Direct/DirectArea")
       ),
       routes: [
-        (area) => new ActionRoute(area, "Video", { path: ":title" }),
-        (area) => new ActionRoute(area, "Circles"),
-        (area) => new ActionRoute(area, "RaidRace"),
-        (area) => new ActionRoute(area, "Rewards"),
-        (area) => new ActionRoute(area, "DestinyShowcase"),
-        (area) => new ActionRoute(area, "Anniversary"),
-        (area) => new ActionRoute(area, "Reveal"),
+        (area) => new ActionRoute(area, RouteActions.Video, { path: ":title" }),
+        (area) => new ActionRoute(area, RouteActions.Circles),
+        (area) => new ActionRoute(area, RouteActions.RaidRace),
+        (area) => new ActionRoute(area, RouteActions.Rewards),
+        (area) => new ActionRoute(area, RouteActions.DestinyShowcase),
+        (area) => new ActionRoute(area, RouteActions.Anniversary),
+        (area) => new ActionRoute(area, RouteActions.Reveal),
       ],
     }),
     FireteamFinder: new Area({
-      name: RouteDefs.AreaNames.FireteamFinder,
+      name: AreaNames.FireteamFinder,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/FireteamFinder/FireteamFinderArea")
       ),
       routes: [
-        (area) => new ActionRoute(area, "Dashboard"),
+        (area) => new ActionRoute(area, RouteActions.Dashboard),
         (area) =>
-          new ActionRoute(area, "Browse", {
+          new ActionRoute(area, RouteActions.Browse, {
             path: ":graphId?/:activityId?",
           }),
-        (area) => new ActionRoute(area, "Detail", { path: ":lobbyId?" }),
         (area) =>
-          new ActionRoute(area, "Create", {
+          new ActionRoute(area, RouteActions.Detail, { path: ":lobbyId?" }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Create, {
             path: ":graphId?/:activityId?",
           }),
       ],
     }),
     Fireteams: new Area({
-      name: RouteDefs.AreaNames.Fireteams,
+      name: AreaNames.Fireteams,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Fireteams/FireteamsArea")
       ),
       routes: [
-        (area) => new ActionRoute(area, "Search"),
-        (area) => new ActionRoute(area, "Fireteam", { path: ":fireteamId" }),
+        (area) => new ActionRoute(area, RouteActions.Search),
+        (area) =>
+          new ActionRoute(area, RouteActions.Fireteam, { path: ":fireteamId" }),
       ],
     }),
     Guide: new Area({
-      name: RouteDefs.AreaNames.Guide,
+      name: AreaNames.Guide,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Guide/GuideArea")
       ),
       indexParams: { path: ":guide" },
-      routes: [(area) => new ActionRoute(area, "index", { path: ":guide" })],
+      routes: [
+        (area) => new ActionRoute(area, RouteActions.Index, { path: ":guide" }),
+      ],
     }),
     Legal: new Area({
-      name: RouteDefs.AreaNames.Legal,
+      name: AreaNames.Legal,
       indexParams: { path: ":pageName" },
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Legal/LegalArea" /* webpackChunkName: "Legal" */)
       ),
-      routes: [(area) => new ActionRoute(area, "index", { path: ":pageName" })],
+      routes: [
+        (area) =>
+          new ActionRoute(area, RouteActions.Index, { path: ":pageName" }),
+      ],
     }),
     News: new Area({
-      name: RouteDefs.AreaNames.News,
+      name: AreaNames.News,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/News/NewsArea" /* webpackChunkName: "News" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "destiny"),
-        (area) => new ActionRoute(area, "bungie"),
-        (area) => new ActionRoute(area, "community"),
-        (area) => new ActionRoute(area, "updates"),
-        (area) => new ActionRoute(area, "tech"),
-        (area) => new ActionRoute(area, "article", { path: ":articleUrl?" }),
+        (area) => new ActionRoute(area, RouteActions.Destiny),
+        (area) => new ActionRoute(area, RouteActions.Bungie),
+        (area) => new ActionRoute(area, RouteActions.Community),
+        (area) => new ActionRoute(area, RouteActions.Updates),
+        (area) => new ActionRoute(area, RouteActions.Tech),
+        (area) =>
+          new ActionRoute(area, RouteActions.Article, { path: ":articleUrl?" }),
       ],
       webmasterSystem: SystemNames.CoreHomeAndNews,
     }),
     Newsroom: new Area({
-      name: RouteDefs.AreaNames.Newsroom,
+      name: AreaNames.Newsroom,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -333,12 +324,13 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "index"),
-        (area) => new ActionRoute(area, "article", { path: "articleUrl?" }),
+        (area) => new ActionRoute(area, RouteActions.Index),
+        (area) =>
+          new ActionRoute(area, RouteActions.Article, { path: "articleUrl?" }),
       ],
     }),
     Pgcr: new Area({
-      name: RouteDefs.AreaNames.Pgcr,
+      name: AreaNames.Pgcr,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -349,7 +341,7 @@ export class RouteDefs {
       routes: [],
     }),
     Registration: new Area({
-      name: RouteDefs.AreaNames.Registration,
+      name: AreaNames.Registration,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -357,74 +349,77 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "RegistrationPage"),
-        (area) => new ActionRoute(area, "Benefits"),
-        (area) => new ActionRoute(area, "Apps"),
+        (area) => new ActionRoute(area, RouteActions.RegistrationPage),
+        (area) => new ActionRoute(area, RouteActions.Benefits),
+        (area) => new ActionRoute(area, RouteActions.Apps),
       ],
     }),
     Rewards: new Area({
-      name: RouteDefs.AreaNames.Rewards,
+      name: AreaNames.Rewards,
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Rewards/RewardsArea" /* webpackChunkName: "Rewards" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "Rewards"),
+        (area) => new ActionRoute(area, RouteActions.Rewards),
         (area) =>
-          new ActionRoute(area, "Reward", {
+          new ActionRoute(area, RouteActions.Reward, {
             path: ":mtype?/:rewardId?",
           }),
       ],
     }),
     Search: new Area({
-      name: RouteDefs.AreaNames.Search,
+      name: AreaNames.Search,
       indexParams: { path: ":query?" },
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Search/SearchArea" /* webpackChunkName: "Search" */)
       ),
-      routes: [(area) => new ActionRoute(area, "index", { path: ":query?" })],
+      routes: [
+        (area) =>
+          new ActionRoute(area, RouteActions.Index, { path: ":query?" }),
+      ],
     }),
     Seasons: new Area({
-      name: RouteDefs.AreaNames.Seasons,
+      name: AreaNames.Seasons,
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Seasons/SeasonsArea" /* webpackChunkName: "Seasons" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, "SeasonOfTheUndying"),
-        (area) => new ActionRoute(area, "SeasonOfDawn"),
-        (area) => new ActionRoute(area, "SeasonOfTheWorthy"),
-        (area) => new ActionRoute(area, "SeasonOfArrivals"),
-        (area) => new ActionRoute(area, "SeasonOfTheHunt"),
-        (area) => new ActionRoute(area, "SeasonOfTheChosen"),
-        (area) => new ActionRoute(area, "SeasonOfTheSplicer"),
-        (area) => new ActionRoute(area, "SeasonOfTheLost"),
-        (area) => new ActionRoute(area, "SeasonOfTheRisen"),
-        (area) => new ActionRoute(area, "SeasonOfTheHaunted"),
-        (area) => new ActionRoute(area, "SeasonOfPlunder"),
-        (area) => new ActionRoute(area, "SeasonOfTheSeraph"),
-        (area) => new ActionRoute(area, "SeasonOfDefiance"),
-        (area) => new ActionRoute(area, "SeasonOfTheDeep"),
-        (area) => new ActionRoute(area, "SeasonOfTheWitch"),
-        (area) => new ActionRoute(area, "SeasonOfTheWish"),
-        (area) => new ActionRoute(area, "Progress"),
-        (area) => new ActionRoute(area, "PreviousSeason"),
-        (area) => new ActionRoute(area, "Events"),
-        (area) => new ActionRoute(area, "News", { path: ":slug" }),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheUndying),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfDawn),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWorthy),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfArrivals),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheHunt),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheChosen),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheSplicer),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheLost),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheRisen),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheHaunted),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfPlunder),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheSeraph),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfDefiance),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheDeep),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWitch),
+        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWish),
+        (area) => new ActionRoute(area, RouteActions.Progress),
+        (area) => new ActionRoute(area, RouteActions.PreviousSeason),
+        (area) => new ActionRoute(area, RouteActions.Events),
+        (area) => new ActionRoute(area, RouteActions.News, { path: ":slug" }),
       ],
       webmasterSystem: SystemNames.CoreAreaSeasons,
     }),
     Sms: new Area({
-      name: RouteDefs.AreaNames.Sms,
+      name: AreaNames.Sms,
       lazyComponent: createAsyncComponent(
         () => import("@Areas/Sms/SmsArea" /* webpackChunkName: "Sms" */)
       ),
-      routes: [(area) => new ActionRoute(area, "index")],
+      routes: [(area) => new ActionRoute(area, RouteActions.Index)],
       webmasterSystem: SystemNames.SmsVerification,
     }),
     Static: new Area({
-      name: RouteDefs.AreaNames.Static,
+      name: AreaNames.Static,
       lazyComponent: createAsyncComponent(
         () =>
           import("@Areas/Static/StaticArea" /* webpackChunkName: "Static" */)
@@ -433,7 +428,7 @@ export class RouteDefs {
       routes: [],
     }),
     Triumphs: new Area({
-      name: RouteDefs.AreaNames.Triumphs,
+      name: AreaNames.Triumphs,
       indexParams: {
         path: ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
       },
@@ -445,14 +440,14 @@ export class RouteDefs {
       ),
       routes: [
         (area) =>
-          new ActionRoute(area, "index", {
+          new ActionRoute(area, RouteActions.Index, {
             path:
               ":mtype?/:mid?/:cid?/:root?/:parent?/:category?/:subcategory?",
           }),
       ],
     }),
     UserResearch: new Area({
-      name: RouteDefs.AreaNames.UserResearch,
+      name: AreaNames.UserResearch,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -460,15 +455,15 @@ export class RouteDefs {
           )
       ),
       routes: [
-        (area) => new ActionRoute(area, "UserResearch"),
-        (area) => new ActionRoute(area, "UserResearchCanTravel"),
+        (area) => new ActionRoute(area, RouteActions.UserResearch),
+        (area) => new ActionRoute(area, RouteActions.UserResearchCanTravel),
       ],
     }),
   } as const;
 
   public static AreaGroups = {
     User: new AreaGroup({
-      name: RouteDefs.AreaNames.User,
+      name: AreaNames.User,
       children: {
         ZendeskAuth: {
           lazyComponent: createAsyncComponent(
@@ -495,7 +490,7 @@ export class RouteDefs {
           ),
           routes: [
             (urlPrefix) =>
-              new ActionRoute(urlPrefix, "index", {
+              new ActionRoute(urlPrefix, RouteActions.Index, {
                 path: ":mtype?/:mid?/:section?",
               }),
           ],
@@ -508,18 +503,26 @@ export class RouteDefs {
               )
           ),
           routes: [
-            (urlPrefix) => new ActionRoute(urlPrefix, "IdentitySettings"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "BungieFriends"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "EmailSms"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "Notifications"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "AccountLinking"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "Privacy"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "LanguageRegion"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "BlockedUsers"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "CrossSave"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "EververseHistory"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "SilverBalanceHistory"),
-            (urlPrefix) => new ActionRoute(urlPrefix, "AppHistory"),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.IdentitySettings),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.BungieFriends),
+            (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.EmailSms),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.Notifications),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.AccountLinking),
+            (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.Privacy),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.LanguageRegion),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.BlockedUsers),
+            (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.CrossSave),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.EververseHistory),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.SilverBalanceHistory),
+            (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.AppHistory),
           ],
         },
         GameHistory: {
@@ -531,7 +534,7 @@ export class RouteDefs {
           ),
           routes: [
             (urlPrefix) =>
-              new ActionRoute(urlPrefix, "index", {
+              new ActionRoute(urlPrefix, RouteActions.Index, {
                 path: ":mtype?/:mid?",
               }),
           ],

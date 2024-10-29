@@ -3,7 +3,7 @@
 import { Localizer } from "@bungie/localization/Localizer";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamFinderParams } from "@Routes/RouteParams";
+import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
 import classNames from "classnames";
 import React from "react";

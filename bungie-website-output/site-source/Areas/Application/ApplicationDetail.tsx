@@ -8,7 +8,7 @@ import { ApplicationUtils } from "@Areas/Application/Shared/ApplicationUtils";
 import { Localizer } from "@bungie/localization/Localizer";
 import { SystemNames } from "@Global/SystemNames";
 import { Applications, Platform } from "@Platform";
-import { IApplicationParams } from "@Routes/RouteParams";
+import { IApplicationParams } from "@Routes/Definitions/RouteParams";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";

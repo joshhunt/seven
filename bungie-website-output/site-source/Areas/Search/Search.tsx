@@ -12,7 +12,7 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { ISearchParams } from "@Routes/RouteParams";
+import { ISearchParams } from "@Routes/Definitions/RouteParams";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";

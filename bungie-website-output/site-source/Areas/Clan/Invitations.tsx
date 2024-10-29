@@ -9,7 +9,7 @@ import { SettingsWrapper } from "@Areas/Clan/Shared/SettingsWrapper";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import React, { useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 

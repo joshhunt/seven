@@ -19,7 +19,7 @@ import { Fireteam, Platform } from "@Platform";
 import { BiRefresh } from "@react-icons/all-files/bi/BiRefresh";
 import { IoMdLink } from "@react-icons/all-files/io/IoMdLink";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IFireteamParams } from "@Routes/RouteParams";
+import { IFireteamParams } from "@Routes/Definitions/RouteParams";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { Anchor } from "@UI/Navigation/Anchor";

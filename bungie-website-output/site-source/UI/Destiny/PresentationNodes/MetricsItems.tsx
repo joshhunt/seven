@@ -12,7 +12,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/PresentationNodeDestinyMembershipStore";
 import { Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import styles from "@UI/Destiny/PresentationNodes/DetailContainer.module.scss";
 import MetricsDetailModal from "@UI/Destiny/PresentationNodes/MetricsDetailModal";
 import {

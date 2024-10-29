@@ -4,7 +4,7 @@
 import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
-import { LegalRouteParams } from "@Routes/RouteParams";
+import { LegalRouteParams } from "@Routes/Definitions/RouteParams";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";

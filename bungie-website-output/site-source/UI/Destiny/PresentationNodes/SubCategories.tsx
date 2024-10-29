@@ -11,7 +11,7 @@ import { BungieMembershipType, DestinyPresentationNodeState } from "@Enum";
 import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/PresentationNodeDestinyMembershipStore";
 import { Quests, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import { ICategoryItemProps } from "@UI/Destiny/PresentationNodes/Categories";
 import {
   PageType,

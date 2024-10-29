@@ -22,7 +22,7 @@ import {
   IClanParams,
   IApplicationParams,
   LegalRouteParams,
-} from "@Routes/RouteParams";
+} from "@Routes/Definitions/RouteParams";
 
 /**
  * Allows us to create links between the Renderer site and the Renderer.Core site more easily.

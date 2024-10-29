@@ -23,7 +23,7 @@ import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/Pr
 import { SystemNames } from "@Global/SystemNames";
 import { Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,

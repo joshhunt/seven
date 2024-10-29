@@ -12,7 +12,7 @@ import { AclEnum, BungieMembershipType, RuntimeGroupMemberType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Platform, Queries } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";

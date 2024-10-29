@@ -21,7 +21,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router";
 import { BnetStackGuide } from "../../Generated/contentstack-types";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { GuideRouteParams, NewsParams } from "@Routes/RouteParams";
+import { GuideRouteParams, NewsParams } from "@Routes/Definitions/RouteParams";
 import styles from "./Guide.module.scss";
 
 interface GuideSectionProps {

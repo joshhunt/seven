@@ -5,7 +5,7 @@ import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory
 import { Localizer } from "@bungie/localization";
 import { ResponsiveSize } from "@bungie/responsive";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { LegalRouteParams } from "@Routes/RouteParams";
+import { LegalRouteParams } from "@Routes/Definitions/RouteParams";
 import { ISubNavLink, SubNav } from "@UIKit/Controls/SubNav";
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router";

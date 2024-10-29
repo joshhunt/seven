@@ -6,7 +6,7 @@ import { ReportItem } from "@Areas/Admin/Shared/ReportItem";
 import { ReportsSidebar } from "@Areas/Admin/Shared/ReportsSidebar";
 import { PlatformError } from "@CustomErrors";
 import { Contracts, Platform } from "@Platform";
-import { IReportParams } from "@Routes/RouteParams";
+import { IReportParams } from "@Routes/Definitions/RouteParams";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import React, { useEffect, useState } from "react";

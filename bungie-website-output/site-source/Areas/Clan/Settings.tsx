@@ -18,7 +18,7 @@ import { FaPencilAlt } from "@react-icons/all-files/fa/FaPencilAlt";
 import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { FaWrench } from "@react-icons/all-files/fa/FaWrench";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { IClanParams } from "@Routes/RouteParams";
+import { IClanParams } from "@Routes/Definitions/RouteParams";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";

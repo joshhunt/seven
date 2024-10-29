@@ -10,7 +10,7 @@ import { Localizer } from "@bungie/localization";
 import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Responses, User } from "@Platform";
-import { IProfileParams } from "@Routes/RouteParams";
+import { IProfileParams } from "@Routes/Definitions/RouteParams";
 import {
   DestinyAccountWrapper,
   IAccountFeatures,

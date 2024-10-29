@@ -8,7 +8,7 @@ import { Localizer } from "@bungie/localization/Localizer";
 import { NotFoundError } from "@CustomErrors";
 import { FaCaretDown } from "@react-icons/all-files/fa/FaCaretDown";
 import { FaCaretRight } from "@react-icons/all-files/fa/FaCaretRight";
-import { NewsParams } from "@Routes/RouteParams";
+import { NewsParams } from "@Routes/Definitions/RouteParams";
 import { TwitterAPI, TwitterScript } from "@UI/Content/TwitterFeed";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Modal } from "@UIKit/Controls/Modal/Modal";

@@ -10,7 +10,7 @@ import { BungieMembershipType } from "@Enum";
 import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/PresentationNodeDestinyMembershipStore";
 import { Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { PresentationNodeParams } from "@Routes/RouteParams";
+import { PresentationNodeParams } from "@Routes/Definitions/RouteParams";
 import { filterMode } from "@UI/Destiny/PresentationNodes/PresentationNodeHelpers";
 import { ISubCategoryItemProps } from "@UI/Destiny/PresentationNodes/SubCategories";
 import styles from "@UI/Destiny/PresentationNodes/SubCategories.module.scss";
