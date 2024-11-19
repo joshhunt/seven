@@ -1,11 +1,9 @@
 // Created by atseng, 2019
 // Copyright Bungie, Inc.
 
-import { Localizer } from "@bungie/localization";
-import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import DestinyCollectibleDetailItemModalContent from "@UI/Destiny/DestinyCollectibleDetailItemContent";
-import DestinyCollectibleDetailModal from "@UI/Destiny/DestinyCollectibleDetailModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
 import seasonItemModalStyles from "./SeasonItemModal.module.scss";
@@ -13,7 +11,7 @@ import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefi
 import { DestinyDefinitions } from "@Definitions";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";
-import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
+import { DestinyProgressionRewardItemState, ItemState } from "@Enum";
 import { IClaimedReward } from "../SeasonsUtilityPage";
 
 export type CompleteState = "None" | "Incomplete" | "Complete";
@@ -21,6 +19,18 @@ export enum CharacterClass {
   Hunter,
   Titan,
   Warlock,
+}
+
+interface CharacterOverrideStateProps {
+  [key: number]: {
+    rewardItemStats: {
+      [key: number]: {
+        statHash: number;
+        value: number;
+      };
+    };
+    itemState: number;
+  };
 }
 
 interface ISeasonPassRewardStepProps {
@@ -40,6 +50,8 @@ interface ISeasonPassRewardStepProps {
   ) => void;
   /* this lets this component know if a item was claimed */
   claimedReward: IClaimedReward;
+  /* Object of reward items that use item index as keys that show reward stats */
+  characterSeasonalOverrideStates?: CharacterOverrideStateProps;
 }
 
 interface ISeasonPassRewardStepState {
@@ -91,6 +103,7 @@ export class SeasonPassRewardStep extends React.Component<
       character,
       rewardStates,
       completeState,
+      characterSeasonalOverrideStates,
     } = this.props;
 
     const allSeasonRewardItems = progressionDef.rewardItems;
@@ -105,6 +118,7 @@ export class SeasonPassRewardStep extends React.Component<
     let premiumReward: DestinyDefinitions.DestinyProgressionRewardItemQuantity;
     let premiumClaimed = false;
     let indexOfPremiumReward = -1;
+    let isPremiumHighlightedObjective = false;
 
     if (premiumRewards) {
       //multiple reward items of the same display style at the same step means that there are character specific rewards
@@ -127,12 +141,18 @@ export class SeasonPassRewardStep extends React.Component<
             allSeasonRewardItems,
             displayedStepNumber
           );
-
         premiumClaimed = this.itemClaimed(
           indexOfPremiumReward,
           premiumReward,
           rewardStates[indexOfPremiumReward]
         );
+
+        if (characterSeasonalOverrideStates) {
+          isPremiumHighlightedObjective = this.itemIsHighlightedObjective(
+            indexOfPremiumReward,
+            characterSeasonalOverrideStates
+          );
+        }
       }
     }
 
@@ -140,6 +160,7 @@ export class SeasonPassRewardStep extends React.Component<
     let freeReward: DestinyDefinitions.DestinyProgressionRewardItemQuantity;
     let freeClaimed = false;
     let indexOfFreeReward = -1;
+    let isFreeHighlightedObjective = false;
 
     if (freeRewards) {
       //multiple reward items of the same display style at the same step means that there are character specific rewards
@@ -156,12 +177,18 @@ export class SeasonPassRewardStep extends React.Component<
         indexOfFreeReward =
           freeReward &&
           this.itemIndex(freeReward, allSeasonRewardItems, displayedStepNumber);
-
         freeClaimed = this.itemClaimed(
           indexOfFreeReward,
           freeReward,
           rewardStates[indexOfFreeReward]
         );
+
+        if (characterSeasonalOverrideStates) {
+          isFreeHighlightedObjective = this.itemIsHighlightedObjective(
+            indexOfFreeReward,
+            characterSeasonalOverrideStates
+          );
+        }
       }
     }
 
@@ -180,14 +207,16 @@ export class SeasonPassRewardStep extends React.Component<
             indexOfFreeReward,
             completeState,
             freeClaimed,
-            false
+            false,
+            isFreeHighlightedObjective
           )}
           {this.itemFragment(
             premiumReward,
             indexOfPremiumReward,
             completeState,
             premiumClaimed,
-            true
+            true,
+            isPremiumHighlightedObjective
           )}
         </div>
       </React.Fragment>
@@ -222,12 +251,27 @@ export class SeasonPassRewardStep extends React.Component<
     );
   }
 
+  /* Highlighted Objective items refer to Deepsight items which should have a red-orange border. */
+  private itemIsHighlightedObjective(
+    index: number,
+    characterSeasonalOverrideStates: CharacterOverrideStateProps
+  ): boolean {
+    const overrideItemStateNum =
+      characterSeasonalOverrideStates?.[index]?.itemState || null;
+
+    return (
+      EnumUtils.hasFlag(overrideItemStateNum, ItemState.HighlightedObjective) &&
+      overrideItemStateNum === ItemState.HighlightedObjective
+    );
+  }
+
   private itemFragment(
     item: DestinyDefinitions.DestinyProgressionRewardItemQuantity,
     rewardIndex: number,
     completeState: CompleteState,
     isClaimed: boolean,
-    isPremium: boolean
+    isPremium: boolean,
+    isHighlightedObjective?: boolean
   ): React.ReactElement {
     const itemDef =
       typeof item !== "undefined" &&
@@ -271,7 +315,10 @@ export class SeasonPassRewardStep extends React.Component<
               }}
             >
               <div
-                className={styles.icon}
+                className={classNames(styles.icon, {
+                  [styles.highlightObjBorder]: isHighlightedObjective,
+                  [styles.baseBorder]: !isHighlightedObjective,
+                })}
                 style={{
                   backgroundImage: `${
                     itemDef?.iconWatermark?.length > 0

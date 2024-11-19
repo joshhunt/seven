@@ -11,8 +11,7 @@ import { PlatformError } from "@CustomErrors";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Localizer } from "@bungie/localization";
-import { Anchor } from "@UI/Navigation/Anchor";
-import { RouteHelper } from "@Routes/RouteHelper";
+import classNames from "classnames";
 
 // Required props
 export interface IRedeemSeasonRewardItemProps {
@@ -25,7 +24,7 @@ export interface IRedeemSeasonRewardItemProps {
   membershipType: Globals.BungieMembershipType;
   rewardIndex: number;
   seasonHash: number;
-
+  isHighlightedObjective: boolean;
   itemClaimed: (rewardIndex: number, itemHash: number) => void;
   handleClick: (itemHash: number, rewardIndex: number) => void;
 }
@@ -78,7 +77,14 @@ export class RedeemSeasonRewardItem extends React.Component<
               )
             }
           >
-            <img src={this.props.imagePath} alt={redeemRewardRank} />
+            <img
+              className={classNames({
+                [styles.highlightObjBorder]: this.props.isHighlightedObjective,
+                [styles.baseBorder]: !this.props.isHighlightedObjective,
+              })}
+              src={this.props.imagePath}
+              alt={redeemRewardRank}
+            />
           </div>
           <div className={styles.itemContent}>
             <h5>{redeemRewardRank}</h5>

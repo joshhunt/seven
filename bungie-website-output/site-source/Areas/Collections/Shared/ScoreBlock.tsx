@@ -12,6 +12,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Responses } from "@Platform";
 import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import React, { useEffect, useState } from "react";
+import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 
 interface ScoreBlockProps
   extends D2DatabaseComponentProps<"DestinyPresentationNodeDefinition"> {
@@ -89,13 +90,17 @@ const ScoreBlock: React.FC<ScoreBlockProps> = (props) => {
       <div className={styles.scoreNumber}>
         <span>
           {totalScore.totalGathered.toLocaleString(
-            Localizer.CurrentCultureName
+            LocalizerUtils.useAltChineseCultureString(
+              Localizer.CurrentCultureName
+            )
           )}
         </span>{" "}
         /{" "}
         <span>
           {totalScore.totalPossible.toLocaleString(
-            Localizer.CurrentCultureName
+            LocalizerUtils.useAltChineseCultureString(
+              Localizer.CurrentCultureName
+            )
           )}
         </span>
       </div>

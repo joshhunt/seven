@@ -143,6 +143,10 @@ class SeasonPassRewardProgression extends React.Component<
 
     const maxSeasonRewardCount = rewardsDef.steps.length;
 
+    const characterSeasonalOverrideStates =
+      characterSeasonalProgress &&
+      characterSeasonalProgress.rewardItemSocketOverrideStates;
+
     const handleRankDisplay = (
       characterSeasonalProgress: World.DestinyProgression
     ) => {
@@ -225,6 +229,7 @@ class SeasonPassRewardProgression extends React.Component<
           character={characterClass}
           completeState={completeState}
           rewardStates={rewardItemStates}
+          characterSeasonalOverrideStates={characterSeasonalOverrideStates}
           handleClaimingClick={(
             itemHash: number,
             rewardIndex: number,

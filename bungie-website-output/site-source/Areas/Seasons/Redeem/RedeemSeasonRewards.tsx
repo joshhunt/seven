@@ -7,7 +7,11 @@ import {
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
-import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
+import {
+  BungieMembershipType,
+  DestinyProgressionRewardItemState,
+  ItemState,
+} from "@Enum";
 import { Components, World } from "@Platform";
 import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Toast } from "@UI/UIKit/Controls/Toast/Toast";
@@ -18,6 +22,8 @@ import {
   IRedeemSeasonRewardItemProps,
   RedeemSeasonRewardItem,
 } from "./RedeemSeasonRewardItem";
+import { EnumUtils } from "@Utilities/EnumUtils";
+
 import styles from "./RedeemSeasonRewards.module.scss";
 
 // Required props
@@ -107,6 +113,10 @@ class RedeemSeasonRewards extends React.Component<
     const { definitions, seasonHash } = this.props;
 
     const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
+    const characterSeasonalOverrideStates =
+      this?.props?.characterProgressions &&
+      this?.props?.characterProgressions[seasonDef?.seasonPassProgressionHash]
+        ?.rewardItemSocketOverrideStates;
 
     const seasonName = seasonDef.displayProperties.name;
 
@@ -124,6 +134,18 @@ class RedeemSeasonRewards extends React.Component<
     if (!this.props.characterProgressions) {
       return null;
     }
+
+    const getHighlightedObjectiveStatus = (itemIndex: number) => {
+      const overrideItemStateNum =
+        characterSeasonalOverrideStates?.[itemIndex]?.itemState || null;
+
+      return (
+        EnumUtils.hasFlag(
+          overrideItemStateNum,
+          ItemState.HighlightedObjective
+        ) && overrideItemStateNum === ItemState.HighlightedObjective
+      );
+    };
 
     return (
       <React.Fragment>
@@ -146,6 +168,9 @@ class RedeemSeasonRewards extends React.Component<
                   characterId={value.characterId}
                   membershipType={value.membershipType}
                   rewardIndex={value.rewardIndex}
+                  isHighlightedObjective={getHighlightedObjectiveStatus(
+                    value.rewardIndex
+                  )}
                   seasonHash={value.seasonHash}
                   itemClaimed={() =>
                     this.props.itemClaimed(value.itemHash, value.rewardIndex)
