@@ -48,29 +48,29 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
         const charComponent = value[1];
         const characterLight = (
           <>
-            <span className={styles.lightSymbol}>✧</span> {charComponent.light}
+            <span className={styles.lightSymbol}>✧</span> {charComponent?.light}
           </>
         );
 
         const def = props.definitions.DestinyInventoryItemLiteDefinition.get(
-          charComponent.emblemHash
+          charComponent?.emblemHash
         );
 
         characterList.push({
-          iconPath: def.secondaryOverlay,
-          backgroundPath: def.secondarySpecial,
+          iconPath: def?.secondaryOverlay,
+          backgroundPath: def?.secondarySpecial,
           light: (
             <React.Fragment>
               <span className={styles.light}>{characterLight}</span>
             </React.Fragment>
           ),
-          class: props.definitions.DestinyClassDefinition?.get(
+          class: props.definitions?.DestinyClassDefinition?.get(
             charComponent?.classHash
-          ).displayProperties.name,
+          ).displayProperties?.name,
           id: charComponent.characterId,
-          race: props.definitions.DestinyRaceDefinition.get(
+          race: props.definitions?.DestinyRaceDefinition.get(
             charComponent?.raceHash
-          ).displayProperties.name,
+          ).displayProperties?.name,
         });
       }
     );
@@ -78,7 +78,7 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
     setCharactersList(characterList);
 
     if (props.selectedCharacterId === "" && characterList.length) {
-      updateSelectedCharacter(characterList[0].id);
+      updateSelectedCharacter(characterList?.[0]?.id);
     }
 
     setCharactersLoaded(true);
@@ -94,7 +94,7 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
         url={RouteHelper.Gear(
           props?.membershipId,
           props?.membershipType,
-          characterProps.id
+          characterProps?.id
         )}
         key={characterProps.id}
         className={classNames(styles.character, {
@@ -116,7 +116,7 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
   };
 
   const renderEmptyCharacterItems = (numCharacters: number) => {
-    return [...Array(3 - numCharacters)].map((e, i) => (
+    return [...Array(3 - numCharacters)]?.map((e, i) => (
       <EmptyCharacterItem key={i} index={numChars + (i + 1)} />
     ));
   };
@@ -129,12 +129,12 @@ const ProfileCharacterSelector: React.FC<CharactersProps> = (props) => {
     return null;
   }
 
-  const numChars = charactersList.length;
+  const numChars = charactersList?.length;
 
   return (
     <div className={styles.characterList}>
       {numChars > 0 &&
-        charactersList.map((value, index) => {
+        charactersList?.map((value, index) => {
           return characterItem(value);
         })}
       {renderEmptyCharacterItems(numChars)}
