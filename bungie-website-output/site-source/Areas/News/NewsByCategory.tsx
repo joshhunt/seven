@@ -54,8 +54,9 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const qs = new URLSearchParams(location.search);
   const pageCategory = UrlUtils.GetUrlAction(location);
   const categoryIsInvalid = !EnumUtils.getStringKeys(NewsCategory).includes(
-    UrlUtils.GetUrlAction(location)
+    pageCategory?.toLowerCase()
   );
+
   const pageQueryToNumber = parseInt(qs.get("page"));
   const [page, setPage] = useState(pageQueryToNumber || 1);
   const [articles, setArticles] = useState(null);
@@ -86,7 +87,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
         });
     } else {
       BasicNewsQuery(locale, articlesPerPage, page)
-        .where("category", pageCategory)
+        .where("category", pageCategory?.toLowerCase())
         .find()
         .then((response) => {
           const [entries, count] = response || [];
