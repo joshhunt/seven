@@ -33,7 +33,7 @@ export const EmailValidationGlobalBar: React.FC = (props) => {
       return null;
     }
 
-    return UserUtils.getEmailValidationState(loggedInUser.emailStatus);
+    return UserUtils.getEmailValidationState(loggedInUser?.emailStatus);
   };
 
   // the specific global alert bar should not control its visibility status, but it should define the requirements for it to show initially and

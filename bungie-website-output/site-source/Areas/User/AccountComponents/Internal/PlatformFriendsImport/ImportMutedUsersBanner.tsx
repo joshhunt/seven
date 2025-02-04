@@ -36,7 +36,7 @@ export const ImportMutedUsersBanner: React.FC<ImportMutedUsersBannerProps> = (
 
   useEffect(() => {
     Platform.IgnoreService.ManageIgnoresForUser(
-      globalStateData.loggedInUser.user.membershipId
+      globalStateData.loggedInUser?.user.membershipId
     )
       .then((data) => {
         setHasMutedUsers(data.length > 0);

@@ -70,7 +70,7 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
       } else {
         //there is no selectedMembership available; use their bungienext membershipType and membershipId
         RewardsDataStore.actions.getRewardsList(
-          globalState.loggedInUser.user.membershipId
+          globalState.loggedInUser?.user.membershipId
         );
       }
     }

@@ -15,6 +15,7 @@ import domPurify from "dompurify";
 export const sanitizeHTML = (html: string) => {
   const sanitizedHtml = domPurify.sanitize(html, {
     USE_PROFILES: { html: true },
+    ADD_ATTR: ["target"],
   });
 
   return { __html: sanitizedHtml };

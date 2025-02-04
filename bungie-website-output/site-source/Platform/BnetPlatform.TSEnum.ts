@@ -1338,6 +1338,7 @@ export enum PlatformErrorCodes {
   FireteamFinderApplicationClosedToOfflinePlayers = 3129,
   FireteamFinderUserNotApplicationOwner = 3130,
   FireteamFinderInviteValidationFailed = 3131,
+  FireteamFinderApplicantNotInGame = 3132,
   FireteamFinderOwnerNotInGame = 3132,
   FireteamFinderPlayerAtMaxLobbyLimit = 3133,
   FireteamFinderLobbyTooFarInTheFuture = 3134,
@@ -1399,6 +1400,7 @@ export enum PlatformErrorCodes {
   ErrorPhoneValidationCodeExpired = 3708,
   ErrorPhoneValidationInvalidNumberType = 3709,
   ErrorPhoneValidationCodeTooRecentlyChecked = 3710,
+  ErrorPhoneValidationRecentlyPlayedDestiny2AccountRequired = 3711,
   ApplePushErrorUnknown = 3800,
   ApplePushErrorNull = 3801,
   ApplePushErrorTimeout = 3802,
@@ -1418,6 +1420,8 @@ export enum PlatformErrorCodes {
   ErrorBungieBlockSelf = 3908,
   ErrorBungieFriendsListFull = 3910,
   ErrorBungieBlockListFull = 3911,
+  ErrorBungieFriendNotFound = 3912,
+  ErrorBungieFriendInvalidMembershipType = 3913,
   ErrorEgsUnknown = 4000,
   ErrorEgsBadRequest = 4001,
   ErrorEgsNotAuthorized = 4002,
@@ -1479,6 +1483,60 @@ export enum OptInFlags {
 export enum AnonymousIdentifierSource {
   BungieNext = 0,
   DestinyTwitchExt = 1,
+}
+
+/**
+	The parental controls category for a which an account belongs to.
+	*/
+export enum ParentalControlsCategoryType {
+  None = 0,
+  Child = 1,
+  Teen = 2,
+  Adult = 3,
+}
+
+/**
+	The guardian link status of a player in the context of parental controls. Applies to both children and guardians.
+	*/
+export enum ParentalControlsGuardianChildLinkStatus {
+  None = 0,
+  Pending = 1,
+  Linked = 2,
+  Unlinked = 3,
+}
+
+/**
+	Response status types for parental controls operations.
+	*/
+export enum ParentalControlsResponseStatus {
+  None = 0,
+  Success = 20,
+  SuccessfullyLinked = 22,
+  RequiresAdultVerification = 23,
+  Unauthorized = 30,
+  BungieUserNotFound = 40,
+  PlayerProfileNotFound = 41,
+  PreferenceNotFound = 42,
+  PermissionNotFound = 43,
+  PreferencesUpdateFailed = 50,
+  PermissionsUpdateFailed = 51,
+  BungieApiCallFailed = 52,
+  KwsApiCallFailed = 53,
+  InternalServerError = 54,
+  TokenIsEmpty = 60,
+  SignatureIsEmpty = 61,
+  RequestIsEmpty = 62,
+  ChildIdIsEmpty = 63,
+  AuthorizationCodeIsEmpty = 64,
+  GuardianIsNotAdult = 65,
+  PlayerIsNotChild = 66,
+  ChildAlreadyHasGuardian = 67,
+  GuardianIsNotLinked = 68,
+  ValidationError = 69,
+  PreferenceUpdateForbidden = 70,
+  RefreshTokenIsEmpty = 71,
+  AuthorizationCodeAlredyUsed = 72,
+  GuardianEmailIsNotVerified = 73,
 }
 
 export enum TemplateFormat {
@@ -1712,6 +1770,39 @@ export enum DestinyProgressionRewardItemState {
 }
 
 /**
+	A flags enumeration/bitmask where each bit represents a different possible state that the item can be in
+	that may effect how the item is displayed to the user and what actions can be performed against it.
+	*/
+export enum ItemState {
+  None = 0,
+  /**
+		If this bit is set, the item has been "locked" by the user and cannot be deleted.
+		You may want to represent this visually with a "lock" icon.
+		*/
+  Locked = 1,
+  /**
+		If this bit is set, the item is a quest that's being tracked by the user.  You may
+		want a visual indicator to show that this is a tracked quest.
+		*/
+  Tracked = 2,
+  /**
+		If this bit is set, the item has a Masterwork plug inserted.  This usually coincides
+		with having a special "glowing" effect applied to the item's icon.
+		*/
+  Masterwork = 4,
+  /**
+		If this bit is set, the item has been 'crafted' by the player.
+		You may want to represent this visually with a "crafted" icon overlay.
+		*/
+  Crafted = 8,
+  /**
+		If this bit is set, the item has a 'highlighted' objective.
+		You may want to represent this with an orange-red icon border color.
+		*/
+  HighlightedObjective = 16,
+}
+
+/**
 	There's a lot of places where we need to know scope on more than just a profile or character level.
 	For everything else, there's this more generic sense of scope.
 	*/
@@ -1787,6 +1878,9 @@ export enum DestinyRecordToastStyle {
   ToastGuardianRankDetails = 9,
   PathfinderObjectiveCompleteRituals = 10,
   PathfinderObjectiveCompleteSchism = 11,
+  PathfinderObjectiveCompletePvp = 12,
+  PathfinderObjectiveCompleteStrikes = 13,
+  PathfinderObjectiveCompleteGambit = 14,
 }
 
 export enum TierType {
@@ -2140,39 +2234,6 @@ export enum TransferStatuses {
 		your remaining Vault and/or character space.
 		*/
   NoRoomInDestination = 4,
-}
-
-/**
-	A flags enumeration/bitmask where each bit represents a different possible state that the item can be in
-	that may effect how the item is displayed to the user and what actions can be performed against it.
-	*/
-export enum ItemState {
-  None = 0,
-  /**
-		If this bit is set, the item has been "locked" by the user and cannot be deleted.
-		You may want to represent this visually with a "lock" icon.
-		*/
-  Locked = 1,
-  /**
-		If this bit is set, the item is a quest that's being tracked by the user.  You may
-		want a visual indicator to show that this is a tracked quest.
-		*/
-  Tracked = 2,
-  /**
-		If this bit is set, the item has a Masterwork plug inserted.  This usually coincides
-		with having a special "glowing" effect applied to the item's icon.
-		*/
-  Masterwork = 4,
-  /**
-		If this bit is set, the item has been 'crafted' by the player.
-		You may want to represent this visually with a "crafted" icon overlay.
-		*/
-  Crafted = 8,
-  /**
-		If this bit is set, the item has a 'highlighted' objective.
-		You may want to represent this with an orange-red icon border color.
-		*/
-  HighlightedObjective = 16,
 }
 
 /**
@@ -2812,6 +2873,7 @@ export enum DestinyVendorItemState {
   ArtifactPerkOwned = 2097152,
   Savings = 4194304,
   Ineligible = 8388608,
+  ArtifactPerkBoosted = 16777216,
 }
 
 /**

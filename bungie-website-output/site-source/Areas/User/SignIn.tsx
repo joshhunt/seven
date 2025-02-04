@@ -52,7 +52,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
 
   public componentDidMount() {
     if (UserUtils.isAuthenticated(this.props.globalState)) {
-      this.redirect(this.props.globalState.loggedInUser.user);
+      this.redirect(this.props.globalState.loggedInUser?.user);
     }
 
     const params = new URLSearchParams(location.search);
@@ -87,7 +87,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
     return (
       <Auth
         onSignIn={(tempGlobalState) =>
-          this.redirect(tempGlobalState.loggedInUser.user)
+          this.redirect(tempGlobalState.loggedInUser?.user)
         }
         customLabel={customLabel}
         referrer={this.state.referrer}

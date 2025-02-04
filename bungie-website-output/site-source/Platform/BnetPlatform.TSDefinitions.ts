@@ -654,6 +654,7 @@ export declare namespace DestinyDefinitions {
     ArtifactPerkOwned = 2097152,
     Savings = 4194304,
     Ineligible = 8388608,
+    ArtifactPerkBoosted = 16777216,
   }
 
   enum DestinySocketCategoryStyle {
@@ -747,6 +748,9 @@ export declare namespace DestinyDefinitions {
     ToastGuardianRankDetails = 9,
     PathfinderObjectiveCompleteRituals = 10,
     PathfinderObjectiveCompleteSchism = 11,
+    PathfinderObjectiveCompletePvp = 12,
+    PathfinderObjectiveCompleteStrikes = 13,
+    PathfinderObjectiveCompleteGambit = 14,
   }
 
   enum DestinyPresentationScreenStyle {
@@ -2386,6 +2390,8 @@ export declare namespace DestinyDefinitions {
     omitFromRequirements: boolean;
 
     virtualMaterialUnlockValueHash?: number;
+
+    hasVirtualStackSize: boolean;
   }
 
   export interface DestinyMedalTierDefinition {
@@ -2659,6 +2665,8 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyProgressionRewardItemQuantity {
+    rewardItemIndex: number;
+
     rewardedAtProgressionLevel: number;
 
     acquisitionBehavior: DestinyProgressionRewardItemAcquisitionBehavior;
@@ -2673,6 +2681,8 @@ export declare namespace DestinyDefinitions {
 
     claimUnlockDisplayStrings: string[];
 
+    socketOverrides: DestinyProgressionSocketPlugOverride[];
+
     itemHash: number;
 
     itemInstanceId?: string;
@@ -2684,6 +2694,14 @@ export declare namespace DestinyDefinitions {
     uiOnlyGatingUnlockExpressionMappingHash?: number;
 
     uiOnlyGatingUnlockExpression: DestinyUnlockExpressionDefinition;
+  }
+
+  export interface DestinyProgressionSocketPlugOverride {
+    socketTypeHash: number;
+
+    overrideSingleItemHash?: number;
+
+    overrideRewardSiteHash?: number;
   }
 
   export interface DestinyProgressionMappingDefinition {
@@ -3934,6 +3952,74 @@ export declare namespace DestinyDefinitions {
     z: number;
   }
 
+  export interface DestinyGlobalConstantsDefinition {
+    pathfinderConstants: DestinyPathfinderConstantsDefinition;
+
+    collectionsRootNodeHash: number;
+
+    collectionBadgesRootNodeHash: number;
+
+    activeTriumphsRootNodeHash: number;
+
+    activeSealsRootNodeHash: number;
+
+    legacyTriumphsRootNodeHash: number;
+
+    legacySealsRootNodeHash: number;
+
+    medalsRootNodeHash: number;
+
+    exoticCatalystsRootNodeHash: number;
+
+    loreRootNodeHash: number;
+
+    metricsRootNodeHash: number;
+
+    craftingRootNodeHash: number;
+
+    guardianRanksRootNodeHash: number;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyPathfinderConstantsDefinition {
+    thePaleHeartPathfinderRootNodeHash: number;
+
+    vanguardPathfinderRootNodeHash: number;
+
+    cruciblePathfinderRootNodeHash: number;
+
+    gambitPathfinderRootNodeHash: number;
+
+    allPathfinderRootNodeHashes: number[];
+
+    pathfinderTreeTiers: { [key: number]: number };
+
+    pathfinderTopology: { [key: number]: number[] };
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DateRange {
     start: string;
 
@@ -4065,6 +4151,8 @@ export declare namespace DestinyDefinitions {
 
     parentItemOverride: DestinyParentItemOverride;
 
+    reusablePlugOptions: DestinyReusablePlugOptions;
+
     energyCapacity: DestinyEnergyCapacityEntry;
 
     energyCost: DestinyEnergyCostEntry;
@@ -4088,6 +4176,12 @@ export declare namespace DestinyDefinitions {
     overrideAcquireEnabledExpression: DestinyUnlockExpressionDefinition;
 
     additionalEquipRequirementsExpressions: DestinyUnlockExpressionDefinition[];
+  }
+
+  export interface DestinyReusablePlugOptions {
+    uiOnlyStackSizeExpression: DestinyUnlockExpressionDefinition;
+
+    uiOnlyMaxStackSizeExpression: DestinyUnlockExpressionDefinition;
   }
 
   export interface DestinyEnergyCapacityEntry {
@@ -6715,6 +6809,9 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyGenderDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGenderDefinition;
   };
+  DestinyGlobalConstantsDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyGlobalConstantsDefinition;
+  };
   DestinyGuardianRankConstantsDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
   };
@@ -6968,6 +7065,7 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyFireteamFinderOptionGroupDefinition?: DestinyDefinitions.DestinyFireteamFinderOptionGroupDefinition;
   DestinyEnergyTypeDefinition?: DestinyDefinitions.DestinyEnergyTypeDefinition;
   DestinyActivityGraphDefinition?: DestinyDefinitions.DestinyActivityGraphDefinition;
+  DestinyGlobalConstantsDefinition?: DestinyDefinitions.DestinyGlobalConstantsDefinition;
   DestinyCollectibleDefinition?: DestinyDefinitions.DestinyCollectibleDefinition;
   DestinyChecklistDefinition?: DestinyDefinitions.DestinyChecklistDefinition;
   DestinyCharacterCustomizationCategoryDefinition?: DestinyDefinitions.DestinyCharacterCustomizationCategoryDefinition;
@@ -7058,6 +7156,7 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyFireteamFinderOptionGroupDefinition",
   "DestinyEnergyTypeDefinition",
   "DestinyActivityGraphDefinition",
+  "DestinyGlobalConstantsDefinition",
   "DestinyCollectibleDefinition",
   "DestinyChecklistDefinition",
   "DestinyCharacterCustomizationCategoryDefinition",

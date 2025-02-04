@@ -3435,6 +3435,188 @@ export declare namespace GroupsV2 {
   }
 }
 
+export declare namespace ParentalControls {
+  /**
+	Response contract for linking a guardian in the context of parental controls.
+	*/
+  export interface ParentalControlsLinkGuardianResponse {
+    ErrorMessage: string;
+  }
+
+  /**
+	Response contract for unlinking a child-guardian relationship in the context of parental controls.
+	*/
+  export interface ParentalControlsUnlinkGuardianResponse {
+    ErrorMessage: string;
+  }
+
+  /**
+	Response contract for retrieving player info in the context of parental controls.
+	*/
+  export interface ParentalControlsGetPlayerContextResponse {
+    Player: ParentalControls.ParentalControlsPlayerContext;
+
+    Children: ParentalControls.ParentalControlsChildContext[];
+
+    Preferences: ParentalControls.ParentalControlsPreferenceContext[];
+  }
+
+  /**
+	Detailed class for player info in the context of parental controls.
+	*/
+  export interface ParentalControlsPlayerContext {
+    GuardianId: string;
+
+    Email: string;
+
+    DateOfBirth?: string;
+
+    Category: Globals.ParentalControlsCategoryType;
+
+    LinkStatus: Globals.ParentalControlsGuardianChildLinkStatus;
+
+    IsEmailVerified: boolean;
+
+    IsVerifiedAdult: boolean;
+
+    PlayerId: string;
+
+    UniqueName: string;
+
+    ProfilePicturePath: string;
+  }
+
+  /**
+	Detailed class for child info in the context of parental controls.
+	*/
+  export interface ParentalControlsChildContext {
+    Permissions: ParentalControls.ParentalControlsPermission[];
+
+    PlayerId: string;
+
+    UniqueName: string;
+
+    ProfilePicturePath: string;
+  }
+
+  /**
+	A data structure representing a permission for a player in the context of parental controls.
+	*/
+  export interface ParentalControlsPermission {
+    Name: string;
+
+    Value: boolean;
+  }
+
+  /**
+	Detailed class preference info, with an additional parameter representing mutability.
+	*/
+  export interface ParentalControlsPreferenceContext {
+    Preference: ParentalControls.ParentalControlsPreference;
+
+    IsEditable: boolean;
+  }
+
+  /**
+	A data structure representing a preference for a player in the context of parental controls.
+	*/
+  export interface ParentalControlsPreference {
+    Name: string;
+
+    Value: boolean;
+  }
+
+  /**
+	Response contract for updating a child's permissions in the context of parental controls.
+	*/
+  export interface ParentalControlsUpdatePermissionsForChildResponse {
+    ErrorMessage: string;
+
+    StatusCode: Globals.ParentalControlsResponseStatus;
+  }
+
+  /**
+	Request contract for updating a child's permissions in the context of parental controls.
+	*/
+  export interface ParentalControlsUpdatePermissionsForChildRequest {
+    Permissions: ParentalControls.ParentalControlsPermission[];
+  }
+
+  /**
+	Response contract for retrieving child preferences in the context of parental controls.
+	*/
+  export interface ParentalControlsGetPreferencesForChildResponse {
+    Preferences: ParentalControls.ParentalControlsPreference[];
+  }
+
+  /**
+	Response contract for updating a child's preferences in the context of parental controls.
+	*/
+  export interface ParentalControlsUpdatePreferencesForChildResponse {
+    ErrorMessage: string;
+
+    StatusCode: Globals.ParentalControlsResponseStatus;
+  }
+
+  export interface ParentalControlsUpdatePreferencesForChildRequest {
+    Preferences: ParentalControls.ParentalControlsPreference[];
+  }
+
+  /**
+	Response contract for a webhook with Kid's Web Services (KWS).
+	*/
+  export interface ParentalControlsKWSWebhookResponse {
+    Success: boolean;
+
+    ErrorMessage: string;
+  }
+
+  /**
+	Request contract for a webhook with Kid's Web Services (KWS).
+	*/
+  export interface ParentalControlsKWSWebhookRequest {
+    Payload: ParentalControls.ParentalControlsKWSWebHookPayload;
+  }
+
+  /**
+	Parental controls webhook payload for KWS.
+	*/
+  export interface ParentalControlsKWSWebHookPayload {
+    ParentEmail: string;
+
+    Status: ParentalControls.ParentalControlsKWSWebHookStatus;
+
+    ExternalPayload: string;
+  }
+
+  /**
+	Status for a KWS webhook payload.
+	*/
+  export interface ParentalControlsKWSWebHookStatus {
+    Verified: boolean;
+  }
+
+  /**
+	Response contract for retrieving a token in the context of parental controls.
+	*/
+  export interface ParentalControlsTokenResponse {
+    Token: string;
+
+    TokenExpiresIn: number;
+
+    RefreshToken: string;
+
+    RefreshTokenExpiresIn: number;
+  }
+
+  /**
+	Request contract for retrieving a token in the context of parental controls.
+	*/
+  export interface ParentalControlsTokenRequest {
+    Code: string;
+  }
+}
+
 export declare namespace Responses {
   /**
 	A response wrapper for a single Message Conversation, that includes any linked entity information and additional
@@ -4178,7 +4360,7 @@ export declare namespace Responses {
 		These are keyed by the Vendor Hash, so you will get one Sale Item Set Component per vendor returned.
 		
 		Note that within the Sale Item Set component, the sales are themselves keyed by the vendorSaleIndex, so you
-		can relate it to the corrent sale item definition within the Vendor's definition.
+		can relate it to the current sale item definition within the Vendor's definition.
 		
 		COMPONENT TYPE: VendorSales
 		*/
@@ -4191,7 +4373,7 @@ export declare namespace Responses {
 		The components contained inside are themselves keyed by the vendorSaleIndex, and will have whatever
 		item-level components you requested (Sockets, Stats, Instance data etc...) per item being sold by the vendor.
 		*/
-    itemComponents: { [key: number]: Sets.DestinyItemComponentSetInt32 };
+    itemComponents: { [key: number]: Sets.DestinyVendorItemComponentSetInt32 };
 
     /**
 		A "lookup" convenience component that can be used to quickly check if the character has access
@@ -4241,9 +4423,9 @@ export declare namespace Responses {
     /**
 		Item components, keyed by the vendorItemIndex of the active sale items.
 		
-		COMPONENT TYPE: [See inside the DestinyItemComponentSet contract for component types.]
+		COMPONENT TYPE: [See inside the DestinyVendorItemComponentSet contract for component types.]
 		*/
-    itemComponents: Sets.DestinyItemComponentSetInt32;
+    itemComponents: Sets.DestinyVendorItemComponentSetInt32;
 
     /**
 		A "lookup" convenience component that can be used to quickly check if the character has access
@@ -4534,6 +4716,13 @@ export declare namespace World {
 		Information about historical rewards for this progression, if there is any data for it.
 		*/
     rewardItemStates: Globals.DestinyProgressionRewardItemState[];
+
+    /**
+		Information about items stats and states that have socket overrides, if there is any data for it.
+		*/
+    rewardItemSocketOverrideStates: {
+      [key: number]: World.DestinyProgressionRewardItemSocketOverrideState;
+    };
   }
 
   /**
@@ -4546,6 +4735,36 @@ export declare namespace World {
     season: number;
 
     resets: number;
+  }
+
+  /**
+	Represents the stats and item state if applicable for progression reward items with socket overrides
+	*/
+  export interface DestinyProgressionRewardItemSocketOverrideState {
+    /**
+		Information about the computed stats from socket and plug overrides for this progression, if there is any data for it.
+		*/
+    rewardItemStats: { [key: number]: World.DestinyStat };
+
+    /**
+		Information about the item state, specifically deepsight if there is any data for it
+		*/
+    itemState: Globals.ItemState;
+  }
+
+  /**
+	Represents a stat on an item *or* Character (NOT a Historical Stat, but a physical attribute stat like Attack, Defense etc...)
+	*/
+  export interface DestinyStat {
+    /**
+		The hash identifier for the Stat.  Use it to look up the DestinyStatDefinition for static data about the stat.
+		*/
+    statHash: number;
+
+    /**
+		The current value of the Stat.
+		*/
+    value: number;
   }
 
   /**
@@ -4673,21 +4892,6 @@ export declare namespace World {
 		indicating the currently active loadout requirements.
 		*/
     loadoutRequirementIndex?: number;
-  }
-
-  /**
-	Represents a stat on an item *or* Character (NOT a Historical Stat, but a physical attribute stat like Attack, Defense etc...)
-	*/
-  export interface DestinyStat {
-    /**
-		The hash identifier for the Stat.  Use it to look up the DestinyStatDefinition for static data about the stat.
-		*/
-    statHash: number;
-
-    /**
-		The current value of the Stat.
-		*/
-    value: number;
   }
 
   /**
@@ -8534,6 +8738,12 @@ export declare namespace Definitions {
 		I mean, I'm not your mom: I'm not going to tell you you *can't* show it.  But we won't show it in our UI.
 		*/
     omitFromRequirements: boolean;
+
+    /**
+		If true, this material requirement references a virtual item stack size value.
+		You can get that value from a corresponding DestinyMaterialRequirementSetState.
+		*/
+    hasVirtualStackSize: boolean;
   }
 
   export interface DestinyHistoricalStatsDefinition {
@@ -11417,6 +11627,8 @@ export declare namespace Definitions {
   }
 
   export interface DestinyProgressionRewardItemQuantity {
+    rewardItemIndex: number;
+
     rewardedAtProgressionLevel: number;
 
     acquisitionBehavior: Globals.DestinyProgressionRewardItemAcquisitionBehavior;
@@ -11425,6 +11637,8 @@ export declare namespace Definitions {
 
     claimUnlockDisplayStrings: string[];
 
+    socketOverrides: Definitions.DestinyProgressionSocketPlugOverride[];
+
     itemHash: number;
 
     itemInstanceId?: string;
@@ -11432,6 +11646,15 @@ export declare namespace Definitions {
     quantity: number;
 
     hasConditionalVisibility: boolean;
+  }
+
+  /**
+	The information for how progression item definitions should override a given socket with custom plug data.
+	*/
+  export interface DestinyProgressionSocketPlugOverride {
+    socketTypeHash: number;
+
+    overrideSingleItemHash?: number;
   }
 
   /**
@@ -12651,6 +12874,8 @@ export declare namespace Items {
 	*/
   export interface ItemSpawnStatSet {}
 
+  export interface DestinyReusablePlugOptions {}
+
   /**
 	The base item component, filled with properties that are generally useful to know in any item request or that
 	don't feel worthwhile to put in their own component.
@@ -13124,6 +13349,10 @@ export declare namespace Items {
     insertFailIndexes: number[];
 
     enableFailIndexes: number[];
+
+    stackSize?: number;
+
+    maxStackSize?: number;
   }
 
   /**
@@ -13597,7 +13826,7 @@ export declare namespace Inventory {
 	for the purpose of testing currency requirements on an item being purchased, or operations that have costs.
 	
 	You *could* figure this out yourself by doing a GetCharacter or GetProfile request and forming your own lookup table, but
-	that is inconvenient enough that this feels like a worthwhile (and optional) redundency.  Don't bother requesting it if you
+	that is inconvenient enough that this feels like a worthwhile (and optional) redundancy.  Don't bother requesting it if you
 	have already created your own lookup from prior GetCharacter/GetProfile calls.
 	*/
   export interface DestinyCurrenciesComponent {
@@ -13609,6 +13838,43 @@ export declare namespace Inventory {
 		this list itself.
 		*/
     itemQuantities: { [key: number]: number };
+
+    /**
+		A map of material requirement hashes and their status information.
+		*/
+    materialRequirementSetStates: {
+      [key: number]: Inventory.DestinyMaterialRequirementSetState;
+    };
+  }
+
+  export interface DestinyMaterialRequirementSetState {
+    /**
+		The hash identifier of the material requirement set. Use it to look up the DestinyMaterialRequirementSetDefinition.
+		*/
+    materialRequirementSetHash: number;
+
+    /**
+		The dynamic state values for individual material requirements.
+		*/
+    materialRequirementStates: Inventory.DestinyMaterialRequirementState[];
+  }
+
+  export interface DestinyMaterialRequirementState {
+    /**
+		The hash identifier of the material required. Use it to look up the material's DestinyInventoryItemDefinition.
+		*/
+    itemHash: number;
+
+    /**
+		The amount of the material required.
+		*/
+    count: number;
+
+    /**
+		A value for the amount of a (possibly virtual) material on some scope.
+		For example: Dawning cookie baking material requirements.
+		*/
+    stackSize: number;
   }
 }
 
@@ -14280,6 +14546,11 @@ export declare namespace Characters {
 		The list of activities that the user can play.
 		*/
     availableActivities: World.DestinyActivity[];
+
+    /**
+		The list of activity interactables that the player can interact with.
+		*/
+    availableActivityInteractables: FireteamFinder.DestinyActivityInteractableReference[];
 
     /**
 		If the user is in an activity, this will be the hash of the Activity being played.
@@ -15091,6 +15362,14 @@ export declare namespace Components {
     disabled?: boolean;
   }
 
+  export interface DictionaryComponentResponseInt32DestinyItemComponent {
+    data: { [key: number]: Items.DestinyItemComponent };
+
+    privacy: Globals.ComponentPrivacySetting;
+
+    disabled?: boolean;
+  }
+
   export interface DictionaryComponentResponseInt32DestinyItemInstanceComponent {
     data: { [key: number]: Items.DestinyItemInstanceComponent };
 
@@ -15349,6 +15628,10 @@ export declare namespace Sockets {
     insertFailIndexes: number[];
 
     enableFailIndexes: number[];
+
+    stackSize?: number;
+
+    maxStackSize?: number;
   }
 
   export interface DestinyItemPlugBase {
@@ -15382,6 +15665,16 @@ export declare namespace Sockets {
 		This list will be empty if the plug is enabled.
 		*/
     enableFailIndexes: number[];
+
+    /**
+		If available, this is the stack size to display for the socket plug item.
+		*/
+    stackSize?: number;
+
+    /**
+		If available, this is the maximum stack size to display for the socket plug item.
+		*/
+    maxStackSize?: number;
   }
 
   /**
@@ -15834,6 +16127,10 @@ export declare namespace Progression {
     seasonResets: World.DestinyProgressionResetEntry[];
 
     rewardItemStates: Globals.DestinyProgressionRewardItemState[];
+
+    rewardItemSocketOverrideStates: {
+      [key: number]: World.DestinyProgressionRewardItemSocketOverrideState;
+    };
   }
 
   /**
@@ -17069,6 +17366,381 @@ export declare namespace Character {
   }
 }
 
+export declare namespace FireteamFinder {
+  export interface DestinyActivityInteractableReference {
+    activityInteractableHash: number;
+
+    activityInteractableElementIndex: number;
+  }
+
+  export interface DestinyFireteamFinderApplyToListingResponse {
+    isApplied: boolean;
+
+    application: FireteamFinder.DestinyFireteamFinderApplication;
+
+    listing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderApplication {
+    applicationId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderApplicationState;
+
+    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
+
+    applicationType: Globals.DestinyFireteamFinderApplicationType;
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderPlayerId {
+    membershipId: string;
+
+    membershipType: Globals.BungieMembershipType;
+
+    characterId: string;
+  }
+
+  export interface DestinyFireteamFinderApplicantSet {
+    applicants: FireteamFinder.DestinyFireteamFinderApplicant[];
+  }
+
+  export interface DestinyFireteamFinderApplicant {
+    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+  }
+
+  export interface DestinyFireteamFinderListing {
+    listingId: string;
+
+    revision: number;
+
+    ownerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+
+    availableSlots: number;
+
+    lobbyId: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderLobbySettings {
+    maxPlayerCount: number;
+
+    onlinePlayersOnly: boolean;
+
+    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
+
+    scheduledDateTime: string;
+
+    clanId: string;
+
+    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
+
+    activityGraphHash: number;
+
+    activityHash: number;
+  }
+
+  export interface DestinyFireteamFinderListingValue {
+    valueType: number;
+
+    values: number[];
+  }
+
+  export interface DestinyFireteamFinderBulkGetListingStatusResponse {
+    listingStatus: FireteamFinder.DestinyFireteamFinderListingStatus[];
+  }
+
+  export interface DestinyFireteamFinderListingStatus {
+    listingId: string;
+
+    listingRevision: number;
+
+    availableSlots: number;
+  }
+
+  export interface DestinyFireteamFinderBulkGetListingStatusRequest {
+    lobbyListingReferences: FireteamFinder.DestinyFireteamFinderLobbyListingReference[];
+  }
+
+  export interface DestinyFireteamFinderLobbyListingReference {
+    lobbyId: string;
+
+    listingId: string;
+  }
+
+  export interface DestinyFireteamFinderGetApplicationResponse {
+    applicationId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderApplicationState;
+
+    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
+
+    applicationType: Globals.DestinyFireteamFinderApplicationType;
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderGetListingApplicationsResponse {
+    applications: FireteamFinder.DestinyFireteamFinderApplication[];
+
+    pageSize: number;
+
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderLobbyResponse {
+    lobbyId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderLobbyState;
+
+    owner: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+
+    players: FireteamFinder.DestinyFireteamFinderLobbyPlayer[];
+
+    listingId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderLobbyPlayer {
+    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    referralToken: string;
+
+    state: Globals.DestinyFireteamFinderPlayerReadinessState;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerLobbiesResponse {
+    /**
+		All available lobbies that this player has created or is a member of.
+		*/
+    lobbies: FireteamFinder.DestinyFireteamFinderLobbyResponse[];
+
+    /**
+		The number of results requested.
+		*/
+    pageSize: number;
+
+    /**
+		A string token required to get the next page of results. This will be null or empty if there are no more results.
+		*/
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerApplicationsResponse {
+    /**
+		All applications that this player has sent.
+		*/
+    applications: FireteamFinder.DestinyFireteamFinderApplication[];
+
+    /**
+		String token to request next page of results.
+		*/
+    nextPageToken: string;
+  }
+
+  export interface DestinyFireteamFinderGetPlayerOffersResponse {
+    /**
+		All offers that this player has recieved.
+		*/
+    offers: FireteamFinder.DestinyFireteamFinderOffer[];
+  }
+
+  export interface DestinyFireteamFinderOffer {
+    offerId: string;
+
+    lobbyId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderOfferState;
+
+    targetId: FireteamFinder.DestinyFireteamFinderPlayerId;
+
+    applicationId: string;
+
+    createdDateTime: string;
+  }
+
+  export interface DestinyFireteamFinderGetCharacterActivityAccessResponse {
+    /**
+		A map of fireteam finder activity graph hashes to visibility and availability states.
+		*/
+    fireteamFinderActivityGraphStates: {
+      [key: number]: FireteamFinder.DestinyFireteamFinderActivityGraphState;
+    };
+  }
+
+  export interface DestinyFireteamFinderActivityGraphState {
+    /**
+		Indicates if this fireteam finder activity graph node is visible for this character.
+		*/
+    isVisible: boolean;
+
+    /**
+		Indicates if this fireteam finder activity graph node is available to select for this character.
+		*/
+    isAvailable: boolean;
+  }
+
+  export interface DestinyFireteamFinderGetLobbyOffersResponse {
+    offers: FireteamFinder.DestinyFireteamFinderOffer[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderHostLobbyResponse {
+    lobbyId: string;
+
+    listingId: string;
+
+    applicationId: string;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderHostLobbyRequest {
+    maxPlayerCount: number;
+
+    onlinePlayersOnly: boolean;
+
+    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
+
+    scheduledDateTime: string;
+
+    clanId: string;
+
+    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
+
+    activityGraphHash: number;
+
+    activityHash: number;
+  }
+
+  export interface DestinyFireteamFinderJoinLobbyRequest {
+    lobbyId: string;
+
+    offerId: string;
+  }
+
+  export interface DestinyFireteamFinderKickPlayerRequest {
+    targetMembershipType: Globals.BungieMembershipType;
+
+    targetCharacterId: string;
+  }
+
+  export interface DestinyFireteamFinderRespondToApplicationResponse {
+    applicationId: string;
+
+    applicationRevision: number;
+  }
+
+  export interface DestinyFireteamFinderRespondToApplicationRequest {
+    accepted: boolean;
+  }
+
+  export interface DestinyFireteamFinderRespondToAuthenticationResponse {
+    applicationId: string;
+
+    applicationRevision: number;
+
+    offer: FireteamFinder.DestinyFireteamFinderOffer;
+
+    listing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderRespondToAuthenticationRequest {
+    confirmed: boolean;
+  }
+
+  export interface DestinyFireteamFinderRespondToOfferResponse {
+    offerId: string;
+
+    revision: number;
+
+    state: Globals.DestinyFireteamFinderOfferState;
+  }
+
+  export interface DestinyFireteamFinderRespondToOfferRequest {
+    accepted: boolean;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByClanResponse {
+    listings: FireteamFinder.DestinyFireteamFinderListing[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByClanRequest {
+    pageSize: number;
+
+    pageToken: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByFiltersResponse {
+    listings: FireteamFinder.DestinyFireteamFinderListing[];
+
+    pageToken: string;
+  }
+
+  export interface DestinyFireteamFinderSearchListingsByFiltersRequest {
+    filters: FireteamFinder.DestinyFireteamFinderListingFilter[];
+
+    pageSize: number;
+
+    pageToken: string;
+
+    lobbyState: Globals.DestinyFireteamFinderLobbyState;
+  }
+
+  export interface DestinyFireteamFinderListingFilter {
+    listingValue: FireteamFinder.DestinyFireteamFinderListingValue;
+
+    rangeType: Globals.DestinyFireteamFinderListingFilterRangeType;
+
+    matchType: Globals.DestinyFireteamFinderListingFilterMatchType;
+  }
+
+  export interface DestinyFireteamFinderUpdateLobbySettingsResponse {
+    updatedLobby: FireteamFinder.DestinyFireteamFinderLobbyResponse;
+
+    updatedListing: FireteamFinder.DestinyFireteamFinderListing;
+  }
+
+  export interface DestinyFireteamFinderUpdateLobbySettingsRequest {
+    updatedSettings: FireteamFinder.DestinyFireteamFinderLobbySettings;
+  }
+}
+
 export declare namespace Sets {
   export interface DestinyBaseItemComponentSetUInt32 {
     objectives: Components.DictionaryComponentResponseUInt32DestinyItemObjectivesComponent;
@@ -17098,7 +17770,9 @@ export declare namespace Sets {
     perks: Components.DictionaryComponentResponseInt64DestinyItemPerksComponent;
   }
 
-  export interface DestinyItemComponentSetInt32 {
+  export interface DestinyVendorItemComponentSetInt32 {
+    itemComponents: Components.DictionaryComponentResponseInt32DestinyItemComponent;
+
     instances: Components.DictionaryComponentResponseInt32DestinyItemInstanceComponent;
 
     renderData: Components.DictionaryComponentResponseInt32DestinyItemRenderComponent;
@@ -18226,375 +18900,6 @@ export declare namespace Fireteam {
     playerSlotCount?: number;
 
     alternateSlotCount?: number;
-  }
-}
-
-export declare namespace FireteamFinder {
-  export interface DestinyFireteamFinderApplyToListingResponse {
-    isApplied: boolean;
-
-    application: FireteamFinder.DestinyFireteamFinderApplication;
-
-    listing: FireteamFinder.DestinyFireteamFinderListing;
-  }
-
-  export interface DestinyFireteamFinderApplication {
-    applicationId: string;
-
-    revision: number;
-
-    state: Globals.DestinyFireteamFinderApplicationState;
-
-    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    referralToken: string;
-
-    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
-
-    applicationType: Globals.DestinyFireteamFinderApplicationType;
-
-    listingId: string;
-
-    createdDateTime: string;
-  }
-
-  export interface DestinyFireteamFinderPlayerId {
-    membershipId: string;
-
-    membershipType: Globals.BungieMembershipType;
-
-    characterId: string;
-  }
-
-  export interface DestinyFireteamFinderApplicantSet {
-    applicants: FireteamFinder.DestinyFireteamFinderApplicant[];
-  }
-
-  export interface DestinyFireteamFinderApplicant {
-    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
-  }
-
-  export interface DestinyFireteamFinderListing {
-    listingId: string;
-
-    revision: number;
-
-    ownerId: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
-
-    availableSlots: number;
-
-    lobbyId: string;
-
-    lobbyState: Globals.DestinyFireteamFinderLobbyState;
-
-    createdDateTime: string;
-  }
-
-  export interface DestinyFireteamFinderLobbySettings {
-    maxPlayerCount: number;
-
-    onlinePlayersOnly: boolean;
-
-    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
-
-    scheduledDateTime: string;
-
-    clanId: string;
-
-    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
-
-    activityGraphHash: number;
-
-    activityHash: number;
-  }
-
-  export interface DestinyFireteamFinderListingValue {
-    valueType: number;
-
-    values: number[];
-  }
-
-  export interface DestinyFireteamFinderBulkGetListingStatusResponse {
-    listingStatus: FireteamFinder.DestinyFireteamFinderListingStatus[];
-  }
-
-  export interface DestinyFireteamFinderListingStatus {
-    listingId: string;
-
-    listingRevision: number;
-
-    availableSlots: number;
-  }
-
-  export interface DestinyFireteamFinderBulkGetListingStatusRequest {
-    lobbyListingReferences: FireteamFinder.DestinyFireteamFinderLobbyListingReference[];
-  }
-
-  export interface DestinyFireteamFinderLobbyListingReference {
-    lobbyId: string;
-
-    listingId: string;
-  }
-
-  export interface DestinyFireteamFinderGetApplicationResponse {
-    applicationId: string;
-
-    revision: number;
-
-    state: Globals.DestinyFireteamFinderApplicationState;
-
-    submitterId: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    referralToken: string;
-
-    applicantSet: FireteamFinder.DestinyFireteamFinderApplicantSet;
-
-    applicationType: Globals.DestinyFireteamFinderApplicationType;
-
-    listingId: string;
-
-    createdDateTime: string;
-  }
-
-  export interface DestinyFireteamFinderGetListingApplicationsResponse {
-    applications: FireteamFinder.DestinyFireteamFinderApplication[];
-
-    pageSize: number;
-
-    nextPageToken: string;
-  }
-
-  export interface DestinyFireteamFinderLobbyResponse {
-    lobbyId: string;
-
-    revision: number;
-
-    state: Globals.DestinyFireteamFinderLobbyState;
-
-    owner: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    settings: FireteamFinder.DestinyFireteamFinderLobbySettings;
-
-    players: FireteamFinder.DestinyFireteamFinderLobbyPlayer[];
-
-    listingId: string;
-
-    createdDateTime: string;
-  }
-
-  export interface DestinyFireteamFinderLobbyPlayer {
-    playerId: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    referralToken: string;
-
-    state: Globals.DestinyFireteamFinderPlayerReadinessState;
-
-    offerId: string;
-  }
-
-  export interface DestinyFireteamFinderGetPlayerLobbiesResponse {
-    /**
-		All available lobbies that this player has created or is a member of.
-		*/
-    lobbies: FireteamFinder.DestinyFireteamFinderLobbyResponse[];
-
-    /**
-		The number of results requested.
-		*/
-    pageSize: number;
-
-    /**
-		A string token required to get the next page of results. This will be null or empty if there are no more results.
-		*/
-    nextPageToken: string;
-  }
-
-  export interface DestinyFireteamFinderGetPlayerApplicationsResponse {
-    /**
-		All applications that this player has sent.
-		*/
-    applications: FireteamFinder.DestinyFireteamFinderApplication[];
-
-    /**
-		String token to request next page of results.
-		*/
-    nextPageToken: string;
-  }
-
-  export interface DestinyFireteamFinderGetPlayerOffersResponse {
-    /**
-		All offers that this player has recieved.
-		*/
-    offers: FireteamFinder.DestinyFireteamFinderOffer[];
-  }
-
-  export interface DestinyFireteamFinderOffer {
-    offerId: string;
-
-    lobbyId: string;
-
-    revision: number;
-
-    state: Globals.DestinyFireteamFinderOfferState;
-
-    targetId: FireteamFinder.DestinyFireteamFinderPlayerId;
-
-    applicationId: string;
-
-    createdDateTime: string;
-  }
-
-  export interface DestinyFireteamFinderGetCharacterActivityAccessResponse {
-    /**
-		A map of fireteam finder activity graph hashes to visibility and availability states.
-		*/
-    fireteamFinderActivityGraphStates: {
-      [key: number]: FireteamFinder.DestinyFireteamFinderActivityGraphState;
-    };
-  }
-
-  export interface DestinyFireteamFinderActivityGraphState {
-    /**
-		Indicates if this fireteam finder activity graph node is visible for this character.
-		*/
-    isVisible: boolean;
-
-    /**
-		Indicates if this fireteam finder activity graph node is available to select for this character.
-		*/
-    isAvailable: boolean;
-  }
-
-  export interface DestinyFireteamFinderGetLobbyOffersResponse {
-    offers: FireteamFinder.DestinyFireteamFinderOffer[];
-
-    pageToken: string;
-  }
-
-  export interface DestinyFireteamFinderHostLobbyResponse {
-    lobbyId: string;
-
-    listingId: string;
-
-    applicationId: string;
-
-    offerId: string;
-  }
-
-  export interface DestinyFireteamFinderHostLobbyRequest {
-    maxPlayerCount: number;
-
-    onlinePlayersOnly: boolean;
-
-    privacyScope: Globals.DestinyFireteamFinderLobbyPrivacyScope;
-
-    scheduledDateTime: string;
-
-    clanId: string;
-
-    listingValues: FireteamFinder.DestinyFireteamFinderListingValue[];
-
-    activityGraphHash: number;
-
-    activityHash: number;
-  }
-
-  export interface DestinyFireteamFinderJoinLobbyRequest {
-    lobbyId: string;
-
-    offerId: string;
-  }
-
-  export interface DestinyFireteamFinderKickPlayerRequest {
-    targetMembershipType: Globals.BungieMembershipType;
-
-    targetCharacterId: string;
-  }
-
-  export interface DestinyFireteamFinderRespondToApplicationResponse {
-    applicationId: string;
-
-    applicationRevision: number;
-  }
-
-  export interface DestinyFireteamFinderRespondToApplicationRequest {
-    accepted: boolean;
-  }
-
-  export interface DestinyFireteamFinderRespondToAuthenticationResponse {
-    applicationId: string;
-
-    applicationRevision: number;
-
-    offer: FireteamFinder.DestinyFireteamFinderOffer;
-
-    listing: FireteamFinder.DestinyFireteamFinderListing;
-  }
-
-  export interface DestinyFireteamFinderRespondToAuthenticationRequest {
-    confirmed: boolean;
-  }
-
-  export interface DestinyFireteamFinderRespondToOfferResponse {
-    offerId: string;
-
-    revision: number;
-
-    state: Globals.DestinyFireteamFinderOfferState;
-  }
-
-  export interface DestinyFireteamFinderRespondToOfferRequest {
-    accepted: boolean;
-  }
-
-  export interface DestinyFireteamFinderSearchListingsByClanResponse {
-    listings: FireteamFinder.DestinyFireteamFinderListing[];
-
-    pageToken: string;
-  }
-
-  export interface DestinyFireteamFinderSearchListingsByClanRequest {
-    pageSize: number;
-
-    pageToken: string;
-
-    lobbyState: Globals.DestinyFireteamFinderLobbyState;
-  }
-
-  export interface DestinyFireteamFinderSearchListingsByFiltersResponse {
-    listings: FireteamFinder.DestinyFireteamFinderListing[];
-
-    pageToken: string;
-  }
-
-  export interface DestinyFireteamFinderSearchListingsByFiltersRequest {
-    filters: FireteamFinder.DestinyFireteamFinderListingFilter[];
-
-    pageSize: number;
-
-    pageToken: string;
-
-    lobbyState: Globals.DestinyFireteamFinderLobbyState;
-  }
-
-  export interface DestinyFireteamFinderListingFilter {
-    listingValue: FireteamFinder.DestinyFireteamFinderListingValue;
-
-    rangeType: Globals.DestinyFireteamFinderListingFilterRangeType;
-
-    matchType: Globals.DestinyFireteamFinderListingFilterMatchType;
-  }
-
-  export interface DestinyFireteamFinderUpdateLobbySettingsResponse {
-    updatedLobby: FireteamFinder.DestinyFireteamFinderLobbyResponse;
-
-    updatedListing: FireteamFinder.DestinyFireteamFinderListing;
-  }
-
-  export interface DestinyFireteamFinderUpdateLobbySettingsRequest {
-    updatedSettings: FireteamFinder.DestinyFireteamFinderLobbySettings;
   }
 }
 
@@ -21768,6 +22073,194 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "GetMembershipIdMappingFromBungieIdForParentalControls",
+      input,
+      clientState
+    );
+
+  /**
+   * Links the calling account as the guardian of the requested child.
+   * @param childMembershipId The membership Id of the child to link.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static LinkParentalControlGuardian = (
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsLinkGuardianResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/${e(childMembershipId)}/LinkGuardian/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "LinkParentalControlGuardian",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Revokes the parental control guardian status of the calling account.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UnlinkParentalControlGuardian = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsUnlinkGuardianResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/UnlinkGuardian/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "UnlinkParentalControlGuardian",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns a child account in the context of parental controls
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerContextForParentalControls = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsGetPlayerContextResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/User/ParentalControls/Player/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetPlayerContextForParentalControls",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Updates child permissions in the context of parental controls.
+   * @param childMembershipId The membership Id of the child to update permissions for.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UpdateParentalControlPermissionsForChild = (
+    input: ParentalControls.ParentalControlsUpdatePermissionsForChildRequest,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    ParentalControls.ParentalControlsUpdatePermissionsForChildResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/${e(childMembershipId)}/Permissions/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "UpdateParentalControlPermissionsForChild",
+      input,
+      clientState
+    );
+
+  /**
+   * Retrieves the requested child's preferences.
+   * @param childMembershipId The membership Id of the child to get preferences for.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetParentalControlPreferencesForChild = (
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsGetPreferencesForChildResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/User/ParentalControls/${e(childMembershipId)}/Preferences/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetParentalControlPreferencesForChild",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Updates, or creates if they do not exist, preferences for the requested child.
+   * @param childMembershipId The membership Id of the child to update preferences for.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UpdateParentalControlPreferencesForChild = (
+    input: ParentalControls.ParentalControlsUpdatePreferencesForChildRequest,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<
+    ParentalControls.ParentalControlsUpdatePreferencesForChildResponse
+  > =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/${e(childMembershipId)}/Preferences/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "UpdateParentalControlPreferencesForChild",
+      input,
+      clientState
+    );
+
+  /**
+   * Parental controls webhook for Kids Web Services (KWS).
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static ParentalControlKWSWebhook = (
+    input: ParentalControls.ParentalControlsKWSWebhookRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsKWSWebhookResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/KWSWebhook/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "ParentalControlKWSWebhook",
+      input,
+      clientState
+    );
+
+  /**
+   * Retrieves a temporary BungieNet token from BNet for parental controls.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieNetTokenForParentalControls = (
+    input: ParentalControls.ParentalControlsTokenRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsTokenResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/BungieNetToken/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetBungieNetTokenForParentalControls",
+      input,
+      clientState
+    );
+
+  /**
+   * Retrieves a temporary refresh token from BNet for parental controls.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetBungieRefreshTokenForParentalControls = (
+    input: ParentalControls.ParentalControlsTokenRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<ParentalControls.ParentalControlsTokenResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/ParentalControls/BungieRefreshToken/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetBungieRefreshTokenForParentalControls",
       input,
       clientState
     );
@@ -29519,6 +30012,7 @@ class FireteamfinderServiceInternal {
    * @param destinyMembershipType A valid Destiny membership type.
    * @param destinyMembershipId A valid Destiny membership ID.
    * @param destinyCharacterId A valid Destiny character ID.
+   * @param overrideOfflineFilter Optional boolean to bypass the offline-only check, so the client can pull fireteam from the game.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
@@ -29527,6 +30021,7 @@ class FireteamfinderServiceInternal {
     destinyMembershipType: Globals.BungieMembershipType,
     destinyMembershipId: string,
     destinyCharacterId: string,
+    overrideOfflineFilter: boolean,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<
@@ -29536,7 +30031,7 @@ class FireteamfinderServiceInternal {
       `/FireteamFinder/Search/${e(destinyMembershipType)}/${e(
         destinyMembershipId
       )}/${e(destinyCharacterId)}/`,
-      [],
+      [["overrideOfflineFilter", overrideOfflineFilter]],
       optionalQueryAppend,
       "FireteamFinder",
       "SearchListingsByFilters",
@@ -30095,6 +30590,33 @@ class SocialServiceInternal {
       optionalQueryAppend,
       "Social",
       "GetPlatformFriendList",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Sends a request to invite a target player directly to the fireteam.
+   * @param inviterDestinyMembershipType A valid Destiny membership type for the inviter.
+   * @param targetDestinyMembershipType A valid Destiny membership type for the target.
+   * @param targetDestinyMembershipId A valid Destiny membership ID for the target.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static BungieFriendNetworkSessionInvite = (
+    inviterDestinyMembershipType: Globals.BungieMembershipType,
+    targetDestinyMembershipType: Globals.BungieMembershipType,
+    targetDestinyMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<boolean> =>
+    ApiIntermediary.doGetRequest(
+      `/Social/Friends/Invite/${e(inviterDestinyMembershipType)}/${e(
+        targetDestinyMembershipType
+      )}/${e(targetDestinyMembershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "Social",
+      "BungieFriendNetworkSessionInvite",
       undefined,
       clientState
     );

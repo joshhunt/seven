@@ -70,6 +70,26 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
     [props.className]: props.className,
   });
 
+  const handleSubmit = (
+    values: { message: any },
+    { setSubmitting, resetForm }: any
+  ) => {
+    sendMessage(
+      {
+        subject: "",
+        membersToId: [
+          props.recipientsBnetMembershipId,
+          globalState.loggedInUser.user.membershipId,
+        ],
+        body: values.message,
+      },
+      () => {
+        resetForm();
+        setSubmitting(false);
+      }
+    );
+  };
+
   return (
     <Modal
       open={modalIsOpen}
@@ -93,22 +113,7 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
             message: Yup.string(),
           })}
           enableReinitialize
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            sendMessage(
-              {
-                subject: "",
-                membersToId: [
-                  props.recipientsBnetMembershipId,
-                  globalState.loggedInUser.user.membershipId,
-                ],
-                body: values.message,
-              },
-              () => {
-                resetForm();
-                setSubmitting(false);
-              }
-            );
-          }}
+          onSubmit={handleSubmit}
         >
           {(formikProps) => (
             <Form className={styles.sendMessageForm}>
@@ -118,20 +123,15 @@ export const SendMessage: React.FC<SendMessageProps> = (props) => {
                 placeholder={Localizer.Usertools.EnterMessage}
                 className={styles.textArea}
               />
-              <button
-                type="submit"
-                className={styles.textOnly}
+              <Button
+                submit={true}
+                buttonType={"gold"}
+                size={BasicSize.Small}
+                loading={formikProps.isSubmitting}
                 disabled={!(formikProps.isValid && formikProps.dirty)}
               >
-                <Button
-                  buttonType={"gold"}
-                  size={BasicSize.Small}
-                  loading={formikProps.isSubmitting}
-                  disabled={!(formikProps.isValid && formikProps.dirty)}
-                >
-                  {Localizer.Usertools.SubmitMessageButtonText}
-                </Button>
-              </button>
+                {Localizer.Usertools.SubmitMessageButtonText}
+              </Button>
             </Form>
           )}
         </Formik>

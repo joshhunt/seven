@@ -160,7 +160,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
   const loadDestinyMembership = () => {
     const membershipPair = {
       membershipId: isUserViewingSelf
-        ? globalState.loggedInUser.user.membershipId
+        ? globalState.loggedInUser?.user.membershipId
         : membershipId,
       membershipType: isUserViewingSelf
         ? BungieMembershipType.BungieNext
@@ -197,7 +197,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
       setIsUserViewingSelf(
         UserUtils.isAuthenticated(globalState) &&
           destinyMembership.membershipData?.bungieNetUser?.membershipId ===
-            globalState.loggedInUser.user.membershipId
+            globalState.loggedInUser?.user.membershipId
       );
 
       const collectionsParams: PresentationNodeParams = {

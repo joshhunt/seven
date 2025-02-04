@@ -83,7 +83,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
     });
 
     return (
-      <footer className={classes}>
+      <footer id={`main-footer`} className={classes}>
         {this.props.isFixed && (
           <div className={styles.footerTrigger} onClick={() => toggleFooter()}>
             <SafelySetInnerHTML

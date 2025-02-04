@@ -26,7 +26,7 @@ export const EmailVerified: React.FC<EmailVerifiedProps> = (props) => {
   }
 
   const emailVerified =
-    (globalState.loggedInUser.emailStatus & EmailValidationStatus.VALID) ===
+    (globalState.loggedInUser?.emailStatus & EmailValidationStatus.VALID) ===
     EmailValidationStatus.VALID;
 
   if (!emailVerified) {
@@ -60,7 +60,7 @@ export const EmailVerified: React.FC<EmailVerifiedProps> = (props) => {
     <TwoLineItem
       className={classNames(classes)}
       itemTitle={Localizer.Format(registrationLoc.EmailVerified, {
-        email: globalState.loggedInUser.email,
+        email: globalState.loggedInUser?.email,
       })}
       itemSubtitle={subtitle}
       icon={<FiMail />}

@@ -219,7 +219,8 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
         input,
         destinyMembership.selectedMembership.membershipType,
         destinyMembership.selectedMembership.membershipId,
-        destinyMembership?.selectedCharacter?.characterId
+        destinyMembership?.selectedCharacter?.characterId,
+        false
       )
         .then((response) => {
           lobbyStateRequested === DestinyFireteamFinderLobbyState.Active

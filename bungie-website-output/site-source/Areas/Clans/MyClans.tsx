@@ -29,7 +29,7 @@ const MyClans: React.FC<MyClansProps> = (props) => {
   const recoverClan = () => {
     Platform.GroupV2Service.RecoverGroupForFounder(
       BungieMembershipType.BungieNext,
-      globalState.loggedInUser.user.membershipId,
+      globalState.loggedInUser?.user.membershipId,
       GroupType.Clan
     )
       .then((result) => {

@@ -45,7 +45,9 @@ export const FriendsImport = () => {
           credEnum
         );
 
-        if (globalState.loggedInUser.publicCredentialTypes.includes(credEnum)) {
+        if (
+          globalState.loggedInUser?.publicCredentialTypes.includes(credEnum)
+        ) {
           _validPlatformsLinked.push(platformFriendType);
         } else {
           _validPlatformsToLink.push(platformFriendType);

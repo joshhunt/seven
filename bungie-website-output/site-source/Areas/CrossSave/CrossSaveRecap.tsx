@@ -222,7 +222,7 @@ const CrossSaveRecap: React.FC<
                   onAccountLinked={CrossSaveFlowStateDataStore.onAccountLinked}
                   hideAccountInfo={true}
                   linkedCredentialTypes={
-                    globalState.loggedInUser.crossSaveCredentialTypes
+                    globalState.loggedInUser?.crossSaveCredentialTypes
                   }
                 />
               )}

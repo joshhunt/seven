@@ -81,7 +81,7 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
       );
     } else {
       RewardsDataStore.actions.getRewardsList(
-        globalState.loggedInUser.user.membershipId
+        globalState.loggedInUser?.user.membershipId
       );
     }
 

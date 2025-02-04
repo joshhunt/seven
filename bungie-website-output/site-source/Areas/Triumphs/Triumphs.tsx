@@ -177,7 +177,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
   const loadDestinyMembership = () => {
     const membershipPair = {
       membershipId: isUserViewingSelf
-        ? globalState.loggedInUser.user.membershipId
+        ? globalState.loggedInUser?.user.membershipId
         : membershipId,
       membershipType: isUserViewingSelf
         ? BungieMembershipType.BungieNext
@@ -210,7 +210,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
       setIsUserViewingSelf(
         UserUtils.isAuthenticated(globalState) &&
           destinyMembership.membershipData?.bungieNetUser?.membershipId ===
-            globalState.loggedInUser.user.membershipId
+            globalState.loggedInUser?.user.membershipId
       );
 
       const triumphsParams: PresentationNodeParams = {

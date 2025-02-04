@@ -50,11 +50,11 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
      */
     const canViewHistory =
       (props.membershipId &&
-        props.membershipId === globalState.loggedInUser.user.membershipId) ||
-      globalState.loggedInUser.userAcls.includes(
+        props.membershipId === globalState.loggedInUser?.user.membershipId) ||
+      globalState.loggedInUser?.userAcls.includes(
         AclEnum.BNextPrivateUserDataReader
       );
-    const hasPrivateDataReadPermissions = globalState.loggedInUser.userAcls.includes(
+    const hasPrivateDataReadPermissions = globalState.loggedInUser?.userAcls.includes(
       AclEnum.BNextPrivateUserDataReader
     );
 

@@ -318,7 +318,7 @@ export class UserUtils {
   public static loggedInUserEmail(
     gs: GlobalState<"loggedInUser"> | Partial<GlobalState<any>>
   ) {
-    return gs?.loggedInUser ? gs?.loggedInUser.email : null;
+    return gs?.loggedInUser ? gs?.loggedInUser?.email : null;
   }
 
   /** Returns the profile picture path or defaults to tricorn for a bungieFriend */

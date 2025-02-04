@@ -98,9 +98,9 @@ export const PartnerRewards: React.FC = () => {
     if (ConfigUtils.SystemStatus("PartnerOfferClaims")) {
       if (UserUtils.isAuthenticated(globalState)) {
         const canViewHistory =
-          (membershipId && membershipId === loggedInUser.user.membershipId) ||
-          loggedInUser.userAcls.includes(AclEnum.BNextPrivateUserDataReader);
-        const hasPrivateDataReadPermissions = loggedInUser.userAcls.includes(
+          (membershipId && membershipId === loggedInUser?.user.membershipId) ||
+          loggedInUser?.userAcls.includes(AclEnum.BNextPrivateUserDataReader);
+        const hasPrivateDataReadPermissions = loggedInUser?.userAcls.includes(
           AclEnum.BNextPrivateUserDataReader
         );
         // if there isn't a parameter in the url, provide history for the logged in user

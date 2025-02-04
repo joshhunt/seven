@@ -226,15 +226,15 @@ export const IdentitySettings: React.FC<IdentitySettingsProps> = (props) => {
   useEffect(() => {
     if (UserUtils.isAuthenticated(globalStateData)) {
       if (isSelf) {
-        setOnPageUser(globalStateData.loggedInUser.user);
+        setOnPageUser(globalStateData.loggedInUser?.user);
         setBungieName(
           UserUtils.getBungieNameFromBnetGeneralUser(
-            globalStateData.loggedInUser.user
+            globalStateData.loggedInUser?.user
           )
         );
 
         Platform.UserService.GetMembershipDataById(
-          globalStateData.loggedInUser.user.membershipId,
+          globalStateData.loggedInUser?.user.membershipId,
           BungieMembershipType.BungieNext
         )
           .then((data) => {

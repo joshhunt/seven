@@ -134,5 +134,6 @@ export const SystemNames = {
   ParentalControlUI: "ParentalControlUI",
   FireteamFinderNotification: "FireteamFinderNotification",
   FeatUseFunctionalAuthInternal: "FeatUseFunctionalAuthInternal",
-  RestrictAuthToPlatformMethods: "RestrictAuthToPlatformMethods",
+  FeatureParentalControls: "FeatureParentalControls",
+  FeatureMultiFranchiseAuthUpdate: "FeatureMultiFranchiseAuthUpdate",
 } as const;

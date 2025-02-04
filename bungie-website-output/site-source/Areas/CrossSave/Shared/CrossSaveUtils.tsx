@@ -266,7 +266,7 @@ export class CrossSaveUtils {
       mt,
       authStatuses[mtFixed],
       flowState.validation.profileSpecificErrors[mtFixed],
-      loggedInUser.crossSaveCredentialTypes
+      loggedInUser?.crossSaveCredentialTypes
     );
   }
 
@@ -285,7 +285,7 @@ export class CrossSaveUtils {
 
     // Note that this is looking at credential types, so Stadia is 16 not 5
     // For auth purposes, Stadia is always considered authorized
-    const crossSaveCredentialTypes = loggedInUser.crossSaveCredentialTypes.filter(
+    const crossSaveCredentialTypes = loggedInUser?.crossSaveCredentialTypes.filter(
       (ct) =>
         !EnumUtils.looseEquals(
           BungieCredentialType[ct],
@@ -307,7 +307,7 @@ export class CrossSaveUtils {
           mt,
           authStatuses[mtFixed],
           flowState.validation.profileSpecificErrors[mtFixed],
-          loggedInUser.crossSaveCredentialTypes
+          loggedInUser?.crossSaveCredentialTypes
         );
 
         console.log(mtFixed, statuss);

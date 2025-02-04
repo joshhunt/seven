@@ -31,7 +31,7 @@ export const BlockButton: React.FC<BlockButtonProps> = (props) => {
 
   const getBlockedStatus = () => {
     Platform.IgnoreService.ManageIgnoresForUser(
-      globalState.loggedInUser.user.membershipId
+      globalState.loggedInUser?.user.membershipId
     )
       .then((result) => {
         if (result.find((user) => user.membershipId === props.membershipId)) {

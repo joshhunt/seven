@@ -63,7 +63,7 @@ export const CrossSaveAccountLink: React.FC<ICrossSaveAccountLinkProps> = (
       flowState
     ) &&
     pairableMembershipTypes.length > 1 &&
-    globalState.loggedInUser.crossSaveCredentialTypes.length > 1;
+    globalState.loggedInUser?.crossSaveCredentialTypes.length > 1;
 
   return (
     <div className={styles.accountPair}>

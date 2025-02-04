@@ -71,7 +71,7 @@ export const LanguageAndRegion: React.FC<LanguageAndRegionProps> = (props) => {
       newLocaleInherit !== inherit
     ) {
       const request: Contract.UserEditRequest = {
-        membershipId: loggedInUser.user.membershipId,
+        membershipId: loggedInUser?.user.membershipId,
         displayName: null,
         about: null,
         emailAddress: null,

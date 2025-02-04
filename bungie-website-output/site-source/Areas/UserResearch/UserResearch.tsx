@@ -159,7 +159,7 @@ class UserResearch extends React.Component<
     const canTravelLabel =
       Localizer.Userresearch.ICanProvideMyOwnTransportation;
 
-    const usersEmail = this.props.globalState.loggedInUser.email;
+    const usersEmail = this.props.globalState.loggedInUser?.email;
 
     const changeEmailSettingsLink = RouteHelper.Settings({
       membershipId: this.props.globalState.loggedInUser?.user?.membershipId,

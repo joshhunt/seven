@@ -129,9 +129,9 @@ class Reveal extends React.Component<Props, IRevealState> {
 
     const userAlreadySignedUpUpdates =
       isLoggedIn &&
-      this.props.globalState.loggedInUser.emailStatus ===
+      this.props.globalState.loggedInUser?.emailStatus ===
         EmailValidationStatus.VALID &&
-      (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
+      (parseInt(this.props.globalState.loggedInUser?.emailUsage, 10) &
         this.aggregateEmailSetting) !==
         0;
 
@@ -142,9 +142,9 @@ class Reveal extends React.Component<Props, IRevealState> {
     const showEmailSettingsButton =
       !isLoggedIn ||
       (isLoggedIn &&
-        this.props.globalState.loggedInUser.emailStatus ===
+        this.props.globalState.loggedInUser?.emailStatus ===
           EmailValidationStatus.VALID &&
-        (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
+        (parseInt(this.props.globalState.loggedInUser?.emailUsage, 10) &
           this.aggregateEmailSetting) ===
           0);
 
@@ -264,7 +264,7 @@ class Reveal extends React.Component<Props, IRevealState> {
           if (
             temporaryGlobalState.loggedInUser?.emailStatus ===
               EmailValidationStatus.VALID &&
-            (parseInt(this.props.globalState.loggedInUser.emailUsage, 10) &
+            (parseInt(this.props.globalState.loggedInUser?.emailUsage, 10) &
               this.aggregateEmailSetting) ===
               0
           ) {
@@ -285,7 +285,7 @@ class Reveal extends React.Component<Props, IRevealState> {
     const addedOptIns = this.aggregateEmailSetting.toString();
 
     const input: Contract.UserEditRequest = {
-      membershipId: this.props.globalState.loggedInUser.user.membershipId,
+      membershipId: this.props.globalState.loggedInUser?.user.membershipId,
       addedOptIns: addedOptIns,
       removedOptIns: null,
       displayName: null,

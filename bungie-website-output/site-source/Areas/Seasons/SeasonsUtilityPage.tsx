@@ -25,7 +25,6 @@ import seasonItemModalStyles from "./Progress/SeasonItemModal.module.scss";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import SeasonCalendar from "./Progress/SeasonCalendar";
 import SeasonHeader from "./Progress/SeasonHeader";
 import SeasonPassRewardProgression from "./Progress/SeasonPassRewardProgression";
 import SeasonsPageNav from "./Progress/SeasonsPageNav";
@@ -319,7 +318,6 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
           )}
         </GridCol>
       </Grid>
-      {isCurrentSeason && <SeasonCalendar seasonHash={seasonHash} />}
     </>
   );
 };

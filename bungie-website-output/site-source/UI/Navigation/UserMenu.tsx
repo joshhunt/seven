@@ -96,10 +96,10 @@ class UserMenuInternal extends React.Component<
     let title = "",
       background = "";
 
-    if (loggedInUser && loggedInUser.user) {
+    if (loggedInUser && loggedInUser?.user) {
       title = UserUtils.getBungieNameFromBnetGeneralUser(loggedInUser?.user)
         ?.bungieGlobalName;
-      background = loggedInUser.user.profilePicturePath;
+      background = loggedInUser?.user.profilePicturePath;
     }
 
     const notificationsIconName =
@@ -317,7 +317,7 @@ class SignInTriggers extends React.Component<{
   ) {
     this.steamModal.current.close();
 
-    const mId = tempGlobalState.loggedInUser.user.membershipId;
+    const mId = tempGlobalState.loggedInUser?.user.membershipId;
 
     window.location.href =
       RouteHelper.ProfileSettings(mId, "Accounts").url + `#list_linkAccounts`;

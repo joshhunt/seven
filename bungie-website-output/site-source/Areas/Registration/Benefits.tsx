@@ -111,7 +111,7 @@ class Benefits extends React.Component<Props, IBenefitsState> {
     const metaSubtitle =
       Localizer.Registrationbenefits.WelcomeToBungieTakeAMinute;
 
-    const avatarPath = this.props.globalState.loggedInUser.user
+    const avatarPath = this.props.globalState.loggedInUser?.user
       .profilePicturePath;
     const displayName = UserUtils.getBungieNameFromBnetGeneralUser(
       this.props?.globalState?.loggedInUser?.user
@@ -125,7 +125,7 @@ class Benefits extends React.Component<Props, IBenefitsState> {
     const resendEmail = Localizer.Registrationbenefits.ResendEmail;
     const emailSettings = Localizer.Registrationbenefits.EmailSettings;
     const emailVerified =
-      (this.props.globalState.loggedInUser.emailStatus &
+      (this.props.globalState.loggedInUser?.emailStatus &
         EmailValidationStatus.VALID) ===
       EmailValidationStatus.VALID;
     const content = this.state.contentRenderable.properties;
@@ -174,17 +174,17 @@ class Benefits extends React.Component<Props, IBenefitsState> {
           <GridCol cols={12}>
             <SettingsBanners
               emailUsage={parseInt(
-                this.props.globalState.loggedInUser.emailUsage,
+                this.props.globalState.loggedInUser?.emailUsage,
                 10
               )}
               emailVerified={emailVerified}
               membershipId={
-                this.props.globalState.loggedInUser.user.membershipId
+                this.props.globalState.loggedInUser?.user.membershipId
               }
             />
             <RewardsBanner
               membershipId={
-                this.props.globalState.loggedInUser.user.membershipId
+                this.props.globalState.loggedInUser?.user.membershipId
               }
             />
 

@@ -82,7 +82,7 @@ export class CrossSaveVerifyAllAccounts extends React.Component<
         membershipType={membershipType}
         flowState={flowState}
         onAccountLinked={this.props.onAccountLinked}
-        linkedCredentialTypes={loggedInUser.crossSaveCredentialTypes}
+        linkedCredentialTypes={loggedInUser?.crossSaveCredentialTypes}
       />
     ));
 
@@ -97,7 +97,7 @@ export class CrossSaveVerifyAllAccounts extends React.Component<
             membershipType={BungieMembershipType.TigerStadia}
             flowState={flowState}
             onAccountLinked={this.props.onAccountLinked}
-            linkedCredentialTypes={loggedInUser.crossSaveCredentialTypes}
+            linkedCredentialTypes={loggedInUser?.crossSaveCredentialTypes}
             isDeactivateFlow={true}
           />
         )}

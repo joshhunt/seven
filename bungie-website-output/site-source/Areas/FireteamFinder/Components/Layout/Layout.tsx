@@ -71,7 +71,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
 
   const loadDestinyMembership = () => {
     Platform?.UserService?.GetMembershipDataById(
-      globalState.loggedInUser.user.membershipId,
+      globalState.loggedInUser?.user.membershipId,
       BungieMembershipType.BungieNext
     )
       .then((result) => {

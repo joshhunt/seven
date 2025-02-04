@@ -16,7 +16,10 @@ import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React, { useEffect } from "react";
 import Helmet from "react-helmet";
+import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import { PersistGate } from "redux-persist/integration/react";
+import store, { persistor } from "./Global/store/store";
 
 /**
  * The wrapper component for the rest of the application
@@ -35,35 +38,39 @@ export const App: React.FC = () => {
     <React.StrictMode>
       <Router basename={AppBaseUrl}>
         <BasicErrorBoundary>
-          <AppLayout>
-            <Helmet
-              titleTemplate="%s | Bungie.net"
-              defaultTitle={"Bungie.net"}
-            />
-            {coreSettings && (
-              <React.Fragment>
-                <FullPageLoadingBar />
-                <SwitchWithErrors>
-                  <Route exact={true} path="/">
-                    <Home />
-                  </Route>
-                  <Route exact={true} path="/version">
-                    {
-                      /* tslint:disable-next-line: jsx-use-translation-function */
-                      <span>Build Version: {BuildVersion}</span>
-                    }
-                  </Route>
-                  {RouteDefs.AllAreaRoutes}
-                  <Route path={"/:locale/:slug?"}>
-                    <React.Suspense fallback={<LoadingFallback />}>
-                      <ProceduralMarketingPageFallback />
-                    </React.Suspense>
-                  </Route>
-                </SwitchWithErrors>
-              </React.Fragment>
-            )}
-          </AppLayout>
-          <GlobalElements />
+          <Provider store={store}>
+            <PersistGate persistor={persistor}>
+              <AppLayout>
+                <Helmet
+                  titleTemplate="%s | Bungie.net"
+                  defaultTitle={"Bungie.net"}
+                />
+                {coreSettings && (
+                  <React.Fragment>
+                    <FullPageLoadingBar />
+                    <SwitchWithErrors>
+                      <Route exact={true} path="/">
+                        <Home />
+                      </Route>
+                      <Route exact={true} path="/version">
+                        {
+                          /* tslint:disable-next-line: jsx-use-translation-function */
+                          <span>Build Version: {BuildVersion}</span>
+                        }
+                      </Route>
+                      {RouteDefs.AllAreaRoutes}
+                      <Route path={"/:locale/:slug?"}>
+                        <React.Suspense fallback={<LoadingFallback />}>
+                          <ProceduralMarketingPageFallback />
+                        </React.Suspense>
+                      </Route>
+                    </SwitchWithErrors>
+                  </React.Fragment>
+                )}
+              </AppLayout>
+              <GlobalElements />
+            </PersistGate>
+          </Provider>
         </BasicErrorBoundary>
       </Router>
     </React.StrictMode>

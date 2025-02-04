@@ -119,7 +119,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
       .catch((e) => Modal.error(e));
   };
 
-  const showResendVerificatiomToast = () => {
+  const showResendVerificationToast = () => {
     Toast.show(Localizer.emails.ResendingVerificationContent, {
       position: "br",
     });
@@ -129,7 +129,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
     setResendVerificationLoading(true);
     Platform.UserService.RevalidateEmail()
       .then((data) => {
-        data && showResendVerificatiomToast();
+        data && showResendVerificationToast();
         setResendVerificationLoading(false);
       })
       .catch(ConvertToPlatformError)

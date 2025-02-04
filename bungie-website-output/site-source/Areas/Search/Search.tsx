@@ -1,8 +1,6 @@
-// Created by atseng, 2022
-// Copyright Bungie, Inc.
-
 import {
   SearchDataStore,
+  SearchTabContentProps,
   SearchType,
 } from "@Areas/Search/DataStores/SearchDataStore";
 import { SearchTab } from "@Areas/Search/Shared/SearchTab";
@@ -14,93 +12,131 @@ import { Img } from "@Helpers";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { ISearchParams } from "@Routes/Definitions/RouteParams";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { Button } from "@UIKit/Controls/Button/Button";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { FormikTextInput } from "@UIKit/Forms/FormikForms/FormikTextInput";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Form, Formik } from "formik";
 import { AiOutlineClose } from "@react-icons/all-files/ai/AiOutlineClose";
 import { useHistory, useParams } from "react-router";
 
 interface SearchProps {}
 
-export interface SearchViewProps {}
+interface SearchFormValues {
+  searchTerm: string;
+}
 
-const Search: React.FC<SearchProps> = (props) => {
+const Search: React.FC<SearchProps> = () => {
   const history = useHistory();
-  //url params way /Search/searchTerm
   const params = useParams<ISearchParams>();
-  //querystring way /Search?query=searchTerm
   const queryString = UrlUtils.QueryToObject(window.location.search);
   const urlQuery = params?.query ?? queryString?.["query"] ?? "";
+  const lastSearchedTerm = useRef<string>("");
 
   const searchLoc = Localizer.Search;
 
-  const [inputString, setInputString] = useState(urlQuery);
   const [activeTab, setActiveTab] = useState<SearchType>("none");
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
+  const [orderedTabs, setOrderedTabs] = useState([]);
   const searchDataStorePayload = useDataStore(SearchDataStore);
 
-  const search = () => {
-    setIsLoading(true);
+  useEffect(() => {
+    const order = ["users", "items", "news", "destinyusers", "clans"];
 
+    // First, get tabs with results
+    const tabsWithResults = order
+      .map((searchType) =>
+        searchDataStorePayload?.searchTabContentProps?.find(
+          (tab) => tab.searchType === searchType
+        )
+      )
+      .filter((tab) => tab?.searchItems?.length > 0);
+
+    // Then get tabs without results
+    const tabsWithoutResults = order
+      .map((searchType) =>
+        searchDataStorePayload?.searchTabContentProps?.find(
+          (tab) => tab.searchType === searchType
+        )
+      )
+      .filter((tab) => tab && !tab.searchItems?.length);
+
+    // Combine them
+    setOrderedTabs([...tabsWithResults, ...tabsWithoutResults]);
+
+    // Set active tab if needed and we have tabs with results
+    if (activeTab === "none" && tabsWithResults.length > 0) {
+      setActiveTab(tabsWithResults[0].searchType);
+    }
+  }, [searchDataStorePayload?.searchTabContentProps]);
+  const performSearch = async (searchTerm: string) => {
+    const trimmedSearchTerm = searchTerm?.trim() || "";
+
+    // If empty search, reset everything and return
+    if (!trimmedSearchTerm) {
+      resetPage();
+      history.push(RouteHelper.Search().url);
+      return;
+    }
+
+    // Rest of validation
+    if (trimmedSearchTerm.length < 3) {
+      return;
+    }
+
+    // Don't search if the term hasn't changed
+    if (trimmedSearchTerm === lastSearchedTerm.current) {
+      return;
+    }
+
+    setIsLoading(true);
     resetPage();
 
-    searchSeparately();
+    try {
+      // Update the last searched term
+      lastSearchedTerm.current = trimmedSearchTerm;
 
-    history.push(RouteHelper.Search({ query: inputString }).url);
-  };
+      await SearchDataStore.actions.setSearchTerm(trimmedSearchTerm);
 
-  const searchSeparately = () => {
-    SearchDataStore.actions.doPagedItemSearch(inputString);
-    SearchDataStore.actions.doPagedUserSearch(inputString);
-    SearchDataStore.actions.doPagedNewsSearch(inputString);
-    SearchDataStore.actions.doPagedClanSearch(inputString);
-    SearchDataStore.actions.doPagedDestinyUserSearch(inputString);
+      await Promise.all([
+        SearchDataStore.actions.doPagedItemSearch(trimmedSearchTerm),
+        SearchDataStore.actions.doPagedUserSearch(trimmedSearchTerm),
+        SearchDataStore.actions.doPagedNewsSearch(trimmedSearchTerm),
+        SearchDataStore.actions.doPagedClanSearch(trimmedSearchTerm),
+        SearchDataStore.actions.doPagedDestinyUserSearch(trimmedSearchTerm),
+      ]);
+
+      // Get final ordered state and find first tab with results
+      const finalState = SearchDataStore.state;
+      const firstTabWithResults = finalState.searchTabContentProps.find(
+        (tab) => tab?.searchItems?.length > 0
+      );
+
+      if (firstTabWithResults) {
+        setActiveTab(firstTabWithResults.searchType);
+      }
+
+      history.push(RouteHelper.Search({ query: trimmedSearchTerm }).url);
+    } catch (error) {
+      console.error("Search failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const resetPage = () => {
     setActiveTab("none");
     SearchDataStore.actions.reset();
+    lastSearchedTerm.current = "";
   };
 
-  useEffect(() => {
-    if (activeTab === "none") {
-      const visibleTabsArray = searchDataStorePayload.visibleTabs
-        ? [...searchDataStorePayload?.visibleTabs]
-        : [];
-
-      const noSearchResultsFound =
-        visibleTabsArray[0] ||
-        (searchDataStorePayload.searchTerm && !visibleTabsArray.length);
-
-      if (noSearchResultsFound) {
-        setIsLoading(false);
-      }
-
-      //set the first tab available as the active tab
-      setActiveTab(visibleTabsArray?.[0] ?? "none");
-    }
-  }, [searchDataStorePayload]);
-
-  useEffect(() => {
-    let searchTimer: number;
-
-    if (inputString.length > 1) {
-      //only submit 500ms after the last key press and only if longer than 1 character
-      searchTimer = setTimeout(() => {
-        search();
-      }, 500);
-    }
-
-    return () => {
-      clearTimeout(searchTimer);
-    };
-  }, [inputString]);
+  const initialValues: SearchFormValues = {
+    searchTerm: urlQuery,
+  };
 
   return (
     <>
@@ -111,102 +147,111 @@ const Search: React.FC<SearchProps> = (props) => {
       <Grid>
         <GridCol cols={12} className={styles.searchContainer}>
           <Formik
-            initialValues={{
-              searchTerm: urlQuery,
-            }}
+            initialValues={initialValues}
             enableReinitialize
-            onSubmit={(values, { setSubmitting }) => {
-              //do nothing here
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                await performSearch(values.searchTerm);
+              } finally {
+                setSubmitting(false);
+              }
             }}
           >
-            {(formikProps) => {
-              if (
-                formikProps?.values?.searchTerm &&
-                formikProps.values.searchTerm !== inputString
-              ) {
-                //this will trigger the submit because the inputString will change
-                setInputString(formikProps.values.searchTerm);
-              }
-
-              return (
-                <Form>
-                  <div
-                    className={classNames(styles.inputBoxItemSearch, {
-                      [styles.focused]: isFocused,
-                    })}
+            {(formikProps) => (
+              <Form onSubmit={formikProps.handleSubmit}>
+                <div
+                  className={classNames(styles.inputBoxItemSearch, {
+                    [styles.focused]: isFocused,
+                  })}
+                >
+                  <FormikTextInput
+                    name="searchTerm"
+                    type="text"
+                    placeholder={searchLoc.SearchLabel}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        formikProps.handleSubmit();
+                      }
+                    }}
+                    aria-label={searchLoc.SearchLabel}
+                  />
+                  <button
+                    type="submit"
+                    onClick={() => {
+                      formikProps.resetForm({
+                        values: { searchTerm: "" },
+                      });
+                      history.push(RouteHelper.Search().url);
+                      resetPage();
+                    }}
+                    className={styles.closeXButton}
+                    aria-label={searchLoc.ClearSearch ?? "Clear search"}
                   >
-                    <FormikTextInput
-                      name={"searchTerm"}
-                      type={"text"}
-                      placeholder={searchLoc.SearchLabel}
-                      onFocus={() => setIsFocused(true)}
-                      onBlur={() => setIsFocused(false)}
-                    />
-                    <AiOutlineClose
-                      className={styles.closeX}
-                      onClick={(e) => {
-                        //clear x button
-                        formikProps.resetForm({
-                          values: {
-                            searchTerm: "",
-                          },
-                        });
-
-                        history.push(RouteHelper.Search().url);
-                        resetPage();
-                      }}
-                    />
-                  </div>
-                </Form>
-              );
-            }}
-          </Formik>
-          <div className={styles.tabContainer}>
-            {searchDataStorePayload?.searchTabContentProps.map(
-              (item, index) => {
-                if (searchDataStorePayload.visibleTabs.has(item.searchType)) {
-                  return (
-                    <SearchTab
-                      label={item.tabLabel}
-                      resultNumber={item.searchItems?.length}
-                      hasMore={item.hasMore}
-                      isActive={activeTab === item.searchType}
-                      setActive={() => setActiveTab(item.searchType)}
-                    />
-                  );
-                }
-              }
+                    <AiOutlineClose className={styles.closeX} />
+                  </button>
+                </div>
+                <div className={styles.searchControls}>
+                  <Button
+                    submit={true}
+                    buttonType={"gold"}
+                    className={styles.searchButton}
+                    disabled={
+                      formikProps.isSubmitting || !formikProps.values.searchTerm
+                    }
+                    aria-label={searchLoc.SearchLabel ?? "Search"}
+                  >
+                    {formikProps.isSubmitting
+                      ? "Searching..."
+                      : searchLoc.SearchLabel ?? "Search"}
+                  </Button>
+                </div>
+              </Form>
             )}
+          </Formik>
+
+          <div className={styles.tabContainer}>
+            {orderedTabs.map((item, index) => (
+              <SearchTab
+                key={`${item.searchType}-${index}`}
+                label={item.tabLabel}
+                resultNumber={item.searchItems?.length}
+                hasMore={item.hasMore}
+                isActive={activeTab === item.searchType}
+                setActive={() => setActiveTab(item.searchType)}
+              />
+            ))}
           </div>
+
           <div className={styles.results}>
             <SpinnerContainer loading={isLoading}>
-              {searchDataStorePayload?.searchTabContentProps?.map(
-                (item, index) => {
-                  if (
-                    searchDataStorePayload.visibleTabs.has(item.searchType) &&
-                    item.searchType === activeTab
-                  ) {
-                    return (
-                      <SearchTabContent
-                        tabLabel={item.tabLabel}
-                        key={index}
-                        searchItems={item.searchItems}
-                        searchType={item.searchType}
-                        page={item.page}
-                        hasMore={item.hasMore}
-                        nextPageFunction={() => item.nextPageFunction()}
-                      />
-                    );
-                  }
-                }
-              )}
+              {(() => {
+                const activeItem = searchDataStorePayload?.searchTabContentProps?.find(
+                  (item) => item.searchType === activeTab
+                );
+                if (!activeItem) return null;
 
-              {searchDataStorePayload?.searchTerm?.length > 1 &&
-                searchDataStorePayload?.visibleTabs?.has("none") && (
-                  <div className={styles.empty}>
-                    {searchLoc.SearchNoResults}
+                return (
+                  <div key={`${activeItem.searchType}-content`}>
+                    {activeItem.searchItems?.length > 0 ? (
+                      <SearchTabContent
+                        tabLabel={activeItem.tabLabel}
+                        searchItems={activeItem.searchItems}
+                        searchType={activeItem.searchType}
+                        page={activeItem.page}
+                        hasMore={activeItem.hasMore}
+                        nextPageFunction={() => activeItem.nextPageFunction()}
+                      />
+                    ) : (
+                      <div className={styles.empty} role="alert">
+                        {searchLoc.NoResults}
+                      </div>
+                    )}
                   </div>
-                )}
+                );
+              })()}
             </SpinnerContainer>
           </div>
         </GridCol>

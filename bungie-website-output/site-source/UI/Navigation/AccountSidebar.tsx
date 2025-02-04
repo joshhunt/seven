@@ -277,7 +277,7 @@ export class AccountSidebar extends React.Component<
   private getProfileThemePath() {
     const loggedInUser = this.props.globalState.loggedInUser;
     if (loggedInUser) {
-      return `/img/UserThemes/${loggedInUser.user.profileThemeName}/mobiletheme.jpg`;
+      return `/img/UserThemes/${loggedInUser?.user.profileThemeName}/mobiletheme.jpg`;
     }
 
     return "rgba(0,0,0,0.25)";
@@ -309,7 +309,7 @@ export class AccountSidebar extends React.Component<
           <div
             className={styles.userAvatar}
             style={{
-              backgroundImage: `url(${loggedInUser.user.profilePicturePath})`,
+              backgroundImage: `url(${loggedInUser?.user.profilePicturePath})`,
             }}
           />
           <div className={styles.textContent}>
@@ -341,14 +341,14 @@ export class AccountSidebar extends React.Component<
     const newUserDesc = Localizer.Nav.CheckoutThisPageToSetup;
 
     const hasFirstAccess =
-      this.props.globalState.loggedInUser.user.firstAccess?.length > 0;
+      this.props.globalState.loggedInUser?.user.firstAccess?.length > 0;
 
     if (!hasFirstAccess) {
       return null;
     }
 
     const date = DateTime.fromISO(
-      this.props.globalState.loggedInUser.user.firstAccess
+      this.props.globalState.loggedInUser?.user.firstAccess
     );
     const accountIsNew = DateTime.now().diff(date).as("days") < 15;
 

@@ -1,4 +1,3 @@
-import { SeasonsIndex } from "@Areas/Seasons/SeasonsIndex";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { RouteComponentProps, Route, Redirect } from "react-router-dom";
 import React from "react";
@@ -176,10 +175,6 @@ class SeasonsArea extends React.Component<RouteComponentProps> {
         <Route
           path={RouteDefs.Areas.Seasons.getAction("Events").path}
           component={() => <Redirect to={RouteHelper.Seasons().url} />}
-        />
-        <Route
-          path={RouteDefs.Areas.Seasons.getAction("Index").path}
-          component={SeasonsIndex}
         />
       </SwitchWithErrors>
     );

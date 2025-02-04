@@ -100,9 +100,9 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
 
   if (isLoggedIn) {
     emailValid =
-      globalState.loggedInUser.emailStatus === EmailValidationStatus.VALID;
+      globalState.loggedInUser?.emailStatus === EmailValidationStatus.VALID;
     emailSettingDisabled =
-      (parseInt(globalState.loggedInUser.emailUsage, 10) &
+      (parseInt(globalState.loggedInUser?.emailUsage, 10) &
         aggregateEmailSetting) ===
       0;
     showEmailSettingsButton =
@@ -153,7 +153,7 @@ export const MarketingOptInButton: React.FC<MarketingOptInButtonProps> = (
 
     setSettingsUpdating(true);
 
-    updateEmailSettings(globalState.loggedInUser.user.membershipId, () =>
+    updateEmailSettings(globalState.loggedInUser?.user.membershipId, () =>
       setSettingsUpdating(false)
     );
   };
