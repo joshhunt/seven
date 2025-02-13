@@ -114,7 +114,7 @@ const LightfallNavDropdown: React.FC<ILightfallNavDropdown> = (props) => {
 
   const selected = options?.[selectedOption];
 
-  return (
+  return options?.length > 1 ? (
     <div className={styles.skuDropDown}>
       <p className={styles.selectorTitle}>{title}</p>
       <div className={styles.selectedValue} onClick={toggleShowDropdown}>
@@ -147,7 +147,7 @@ const LightfallNavDropdown: React.FC<ILightfallNavDropdown> = (props) => {
         })}
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default LightfallStickyNav;
