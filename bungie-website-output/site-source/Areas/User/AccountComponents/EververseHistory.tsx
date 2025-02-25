@@ -187,7 +187,9 @@ export const EververseHistory: React.FC<EververseHistoryProps> = (props) => {
             >
               <div
                 className={styles.icon}
-                style={{ backgroundImage: `url(${mem.iconPath})` }}
+                style={{
+                  backgroundImage: `url(${mem.iconPath})`,
+                }}
               />
               {LocalizerUtils.getPlatformNameFromMembershipType(
                 mem.membershipType

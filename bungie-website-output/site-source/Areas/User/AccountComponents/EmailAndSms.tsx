@@ -168,7 +168,11 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
               emailFlags
             );
             setTimeout(() => {
-              trySaveSettings({ ...values, addedOptIns, removedOptIns });
+              trySaveSettings({
+                ...values,
+                addedOptIns,
+                removedOptIns,
+              });
               setSubmitting(false);
             }, 400);
           }}
@@ -185,13 +189,19 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                     >
                       {Localizer.Userpages.CreateViewEmailLabel}
                     </GridCol>
-                    <GridCol cols={10} medium={12}>
+                    <GridCol
+                      cols={10}
+                      medium={12}
+                      className={styles.inputContainer}
+                    >
                       <div className={styles.relContainer}>
                         <FormikTextInput
                           name={"emailAddress"}
                           type={"email"}
                           placeholder={formikProps.values.emailAddress}
-                          classes={{ input: styles.textInput }}
+                          classes={{
+                            input: styles.textInput,
+                          }}
                         />
                         <Icon iconName={"pencil"} iconType={"fa"} />
                       </div>
