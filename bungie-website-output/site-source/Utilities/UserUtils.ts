@@ -2,6 +2,7 @@
 
 import { Localizer } from "@bungie/localization/Localizer";
 import { DetailedError } from "@CustomErrors";
+import { BungieCredentialType } from "@Enum";
 import * as Globals from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
@@ -49,7 +50,6 @@ export enum EmailValidationState {
   Verified,
   Verifying,
 }
-
 export class UserUtils {
   public static readonly emptyBungieNameObject = {
     bungieGlobalName: null,

@@ -21,13 +21,12 @@ import { MenuItem } from "@UI/Navigation/MenuItem";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Icon } from "@UIKit/Controls/Icon";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Anchor } from "./Anchor";
 import LocaleSwitcher from "./LocaleSwitcher";
 import styles from "./UserMenu.module.scss";
@@ -64,6 +63,14 @@ class UserMenuInternal extends React.Component<
     };
   }
 
+  private get totalCounts() {
+    if (!this.state.counts) {
+      return 0;
+    }
+
+    return this.state.counts.notifications + this.state.counts.messages;
+  }
+
   public componentDidMount(): void {
     this.unsubs.push(
       NotificationCountManager.viewModel.observe(this.onNotification)
@@ -72,20 +79,6 @@ class UserMenuInternal extends React.Component<
 
   public componentWillUnmount(): void {
     DataStore.destroyAll(...this.unsubs);
-  }
-
-  private readonly onNotification = (counts: NotificationCounts) => {
-    this.setState({
-      counts,
-    });
-  };
-
-  private get totalCounts() {
-    if (!this.state.counts) {
-      return 0;
-    }
-
-    return this.state.counts.notifications + this.state.counts.messages;
   }
 
   public render() {
@@ -114,7 +107,7 @@ class UserMenuInternal extends React.Component<
 
     return (
       <div className={styles.userAuth}>
-        {!isAuthed && <SignInTriggers globalState={globalState} />}
+        {!isAuthed && <SignInTriggersWithRouter globalState={globalState} />}
 
         <Anchor
           url={RouteHelper.Search()}
@@ -157,6 +150,12 @@ class UserMenuInternal extends React.Component<
     );
   }
 
+  private readonly onNotification = (counts: NotificationCounts) => {
+    this.setState({
+      counts,
+    });
+  };
+
   private onToggleNotifications(e: React.MouseEvent<HTMLAnchorElement>) {
     e.preventDefault();
     this.props.onToggleNotifications();
@@ -171,24 +170,25 @@ export const UserMenu = withGlobalState(
   false
 );
 
-class SignInTriggers extends React.Component<{
+interface ISignInTriggersProps extends RouteComponentProps {
   globalState: GlobalState<"loggedInUser" | "loggedInUserClans">;
-}> {
-  private steamModal: React.RefObject<Modal>;
+}
 
+class SignInTriggers extends React.Component<ISignInTriggersProps> {
   public render() {
-    const globalState = this.props.globalState;
-    const auth = globalState.coreSettings.systems.Authentication;
-    const stadiaSystem = globalState.coreSettings.systems.StadiaIdAuth;
+    const { globalState, history } = this.props;
 
-    const useAltVersion = ConfigUtils.SystemStatus("RegistrationNavVersion2");
+    const auth = globalState.coreSettings.systems.Authentication;
+    const multiAuthEnabled = ConfigUtils.SystemStatus(
+      SystemNames.FeatureMultiFranchiseAuthUpdate
+    );
 
     const linkProps: INavigationTopLink = {
       Enabled: true,
       External: false,
       Id: "sign-in",
       Legacy: NavigationConfigLegacy.Legacy,
-      StringKey: useAltVersion ? "myaccount" : "signin",
+      StringKey: "myaccount",
       SecondaryStringKey: null,
       Url: null,
       NavLinks: null,
@@ -206,11 +206,9 @@ class SignInTriggers extends React.Component<{
           </div>
         )}
 
-        {useAltVersion && (
-          <div className={styles.registrationNavHeader}>
-            {Localizer.Nav.SignIn}
-          </div>
-        )}
+        <div className={styles.registrationNavHeader}>
+          {Localizer.Nav.SignIn}
+        </div>
 
         {ConfigUtils.SystemStatus(SystemNames.PSNAuth) && (
           <AuthTrigger
@@ -221,7 +219,14 @@ class SignInTriggers extends React.Component<{
           </AuthTrigger>
         )}
 
-        {auth && this.showSteamButton()}
+        {ConfigUtils.SystemStatus(SystemNames.SteamIdAuth) && (
+          <AuthTrigger
+            key={BungieCredentialType.SteamId}
+            credential={BungieCredentialType.SteamId}
+          >
+            {Localizer.Registration.networksigninoptionsteam}
+          </AuthTrigger>
+        )}
 
         {ConfigUtils.SystemStatus(SystemNames.XuidAuth) && (
           <AuthTrigger
@@ -250,80 +255,31 @@ class SignInTriggers extends React.Component<{
           </AuthTrigger>
         )}
 
-        {ConfigUtils.SystemStatus(SystemNames.StadiaIdAuth) && (
-          <AuthTrigger
-            key={BungieCredentialType.StadiaId}
-            credential={BungieCredentialType.StadiaId}
-          >
-            <div className={styles.twoLine}>
-              {Localizer.Registration.networksigninoptionstadia}
-              {stadiaSystem && (
-                <span>{Localizer.Registration.stadiaauthleaving}</span>
-              )}
-            </div>
-          </AuthTrigger>
-        )}
-
-        {useAltVersion && (
+        {
           <div className={styles.registrationNavFooter}>
-            <Button
-              onClick={() => {
-                const signInModal = Modal.signIn(() => {
-                  signInModal.current.close();
-                });
-              }}
-              buttonType={"gold"}
-              style={{ width: "100%" }}
-              size={BasicSize.Small}
-            >
-              {Localizer.Nav.JoinUp.toUpperCase()}
-            </Button>
+            {multiAuthEnabled ? (
+              <Button buttonType={"blue"} url={RouteHelper.SignIn()}>
+                {Localizer.Nav.JoinUp.toUpperCase()}{" "}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  const signInModal = Modal.signIn(() => {
+                    signInModal.current.close();
+                  });
+                }}
+                buttonType={"gold"}
+                style={{ width: "100%" }}
+                size={BasicSize.Small}
+              >
+                {Localizer.Nav.JoinUp.toUpperCase()}
+              </Button>
+            )}
           </div>
-        )}
+        }
       </MenuItem>
     );
   }
-
-  private showSteamButton(): React.ReactElement {
-    const steamEnabled = ConfigUtils.SystemStatus("SteamIdAuth");
-
-    if (steamEnabled) {
-      return (
-        <AuthTrigger
-          key={BungieCredentialType.SteamId}
-          credential={BungieCredentialType.SteamId}
-        >
-          {Localizer.Registration.networksigninoptionsteam}
-        </AuthTrigger>
-      );
-    } else {
-      return null;
-    }
-  }
-
-  private showSteamAlert() {
-    this.steamModal = Modal.open(
-      <RequiresAuth
-        onSignIn={(tempGlobalState) => this.gotoAccountLinking(tempGlobalState)}
-      />,
-      {
-        isFrameless: true,
-      }
-    );
-  }
-
-  private gotoAccountLinking(
-    tempGlobalState: GlobalState<"loggedInUser" | "credentialTypes">
-  ) {
-    this.steamModal.current.close();
-
-    const mId = tempGlobalState.loggedInUser?.user.membershipId;
-
-    window.location.href =
-      RouteHelper.ProfileSettings(mId, "Accounts").url + `#list_linkAccounts`;
-  }
-
-  public updateLocalStorage(newValue: boolean, localStorageKey: string) {
-    LocalStorageUtils.setItem(localStorageKey, newValue ? "true" : "false");
-  }
 }
+
+const SignInTriggersWithRouter = withRouter(SignInTriggers);

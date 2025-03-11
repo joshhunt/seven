@@ -158,6 +158,10 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Partners, {
             path: ":membershipId?",
           }),
+        (area) =>
+          new ActionRoute(area, RouteActions.GameCodes, {
+            path: ":membershipId?",
+          }),
       ],
     }),
     Emails: new Area({
@@ -299,6 +303,12 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Index, { path: ":pageName" }),
       ],
     }),
+    //	Marathon: new Area({
+    //		name: AreaNames.Marathon, lazyComponent: createAsyncComponent(() => import(
+    //			"@Areas/Marathon/MarathonArea" /* webpackChunkName: "Marathon" */
+    //			)), routes: [area => new ActionRoute(area, RouteActions.Alpha)]
+    //
+    //	}),
     News: new Area({
       name: AreaNames.News,
       lazyComponent: createAsyncComponent(
@@ -507,6 +517,7 @@ export class RouteDefs {
               new ActionRoute(urlPrefix, RouteActions.IdentitySettings),
             (urlPrefix) =>
               new ActionRoute(urlPrefix, RouteActions.BungieFriends),
+            //urlPrefix => new ActionRoute(urlPrefix, RouteActions.ParentalControls),
             (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.EmailSms),
             (urlPrefix) =>
               new ActionRoute(urlPrefix, RouteActions.Notifications),

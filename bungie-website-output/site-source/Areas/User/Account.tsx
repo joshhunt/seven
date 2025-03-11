@@ -91,7 +91,9 @@ const Account: React.FC = () => {
   const membershipId = UrlUtils.QueryToObject().membershipId;
   const loggedInUserMembershipId =
     globalState?.loggedInUser?.user?.membershipId;
-  const includeParentalControls = ConfigUtils.SystemStatus("ParentalControlUI");
+  //const includeParentalControls = ConfigUtils.SystemStatus(
+  //	"ParentalControlUI"
+  //);
 
   const loggedInUserIsOnPageUser = (mid: string) => {
     if (!loggedInUserMembershipId) {
@@ -130,6 +132,17 @@ const Account: React.FC = () => {
     );
   }, []);
 
+  /*
+   * TODO:
+   * ParentalControls: Maps to the AEM integration of Parental Controls - an external project
+   * ParentalControlsInternal: Maps to the internal integration of Parental Controls
+   *
+   * Naming should be aligned once the feature flag for the internal integration
+   * is removed and the feature is live
+   *
+   *  - @tmorris
+   * */
+
   const actions = {
     Account: area.getAction("index"),
     IdentitySettings: area.getAction("IdentitySettings"),
@@ -141,6 +154,7 @@ const Account: React.FC = () => {
       legacy: true,
       url: Localizer.Account.ParentalControlsUrl,
     } as IMultiSiteLink,
+    //ParentalControlsInternal: area.getAction("ParentalControls"),
     Privacy: area.getAction("Privacy"),
     LanguageRegion: area.getAction("LanguageRegion"),
     BlockedUsers: area.getAction("BlockedUsers"),
@@ -156,6 +170,7 @@ const Account: React.FC = () => {
   const eververseHistoryPath = actions.EververseHistory.resolve();
   const silverBalanceHistoryPath = actions.SilverBalanceHistory.resolve();
   const notificationsPath = actions.Notifications.resolve();
+  //const parentalControlsInternalPath = actions.ParentalControlsInternal.resolve();
   const history = useHistory();
 
   const tabsOnly = StringUtils.equals(
@@ -174,14 +189,6 @@ const Account: React.FC = () => {
       />
     </span>
   );
-
-  const parentalControlsTabData = {
-    tabLabel: Localizer.account.ParentalControls,
-    tabRender: renderAsExternalLink,
-    contentComponent: null as React.ReactNode,
-    tabTo: actions.ParentalControls,
-    pathName: actions.ParentalControls.url,
-  };
 
   const accountTabDetails: TabData[] = [
     {
@@ -207,6 +214,13 @@ const Account: React.FC = () => {
       contentComponent: <BungieFriends />,
       tabTo: actions.BungieFriends.resolve(),
       pathName: actions.BungieFriends.path,
+    },
+    {
+      tabLabel: Localizer.account.ParentalControls,
+      tabRender: renderAsExternalLink,
+      contentComponent: null as React.ReactNode,
+      tabTo: actions.ParentalControls,
+      pathName: actions.ParentalControls.url,
     },
     {
       tabLabel: Localizer.Userpages.EmailAndSmsLabel,
@@ -276,10 +290,6 @@ const Account: React.FC = () => {
       pathName: actions.AppHistory.path,
     },
   ];
-
-  if (includeParentalControls) {
-    accountTabDetails.splice(4, 0, parentalControlsTabData);
-  }
 
   return (
     <SystemDisabledHandler systems={[SystemNames.AccountServices]}>

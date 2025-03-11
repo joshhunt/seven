@@ -19,7 +19,7 @@ import Helmet from "react-helmet";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
-import store, { persistor } from "./Global/store/store";
+import store, { persistor } from "./Global/Redux/store";
 
 /**
  * The wrapper component for the rest of the application

@@ -1,4 +1,5 @@
 export enum RouteActions {
+  Alpha = "Alpha",
   Index = "Index",
   Create = "Create",
   Detail = "Detail",
@@ -101,4 +102,6 @@ export enum RouteActions {
   RegistrationPage = "RegistrationPage",
   Benefits = "Benefits",
   Apps = "Apps",
+  //ParentalControls = "ParentalControls",
+  GameCodes = "GameCodes",
 }

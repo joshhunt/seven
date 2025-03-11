@@ -18,6 +18,7 @@ export enum AreaNames {
   Fireteams = "Fireteams",
   Guide = "Guide",
   Legal = "Legal",
+  Marathon = "Marathon",
   News = "News",
   Newsroom = "Newsroom",
   Pgcr = "Pgcr",

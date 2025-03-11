@@ -17,6 +17,8 @@ import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
 import * as React from "react";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import AuthStepsContainer from "@UI/User/Authentication/AuthStepsContainer";
 
 // Required props
 interface ISignInProps extends GlobalStateComponentProps<"loggedInUser"> {
@@ -55,11 +57,11 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
       this.redirect(this.props.globalState.loggedInUser?.user);
     }
 
-    const params = new URLSearchParams(location.search);
-    const reffererFromQuery = params.get("bru");
+    const params = new URLSearchParams(window.location.search);
+    const referrerFromQuery = params.get("bru");
 
-    if (reffererFromQuery) {
-      this.setState({ referrer: reffererFromQuery || "/" });
+    if (referrerFromQuery) {
+      this.setState({ referrer: referrerFromQuery || "/" });
     }
   }
 
@@ -84,7 +86,14 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
         ? this.props.customLabel
         : Localizer.Registration.SelectYourPlatform;
 
-    return (
+    /* TODO: This is placeholder to allow us the opportunity to test these changes (only ON for int, near, and local). */
+    /* NOTE:
+			This should probably be replaced by another component that captures the
+			larger auth flow and renders the appropriate views at the appropriate time when we are further along?
+			*/
+    return ConfigUtils.SystemStatus("FeatureMultiFranchiseAuthUpdate") ? (
+      <AuthStepsContainer />
+    ) : (
       <Auth
         onSignIn={(tempGlobalState) =>
           this.redirect(tempGlobalState.loggedInUser?.user)
