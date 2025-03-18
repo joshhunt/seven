@@ -125,10 +125,10 @@ export class SeasonPassRewardStep extends React.Component<
 
       //Hunter[0], Titan[1], Warlock[2] is always the order
       //character specific step
-      const characterStep =
+      const premiumCharacterStep =
         premiumRewards.filter((r) => r.acquisitionBehavior)?.length === 3;
 
-      premiumReward = characterStep
+      premiumReward = premiumCharacterStep
         ? premiumRewards[character]
         : premiumRewards.find((r) => r.acquisitionBehavior) ??
           premiumRewards[0];
@@ -166,10 +166,10 @@ export class SeasonPassRewardStep extends React.Component<
       //multiple reward items of the same display style at the same step means that there are character specific rewards
 
       //Hunter[0], Titan[1], Warlock[2] is always the order
-      const characterStep =
-        premiumRewards.filter((r) => r.acquisitionBehavior)?.length === 3;
+      const freeCharacterStep =
+        freeRewards.filter((r) => r.acquisitionBehavior)?.length === 3;
 
-      freeReward = characterStep
+      freeReward = freeCharacterStep
         ? freeRewards[character]
         : freeRewards.find((r) => r.acquisitionBehavior) ?? freeRewards[0];
 
