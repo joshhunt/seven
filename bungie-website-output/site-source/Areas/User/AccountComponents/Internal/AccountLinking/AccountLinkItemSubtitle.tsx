@@ -13,6 +13,7 @@ import styles from "../../AccountLinking.module.scss";
 import { AccountDestinyMembershipDataStore } from "../../DataStores/AccountDestinyMembershipDataStore";
 import { AccountLinkAdminView } from "./AccountLinkAdminView";
 import { AccountLinkingFlags } from "./AccountLinkSection";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface AccountLinkItemSubtitleProps {
   flag: AccountLinkingFlags;
@@ -39,10 +40,6 @@ export const AccountLinkItemSubtitle: React.FC<AccountLinkItemSubtitleProps> = (
     "coresettings",
   ]);
   const destinyMembershipData = useDataStore(AccountDestinyMembershipDataStore);
-  const crossSaveEligible = EnumUtils.hasFlag(
-    flag,
-    AccountLinkingFlags.CrossSaveEligible
-  );
   const isLinked = EnumUtils.hasFlag(flag, AccountLinkingFlags.Linked);
   const isCrossSave = EnumUtils.hasFlag(flag, AccountLinkingFlags.CrossSaved);
   const { membershipIdFromQuery, loggedInUserId, isSelf, isAdmin } = useContext(
@@ -55,22 +52,22 @@ export const AccountLinkItemSubtitle: React.FC<AccountLinkItemSubtitleProps> = (
       )?.isPublic
   );
 
-  const isCrossSavedAndLinked =
-    destinyMembershipData.isCrossSaved && crossSaveEligible && isLinked;
   const adminView = membershipIdFromQuery && isAdmin;
 
-  const crossSavedAndLinkedMessage = isCrossSavedAndLinked
-    ? Localizer.Accountlinking.DisableCrossSaveToUnlink
-    : "";
   const crossSavedAndNotLinkedMessage =
     destinyMembershipData.isCrossSaved && !isLinked
       ? Localizer.Accountlinking.YourBungieAccountHasCross
       : "";
 
+  const loggedInMessageFeatureCheck = ConfigUtils.SystemStatus(
+    "FeatureAccountLinkingUpdate"
+  )
+    ? Localizer.Accountlinking.YouAreLoggedInAcc
+    : Localizer.Accountlinking.YouAreLoggedInWithThis;
   const loggedInCredMessage =
     !!onPageUserLoggedInCred &&
     credentialType === onPageUserLoggedInCred &&
-    Localizer.Accountlinking.YouAreLoggedInWithThis;
+    loggedInMessageFeatureCheck;
 
   return (
     <div className={styles.relativeContainer}>
@@ -80,9 +77,9 @@ export const AccountLinkItemSubtitle: React.FC<AccountLinkItemSubtitleProps> = (
           {Localizer.Accountlinking.LinkAccount}
         </p>
       )}
-      {crossSavedAndLinkedMessage || crossSavedAndNotLinkedMessage ? (
+      {crossSavedAndNotLinkedMessage ? (
         <p className={styles.subtitleMessage}>
-          {crossSavedAndLinkedMessage || crossSavedAndNotLinkedMessage}
+          {crossSavedAndNotLinkedMessage}
         </p>
       ) : null}
       {isLinked && (

@@ -179,9 +179,6 @@ class SignInTriggers extends React.Component<ISignInTriggersProps> {
     const { globalState, history } = this.props;
 
     const auth = globalState.coreSettings.systems.Authentication;
-    const multiAuthEnabled = ConfigUtils.SystemStatus(
-      SystemNames.FeatureMultiFranchiseAuthUpdate
-    );
 
     const linkProps: INavigationTopLink = {
       Enabled: true,
@@ -257,11 +254,7 @@ class SignInTriggers extends React.Component<ISignInTriggersProps> {
 
         {
           <div className={styles.registrationNavFooter}>
-            {multiAuthEnabled ? (
-              <Button buttonType={"blue"} url={RouteHelper.SignIn()}>
-                {Localizer.Nav.JoinUp.toUpperCase()}{" "}
-              </Button>
-            ) : (
+            {
               <Button
                 onClick={() => {
                   const signInModal = Modal.signIn(() => {
@@ -274,7 +267,7 @@ class SignInTriggers extends React.Component<ISignInTriggersProps> {
               >
                 {Localizer.Nav.JoinUp.toUpperCase()}
               </Button>
-            )}
+            }
           </div>
         }
       </MenuItem>

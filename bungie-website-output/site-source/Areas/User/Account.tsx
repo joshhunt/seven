@@ -190,6 +190,14 @@ const Account: React.FC = () => {
     </span>
   );
 
+  //	const parentalControlsTabData = {
+  //		tabLabel: Localizer.account.ParentalControls,
+  //		tabRender: renderAsExternalLink,
+  //		contentComponent: null as React.ReactNode,
+  //		tabTo: actions.ParentalControls,
+  //		pathName: actions.ParentalControls.url
+  //	};
+
   const accountTabDetails: TabData[] = [
     {
       tabLabel: Localizer.account.account,

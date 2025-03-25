@@ -58,47 +58,6 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
     };
   }
 
-  public componentDidMount() {
-    if (!UserUtils.isAuthenticated(this.props.globalState)) {
-      const alternateContentVersionEnabled = ConfigUtils.SystemStatus(
-        "RegistrationUpsellContentVersion2"
-      );
-
-      const contentTag = alternateContentVersionEnabled
-        ? "RegistrationVersion2"
-        : "Registration";
-
-      const queryString = UrlUtils.QueryToObject(window.location.search);
-
-      const platformType = queryString["platform"];
-
-      const bungieCredential = UserUtils.getCredentialTypeFromPlatformString(
-        platformType
-      );
-
-      if (platformType?.length > 0) {
-        this.setState({ platform: bungieCredential });
-      }
-
-      //load the content set
-      Platform.ContentService.GetContentByTagAndType(
-        contentTag,
-        "ContentSet",
-        Localizer.CurrentCultureName,
-        true
-      )
-        .then((response) =>
-          this.setState({
-            contentRenderable: response,
-          })
-        )
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          Modal.error(e);
-        });
-    }
-  }
-
   public componentDidUpdate(prevProps: Props) {
     if (
       UserUtils.getAuthChangeStatus(this.props, prevProps) ===
@@ -116,6 +75,9 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
     );
 
     const isSignedIn = UserUtils.isAuthenticated(this.props.globalState);
+    if (!isSignedIn) {
+      return <Redirect to={RouteHelper.SignIn().url} />;
+    }
 
     if (isSignedIn) {
       if (benefitsEnabled) {
@@ -127,14 +89,6 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
       return null;
     }
 
-    const metaTitle = Localizer.Registrationbenefits.JoinUp;
-    const metaImage = `/7/ca/bungie/bgs/header_registration.png`;
-    const metaSubtitle = Localizer.Registrationbenefits.JoinMissionsOfGuardians;
-
-    const joinUp = Localizer.Registrationbenefits.JoinUp;
-    const joinUpDesc = Localizer.Registrationbenefits.JoinMissionsOfGuardians;
-    const btnJoin = Localizer.Registrationbenefits.JoinBungie;
-
     const pageLoaded = this.state.contentRenderable !== null;
 
     if (!pageLoaded) {
@@ -144,43 +98,7 @@ class RegistrationPage extends React.Component<Props, IRegistrationPageState> {
     //contentset contains everything -> contentset for each section
     const content = this.state.contentRenderable.properties;
 
-    const pageHasContent = content["ContentItems"]?.length > 0;
-
-    return (
-      <React.Fragment>
-        <BungieHelmet
-          title={metaTitle}
-          image={metaImage}
-          description={metaSubtitle}
-        >
-          <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-        </BungieHelmet>
-        <div className={styles.header}>
-          <h2>{joinUp}</h2>
-          <p>{joinUpDesc}</p>
-          <JoinUpButton
-            className={styles.joinButton}
-            targetCredential={this.state.platform}
-            buttonType={"gold"}
-            size={BasicSize.Large}
-            analyticsId={"RegistrationPageJoinButton"}
-          >
-            {btnJoin}
-          </JoinUpButton>
-        </div>
-        <Grid className={styles.bodyContent}>
-          <GridCol cols={12}>
-            {pageHasContent &&
-              content["ContentItems"].map((contentItem: any) => (
-                <RegistrationContentItem
-                  contentItem={contentItem}
-                  key={`${contentItem.contentId}-${Date.UTC}`}
-                />
-              ))}
-          </GridCol>
-        </Grid>
-      </React.Fragment>
-    );
+    return null;
   }
 }
 

@@ -151,7 +151,7 @@ export class DestinyPlatformSelector extends React.Component<
                     ?.bungieGlobalName
                 }${
                   UserUtils.getBungieNameFromUserInfoCard(value)
-                    ?.bungieGlobalCodeWithHashtag
+                    ?.bungieGlobalCodeWithHashtag || ""
                 } : ${Localizer.Platforms[bMembershipTypeString]}`,
                 value: bMembershipTypeString,
               };

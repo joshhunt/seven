@@ -2,7 +2,6 @@
 // Copyright Bungie, Inc.
 
 import {
-  GlobalState,
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
@@ -17,8 +16,6 @@ import { UrlUtils } from "@Utilities/UrlUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
 import * as React from "react";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
-import AuthStepsContainer from "@UI/User/Authentication/AuthStepsContainer";
 
 // Required props
 interface ISignInProps extends GlobalStateComponentProps<"loggedInUser"> {
@@ -86,14 +83,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
         ? this.props.customLabel
         : Localizer.Registration.SelectYourPlatform;
 
-    /* TODO: This is placeholder to allow us the opportunity to test these changes (only ON for int, near, and local). */
-    /* NOTE:
-			This should probably be replaced by another component that captures the
-			larger auth flow and renders the appropriate views at the appropriate time when we are further along?
-			*/
-    return ConfigUtils.SystemStatus("FeatureMultiFranchiseAuthUpdate") ? (
-      <AuthStepsContainer />
-    ) : (
+    return (
       <Auth
         onSignIn={(tempGlobalState) =>
           this.redirect(tempGlobalState.loggedInUser?.user)
@@ -124,7 +114,7 @@ class SignIn extends React.Component<SignInProps, ISignInState> {
     }
 
     /**
-     * Rather than doing a typical redirect usingwindow.location.href here,
+     * Rather than doing a typical redirect using window.location.href here,
      * we will do a replaceState and a reload, thus effectively redirecting
      * but without adding to the history
      */

@@ -137,4 +137,5 @@ export const SystemNames = {
   FeatureParentalControls: "FeatureParentalControls",
   FeatureMultiFranchiseAuthUpdate: "FeatureMultiFranchiseAuthUpdate",
   FeatureModernLinkCredentials: "FeatureModernLinkCredentials",
+  FeatureAccountLinkingUpdate: "FeatureAccountLinkingUpdate",
 } as const;

@@ -158,10 +158,6 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Partners, {
             path: ":membershipId?",
           }),
-        (area) =>
-          new ActionRoute(area, RouteActions.GameCodes, {
-            path: ":membershipId?",
-          }),
       ],
     }),
     Emails: new Area({
