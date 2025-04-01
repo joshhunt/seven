@@ -208,7 +208,13 @@ export const ConfirmationModalInline: React.FC<Omit<Props, "modalRef">> = (
   const ref = React.useRef();
 
   return (
-    <Modal {...rest} ref={ref}>
+    <Modal
+      {...rest}
+      ref={ref}
+      {...(props?.cancelButtonProps?.onClick
+        ? { onClose: () => props.cancelButtonProps.onClick() }
+        : {})}
+    >
       <_ConfirmationModal {...rest} modalRef={ref}>
         {children}
       </_ConfirmationModal>

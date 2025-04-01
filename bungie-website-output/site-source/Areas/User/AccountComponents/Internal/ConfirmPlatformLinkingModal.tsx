@@ -105,7 +105,11 @@ export const ConfirmPlatformLinkingModal: React.FC<ConfirmPlatformLinkingModalPr
       }}
       cancelButtonProps={{
         buttonType: "white",
-        onClick: () => true,
+        onClick: () => {
+          props.onClose();
+
+          return true;
+        },
       }}
     >
       <div>
