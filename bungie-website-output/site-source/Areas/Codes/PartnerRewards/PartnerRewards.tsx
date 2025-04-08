@@ -259,6 +259,7 @@ export const PartnerRewards: React.FC = () => {
                 return (
                   <div key={index}>
                     <TwoLineItem
+                      normalWhiteSpace
                       itemTitle={StringUtils.decodeHtmlEntities(tw.Title)}
                       itemSubtitle={StringUtils.decodeHtmlEntities(
                         tw.Description
@@ -280,6 +281,7 @@ export const PartnerRewards: React.FC = () => {
                 return (
                   <div key={index}>
                     <TwoLineItem
+                      normalWhiteSpace
                       itemTitle={StringUtils.decodeHtmlEntities(
                         po.LocalizedName
                       )}
