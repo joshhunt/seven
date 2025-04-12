@@ -24,9 +24,12 @@ interface SurveyProps {
 
 export const Survey: FC<SurveyProps> = ({ onComplete }) => {
   const dispatch = useAppDispatch();
-  const { validAlphaCredential, isFriendLinkFlow, surveyType } = useAppSelector(
-    (state) => state.registration
-  );
+  const {
+    validAlphaCredential,
+    isFriendLinkFlow,
+    surveyType,
+    cohortId,
+  } = useAppSelector((state) => state.registration);
   const registration = useAppSelector((state) => state.registration);
 
   const params = new URLSearchParams(document.location.search);
@@ -75,7 +78,7 @@ export const Survey: FC<SurveyProps> = ({ onComplete }) => {
           )
         : "",
       p: validAlphaCredential?.credentialDisplayName ?? "",
-      co: params.get("cohort_id") ?? "",
+      co: cohortId ?? params.get("cohort_id") ?? "",
       b: loggedInUser?.user?.membershipId ?? "",
       e: loggedInUser?.email ?? "",
       uq: params.get("code") ?? "",

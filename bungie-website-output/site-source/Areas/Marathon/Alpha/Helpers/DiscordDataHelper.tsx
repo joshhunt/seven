@@ -120,12 +120,9 @@ export class DiscordDataHelper {
     }
 
     // Cannot start with a number, underscore or period
-    if (/^[0-9._]/.test(username)) {
-      return {
-        valid: false,
-        message: "Username cannot start with a number, period, or underscore",
-      };
-    }
+    // if (/^[0-9._]/.test(username)) {
+    // 	return { valid: false, message: "Username cannot start with a number, period, or underscore" };
+    // }
 
     // Cannot have consecutive periods
     if (username.includes("..")) {
@@ -136,12 +133,9 @@ export class DiscordDataHelper {
     }
 
     // Cannot have leading/trailing periods or underscores
-    if (/^[._]|[._]$/.test(username)) {
-      return {
-        valid: false,
-        message: "Username cannot start or end with a period or underscore",
-      };
-    }
+    // if (/^[._]|[._]$/.test(username)) {
+    // 	return { valid: false, message: "Username cannot start or end with a period or underscore" };
+    // }
 
     return { valid: true };
   }
