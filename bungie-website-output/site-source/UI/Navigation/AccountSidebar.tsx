@@ -1,4 +1,5 @@
 import { RouteHelper } from "@Global/Routes/RouteHelper";
+import { Typography } from "plxp-web-ui/components/base";
 import { IconCoin } from "@UI/UIKit/Companion/Coins/IconCoin";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { PermissionsGate } from "@UI/User/PermissionGate";
@@ -15,6 +16,7 @@ import { GlobalState } from "@Global/DataStore/GlobalStateDataStore";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { Icon } from "@UIKit/Controls/Icon";
 import { AclEnum } from "@Enum";
+import { SeasonsDefinitions } from "@Areas/Seasons/SeasonsDefinitions";
 
 interface IAccountSidebarProps {
   /** The global state */
@@ -86,115 +88,159 @@ export class AccountSidebar extends React.Component<
       <div ref={(ref) => (this.wrapperRef = ref)} className={classes}>
         {this.renderUserInfo()}
         {this.renderNewUserLink()}
-
+        {/* Bungie Section */}
+        <Typography sx={{ padding: " 0.5em 1em" }} variant={"caption"}>
+          Bungie
+        </Typography>
+        {/* View Profile */}
+        <Anchor url={RouteHelper.NewProfile()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_profile.png" />
+            }
+            itemTitle={Localizer.Nav.userflyout_viewprofile}
+          />
+        </Anchor>
+        {/* Account Settings */}
+        <Anchor url={RouteHelper.NewSettings()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_settings.png" />
+            }
+            itemTitle={Localizer.Nav.userflyout_settings}
+          />
+        </Anchor>
+        {/* Bungie Friends */}
+        <Anchor url={RouteHelper.BungieFriends()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_friends.png" />
+            }
+            itemTitle={Localizer.Nav.BungieFriends}
+          />
+        </Anchor>
+        {/* Rewards */}
+        <Anchor url={RouteHelper.Rewards()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_rewards.png" />
+            }
+            itemTitle={Localizer.Nav.DigitalRewards}
+          />
+        </Anchor>
+        {/* Redeem Codes */}
+        <Anchor url={RouteHelper.CodeRedemptionReact()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/account_redeem.png" />
+            }
+            itemTitle={Localizer.Nav.userflyout_redeemcodes}
+          />
+        </Anchor>
+        {/* Destiny Section */}
+        <div className={styles.divider} />
+        <Typography sx={{ padding: " 0.5em 1em" }} variant={"caption"}>
+          Destiny
+        </Typography>
+        {/* Cross Save */}
+        {crossSaveEnabled && (
+          <Anchor url={RouteHelper.CrossSave()}>
+            <OneLineItem
+              size={BasicSize.Small}
+              icon={
+                <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_crosssave.png" />
+              }
+              itemTitle={Localizer.Nav.CrossSave}
+            />
+          </Anchor>
+        )}
+        {/* Season Pass Progress */}
         <Anchor url={RouteHelper.SeasonProgress()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_seasons.png" />
+              <IconCoin
+                iconImageUrl={"/img/theme/bungienet/icons/icon_seasons.png"}
+              />
             }
             itemTitle={Localizer.Nav.TopNavSeasonPassProgress}
           />
         </Anchor>
-
+        {/* Clans */}
+        <Anchor url={RouteHelper.MyClan()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_clan.png" />
+            }
+            itemTitle={Localizer.Nav.Clans}
+          />
+        </Anchor>
+        {/* Fireteam Finder */}
+        <Anchor url={RouteHelper.FireteamFinder()}>
+          <OneLineItem
+            size={BasicSize.Small}
+            icon={
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_fireteamfinder.png" />
+            }
+            itemTitle={Localizer.Nav.FireteamFinder}
+          />
+        </Anchor>
+        {/* Triumphs */}
         <Anchor url={RouteHelper.NewTriumphs()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_triumphs_light.png" />
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_triumphs.png" />
             }
             itemTitle={Localizer.Nav.TopNavTriumphs}
           />
         </Anchor>
-
+        {/* Collections */}
         <Anchor url={RouteHelper.NewCollections()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_collections_light.png" />
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_collections.png" />
             }
             itemTitle={Localizer.Nav.TopNavCollections}
           />
         </Anchor>
-
+        {/* Game History */}
         <Anchor url={RouteHelper.GameHistory(null, 254)}>
           <OneLineItem
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_game_history_light.png" />
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_signout.png" />
             }
             itemTitle={Localizer.Nav.TopNavGameHistory}
           />
         </Anchor>
 
         <div className={styles.divider} />
-
-        {crossSaveEnabled && (
-          <Anchor url={RouteHelper.CrossSave()}>
-            <OneLineItem
-              size={BasicSize.Small}
-              icon={
-                <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_cross_save_light.png" />
-              }
-              itemTitle={Localizer.Nav.CrossSave}
-            />
-          </Anchor>
-        )}
-
-        <Anchor url={RouteHelper.Rewards()}>
-          <OneLineItem
-            size={BasicSize.Small}
-            icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_rewards_light.png" />
-            }
-            itemTitle={Localizer.Nav.userflyout_rewards}
-          />
-        </Anchor>
-
-        <Anchor url={RouteHelper.CodeRedemptionReact()}>
-          <OneLineItem
-            size={BasicSize.Small}
-            icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_seventh_column_light.png" />
-            }
-            itemTitle={Localizer.Nav.userflyout_redeemcodes}
-          />
-        </Anchor>
-
-        <div className={styles.divider} />
-
-        <Anchor url={RouteHelper.NewProfile()}>
-          <OneLineItem
-            size={BasicSize.Small}
-            icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_profile_light.png" />
-            }
-            itemTitle={Localizer.Nav.userflyout_viewprofile}
-          />
-        </Anchor>
-
-        <Anchor url={RouteHelper.NewSettings()}>
-          <OneLineItem
-            size={BasicSize.Small}
-            icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_settings_light.png" />
-            }
-            itemTitle={Localizer.Nav.userflyout_settings}
-          />
-        </Anchor>
-
-        <div className={styles.divider} />
-
+        {/* Sign Out */}
         <AuthTrigger isSignOut={true} onClick={this.props.onClickOutside}>
           <OneLineItem
             clickable={true}
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/icons/icon_sign_out_light.png" />
+              <IconCoin iconImageUrl="7/ca/bungie/icons/profile/accountmenu_signout.png" />
             }
             itemTitle={Localizer.Community.signoutheader}
           />
         </AuthTrigger>
+        {/* Admin Section */}
+        <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
+          <div className={styles.divider} />
+          <Typography sx={{ padding: " 0.5em 1em" }} variant={"caption"}>
+            Admin
+          </Typography>
+        </PermissionsGate>
         {/*New Admin Reports*/}
         <PermissionsGate permissions={[AclEnum.BNextForumNinja]}>
           <Anchor url={RouteHelper.Reports()}>

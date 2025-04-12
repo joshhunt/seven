@@ -99,6 +99,7 @@ export enum RouteActions {
   Community = "Community",
   Updates = "Updates",
   Tech = "Tech",
+  Marathon = "Marathon",
   RegistrationPage = "RegistrationPage",
   Benefits = "Benefits",
   Apps = "Apps",

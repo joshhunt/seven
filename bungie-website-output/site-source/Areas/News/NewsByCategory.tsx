@@ -46,6 +46,33 @@ const BasicNewsQuery = (
     .toJSON();
 };
 
+const TaxonomyNewsQuery = (
+  locale: string,
+  articlesPerPage: number,
+  currentPage: number,
+  taxonomy: string
+) => {
+  return ContentStackClient()
+    .ContentType("news_article")
+    .Query()
+    .where("taxonomies.game", taxonomy)
+    .only([
+      "image",
+      "mobile_image",
+      "banner_image",
+      "subtitle",
+      "date",
+      "title",
+      "url",
+    ])
+    .language(locale)
+    .descending("date")
+    .includeCount()
+    .skip((currentPage - 1) * articlesPerPage)
+    .limit(articlesPerPage)
+    .toJSON();
+};
+
 const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const responsive = useDataStore(Responsive);
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
@@ -74,7 +101,23 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   }, []);
 
   useEffect(() => {
-    if (!pageCategory || categoryIsInvalid) {
+    if (pageCategory == "Marathon") {
+      TaxonomyNewsQuery(
+        locale,
+        articlesPerPage,
+        page,
+        pageCategory?.toLowerCase()
+      )
+        .find()
+        .then((response) => {
+          const [entries, count] = response || [];
+          setArticles(entries);
+          setTotal(count);
+        })
+        .catch((error: Error) => {
+          Logger.logToServer(error, RendererLogLevel.Error);
+        });
+    } else if (!pageCategory || categoryIsInvalid) {
       BasicNewsQuery(locale, articlesPerPage, page)
         .find()
         .then((response) => {

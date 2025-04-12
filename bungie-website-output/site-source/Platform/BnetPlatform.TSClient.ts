@@ -1989,6 +1989,349 @@ export declare namespace Contract {
   }
 }
 
+export declare namespace Tokens {
+  export interface MarathonInviteAuthenticateRequest {
+    InviterId: string;
+
+    InviterCohort: string;
+
+    FriendIndex: string;
+  }
+
+  export interface MarathonInviteTokenResponse {
+    InviterId: string;
+
+    InviterCohort: string;
+
+    FriendIndex: string;
+  }
+
+  export interface TokenSupportDetails {
+    tokenId: string;
+
+    code: string;
+
+    claimStateLastUpdated?: string;
+
+    currentUseCount: number;
+
+    dateCreated: string;
+
+    dateProvisioned?: string;
+
+    isUnlimitedUse: boolean;
+
+    isValid: boolean;
+
+    maximumUseCount: number;
+
+    offerKey: string;
+
+    offerHideInHistory: boolean;
+
+    offerDateAdded?: string;
+
+    campaignName: string;
+
+    campaignDateAdded?: string;
+
+    claims: Queries.SearchResultTokenSupportClaimEntry;
+  }
+
+  export interface TokenSupportClaimEntry {
+    membershipId: string;
+
+    membershipType: Globals.BungieMembershipType;
+
+    displayName: string;
+
+    dateClaimed: string;
+  }
+
+  export interface EververseChangeEvent {
+    EventId: string;
+
+    Timestamp: string;
+
+    ItemHash: string;
+
+    ItemDisplayName: string;
+
+    ItemDisplayDescription: string;
+
+    NewQuantity: number;
+
+    PreviousQuantity: number;
+
+    EventClassification: Globals.EververseChangeEventClassification;
+  }
+
+  export interface EververseVendorPurchaseEvent {
+    EventId: string;
+
+    Timestamp: string;
+
+    ItemHash: string;
+
+    PurchasedItemDisplayName: string;
+
+    PurchasedItemDisplayDescription: string;
+
+    PurchasedItemQuantity: number;
+
+    EventClassification: Globals.EververseVendorPurchaseEventClassification;
+
+    PaidCosts: Tokens.EververseVendorPaidCostPair[];
+  }
+
+  export interface EververseVendorPaidCostPair {
+    ItemHash: string;
+
+    ItemDisplayName: string;
+
+    ItemDisplayDescription: string;
+
+    Quantity: number;
+  }
+
+  export interface EververseSilverBalanceResponse {
+    SilverBalance?: number;
+  }
+
+  export interface EververseCashout {
+    CurrentSilverBalance: number;
+
+    BungieGrantedSilver: number;
+
+    PlatformGrantedSilver: number;
+
+    TotalSilverSpent: number;
+
+    CashoutQuantity: number;
+  }
+
+  export interface RAFBondDetailResponse {
+    requestingUser: User.GeneralUser;
+
+    requestingMembershipId: string;
+
+    requestingMembershipType: Globals.BungieMembershipType;
+
+    requestingUserIsVeteran: boolean;
+
+    bonds: Tokens.RAFBondDetails[];
+  }
+
+  /**
+	The external-facing contract for Refer-a-friend information.
+	*/
+  export interface RAFBondDetails {
+    bondedPlayer: User.GeneralUser;
+
+    rafId: string;
+
+    targetDeviceType: Globals.ClientDeviceType;
+
+    bondedPlayerMembershipId?: string;
+
+    bondedPlayerMembershipType?: Globals.BungieMembershipType;
+
+    isVeteran: boolean;
+
+    dateCreated: string;
+
+    bondStatus: Globals.RAFBondState;
+  }
+
+  export interface RAFEligibilityResponse {
+    MembershipId?: string;
+
+    MembershipType?: Globals.BungieMembershipType;
+
+    DisplayName: string;
+
+    VeteranEligibilityStatus: Globals.RAFEligibility;
+
+    NewPlayerEligibilityStatus: Globals.RAFEligibility;
+  }
+
+  export interface RAFVeteranRewardStatusResponse {
+    MembershipId: string;
+
+    MembershipType: Globals.BungieMembershipType;
+
+    RewardsEarned: number;
+
+    RewardsApplied: number;
+  }
+
+  export interface RAFQuestProgressResponse {
+    MembershipId?: string;
+
+    MembershipType?: Globals.BungieMembershipType;
+
+    CurrentStep: Globals.RAFQuestStepsForsaken;
+
+    IsVeteran: boolean;
+  }
+
+  export interface PartnerOfferClaimRequest {
+    PartnerOfferId: string;
+
+    BungieNetMembershipId: string;
+
+    TransactionId: string;
+  }
+
+  export interface PartnerOfferSkuHistoryResponse {
+    SkuIdentifier: string;
+
+    LocalizedName: string;
+
+    LocalizedDescription: string;
+
+    ClaimDate: string;
+
+    AllOffersApplied: boolean;
+
+    TransactionId: string;
+
+    SkuOffers: Tokens.PartnerOfferHistoryResponse[];
+  }
+
+  export interface PartnerOfferHistoryResponse {
+    PartnerOfferKey: string;
+
+    MembershipId?: string;
+
+    MembershipType?: Globals.BungieMembershipType;
+
+    LocalizedName: string;
+
+    LocalizedDescription: string;
+
+    IsConsumable: boolean;
+
+    QuantityApplied: number;
+
+    ApplyDate?: string;
+  }
+
+  export interface PartnerRewardHistoryResponse {
+    PartnerOffers: Tokens.PartnerOfferSkuHistoryResponse[];
+
+    TwitchDrops: Tokens.TwitchDropHistoryResponse[];
+  }
+
+  export interface TwitchDropHistoryResponse {
+    Title: string;
+
+    Description: string;
+
+    CreatedAt?: string;
+
+    ClaimState?: Globals.DropStateEnum;
+  }
+
+  export interface BungieRewardDisplay {
+    UserRewardAvailabilityModel: Tokens.UserRewardAvailabilityModel;
+
+    ObjectiveDisplayProperties: Tokens.RewardDisplayProperties;
+
+    RewardDisplayProperties: Tokens.RewardDisplayProperties;
+  }
+
+  export interface UserRewardAvailabilityModel {
+    AvailabilityModel: Tokens.RewardAvailabilityModel;
+
+    IsAvailableForUser: boolean;
+
+    IsUnlockedForUser: boolean;
+  }
+
+  export interface RewardAvailabilityModel {
+    HasExistingCode: boolean;
+
+    RecordDefinitions: Records.DestinyRecordDefinition[];
+
+    CollectibleDefinitions: Tokens.CollectibleDefinitions[];
+
+    IsOffer: boolean;
+
+    HasOffer: boolean;
+
+    OfferApplied: boolean;
+
+    DecryptedToken: string;
+
+    IsLoyaltyReward: boolean;
+
+    ShopifyEndDate?: string;
+
+    GameEarnByDate: string;
+
+    RedemptionEndDate: string;
+  }
+
+  export interface CollectibleDefinitions {
+    CollectibleDefinition: Collectibles.DestinyCollectibleDefinition;
+
+    DestinyInventoryItemDefinition: Definitions.DestinyInventoryItemDefinition;
+  }
+
+  export interface RewardDisplayProperties {
+    Name: string;
+
+    Description: string;
+
+    ImagePath: string;
+  }
+
+  export interface BungieRewardClaimResponse {
+    TargetRewardId: string;
+
+    TargetDestinyMembershipType: Globals.BungieMembershipType;
+
+    TargetDestinyMembershipId: string;
+
+    IsOffer: boolean;
+
+    IsLoyaltyReward: boolean;
+
+    OwnsOffer: boolean;
+
+    DecryptedToken: string;
+
+    OfferApplied: boolean;
+
+    OfferAsCode: boolean;
+
+    CodeCharges: number;
+
+    RedemptionEndDate: string;
+
+    RedemptionPeriodExpired: boolean;
+
+    ClaimPeriodExpired: boolean;
+
+    Email: string;
+
+    RewardDisplayProperties: Tokens.RewardDisplayProperties;
+  }
+
+  export interface CohortConfigResponse {
+    FeatureFlag: string;
+
+    FriendLinkCount: number;
+
+    FriendCohortToken: string;
+
+    SkipNda?: boolean;
+
+    SurveyType: string;
+  }
+}
+
 export declare namespace Notifications {
   export interface NotificationUpdateRequest {
     settings: Notifications.NotificationUpdateSetting[];
@@ -5451,6 +5794,52 @@ export declare namespace Models {
     requestContinuationToken: string;
   }
 
+  export interface SurveyEncryptedVariables {
+    d: string;
+
+    dn: string;
+
+    ptype: string;
+
+    p: string;
+
+    co: string;
+
+    b: string;
+
+    e: string;
+
+    uq: string;
+
+    fi: string;
+
+    im: string;
+
+    _ts: string;
+  }
+
+  export interface SurveyVariablesRequest {
+    d: string;
+
+    dn: string;
+
+    ptype: string;
+
+    p: string;
+
+    co: string;
+
+    b: string;
+
+    e: string;
+
+    uq: string;
+
+    fi: string;
+
+    im: string;
+  }
+
   export interface CoreSettingsConfiguration {
     environment: string;
 
@@ -6148,321 +6537,6 @@ export declare namespace Forums {
     awaitingApproval: boolean;
 
     forumId?: number;
-  }
-}
-
-export declare namespace Tokens {
-  export interface TokenSupportDetails {
-    tokenId: string;
-
-    code: string;
-
-    claimStateLastUpdated?: string;
-
-    currentUseCount: number;
-
-    dateCreated: string;
-
-    dateProvisioned?: string;
-
-    isUnlimitedUse: boolean;
-
-    isValid: boolean;
-
-    maximumUseCount: number;
-
-    offerKey: string;
-
-    offerHideInHistory: boolean;
-
-    offerDateAdded?: string;
-
-    campaignName: string;
-
-    campaignDateAdded?: string;
-
-    claims: Queries.SearchResultTokenSupportClaimEntry;
-  }
-
-  export interface TokenSupportClaimEntry {
-    membershipId: string;
-
-    membershipType: Globals.BungieMembershipType;
-
-    displayName: string;
-
-    dateClaimed: string;
-  }
-
-  export interface EververseChangeEvent {
-    EventId: string;
-
-    Timestamp: string;
-
-    ItemHash: string;
-
-    ItemDisplayName: string;
-
-    ItemDisplayDescription: string;
-
-    NewQuantity: number;
-
-    PreviousQuantity: number;
-
-    EventClassification: Globals.EververseChangeEventClassification;
-  }
-
-  export interface EververseVendorPurchaseEvent {
-    EventId: string;
-
-    Timestamp: string;
-
-    ItemHash: string;
-
-    PurchasedItemDisplayName: string;
-
-    PurchasedItemDisplayDescription: string;
-
-    PurchasedItemQuantity: number;
-
-    EventClassification: Globals.EververseVendorPurchaseEventClassification;
-
-    PaidCosts: Tokens.EververseVendorPaidCostPair[];
-  }
-
-  export interface EververseVendorPaidCostPair {
-    ItemHash: string;
-
-    ItemDisplayName: string;
-
-    ItemDisplayDescription: string;
-
-    Quantity: number;
-  }
-
-  export interface EververseSilverBalanceResponse {
-    SilverBalance?: number;
-  }
-
-  export interface EververseCashout {
-    CurrentSilverBalance: number;
-
-    BungieGrantedSilver: number;
-
-    PlatformGrantedSilver: number;
-
-    TotalSilverSpent: number;
-
-    CashoutQuantity: number;
-  }
-
-  export interface RAFBondDetailResponse {
-    requestingUser: User.GeneralUser;
-
-    requestingMembershipId: string;
-
-    requestingMembershipType: Globals.BungieMembershipType;
-
-    requestingUserIsVeteran: boolean;
-
-    bonds: Tokens.RAFBondDetails[];
-  }
-
-  /**
-	The external-facing contract for Refer-a-friend information.
-	*/
-  export interface RAFBondDetails {
-    bondedPlayer: User.GeneralUser;
-
-    rafId: string;
-
-    targetDeviceType: Globals.ClientDeviceType;
-
-    bondedPlayerMembershipId?: string;
-
-    bondedPlayerMembershipType?: Globals.BungieMembershipType;
-
-    isVeteran: boolean;
-
-    dateCreated: string;
-
-    bondStatus: Globals.RAFBondState;
-  }
-
-  export interface RAFEligibilityResponse {
-    MembershipId?: string;
-
-    MembershipType?: Globals.BungieMembershipType;
-
-    DisplayName: string;
-
-    VeteranEligibilityStatus: Globals.RAFEligibility;
-
-    NewPlayerEligibilityStatus: Globals.RAFEligibility;
-  }
-
-  export interface RAFVeteranRewardStatusResponse {
-    MembershipId: string;
-
-    MembershipType: Globals.BungieMembershipType;
-
-    RewardsEarned: number;
-
-    RewardsApplied: number;
-  }
-
-  export interface RAFQuestProgressResponse {
-    MembershipId?: string;
-
-    MembershipType?: Globals.BungieMembershipType;
-
-    CurrentStep: Globals.RAFQuestStepsForsaken;
-
-    IsVeteran: boolean;
-  }
-
-  export interface PartnerOfferClaimRequest {
-    PartnerOfferId: string;
-
-    BungieNetMembershipId: string;
-
-    TransactionId: string;
-  }
-
-  export interface PartnerOfferSkuHistoryResponse {
-    SkuIdentifier: string;
-
-    LocalizedName: string;
-
-    LocalizedDescription: string;
-
-    ClaimDate: string;
-
-    AllOffersApplied: boolean;
-
-    TransactionId: string;
-
-    SkuOffers: Tokens.PartnerOfferHistoryResponse[];
-  }
-
-  export interface PartnerOfferHistoryResponse {
-    PartnerOfferKey: string;
-
-    MembershipId?: string;
-
-    MembershipType?: Globals.BungieMembershipType;
-
-    LocalizedName: string;
-
-    LocalizedDescription: string;
-
-    IsConsumable: boolean;
-
-    QuantityApplied: number;
-
-    ApplyDate?: string;
-  }
-
-  export interface PartnerRewardHistoryResponse {
-    PartnerOffers: Tokens.PartnerOfferSkuHistoryResponse[];
-
-    TwitchDrops: Tokens.TwitchDropHistoryResponse[];
-  }
-
-  export interface TwitchDropHistoryResponse {
-    Title: string;
-
-    Description: string;
-
-    CreatedAt?: string;
-
-    ClaimState?: Globals.DropStateEnum;
-  }
-
-  export interface BungieRewardDisplay {
-    UserRewardAvailabilityModel: Tokens.UserRewardAvailabilityModel;
-
-    ObjectiveDisplayProperties: Tokens.RewardDisplayProperties;
-
-    RewardDisplayProperties: Tokens.RewardDisplayProperties;
-  }
-
-  export interface UserRewardAvailabilityModel {
-    AvailabilityModel: Tokens.RewardAvailabilityModel;
-
-    IsAvailableForUser: boolean;
-
-    IsUnlockedForUser: boolean;
-  }
-
-  export interface RewardAvailabilityModel {
-    HasExistingCode: boolean;
-
-    RecordDefinitions: Records.DestinyRecordDefinition[];
-
-    CollectibleDefinitions: Tokens.CollectibleDefinitions[];
-
-    IsOffer: boolean;
-
-    HasOffer: boolean;
-
-    OfferApplied: boolean;
-
-    DecryptedToken: string;
-
-    IsLoyaltyReward: boolean;
-
-    ShopifyEndDate?: string;
-
-    GameEarnByDate: string;
-
-    RedemptionEndDate: string;
-  }
-
-  export interface CollectibleDefinitions {
-    CollectibleDefinition: Collectibles.DestinyCollectibleDefinition;
-
-    DestinyInventoryItemDefinition: Definitions.DestinyInventoryItemDefinition;
-  }
-
-  export interface RewardDisplayProperties {
-    Name: string;
-
-    Description: string;
-
-    ImagePath: string;
-  }
-
-  export interface BungieRewardClaimResponse {
-    TargetRewardId: string;
-
-    TargetDestinyMembershipType: Globals.BungieMembershipType;
-
-    TargetDestinyMembershipId: string;
-
-    IsOffer: boolean;
-
-    IsLoyaltyReward: boolean;
-
-    OwnsOffer: boolean;
-
-    DecryptedToken: string;
-
-    OfferApplied: boolean;
-
-    OfferAsCode: boolean;
-
-    CodeCharges: number;
-
-    RedemptionEndDate: string;
-
-    RedemptionPeriodExpired: boolean;
-
-    ClaimPeriodExpired: boolean;
-
-    Email: string;
-
-    RewardDisplayProperties: Tokens.RewardDisplayProperties;
   }
 }
 
@@ -19562,6 +19636,8 @@ export declare namespace Seasons {
 
     sealPresentationNodeHash: number;
 
+    eventCardCurrencyList: number[];
+
     ticketCurrencyItemHash: number;
 
     ticketVendorHash: number;
@@ -19569,6 +19645,10 @@ export declare namespace Seasons {
     ticketVendorCategoryHash: number;
 
     endTime: string;
+
+    rewardProgressionHash?: number;
+
+    weeklyChallengesPresentationNodeHash?: number;
 
     hash: number;
 
@@ -21011,6 +21091,67 @@ class UserServiceInternal {
       "User",
       "ZendeskHelpAuthenticate",
       undefined,
+      clientState
+    );
+
+  /**
+   * Generates and returns a URL for creating a Marathon friend invite.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static MarathonInviteAuthenticate = (
+    input: Tokens.MarathonInviteAuthenticateRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<string> =>
+    ApiIntermediary.doPostRequest(
+      `/User/MarathonInviteAuthenticate/`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "MarathonInviteAuthenticate",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns an array of valid friend invite URLs for the authenticated user based on their cohort ACL.
+   * @param cohortIdentifier Cohort enum string or token
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetMarathonFriendInviteUrls = (
+    cohortIdentifier: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<string[]> =>
+    ApiIntermediary.doGetRequest(
+      `/User/GetMarathonFriendInviteUrls/${e(cohortIdentifier)}`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "GetMarathonFriendInviteUrls",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Decodes a Marathon invite token and returns invite details.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static DecodeInviteToken = (
+    input: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Tokens.MarathonInviteTokenResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/User/DecodeInviteToken`,
+      [],
+      optionalQueryAppend,
+      "User",
+      "DecodeInviteToken",
+      input,
       clientState
     );
 
@@ -27290,6 +27431,47 @@ class TokensServiceInternal {
       undefined,
       clientState
     );
+
+  /**
+   * Encrypt custom variables for Survey Monkey.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static EncryptSurveyVariables = (
+    input: Models.SurveyVariablesRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Models.SurveyEncryptedVariables> =>
+    ApiIntermediary.doPostRequest(
+      `/Tokens/EncryptSurveyVariables/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "EncryptSurveyVariables",
+      input,
+      clientState
+    );
+
+  /**
+   * Returns the configuration for a cohort based on a JWT.
+   * @param token The JWT identifying the cohort.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetCohortConfig = (
+    token: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Tokens.CohortConfigResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/Tokens/GetCohortConfig/${e(token)}/`,
+      [],
+      optionalQueryAppend,
+      "Tokens",
+      "GetCohortConfig",
+      undefined,
+      clientState
+    );
 }
 
 class Destiny2ServiceInternal {
@@ -30167,6 +30349,27 @@ class CompanionpermissionServiceInternal {
       optionalQueryAppend,
       "CompanionPermission",
       "GetFireteamPermission",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Returns a list of acls on the given membership id. Generally used to for non-bungie.net membership types.
+   * @param membershipType The target membership type to load Acls for in integer form.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetDirectAcls = (
+    membershipType: number,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<string[]> =>
+    ApiIntermediary.doGetRequest(
+      `/CompanionPermission/DirectAcls/${e(membershipType)}/`,
+      [],
+      optionalQueryAppend,
+      "CompanionPermission",
+      "GetDirectAcls",
       undefined,
       clientState
     );

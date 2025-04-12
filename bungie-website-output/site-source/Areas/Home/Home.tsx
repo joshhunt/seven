@@ -1,21 +1,25 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
+import React, { useEffect, useState } from "react";
+import classNames from "classnames";
 import * as Globals from "@Enum";
 import { Logger } from "@Global/Logger";
 import { Platform } from "@Platform";
-import React, { useEffect, useState } from "react";
-import classNames from "classnames";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { Responsive } from "@Boot/Responsive";
+import { UrlUtils } from "@Utilities/UrlUtils";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Localizer } from "@bungie/localization";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import {
-  CalloutSection,
-  Navigation,
-  SlimFooter,
-  ClipPathWrapper,
-} from "./Components";
+  BnetStackFile,
+  BnetStackLink,
+} from "../../Generated/contentstack-types";
+import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
+import { CalloutSection, SlimFooter, ClipPathWrapper } from "./Components";
 import {
   LinkedInIcon,
   InstagramIcon,
@@ -27,105 +31,71 @@ import {
 
 import styles from "./Home.module.scss";
 
+const contentReferences: string[] = ["sections"];
+
+interface SectionProps {
+  section_title: string;
+  primary_section_image?: BnetStackFile;
+  logo_image?: BnetStackFile;
+  game_rating_information?: {
+    game_rating_image?: BnetStackFile;
+    game_rating_tags?: string;
+    game_rating_url?: string;
+  };
+  buttons?: {
+    button_theme: "destiny-core" | "bungie-core";
+    primary_button: BnetStackLink;
+    secondary_button: BnetStackLink;
+  };
+  background_images?: {
+    desktop_image: BnetStackFile;
+    mobile_image: BnetStackFile;
+  };
+}
+
+interface SectionsProps {
+  sections: { section: SectionProps }[];
+}
+
 const Home = () => {
+  const [{ sections }, setData] = useState<SectionsProps>({ sections: [] });
+  const { mobile } = useDataStore(Responsive);
+
+  const setBgImage = (backgroundImages: {
+    desktop_image: BnetStackFile;
+    mobile_image: BnetStackFile;
+  }): string => {
+    if (backgroundImages?.desktop_image || backgroundImages?.mobile_image) {
+      const bgImage = UrlUtils.addQueryParam(
+        mobile
+          ? backgroundImages?.mobile_image?.url ??
+              backgroundImages?.desktop_image?.url
+          : backgroundImages?.desktop_image?.url,
+        "format",
+        "webp"
+      );
+
+      return bgImage;
+    }
+
+    return null;
+  };
+
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("landing_page")
+      .Entry("blt25066f013983835b")
+      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .includeReference(contentReferences)
+      .toJSON()
+      .fetch()
+      .then(setData);
+  }, []);
+
   const navLoc = Localizer.Nav;
   const communityLoc = Localizer.Community;
-  const [isTopOfPage, setIsTopOfPage] = useState(true);
-
-  /* Detect if user has scrolled from top */
-  useEffect(() => {
-    const getSetScrollPos = () => {
-      if (window?.scrollY > 0) {
-        setIsTopOfPage(false);
-      } else {
-        setIsTopOfPage(true);
-      }
-    };
-    const onScroll = () => window?.requestAnimationFrame(getSetScrollPos);
-
-    window.addEventListener("scroll", onScroll);
-
-    return () => window?.removeEventListener("scroll", onScroll);
-  }, [isTopOfPage]);
-
-  /* Composing data here to keep modification central to one file*/
-  const SECTION_DATA = [
-    {
-      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_01.jpg",
-      logoImage: {
-        alt: navLoc.Destiny,
-        img: "7/ca/destiny/logos/logo_destiny2.png",
-      },
-      buttonData: [
-        {
-          href: RouteHelper.DestinyHome(),
-          label: Localizer.Buyflow.LearnMoreLinkLabel,
-          buttonColor: "blue" as "blue",
-        },
-      ],
-      esrbLogo: {
-        img: communityLoc.DestinyTwoRating,
-        alt: communityLoc.ratedtforteen,
-        href: communityLoc.ratingurl,
-        note: [
-          communityLoc.RatingTBlood,
-          communityLoc.RatingTLanguage,
-          communityLoc.RatingTViolence,
-        ],
-      },
-    },
-    {
-      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_02.jpg",
-      logoImage: {
-        alt: navLoc.Marathon,
-        img: "7/ca/marathon/logos/marathon_logo_splash.svg",
-      },
-      buttonData: [
-        {
-          href:
-            "https://www.marathonthegame.com?CID=bungie_net:web:bnet:bnet_home:bnet_home:bng:2024_05",
-          label: Localizer.Buyflow.LearnMoreLinkLabel,
-          buttonColor: "green" as "green",
-        },
-      ],
-      esrbLogo: {
-        img: communityLoc.RatingPendingLogo,
-        alt: communityLoc.RatingPending,
-        href: communityLoc.RatingGuide,
-      },
-      classes: {
-        logoClass: styles.specialLogo,
-      },
-    },
-    {
-      backgroundImage: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_03.jpg",
-      sectionTitle: navLoc.Careers,
-      logoImage: {
-        alt: "",
-        img: "7/ca/destiny/bgs/c3BsYXNo/c3DsYXNo_p.png",
-      },
-      buttonData: [
-        {
-          href: RouteHelper.Careers("jobs"),
-          label: communityLoc.ExploreJobs,
-          buttonColor: "blue" as "blue",
-        },
-        {
-          href: RouteHelper.Careers(),
-          label: communityLoc.AboutBungie,
-          buttonColor: "grey" as "grey",
-        },
-      ],
-      classes: {
-        logoClass: styles.careersLogo,
-        buttonContainer: styles.careersButtons,
-      },
-    },
-  ];
 
   const FOOTER_DATA = {
-    /* The Instagram and Facebook Font Awesome icons are old - needs to be updated; Using SVGs for now */
-    /* Bungie social accounts are not regionalized */
     socialLinks: [
       {
         href: "https://twitter.com/bungie",
@@ -235,7 +205,7 @@ const Home = () => {
       >
         <body
           className={classNames(
-            SpecialBodyClasses(BodyClasses.NoSpacer | BodyClasses.HideMainNav),
+            SpecialBodyClasses(BodyClasses.NoSpacer),
             styles.specialWrapper
           )}
         />
@@ -246,16 +216,22 @@ const Home = () => {
       </BungieHelmet>
       <h1 className={styles.srOnly}>{navLoc.Bungie}</h1>
       <div className={styles.homeWrapper}>
-        <Navigation isTopOfPage={isTopOfPage} />
-        {SECTION_DATA.map((section, index) => (
-          <ClipPathWrapper
-            clipPathOff={index === 0}
-            backgroundImage={section.backgroundImage}
-            key={section?.logoImage?.img}
-          >
-            <CalloutSection {...section} />
-          </ClipPathWrapper>
-        ))}
+        {sections?.length > 0 &&
+          sections.map(({ section }, index: number) => (
+            <ClipPathWrapper
+              clipPathOff={index === 0}
+              backgroundImage={setBgImage(section?.background_images)}
+              key={section?.logo_image?.url}
+            >
+              <CalloutSection
+                sectionTitle={section.section_title}
+                logoImage={section?.logo_image?.url}
+                primaryImage={section?.primary_section_image?.url}
+                buttonData={section?.buttons}
+                gameRatingData={section?.game_rating_information}
+              />
+            </ClipPathWrapper>
+          ))}
         <ClipPathWrapper
           backgroundColor={"#000000"}
           classes={{ wrapper: styles.footer }}

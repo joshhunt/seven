@@ -158,6 +158,10 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Partners, {
             path: ":membershipId?",
           }),
+        (area) =>
+          new ActionRoute(area, RouteActions.GameCodes, {
+            path: ":membershipId?",
+          }),
       ],
     }),
     Emails: new Area({
@@ -299,12 +303,17 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Index, { path: ":pageName" }),
       ],
     }),
-    //	Marathon: new Area({
-    //		name: AreaNames.Marathon, lazyComponent: createAsyncComponent(() => import(
-    //			"@Areas/Marathon/MarathonArea" /* webpackChunkName: "Marathon" */
-    //			)), routes: [area => new ActionRoute(area, RouteActions.Alpha)]
-    //
-    //	}),
+    Marathon: new Area({
+      name: AreaNames.Marathon,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/Marathon/MarathonArea" /* webpackChunkName: "Marathon" */
+          )
+      ),
+      routes: [(area) => new ActionRoute(area, RouteActions.Alpha)],
+      webmasterSystem: SystemNames.MarathonAlpha,
+    }),
     News: new Area({
       name: AreaNames.News,
       lazyComponent: createAsyncComponent(
@@ -313,6 +322,7 @@ export class RouteDefs {
       routes: [
         (area) => new ActionRoute(area, RouteActions.Destiny),
         (area) => new ActionRoute(area, RouteActions.Bungie),
+        (area) => new ActionRoute(area, RouteActions.Marathon),
         (area) => new ActionRoute(area, RouteActions.Community),
         (area) => new ActionRoute(area, RouteActions.Updates),
         (area) => new ActionRoute(area, RouteActions.Tech),
@@ -513,7 +523,8 @@ export class RouteDefs {
               new ActionRoute(urlPrefix, RouteActions.IdentitySettings),
             (urlPrefix) =>
               new ActionRoute(urlPrefix, RouteActions.BungieFriends),
-            //urlPrefix => new ActionRoute(urlPrefix, RouteActions.ParentalControls),
+            (urlPrefix) =>
+              new ActionRoute(urlPrefix, RouteActions.ParentalControls),
             (urlPrefix) => new ActionRoute(urlPrefix, RouteActions.EmailSms),
             (urlPrefix) =>
               new ActionRoute(urlPrefix, RouteActions.Notifications),

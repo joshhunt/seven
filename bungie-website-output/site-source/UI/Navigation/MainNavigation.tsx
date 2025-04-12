@@ -258,22 +258,13 @@ export const MainNavigation: React.FC<PropsWithChildren<
             setMenuExpanded(!menuExpanded);
           }}
         />
+
         <div className={styles.mainNavigationLinks}>
           <Anchor id={styles.logo} url={RouteHelper.Home} />
           <Respond at={ResponsiveSize.medium} responsive={responsive}>
             {!loggedInUser && <LoggedOutUserButtons />}
           </Respond>
-
           <MenuItems />
-
-          <Button
-            buttonType={"gold"}
-            url={RouteHelper.DestinyBuy()}
-            className={styles.buyButton}
-            size={buyButtonSize}
-          >
-            {Localizer.Nav.BuyDestiny2}
-          </Button>
         </div>
 
         <div className={styles.signIn}>

@@ -64,13 +64,17 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
       hasPrivateDataReadPermissions && props.membershipId
         ? Platform.TokensService.GetUserOfferHistory(props.membershipId)
             .then((response) => {
-              setOffers(response);
+              setOffers(
+                response.filter((o) => o.OfferKey !== "goliath_alpha_access")
+              );
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e))
         : Platform.TokensService.GetCurrentUserOfferHistory()
             .then((response) => {
-              setOffers(response);
+              setOffers(
+                response.filter((o) => o.OfferKey !== "goliath_alpha_access")
+              );
             })
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e));

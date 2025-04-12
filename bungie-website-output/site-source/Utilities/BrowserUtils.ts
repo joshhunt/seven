@@ -28,14 +28,18 @@ export class BrowserUtils {
    * @param href The URL to open
    * @param windowName The window name
    * @param onClosed Triggered on window close
-   * @param features Features for the window
+   * @param width Width of the window (optional)
+   * @param height Height of the window (optional)
+   * @returns The window reference
    */
   public static openWindow(
     href: string,
     windowName: string,
     onClosed: () => void = () => null,
-    features = "height=760, width=790, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no"
+    width = 790,
+    height = 760
   ) {
+    const features = `height=${height}, width=${width}, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no`;
     const child = window.open(href, windowName, features);
 
     const interval = setInterval(() => {
@@ -50,6 +54,8 @@ export class BrowserUtils {
         clearInterval(interval);
       }
     }, 500);
+
+    return child;
   }
 
   /**

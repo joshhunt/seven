@@ -1,6 +1,11 @@
 import { Responsive } from "@Boot/Responsive";
 import { IResponsiveState } from "@bungie/responsive/Responsive";
-import { BungieMembershipType, GroupsForMemberFilter, GroupType } from "@Enum";
+import {
+  AclEnum,
+  BungieMembershipType,
+  GroupsForMemberFilter,
+  GroupType,
+} from "@Enum";
 import {
   BroadcasterObserver,
   DestroyCallback,
@@ -14,6 +19,7 @@ import { SystemNames } from "@Global/SystemNames";
 import { Contract, CrossSave, GroupsV2, Models, Platform } from "@Platform";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalStorageUtils } from "@Utilities/StorageUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { InitializeContentStackClient } from "Platform/ContentStack/ContentStackClient";
@@ -196,6 +202,23 @@ class GlobalStateDataStoreInternal extends DataStore<
         const loggedInUser = await Platform.UserService.GetCurrentUser(
           queryAppend
         );
+        console.log({ loggedInUser });
+
+        //// Get additional permissions from CompanionPermission service
+        //try {
+        //	const directAcls = await Platform.CompanionpermissionService.GetDirectAcls(20);
+        //
+        //	// If we got ACLs and the user already has ACLs, merge them
+        //	if (directAcls && directAcls.length > 0) {
+        //		console.log({directAcls});
+        //
+        //		// Merge the arrays, combining the existing ACLs with the new ones
+        //		loggedInUser.userAcls = [...loggedInUser.userAcls, ...directAcls.map(acl => EnumUtils.getEnumValue(acl, AclEnum))];
+        //	}
+        //} catch (permError) {
+        //	// If this fails, we'll just continue with the existing user data
+        //	console.error('Failed to fetch direct ACLs:', permError);
+        //}
 
         return {
           loggedInUser,

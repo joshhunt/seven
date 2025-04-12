@@ -216,7 +216,7 @@ export const EmailAndSms: React.FC<EmailAndSmsProps> = (props) => {
                       </Button>
                     </GridCol>
                   </div>
-                  <GridCol cols={2} medium={0} />
+                  <GridCol cols={2} large={0} />
                   <GridCol cols={10} medium={12}>
                     {emailVerified ? (
                       <div className={styles.emailSettings}>

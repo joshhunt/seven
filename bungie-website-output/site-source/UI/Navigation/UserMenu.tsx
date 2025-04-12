@@ -107,8 +107,6 @@ class UserMenuInternal extends React.Component<
 
     return (
       <div className={styles.userAuth}>
-        {!isAuthed && <SignInTriggersWithRouter globalState={globalState} />}
-
         <Anchor
           url={RouteHelper.Search()}
           className={classNames(styles.trigger, styles.searchTrigger)}
@@ -116,22 +114,14 @@ class UserMenuInternal extends React.Component<
           <Icon iconName={"search"} iconType={"material"} />
         </Anchor>
 
-        {isAuthed && (
-          <div
-            className={classNames(styles.trigger, styles.userMenuTrigger)}
-            onClick={this.props.onToggleUserMenu}
-          >
-            <div
-              className={styles.userAvatar}
-              title={title}
-              style={{ backgroundImage: `url(${background})` }}
-            />
-          </div>
-        )}
-
-        <LocaleSwitcher classes={{ trigger: styles.trigger }} />
-
-        <BungieFriendsNavIcon />
+        <LocaleSwitcher
+          classes={{
+            trigger: styles.trigger,
+            wrapper: classNames({
+              [styles.localeTrigger]: !isAuthed,
+            }),
+          }}
+        />
 
         {isAuthed && (
           <a
@@ -145,6 +135,21 @@ class UserMenuInternal extends React.Component<
               <span className={styles.countPip}>{this.totalCounts}</span>
             )}
           </a>
+        )}
+
+        {!isAuthed && <SignInTriggersWithRouter globalState={globalState} />}
+
+        {isAuthed && (
+          <div
+            className={classNames(styles.trigger, styles.userMenuTrigger)}
+            onClick={this.props.onToggleUserMenu}
+          >
+            <div
+              className={styles.userAvatar}
+              title={title}
+              style={{ backgroundImage: `url(${background})` }}
+            />
+          </div>
         )}
       </div>
     );
@@ -185,7 +190,7 @@ class SignInTriggers extends React.Component<ISignInTriggersProps> {
       External: false,
       Id: "sign-in",
       Legacy: NavigationConfigLegacy.Legacy,
-      StringKey: "myaccount",
+      StringKey: "signin",
       SecondaryStringKey: null,
       Url: null,
       NavLinks: null,
@@ -202,10 +207,6 @@ class SignInTriggers extends React.Component<ISignInTriggersProps> {
             {Localizer.Nav.SystemDisabledShort}
           </div>
         )}
-
-        <div className={styles.registrationNavHeader}>
-          {Localizer.Nav.SignIn}
-        </div>
 
         {ConfigUtils.SystemStatus(SystemNames.PSNAuth) && (
           <AuthTrigger

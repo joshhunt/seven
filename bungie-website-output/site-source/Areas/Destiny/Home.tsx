@@ -1,6 +1,9 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
+import React, { useEffect, useMemo, useState } from "react";
+import { useHistory } from "react-router";
+import { Button } from "plxp-web-ui/components/base";
 import { Featured } from "@Areas/Home/Featured";
 import { Hero } from "@Areas/Home/Hero";
 import { Recent } from "@Areas/Home/Recent";
@@ -12,12 +15,11 @@ import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Button } from "@UIKit/Controls/Button/Button";
 import { useCSWebpImages } from "@Utilities/CSUtils";
-import React, { useEffect, useMemo, useState } from "react";
-import { useHistory } from "react-router";
+
 import { BnetStackHomePage } from "../../Generated/contentstack-types";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
+import { CallToAction } from "./Components";
 import styles from "./Home.module.scss";
 
 interface HomeProps {}
@@ -67,6 +69,7 @@ const Home: React.FC<HomeProps> = (props) => {
     hero_video,
     subtitle,
     title_as_image,
+    careers_section,
   } = homePageData ?? {};
 
   const images = useCSWebpImages(
@@ -146,10 +149,21 @@ const Home: React.FC<HomeProps> = (props) => {
         <Featured featured={featured} />
         <Recent />
         <div className={styles.buttonContainer}>
-          <Button buttonType={"white"} url={RouteHelper.News()}>
-            {Localizer.news.morenews}
+          <Button
+            variant={"contained"}
+            href={RouteHelper.News().url}
+            size={"medium"}
+          >
+            {Localizer.news.MoreNewsCapitalized}
           </Button>
         </div>
+        <CallToAction
+          heading={careers_section?.heading}
+          sectionLabel={careers_section?.section_label}
+          buttons={careers_section?.buttons}
+          logoImage={careers_section?.logo_image}
+          backgroundImages={careers_section?.background_images}
+        />
       </div>
     </>
   );

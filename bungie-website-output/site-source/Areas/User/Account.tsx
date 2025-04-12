@@ -358,13 +358,29 @@ const Account: React.FC = () => {
               tabsOnly={mobile && tabsOnly}
             >
               {mobile && (
-                <Anchor url={accountIndexPath} className={styles.backButton}>
-                  <Icon
-                    iconType={"material"}
-                    iconName={"keyboard_arrow_left"}
-                  />
-                  {Localizer.Registration.Back}
-                </Anchor>
+                <div className={styles.navigationButtons}>
+                  <Anchor
+                    url="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      history.goBack();
+                    }}
+                    className={styles.historyBackButton}
+                  >
+                    <Icon
+                      iconType={"material"}
+                      iconName={"keyboard_arrow_left"}
+                    />
+                    {Localizer.Registration.Back}
+                  </Anchor>
+                  <Anchor
+                    url={accountIndexPath}
+                    className={styles.settingsButton}
+                  >
+                    <Icon iconType={"material"} iconName={"settings"} />
+                    {Localizer.account.account}
+                  </Anchor>
+                </div>
               )}
               {showBlockBanner && <ImportMutedUsersBanner />}
             </TabSystem>

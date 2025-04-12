@@ -1,95 +1,157 @@
 // Created by larobinson, 2024
 // Copyright Bungie, Inc.
 
-import { BungieMembershipType } from "@Enum";
-import { Contract, GroupsV2 } from "@Platform";
+import { BungieCredentialType } from "@Enum";
+import { Contract } from "@Platform";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface RegistrationState {
   currentStep: number;
-  selectedMembershipType: BungieMembershipType | null;
-  validAlphaMembership: GroupsV2.GroupUserInfoCard | null;
-  memberships: GroupsV2.GroupUserInfoCard[];
-  loginMembershipType: BungieMembershipType | null;
+  pendingRegistrationFlow: boolean;
+  selectedCredentialType: BungieCredentialType | null;
+  validAlphaCredential: Contract.GetCredentialTypesForAccountResponse | null;
+  loginCredentialType: BungieCredentialType | null;
   showConfirmation: boolean;
-  emailVerified: boolean;
   surveyCompleted: boolean;
   ndaSigned: boolean;
   eligible: boolean;
+  isFriendLinkFlow: boolean;
+  surveyType: "Slim" | "FriendSurvey" | "Standard" | "General";
+  cohortId: string;
+  // Friend invitation related fields
+  inviterId: string;
+  inviterCohort: string;
+  friendIndex: number;
+  inviterName: string;
 }
 
 const initialState: RegistrationState = {
   currentStep: 0,
-  selectedMembershipType: null,
-  validAlphaMembership: null,
-  memberships: [],
-  loginMembershipType: null,
+  pendingRegistrationFlow: false,
+  selectedCredentialType: null,
+  validAlphaCredential: null,
+  loginCredentialType: null,
   showConfirmation: false,
-  emailVerified: false,
   surveyCompleted: false,
   ndaSigned: false,
   eligible: true,
+  isFriendLinkFlow: false,
+  surveyType: "General",
+  cohortId: "",
+  // Initialize friend invitation fields
+  inviterId: "",
+  inviterCohort: "",
+  friendIndex: 0,
+  inviterName: "",
 };
 
 export const registrationSlice = createSlice({
   name: "registration",
   initialState,
   reducers: {
-    setStep: (state, action: PayloadAction<number>) => {
+    setStep: (state: { currentStep: any }, action: PayloadAction<number>) => {
       state.currentStep = action.payload;
     },
-    setMembershipType: (
-      state,
-      action: PayloadAction<BungieMembershipType | null>
+    setPendingRegistrationFlow: (
+      state: { pendingRegistrationFlow: any },
+      action: PayloadAction<boolean>
     ) => {
-      state.selectedMembershipType = action.payload;
+      state.pendingRegistrationFlow = action.payload;
     },
-    setValidMembership: (
-      state,
-      action: PayloadAction<GroupsV2.GroupUserInfoCard | null>
+    setSelectedCredentialType: (
+      state: { selectedCredentialType: any },
+      action: PayloadAction<BungieCredentialType | null>
     ) => {
-      state.validAlphaMembership = action.payload;
+      state.selectedCredentialType = action.payload;
     },
-    setMemberships: (
-      state,
-      action: PayloadAction<GroupsV2.GroupUserInfoCard[]>
+    setValidCredential: (
+      state: { validAlphaCredential: any },
+      action: PayloadAction<Contract.GetCredentialTypesForAccountResponse | null>
     ) => {
-      state.memberships = action.payload;
+      state.validAlphaCredential = action.payload;
     },
-    setShowConfirmation: (state, action: PayloadAction<boolean>) => {
+    setShowConfirmation: (
+      state: { showConfirmation: any },
+      action: PayloadAction<boolean>
+    ) => {
       state.showConfirmation = action.payload;
     },
-    setSurveyCompleted: (state, action: PayloadAction<boolean>) => {
+    setSurveyCompleted: (
+      state: { surveyCompleted: any },
+      action: PayloadAction<boolean>
+    ) => {
       state.surveyCompleted = action.payload;
     },
-    resetFlow: (state) => {
-      return initialState;
+    resetFlow: (state: any) => {
+      return {
+        ...initialState,
+        isFriendLinkFlow: state.isFriendLinkFlow,
+        cohortId: state.cohortId,
+        inviterId: state.inviterId,
+        inviterCohort: state.inviterCohort,
+        friendIndex: state.friendIndex,
+      };
     },
-    setEligibility: (state, action: PayloadAction<boolean>) => {
+    setEligibility: (
+      state: { eligible: any },
+      action: PayloadAction<boolean>
+    ) => {
       state.eligible = action.payload;
     },
-    setLoginMembershipType: (
-      state,
-      action: PayloadAction<BungieMembershipType | null>
+    setLoginCredentialType: (
+      state: { loginCredentialType: any },
+      action: PayloadAction<BungieCredentialType | null>
     ) => {
-      state.loginMembershipType = action.payload;
+      state.loginCredentialType = action.payload;
     },
-    setNdaSigned: (state, action: PayloadAction<boolean>) => {
+    setNdaSigned: (
+      state: { ndaSigned: any },
+      action: PayloadAction<boolean>
+    ) => {
       state.ndaSigned = action.payload;
+    },
+    setIsFriendLinkFlow: (state, action: PayloadAction<boolean>) => {
+      state.isFriendLinkFlow = action.payload;
+    },
+    setCohortId: (state, action: PayloadAction<string>) => {
+      state.cohortId = action.payload;
+    },
+    setInviterId: (state, action: PayloadAction<string>) => {
+      state.inviterId = action.payload;
+    },
+    setInviterCohort: (state, action: PayloadAction<string>) => {
+      state.inviterCohort = action.payload;
+    },
+    setFriendIndex: (state, action: PayloadAction<number>) => {
+      state.friendIndex = action.payload;
+    },
+    setInviterName: (state, action: PayloadAction<string>) => {
+      state.inviterName = action.payload;
+    },
+    setSurveyType: (
+      state,
+      action: PayloadAction<"Slim" | "FriendSurvey" | "Standard" | "General">
+    ) => {
+      state.surveyType = action.payload;
     },
   },
 });
 
 export const {
+  setIsFriendLinkFlow,
+  setCohortId,
   setStep,
-  setMembershipType,
-  setValidMembership,
-  setMemberships,
-  setLoginMembershipType,
+  setSelectedCredentialType,
+  setValidCredential,
   setShowConfirmation,
   setSurveyCompleted,
   resetFlow,
   setEligibility,
+  setInviterId,
+  setInviterCohort,
+  setFriendIndex,
+  setInviterName,
+  setSurveyType,
 } = registrationSlice.actions;
 
 export default registrationSlice.reducer;

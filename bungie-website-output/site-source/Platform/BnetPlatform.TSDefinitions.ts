@@ -4923,6 +4923,8 @@ export declare namespace DestinyDefinitions {
 
     sealPresentationNodeHash: number;
 
+    eventCardCurrencyList: number[];
+
     ticketCurrencyItemHash: number;
 
     ticketVendorHash: number;
@@ -4940,6 +4942,10 @@ export declare namespace DestinyDefinitions {
     uiThemeHash: number;
 
     upsellDialogList: number[];
+
+    rewardProgressionHash?: number;
+
+    weeklyChallengesPresentationNodeHash?: number;
 
     boundToRelease: string;
 

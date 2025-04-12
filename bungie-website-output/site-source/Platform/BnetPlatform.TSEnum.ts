@@ -405,6 +405,22 @@ export enum AclEnum {
   BNextMentorColors = 29,
   Tiger2Ban = 30,
   BNextClanCreationBan = 31,
+  MarathonAlpha_General = 32,
+  MarathonAlpha_Creators = 33,
+  MarathonAlpha_SonyGeneral = 34,
+  MarathonAlpha_SonyDevPartners = 35,
+  MarathonAlpha_SonyNetworkTesters = 36,
+  MarathonAlpha_FriendsAndFamily = 37,
+  MarathonAlpha_BungieInternal = 38,
+  MarathonAlpha_MarketingPartners = 39,
+  MarathonAlpha_DevTeamPartners = 40,
+  MarathonAlpha_DevTeam = 41,
+  MarathonAlpha_EarlyAccess = 42,
+  MarathonAlpha_Community = 43,
+  MarathonAlpha_CreatorFriends = 44,
+  MarathonAlpha_PublicFriends = 45,
+  MarathonAlpha_DiaryStudy = 46,
+  MarathonAlpha_CSCreators = 47,
 }
 
 /**
@@ -1338,10 +1354,10 @@ export enum PlatformErrorCodes {
   FireteamFinderApplicationClosedToOfflinePlayers = 3129,
   FireteamFinderUserNotApplicationOwner = 3130,
   FireteamFinderInviteValidationFailed = 3131,
-  FireteamFinderApplicantNotInGame = 3132,
   FireteamFinderOwnerNotInGame = 3132,
   FireteamFinderPlayerAtMaxLobbyLimit = 3133,
   FireteamFinderLobbyTooFarInTheFuture = 3134,
+  FireteamFinderApplicantNotInGame = 3135,
   FireteamFinderResponseUndefined = 3150,
   FireteamFinderResponseMoved = 3151,
   FireteamFinderResponseLoggingIn = 3152,
@@ -4337,6 +4353,10 @@ export enum CompanionPermission {
 		User is a teenager or an adult.
 		*/
   NotAChild = 22,
+  /**
+		User can grant alpha friend invites
+		*/
+  AlphaFriendInvite = 23,
 }
 
 export enum RendererLogLevel {

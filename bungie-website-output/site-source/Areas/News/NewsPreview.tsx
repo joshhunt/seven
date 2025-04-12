@@ -30,15 +30,13 @@ export const NewsPreview: React.FC<NewsPreviewItemProps> = ({
     url,
   } = articleData;
 
-  const images = useCSWebpImages(
-    useMemo(
-      () => ({
-        previewImg: isMobile
-          ? banner_image?.url ?? mobile_image?.url
-          : banner_image?.url ?? image?.url,
-      }),
-      [articleData]
-    )
+  const images = useMemo(
+    () => ({
+      previewImg: isMobile
+        ? mobile_image?.url ?? banner_image?.url
+        : image?.url ?? banner_image?.url,
+    }),
+    [articleData]
   );
 
   const luxonDate = DateTime?.fromISO(date?.toString());

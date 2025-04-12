@@ -19,6 +19,7 @@ export enum NewsCategory {
   community = 3,
   updates = 4,
   tech = 5,
+  marathon = 6,
 }
 
 const News: React.FC = () => {
@@ -28,6 +29,7 @@ const News: React.FC = () => {
   const actions = {
     none: area.getAction("index"),
     destiny: area.getAction("destiny"),
+    marathon: area.getAction("marathon"),
     bungie: area.getAction("bungie"),
     community: area.getAction("community"),
     updates: area.getAction("updates"),
@@ -46,6 +48,11 @@ const News: React.FC = () => {
       label: Localizer.news["TagNews-Destiny"].toUpperCase(),
       to: actions.destiny.resolve(),
       current: actions.destiny.action === UrlUtils.GetUrlAction(location),
+    },
+    {
+      label: Localizer.news["TagNews-Marathon"].toUpperCase(),
+      to: actions.marathon.resolve(),
+      current: actions.marathon.action === UrlUtils.GetUrlAction(location),
     },
     {
       label: Localizer.news["TagNews-Community"].toUpperCase(),
@@ -78,6 +85,7 @@ const News: React.FC = () => {
                 component={NewsByCategory}
               />
               <Route path={actions.destiny.path} component={NewsByCategory} />
+              <Route path={actions.marathon.path} component={NewsByCategory} />
               <Route path={actions.updates.path} component={NewsByCategory} />
               <Route path={actions.community.path} component={NewsByCategory} />
             </AnimatedRouter>

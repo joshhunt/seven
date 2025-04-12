@@ -222,11 +222,6 @@ const MenuLink = (props: ILinkProps) => {
     link.NavLinks &&
     link.NavLinks.length > 0 &&
     responsive.medium;
-
-  if (link.Url === null) {
-    return <span className={styles.menuItem}>{label}</span>;
-  }
-
   const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (isExpandable) {
       return false;
@@ -321,16 +316,26 @@ const MenuLink = (props: ILinkProps) => {
   }
 
   const isLegacy = link.Legacy === NavigationConfigLegacy.Legacy;
+  const WrappingElement: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) =>
+    link.Url ? (
+      <Anchor className={classes} url={url} onClick={onClick} legacy={isLegacy}>
+        {children}
+      </Anchor>
+    ) : (
+      <span className={classes}>{children}</span>
+    );
 
   return (
-    <Anchor className={classes} url={url} onClick={onClick} legacy={isLegacy}>
+    <WrappingElement>
       <div className={styles.linkLabel}>
         {secondaryLabel && (
           <div className={styles.secondaryLabel}>{secondaryLabel}</div>
         )}
         <div>{label}</div>
       </div>
-      {expandIcon}
-    </Anchor>
+      {isExpandable ? expandIcon : null}
+    </WrappingElement>
   );
 };

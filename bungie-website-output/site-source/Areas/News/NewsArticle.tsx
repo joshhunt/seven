@@ -68,8 +68,16 @@ const NewsArticle = () => {
     window.twttr?.widgets?.load();
   });
 
-  const { title, subtitle, date, image, mobile_image, html_content, author } =
-    articleData || {};
+  const {
+    title,
+    subtitle,
+    date,
+    image,
+    banner_image,
+    mobile_image,
+    html_content,
+    author,
+  } = articleData || {};
 
   const codeSectionStart = "<pre";
   const codeSectionEnd = "/pre>";
@@ -142,7 +150,7 @@ const NewsArticle = () => {
           backgroundImage:
             mobile && mobile_image?.url
               ? `url(${mobile_image?.url})`
-              : `url(${image?.url})`,
+              : `url(${banner_image?.url})`,
         }}
       />
       <Grid isTextContainer={true}>

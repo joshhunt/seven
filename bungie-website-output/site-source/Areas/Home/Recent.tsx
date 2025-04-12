@@ -51,17 +51,6 @@ export const Recent = () => {
           cols={8}
           medium={12}
         />
-        <ArticleSection
-          articleList={articles?.slice(4, 6)}
-          cols={6}
-          mobile={12}
-        />
-        <ArticleSection
-          articleList={articles?.slice(6, 8)}
-          className={styles.right}
-          cols={6}
-          mobile={12}
-        />
       </Grid>
     </div>
   );

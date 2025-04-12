@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 
 interface VerifyProps {}
 
-interface IEmailVerfiyRouteQuery {
+interface IEmailVerifyRouteQuery {
   id?: string;
 }
 

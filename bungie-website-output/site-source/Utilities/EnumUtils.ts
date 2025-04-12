@@ -86,4 +86,53 @@ export class EnumUtils {
 
     return val1AsString === val2AsString;
   }
+
+  /**
+   * Returns the enum value given a string or number and the enum type
+   * @param value The string or number to get the enum for (e.g. "TigerXbox", "1", or 1)
+   * @param enumType The enum itself (e.g. BungieMembershipType)
+   * @returns The enum value (e.g. BungieMembershipType.TigerXbox)
+   */
+  public static getEnumValue<T extends object>(
+    value: string | number,
+    enumType: T
+  ): T[keyof T] {
+    // If it's a number or numeric string, try to get the enum by its numeric value
+    if (!isNaN(Number(value))) {
+      const numValue = Number(value);
+      // Check if this numeric value exists in the enum
+      const stringKey = Object.keys(enumType).find(
+        (key) => (enumType as any)[key] === numValue
+      );
+
+      if (stringKey && isNaN(parseInt(stringKey))) {
+        return (enumType as any)[stringKey];
+      }
+    }
+
+    // If it's a string that directly matches an enum key
+    if (
+      typeof value === "string" &&
+      Object.keys(enumType).includes(value) &&
+      isNaN(parseInt(value))
+    ) {
+      return (enumType as any)[value];
+    }
+
+    // Handle case-insensitive string matching
+    if (typeof value === "string") {
+      const stringKeys = EnumUtils.getStringKeys(enumType);
+      const matchingKey = stringKeys.find(
+        (key) => key.toString().toLowerCase() === value.toLowerCase()
+      );
+
+      if (matchingKey) {
+        return (enumType as any)[matchingKey];
+      }
+    }
+
+    throw new Error(
+      `${value} could not be mapped to a valid value in the given enum type`
+    );
+  }
 }

@@ -1,8 +1,17 @@
 import { ResponsiveSize } from "@bungie/responsive";
+import { AclEnum } from "@Enum";
+import {
+  GlobalStateComponentProps,
+  withGlobalState,
+} from "@Global/DataStore/GlobalStateDataStore";
 import { RouteDefs } from "@Global/Routes/RouteDefs";
+import { SystemNames } from "@Global/SystemNames";
+import AuthContainer from "@UI/User/Authentication/components/AuthContainer";
+import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { ISubNavLink, SubNav } from "@UI/UIKit/Controls/SubNav";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
 import { Route, RouteComponentProps } from "react-router-dom";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -13,16 +22,29 @@ import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { CodesRedemption } from "./Redemption/CodesRedemption";
 import { CodesHistory } from "./History/CodesHistory";
 import { PartnerRewards } from "./PartnerRewards/PartnerRewards";
+import { GameCodes } from "@Areas/Codes/GameCodes/GameCodesSection";
 import styles from "./Codes.module.scss";
 import { UrlUtils } from "@Utilities/UrlUtils";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { AclHelper } from "@Areas/Marathon/Alpha/Helpers/AclHelper";
 
-class CodesArea extends React.Component<RouteComponentProps> {
+interface CodesAreaProps
+  extends GlobalStateComponentProps<"loggedInUser">,
+    RouteComponentProps {}
+/**
+ * CodesArea - Replace this description
+ *  *
+ * @param {CodesAreaProps} props
+ * @returns
+ */
+class CodesArea extends React.Component<CodesAreaProps> {
   public render() {
     const currentAction = UrlUtils.GetUrlAction(this.props.location);
 
     const redemption = RouteDefs.Areas.Codes.getAction("Redeem");
     const history = RouteDefs.Areas.Codes.getAction("History");
     const partnerRewards = RouteDefs.Areas.Codes.getAction("Partners");
+    const gameCodes = RouteDefs.Areas.Codes.getAction("GameCodes");
 
     const links: ISubNavLink[] = [
       {
@@ -41,6 +63,32 @@ class CodesArea extends React.Component<RouteComponentProps> {
         current: partnerRewards.action === currentAction,
       },
     ];
+
+    const gameCodesTab = {
+      label: "Game Codes",
+      to: gameCodes.resolve(),
+      current: gameCodes.action === currentAction,
+    };
+
+    const gameCodesRoute = (
+      <Route path={gameCodes.path}>
+        <h2>{"Game Codes"}</h2>
+      </Route>
+    );
+
+    const gameCodesComponentRoute = (
+      <Route path={gameCodes.path} component={GameCodes} />
+    );
+
+    const alphaUnlocked = ConfigUtils.SystemStatus(SystemNames.MarathonAlpha);
+
+    const hasAlphaAccess = AclHelper.hasMarathonAccess(
+      this.props.globalState?.loggedInUser?.userAcls
+    );
+
+    if (hasAlphaAccess && alphaUnlocked) {
+      links.push(gameCodesTab);
+    }
 
     return (
       <React.Fragment>
@@ -63,6 +111,7 @@ class CodesArea extends React.Component<RouteComponentProps> {
                 <Route path={partnerRewards.path}>
                   <h2>{Localizer.Coderedemption.PartnerRewards}</h2>
                 </Route>
+                {alphaUnlocked && gameCodesRoute}
               </SwitchWithErrors>
             </GridCol>
           </Grid>
@@ -72,7 +121,7 @@ class CodesArea extends React.Component<RouteComponentProps> {
             <SubNav
               history={this.props.history}
               links={links}
-              mobileDropdownBreakpoint={ResponsiveSize.mobile}
+              mobileDropdownBreakpoint={ResponsiveSize.medium}
             />
           </GridCol>
         </Grid>
@@ -82,6 +131,7 @@ class CodesArea extends React.Component<RouteComponentProps> {
               <Route path={redemption.path} component={CodesRedemption} />
               <Route path={history.path} component={CodesHistory} />
               <Route path={partnerRewards.path} component={PartnerRewards} />
+              {alphaUnlocked && gameCodesComponentRoute}
             </AnimatedRouter>
           </GridCol>
         </Grid>
@@ -90,4 +140,5 @@ class CodesArea extends React.Component<RouteComponentProps> {
   }
 }
 
-export default WithRouteData(CodesArea);
+const CodesAreaWithGlobalState = withGlobalState(CodesArea, ["loggedInUser"]);
+export default WithRouteData(CodesAreaWithGlobalState);

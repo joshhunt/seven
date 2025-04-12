@@ -39,6 +39,7 @@ export const CodesRedemption: React.FC<ICodesRedemptionProps> = (props) => {
         ?.crossSaveCredentialTypes?.length;
 
       CodesDataStore.initialize(userIsCrossSaved);
+      GlobalStateDataStore?.actions?.refreshCurrentUser(true);
     }
   }, []);
 

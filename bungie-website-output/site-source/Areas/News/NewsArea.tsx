@@ -9,6 +9,7 @@ class NewsArea extends React.Component<RouteComponentProps> {
   public render() {
     const indexPath = RouteDefs.Areas.News.getAction().path;
     const destinyPath = RouteDefs.Areas.News.getAction("destiny").path;
+    const marathonPath = RouteDefs.Areas.News.getAction("marathon").path;
     const communityPath = RouteDefs.Areas.News.getAction("community").path;
     const updatesPath = RouteDefs.Areas.News.getAction("updates").path;
     const articlePath = RouteDefs.Areas.News.getAction("article").path;
@@ -33,6 +34,16 @@ class NewsArea extends React.Component<RouteComponentProps> {
               () =>
                 import(
                   "@Areas/News/News" /* webpackChunkName: "News-Category-Destiny" */
+                )
+            )}
+          />
+          <Route
+            path={marathonPath}
+            exact={true}
+            component={createAsyncComponent(
+              () =>
+                import(
+                  "@Areas/News/News" /* webpackChunkName: "News-Category-Marathon" */
                 )
             )}
           />

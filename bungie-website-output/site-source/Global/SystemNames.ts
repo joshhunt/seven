@@ -138,4 +138,6 @@ export const SystemNames = {
   FeatureMultiFranchiseAuthUpdate: "FeatureMultiFranchiseAuthUpdate",
   FeatureModernLinkCredentials: "FeatureModernLinkCredentials",
   FeatureAccountLinkingUpdate: "FeatureAccountLinkingUpdate",
+  MarathonAlpha: "MarathonAlpha",
+  MarathonAlphaFriendCodes: "MarathonAlphaFriendCodes",
 } as const;

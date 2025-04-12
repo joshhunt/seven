@@ -2,9 +2,11 @@ import { ICrossSaveActivateParams } from "@Areas/CrossSave/CrossSaveActivate";
 import { Localizer } from "@bungie/localization";
 import { BungieCredentialType, BungieMembershipType } from "@Enum";
 import { SystemNames } from "@Global/SystemNames";
+import { RouteActions } from "@Routes/Definitions/RouteActions";
 import {
   BuyDetailQueryParams,
   BuyDetailRouteParams,
+  IAlphaParams,
   IApplicationParams,
   IClanParams,
   IFireteamFinderParams,
@@ -501,6 +503,10 @@ export class RouteHelper {
 
     return messages + (iframeMode ? "?iframe=1" : "");
   };
+
+  public static MarathonAlphaCodePickup = BasicReactPath(
+    RouteDefs.Areas.Codes.getAction(RouteActions.GameCodes)
+  );
 
   public static GetAccountLink = (
     cr: BungieCredentialType,
