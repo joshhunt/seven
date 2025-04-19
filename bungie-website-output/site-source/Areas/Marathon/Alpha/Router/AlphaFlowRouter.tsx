@@ -194,6 +194,7 @@ export const AlphaFlowRouter: FC<AlphaFlowRouterProps> = ({ children }) => {
           dispatch(setInviterCohort(items.InviterCohort));
           dispatch(setFriendIndex(parseInt(items.FriendIndex)));
           dispatch(setIsFriendLinkFlow(true));
+          dispatch(setSurveyType("FriendSurvey" as SurveyType));
 
           if (
             items.InviterId === globalState?.loggedInUser?.user?.membershipId

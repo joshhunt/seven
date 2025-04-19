@@ -1990,14 +1990,6 @@ export declare namespace Contract {
 }
 
 export declare namespace Tokens {
-  export interface MarathonInviteAuthenticateRequest {
-    InviterId: string;
-
-    InviterCohort: string;
-
-    FriendIndex: string;
-  }
-
   export interface MarathonInviteTokenResponse {
     InviterId: string;
 
@@ -21091,26 +21083,6 @@ class UserServiceInternal {
       "User",
       "ZendeskHelpAuthenticate",
       undefined,
-      clientState
-    );
-
-  /**
-   * Generates and returns a URL for creating a Marathon friend invite.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static MarathonInviteAuthenticate = (
-    input: Tokens.MarathonInviteAuthenticateRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<string> =>
-    ApiIntermediary.doPostRequest(
-      `/User/MarathonInviteAuthenticate/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "MarathonInviteAuthenticate",
-      input,
       clientState
     );
 

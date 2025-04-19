@@ -3,7 +3,7 @@
 
 import React from "react";
 
-type SurveyType = "Slim" | "FriendSurvey" | "Standard" | "General";
+export type SurveyType = "Slim" | "FriendSurvey" | "Standard" | "General";
 export class SurveyHelper {
   public static SurveyUrlMap: Record<SurveyType, string> = {
     Slim: "marathonalphaslim",

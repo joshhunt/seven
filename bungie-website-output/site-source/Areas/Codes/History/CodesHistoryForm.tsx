@@ -121,6 +121,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
 
     const twoLineItem = (
       <TwoLineItem
+        normalWhiteSpace
         itemTitle={<SafelySetInnerHTML html={offer.OfferDisplayName} />}
         itemSubtitle={<SafelySetInnerHTML html={offer.OfferDisplayDetail} />}
         icon={<img className={styles.offerIcon} src={offer.OfferImagePath} />}
@@ -222,6 +223,7 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
                 return (
                   <div key={i}>
                     <TwoLineItem
+                      normalWhiteSpace
                       itemTitle={
                         <SafelySetInnerHTML html={o.OfferDisplayName} />
                       }
