@@ -22,7 +22,7 @@ import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useContext, useEffect, useState } from "react";
 import { AccountLinkItem } from "./AccountLinkItem";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { AccountLinkingHeader } from "./AccountLinkingHeader";
 
 export enum AccountLinkingFlags {
   None = 0,
@@ -49,13 +49,9 @@ const validPlatformCredentialTypes = [
 const validSocialCredentialTypes = [BungieCredentialType.TwitchId];
 const crossSaveIneligibleTypes = [BungieCredentialType.TwitchId];
 
-interface AccountLinkSectionProps {
-  type?: "gamePlatform" | "socialPlatform";
-}
+interface AccountLinkSectionProps {}
 
-export const AccountLinkSection: React.FC<AccountLinkSectionProps> = ({
-  type,
-}) => {
+export const AccountLinkSection: React.FC<AccountLinkSectionProps> = () => {
   const { membershipIdFromQuery, loggedInUserId, isSelf, isAdmin } = useContext(
     ViewerPermissionContext
   );
@@ -344,27 +340,20 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = ({
   );
 
   const showStadia = stadiaSystem.enabled || stadiaIsPrimaryCrossSaveMembership;
-  const credentialDisplayTypes =
-    type !== "socialPlatform"
-      ? validPlatformCredentialTypes
-      : validSocialCredentialTypes;
-
-  /* Check the feature flag to ensure we are using the correct array of credential types; Remove checks once stable */
-  const featureCheckDisplayTypes = ConfigUtils.SystemStatus(
-    "FeatureAccountLinkingUpdate"
-  )
-    ? credentialDisplayTypes
-    : validCredentialTypes;
 
   return (
     <>
+      <AccountLinkingHeader
+        heading={Localizer.Accountlinking.GamePlatforms}
+        subheading={Localizer.Accountlinking.GamePlatformsCannotUnlink}
+      />
       <GridCol
-        cols={ConfigUtils.SystemStatus("FeatureAccountLinkingUpdate") ? 12 : 10}
+        cols={12}
         medium={12}
-        className={classNames(styles.linkingContent)}
+        className={classNames(styles.linkingContent, styles.containerSpacing)}
       >
         {accountLinkingFlagMap &&
-          sortUsingFilterArray(featureCheckDisplayTypes, filterArray).map(
+          sortUsingFilterArray(validPlatformCredentialTypes, filterArray).map(
             (credential, i) => {
               if (credential === BungieCredentialType.StadiaId && !showStadia) {
                 return null;
@@ -397,7 +386,59 @@ export const AccountLinkSection: React.FC<AccountLinkSectionProps> = ({
                     }
                     stadiaSystemOverride={stadiaIsPrimaryCrossSaveMembership}
                   />
-                  {i < featureCheckDisplayTypes.length - 1 && (
+                  {i < validPlatformCredentialTypes.length - 1 && (
+                    <GridDivider cols={12} />
+                  )}
+                </div>
+              );
+            }
+          )}
+      </GridCol>
+
+      <AccountLinkingHeader
+        heading={Localizer.Accountlinking.SocialPlatforms}
+        subheading={Localizer.Accountlinking.SocialNetworksAndPlatforms}
+      />
+      <GridCol
+        cols={12}
+        medium={12}
+        className={classNames(styles.linkingContent)}
+      >
+        {accountLinkingFlagMap &&
+          sortUsingFilterArray(validSocialCredentialTypes, filterArray).map(
+            (credential, i) => {
+              if (credential === BungieCredentialType.StadiaId && !showStadia) {
+                return null;
+              }
+
+              return (
+                <div key={i} className={styles.accountLinkItem}>
+                  <AccountLinkItem
+                    onPageUserLoggedInCred={isSelf ? loginCredType : null}
+                    displayName={
+                      credentials?.find((c) => c.credentialType === credential)
+                        ?.credentialDisplayName
+                    }
+                    openLinkingModal={() => openLinkingModal(credential)}
+                    flag={accountLinkingFlagMap[credential]}
+                    credentialType={credential}
+                    onPublicSettingChanged={(checked) =>
+                      onPublicSettingChanged(checked, credential)
+                    }
+                    onCredentialChange={() => {
+                      setUpdateCredentials(true);
+                    }}
+                    membershipSpecificId={
+                      membershipIds[
+                        EnumUtils.getStringValue(
+                          credential,
+                          BungieCredentialType
+                        )
+                      ]
+                    }
+                    stadiaSystemOverride={stadiaIsPrimaryCrossSaveMembership}
+                  />
+                  {i < validSocialCredentialTypes.length - 1 && (
                     <GridDivider cols={12} />
                   )}
                 </div>

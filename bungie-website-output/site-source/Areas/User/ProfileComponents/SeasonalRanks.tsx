@@ -71,18 +71,22 @@ export const SeasonalRanks: React.FC<SeasonalRanksProps> = (props) => {
         <div
           className={styles.icon}
           style={{
-            backgroundImage: `url(${characterProgressionDef.displayProperties.icon})`,
+            backgroundImage: `url(${stepDisplay.icon})`,
           }}
         />
         <div className={styles.text}>
-          <h4>
-            {stepDisplay.stepName}{" "}
-            <span>{progressionDef.displayProperties.name}</span>
-          </h4>
+          <h4>{stepDisplay.stepName}</h4>
+
+          <span className={styles.subtext}>
+            <span className={styles.subtextName}>
+              {progressionDef.displayProperties.name}
+            </span>
+            <span className={styles.progressNumber}>
+              {characterProgression.currentProgress}
+            </span>
+          </span>
         </div>
-        <div className={styles.progressNumber}>
-          {characterProgression.currentProgress}
-        </div>
+
         <div className={styles.progressBar}>
           {characterProgression.currentProgress > 0 && (
             <span

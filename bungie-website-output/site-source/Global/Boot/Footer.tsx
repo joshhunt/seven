@@ -51,6 +51,8 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
       year: moment().year(),
     });
 
+    const LucasFilmLegal: string = navLoc.StarWars2024Lucasfilm;
+
     const toggleFooter = () => {
       if (this.props.isFixed) {
         this.setState({ showFooter: !this.state.showFooter });
@@ -91,6 +93,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                 year: new Date().getFullYear(),
               })}
             />
+            <SafelySetInnerHTML html={LucasFilmLegal} />
             <IoIosArrowDropupCircle className={styles.footerTriggerIcon} />
           </div>
         )}
@@ -286,7 +289,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
             className={styles.copyright}
             dangerouslySetInnerHTML={sanitizeHTML(copyright)}
           />
-
+          <p className={styles.secondFooter}>{LucasFilmLegal}</p>
           <div className={styles.followUs}>
             <p>{Localizer.HelpText.FollowUs}</p>
             <ul>

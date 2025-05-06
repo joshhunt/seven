@@ -83,16 +83,28 @@ export const SpecifiedNewsQuery = (
   articleLimit: number,
   key: string,
   regexFilter: string,
-  currentPage = 1
+  currentPage = 1,
+  omitArticles?: {
+    key: string;
+    value: string;
+  }
 ) => {
-  return ContentStackClient()
-    .ContentType("news_article")
-    .Query()
+  let query = ContentStackClient().ContentType("news_article").Query();
+
+  /* notEqualTo: This method retrieves entries where a specific field value is not equal to a specified value.
+   * https://www.contentstack.com/docs/developers/web-framework/querying#notequalto-key-value-optional
+   * */
+  if (omitArticles?.key && omitArticles?.value) {
+    query = query.notEqualTo(omitArticles.key, omitArticles.value);
+  }
+
+  query = query
     .regex(key, regexFilter)
     .language(locale)
     .descending("date")
     .includeCount()
     .skip((currentPage - 1) * articleLimit)
-    .limit(articleLimit)
-    .toJSON();
+    .limit(articleLimit);
+
+  return query.toJSON();
 };

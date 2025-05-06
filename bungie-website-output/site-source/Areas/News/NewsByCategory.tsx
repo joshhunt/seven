@@ -1,32 +1,35 @@
-// Created by larobinson, 2022
-// Copyright Bungie, Inc.
-
-import { Responsive } from "@Boot/Responsive";
-import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import React, { useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
 import { Localizer } from "@bungie/localization";
-import { RendererLogLevel } from "@Enum";
 import { Logger } from "@Global/Logger";
+import { RendererLogLevel } from "@Enum";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { useHistory, useLocation } from "react-router";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
 import { NewsCategory } from "./News";
 import styles from "./NewsByCategory.module.scss";
 import { NewsPreview } from "./NewsPreview";
+import { Responsive } from "@Boot/Responsive";
 
 interface NewsByCategoryProps {}
+
+export enum GameTaxonomy {
+  destiny_2,
+  marathon,
+}
 
 const BasicNewsQuery = (
   locale: string,
   articlesPerPage: number,
   currentPage: number,
+  game?: string,
   category?: string
 ) => {
-  return ContentStackClient()
+  let query = ContentStackClient()
     .ContentType("news_article")
     .Query()
     .only([
@@ -37,40 +40,23 @@ const BasicNewsQuery = (
       "date",
       "title",
       "url",
+      "taxonomies",
     ])
     .language(locale)
     .descending("date")
     .includeCount()
     .skip((currentPage - 1) * articlesPerPage)
-    .limit(articlesPerPage)
-    .toJSON();
-};
+    .limit(articlesPerPage);
 
-const TaxonomyNewsQuery = (
-  locale: string,
-  articlesPerPage: number,
-  currentPage: number,
-  taxonomy: string
-) => {
-  return ContentStackClient()
-    .ContentType("news_article")
-    .Query()
-    .where("taxonomies.game", taxonomy)
-    .only([
-      "image",
-      "mobile_image",
-      "banner_image",
-      "subtitle",
-      "date",
-      "title",
-      "url",
-    ])
-    .language(locale)
-    .descending("date")
-    .includeCount()
-    .skip((currentPage - 1) * articlesPerPage)
-    .limit(articlesPerPage)
-    .toJSON();
+  if (game) {
+    query = query.where("taxonomies.game", game);
+  }
+
+  if (category && !game) {
+    query = query.where("category", category);
+  }
+
+  return query.toJSON();
 };
 
 const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
@@ -79,79 +65,59 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const location = useLocation();
   const history = useHistory();
   const qs = new URLSearchParams(location.search);
-  const pageCategory = UrlUtils.GetUrlAction(location);
-  const categoryIsInvalid = !EnumUtils.getStringKeys(NewsCategory).includes(
-    pageCategory?.toLowerCase()
-  );
-
-  const pageQueryToNumber = parseInt(qs.get("page"));
+  const pageCategory = UrlUtils.GetUrlAction(location).toLowerCase();
+  const pageQueryToNumber = parseInt(qs.get("page"), 10);
   const [page, setPage] = useState(pageQueryToNumber || 1);
-  const [articles, setArticles] = useState(null);
+  const [articles, setArticles] = useState<any[]>([]);
   const articlesPerPage = 25;
   const [total, setTotal] = useState(articlesPerPage);
-  const totalPages = total / articlesPerPage;
+  const totalPages = Math.ceil(total / articlesPerPage);
+
+  const fetchArticles = (selectedCategory: string, currentPage: number) => {
+    let game;
+    let category;
+
+    const categoryIsInvalid = !EnumUtils.getStringKeys(NewsCategory).includes(
+      pageCategory?.toLowerCase()
+    );
+
+    if (selectedCategory === "marathon" || selectedCategory === "destiny") {
+      game = selectedCategory === "marathon" ? "marathon" : "destiny_2";
+      category = undefined;
+    } else if (!categoryIsInvalid || selectedCategory) {
+      game = undefined;
+      category = selectedCategory;
+    }
+
+    BasicNewsQuery(locale, articlesPerPage, currentPage, game, category)
+      .find()
+      .then((response: any) => {
+        const [entries, count] = response || [[], 0];
+        setArticles(entries);
+        setTotal(count);
+      })
+      .catch((error: Error) => {
+        Logger.logToServer(error, RendererLogLevel.Error);
+      });
+  };
 
   useEffect(() => {
-    if (
-      pageQueryToNumber < 1 &&
-      pageQueryToNumber > Math.ceil(total / articlesPerPage)
-    ) {
+    if (pageQueryToNumber < 1 || pageQueryToNumber > totalPages) {
       setPage(1);
     }
-  }, []);
+  }, [pageQueryToNumber, totalPages]);
 
   useEffect(() => {
-    if (pageCategory == "Marathon") {
-      TaxonomyNewsQuery(
-        locale,
-        articlesPerPage,
-        page,
-        pageCategory?.toLowerCase()
-      )
-        .find()
-        .then((response) => {
-          const [entries, count] = response || [];
-          setArticles(entries);
-          setTotal(count);
-        })
-        .catch((error: Error) => {
-          Logger.logToServer(error, RendererLogLevel.Error);
-        });
-    } else if (!pageCategory || categoryIsInvalid) {
-      BasicNewsQuery(locale, articlesPerPage, page)
-        .find()
-        .then((response) => {
-          const [entries, count] = response || [];
-          setArticles(entries);
-          setTotal(count);
-        })
-        .catch((error: Error) => {
-          Logger.logToServer(error, RendererLogLevel.Error);
-        });
-    } else {
-      BasicNewsQuery(locale, articlesPerPage, page)
-        .where("category", pageCategory?.toLowerCase())
-        .find()
-        .then((response) => {
-          const [entries, count] = response || [];
-          setArticles(entries);
-          setTotal(count);
-        })
-        .catch((error: Error) => {
-          Logger.logToServer(error, RendererLogLevel.Error);
-        });
-    }
+    fetchArticles(pageCategory, page);
   }, [pageCategory, page]);
 
   return (
     <div className={styles.pageContainer}>
       <div className={styles.articleList}>
-        {/* Article List */}
-        {articles?.map((article: any, i: number) => (
+        {articles.map((article: any, i: number) => (
           <NewsPreview key={i} articleData={article} />
         ))}
 
-        {/* Pager */}
         {totalPages > 1 && (
           <ReactPaginate
             forcePage={page - 1 ?? 1}

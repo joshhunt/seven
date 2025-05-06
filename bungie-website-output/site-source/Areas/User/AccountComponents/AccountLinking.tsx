@@ -19,9 +19,7 @@ import { GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import React, { useContext, useEffect } from "react";
 import { ViewerPermissionContext } from "../Account";
-import accountStyles from "../Account.module.scss";
 import styles from "./AccountLinking.module.scss";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface AccountLinkingProps {}
 
@@ -61,44 +59,7 @@ export const AccountLinking: React.FC<AccountLinkingProps> = (props) => {
             isCrossSaved={destinyMembershipData?.isCrossSaved}
           />
         </GridCol>
-        {!ConfigUtils.SystemStatus("FeatureAccountLinkingUpdate") ? (
-          <>
-            <GridCol cols={12}>
-              <h3>{Localizer.account.accountLinking}</h3>
-            </GridCol>
-            <GridDivider cols={12} className={accountStyles.mainDivider} />
-            <GridCol cols={2} medium={12} className={styles.sectionTitle}>
-              {Localizer.Accountlinking.LinkedPlatforms}
-            </GridCol>
-            <AccountLinkSection />
-          </>
-        ) : (
-          <>
-            <GridCol cols={12}>
-              <h3>{Localizer.Accountlinking.GamePlatforms}</h3>
-            </GridCol>
-            <GridDivider cols={12} className={accountStyles.sectionDivider} />
-            <GridCol cols={12}>
-              <p
-                className={accountStyles.sectionSubheader}
-                dangerouslySetInnerHTML={sanitizeHTML(
-                  Localizer.Accountlinking.GamePlatformsCannotUnlink
-                )}
-              />
-            </GridCol>
-            <AccountLinkSection type={"gamePlatform"} />
-            <GridCol cols={12}>
-              <h3>{Localizer.Accountlinking.SocialPlatforms}</h3>
-            </GridCol>
-            <GridDivider cols={12} className={accountStyles.sectionDivider} />
-            <GridCol cols={12}>
-              <p className={accountStyles.sectionSubheader}>
-                {Localizer.Accountlinking.SocialNetworksAndPlatforms}
-              </p>
-            </GridCol>
-            <AccountLinkSection type={"socialPlatform"} />
-          </>
-        )}
+        <AccountLinkSection />
         <GridDivider cols={12} />
         <GridCol cols={2} medium={12} className={styles.sectionTitle}>
           {Localizer.Accountlinking.MobileCompanion}

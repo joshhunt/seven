@@ -17,11 +17,18 @@ import { EnumUtils } from "@Utilities/EnumUtils";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import React, { FC, useMemo, useEffect, useState } from "react";
 import styles from "./Survey.module.scss";
+import { RewardsDataStore } from "@Areas/Rewards/DataStores/RewardsDataStore";
 
 interface SurveyProps {
   onComplete?: () => void;
 }
 
+/**
+ * Survey - Survey page for collecting user intel with improved UX
+ *
+ * @param {SurveyProps} props
+ * @returns
+ */
 export const Survey: FC<SurveyProps> = ({ onComplete }) => {
   const dispatch = useAppDispatch();
   const {

@@ -170,18 +170,7 @@ export const CrossSaveIndex = () => {
             medium={12}
             className={styles.imageTwo}
           >
-            <video
-              autoPlay={true}
-              loop={true}
-              muted={true}
-              data-reactid={".0.1.1"}
-            >
-              <source
-                src="/7/ca/destiny/images/cross_save/Engram.mp4"
-                type="video/mp4"
-                data-reactid={".0.1.1"}
-              />
-            </video>
+            <img src="/7/ca/destiny/images/cross_save/Engram.jpg" />
           </GridCol>
           <GridCol
             cols={6}

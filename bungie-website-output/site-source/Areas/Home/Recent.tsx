@@ -18,14 +18,16 @@ export const Recent = () => {
   const locale = BungieNetLocaleMap(Localizer.CurrentCultureName);
   const [articles, setArticles] = useState(null);
   const { medium } = useDataStore(Responsive);
-  const recentArticleLimit = 10;
+  const recentArticleLimit = 4;
 
   useEffect(() => {
     SpecifiedNewsQuery(
       locale,
       recentArticleLimit,
       "category",
-      "community|destiny|updates"
+      "community|destiny|updates",
+      1,
+      { key: "taxonomies.game", value: "marathon" }
     )
       .toJSON()
       .find()
@@ -46,11 +48,7 @@ export const Recent = () => {
             <span>{Localizer.Explore.LatestNewsHeader}</span>
           </div>
         </GridCol>
-        <ArticleSection
-          articleList={articles?.slice(0, 4)}
-          cols={8}
-          medium={12}
-        />
+        <ArticleSection articleList={articles} cols={8} medium={12} />
       </Grid>
     </div>
   );

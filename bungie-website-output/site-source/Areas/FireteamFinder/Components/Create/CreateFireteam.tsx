@@ -347,7 +347,9 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                           <FireteamScheduler
                             dateTimeValue={dateTimeValue}
                             setDateTimeValue={(value: string) => {
-                              setDateTimeValue(value);
+                              let newDate = new Date(value);
+                              newDate.setSeconds(0);
+                              setDateTimeValue(newDate.toUTCString());
                             }}
                           />
                         </div>

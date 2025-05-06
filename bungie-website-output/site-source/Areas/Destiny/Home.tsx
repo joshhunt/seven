@@ -62,8 +62,10 @@ const Home: React.FC<HomeProps> = (props) => {
     title,
     button_one_label,
     button_one_link,
+    button_one_color,
     button_two_label,
     button_two_link,
+    button_two_color,
     hero_image,
     mobile_hero_image,
     hero_video,
@@ -82,8 +84,6 @@ const Home: React.FC<HomeProps> = (props) => {
       [hero_image, mobile_hero_image, title_as_image]
     )
   );
-
-  const location = useHistory().location;
 
   if (!homePageData) {
     return null;
@@ -139,10 +139,12 @@ const Home: React.FC<HomeProps> = (props) => {
             button_one: {
               label: button_one_label,
               link: button_one_link,
+              color: button_one_color,
             },
             button_two: {
               label: button_two_label,
               link: button_two_link,
+              color: button_two_color,
             },
           }}
         />

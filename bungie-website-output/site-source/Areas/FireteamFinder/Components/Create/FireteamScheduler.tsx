@@ -91,9 +91,12 @@ export const FireteamScheduler: React.FC<FireteamSchedulerProps> = (props) => {
           }}
           onChange={([newValue]) => {
             if (newValue) {
+              newValue.setSeconds(0);
               props.setDateTimeValue(newValue.toUTCString());
             } else {
-              props.setDateTimeValue(DateTime.now().toUTC().toString());
+              let defaultDate = new Date();
+              defaultDate.setSeconds(0);
+              props.setDateTimeValue(defaultDate.toUTCString());
             }
           }}
           aria-label={Localizer.Fireteams.ChooseAStartingTime}

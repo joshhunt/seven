@@ -3,7 +3,7 @@
 
 import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { Button } from "@UIKit/Controls/Button/Button";
+import { Button, ButtonTypes } from "@UIKit/Controls/Button/Button";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import {
@@ -23,10 +23,12 @@ interface HeroProps {
     button_one: {
       label: string;
       link: BnetStackLink;
+      color: string;
     };
     button_two: {
       label: string;
       link: BnetStackLink;
+      color: string;
     };
   };
 }
@@ -87,7 +89,7 @@ export const Hero: React.FC<HeroProps> = (props) => {
           <div className={styles.buttonContainer}>
             {props.heroData?.button_one?.label && (
               <Button
-                buttonType={"gold"}
+                buttonType={props?.heroData?.button_one?.color as ButtonTypes}
                 url={props.heroData?.button_one.link.href}
                 analyticsId={`button-one}`}
               >
@@ -96,7 +98,7 @@ export const Hero: React.FC<HeroProps> = (props) => {
             )}
             {props.heroData?.button_two?.label && (
               <Button
-                buttonType={"gold"}
+                buttonType={props?.heroData?.button_two?.color as ButtonTypes}
                 url={props.heroData?.button_two.link.href}
                 analyticsId={`button-two}`}
               >
