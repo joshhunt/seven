@@ -141,4 +141,22 @@ export class PresentationNodeUtils {
   public static CommendationAdjustedScore(score: number) {
     return Math.round((score * 9999) / (score + 5000));
   }
+
+  /* Match and replace variables in record strings */
+  public static SanitizeRecordDescription(
+    description: string,
+    profileStringVariables: Responses.DestinyProfileResponse["profileStringVariables"]
+  ) {
+    /* Match {var: + one or more digits + } */
+    const VARIABLE_HASH_REGEX = /\{var:(\d+)\}/g;
+    const stringVariables =
+      profileStringVariables?.data.integerValuesByHash || {};
+
+    /* Replace the {var:SOME_NUMBERS} in the provided string with the matching variable OR return it if there is no match. */
+    return description.replace(VARIABLE_HASH_REGEX, (fullMatch, key) =>
+      Object.hasOwn(stringVariables, key)
+        ? String(stringVariables[key])
+        : fullMatch
+    );
+  }
 }

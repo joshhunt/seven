@@ -128,6 +128,8 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
     }
   }
 
+  const profileStringVariables = props?.profileResponse?.profileStringVariables;
+
   //objective rewards, not interval rewards
   const rewards = recordDef.rewardItems?.length
     ? recordDef.rewardItems?.map((r) => {
@@ -208,7 +210,10 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
 
       {!loreDef && !isObscured && (
         <div className={styles.description}>
-          {recordDef.displayProperties?.description}
+          {PresentationNodeUtils.SanitizeRecordDescription(
+            recordDef.displayProperties?.description,
+            profileStringVariables
+          )}
         </div>
       )}
 

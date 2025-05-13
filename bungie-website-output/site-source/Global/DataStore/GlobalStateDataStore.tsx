@@ -202,7 +202,6 @@ class GlobalStateDataStoreInternal extends DataStore<
         const loggedInUser = await Platform.UserService.GetCurrentUser(
           queryAppend
         );
-        console.log({ loggedInUser });
 
         //// Get additional permissions from CompanionPermission service
         //try {

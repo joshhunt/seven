@@ -159,6 +159,7 @@ const Triumphs: React.FC<TriumphsProps> = (props) => {
         DestinyComponentType.Records,
         DestinyComponentType.Collectibles,
         DestinyComponentType.Metrics,
+        DestinyComponentType.StringVariables,
       ]
     )
       .then((response) => {

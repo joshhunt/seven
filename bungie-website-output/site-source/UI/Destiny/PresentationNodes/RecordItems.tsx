@@ -68,6 +68,8 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
     return null;
   }
 
+  const profileStringVariables = props?.profileResponse?.profileStringVariables;
+
   const parentNodeData = PresentationNodeUtils.GetPresentationComponentData(
     props.parentHash,
     destinyMembership?.selectedCharacter?.characterId,
@@ -377,7 +379,12 @@ const RecordItems: React.FC<RecordItemsProps> = (props) => {
                 size={BasicSize.Large}
                 normalWhiteSpace={globalState.responsive.medium}
                 subtitle={
-                  isObscured ? nodesLoc.ObscuredTriumphDescription : description
+                  isObscured
+                    ? nodesLoc.ObscuredTriumphDescription
+                    : PresentationNodeUtils.SanitizeRecordDescription(
+                        description,
+                        profileStringVariables
+                      )
                 }
               />
             </div>
