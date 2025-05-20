@@ -38,7 +38,6 @@ export enum RouteActions {
   PhaseTwo = "PhaseTwo",
   PhaseThree = "PhaseThree",
   BeyondLightPhaseFour = "BeyondLightPhaseFour",
-  Reveal = "Reveal",
   Info = "Info",
   WitchQueen = "WitchQueen",
   WitchQueenComparison = "WitchQueenComparison",
@@ -103,6 +102,6 @@ export enum RouteActions {
   RegistrationPage = "RegistrationPage",
   Benefits = "Benefits",
   Apps = "Apps",
-  //ParentalControls = "ParentalControls",
+  ParentalControls = "ParentalControls",
   GameCodes = "GameCodes",
 }

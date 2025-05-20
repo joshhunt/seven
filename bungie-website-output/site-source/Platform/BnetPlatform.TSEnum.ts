@@ -4506,6 +4506,87 @@ export enum PlatformFriendType {
   Egs = 4,
 }
 
+/**
+	Response status enum for endpoint responses in the PnP system.
+	*/
+export enum ResponseStatusEnum {
+  None = 0,
+  Success = 20,
+  InvalidRequest = 30,
+  InternalServerError = 50,
+  Unauthorized = 51,
+  ChildMembershipIdWasInvalid = 52,
+  ParentOrGuardianMembershipIdWasInvalid = 53,
+  ChildBungieIdNotFound = 54,
+  ParentOrGuardianBungieIdNotFound = 55,
+  PreferenceNotFound = 56,
+  PermissionNotFound = 57,
+  ParentOrGuardianIsNotAdult = 58,
+  PlayerIsNotChild = 59,
+  ParentOrGuardianIsNotAssigned = 60,
+  ParentOrGuardianIsAlreadyAssigned = 61,
+  NoChildrenProvided = 62,
+  ChildNotFound = 63,
+}
+
+/**
+	Reflected permissions that exist in the PnP system for parents/guardians to assign and toggle.
+	*/
+export enum ChildPermissionEnum {
+  Invalid = 0,
+  IsAccessTextChatAllowed = 1,
+  IsAccessVoiceChatAllowed = 2,
+  IsCharacterSelectOffersAllowed = 3,
+  IsCommerceBuySilverAllowed = 4,
+  IsCommerceDialogsAndUpsellsAllowed = 5,
+  IsEververseRecommendationsAllowed = 6,
+  IsRankPurchasingAllowed = 7,
+  IsJoinGroupWithoutInviteAllowed = 8,
+  IsReceiveGroupInvitesAllowed = 9,
+  IsSendGroupInvitesAllowed = 10,
+  IsReceiveBungieFriendRequestsAllowed = 11,
+  IsSharePlatformIdAllowed = 12,
+}
+
+/**
+	Reflected preferences that exist in the PnP system for parents/guardians to assign and toggle.
+	*/
+export enum ChildPreferenceEnum {
+  Invalid = 0,
+  AccessTextChat = 1,
+  AccessVoiceChat = 2,
+  CharacterSelectOffers = 3,
+  CommerceBuySilver = 4,
+  CommerceDialogsAndUpsells = 5,
+  EververseRecommendations = 6,
+  RankPurchasing = 7,
+  JoinGroupWithoutInvite = 8,
+  ReceiveGroupInvites = 9,
+  SendGroupInvites = 10,
+  ReceiveBungieFriendRequests = 11,
+  SharePlatformId = 12,
+}
+
+/**
+	Enum representing the age category for a player's context in PnP.
+	*/
+export enum AgeCategoriesEnum {
+  None = 0,
+  Child = 1,
+  Teen = 2,
+  Adult = 3,
+}
+
+/**
+	Enum representing the assignment status of a parent or guardian to a child in PnP.
+	*/
+export enum ParentOrGuardianAssignmentStatusEnum {
+  None = 0,
+  Pending = 1,
+  Assigned = 2,
+  Unassigned = 3,
+}
+
 export enum GlobalAlertLevel {
   Unknown = 0,
   Blue = 1,

@@ -121,12 +121,26 @@ const Verify: React.FC = () => {
           <Anchor
             url={RouteHelper.Notifications()}
             className={"featureContainer emailSettings"}
-            aria-label={Localizer.emails.verifiedFeatureBungieRewards}
+            aria-label={Localizer.emails.verifiedFeatureEmailSettings}
           >
             <h3 className="section-header">
               {Localizer.emails.verifiedFeatureEmailSettings}
             </h3>
             <p>{Localizer.emails.verifiedFeatureEmailSettingsDescription}</p>
+          </Anchor>
+        </div>
+        <div
+          className={`section grid-col-12 ${styles.emailFeaturesContainer} parentalControls`}
+        >
+          <Anchor
+            url={RouteHelper.ParentalControls()}
+            className={"featureContainer parentalControlsBlock"}
+            aria-label={Localizer.emails.VerifiedFeatureParentalControls}
+          >
+            <h3 className="section-header">
+              {Localizer.emails.VerifiedFeatureParentalControls}
+            </h3>
+            <p>{Localizer.emails.ManageYourFamilyAndApprove}</p>
           </Anchor>
         </div>
       </div>

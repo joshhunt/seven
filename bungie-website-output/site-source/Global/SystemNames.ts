@@ -135,6 +135,7 @@ export const SystemNames = {
   FireteamFinderNotification: "FireteamFinderNotification",
   FeatUseFunctionalAuthInternal: "FeatUseFunctionalAuthInternal",
   FeatureParentalControls: "FeatureParentalControls",
+  FeatureMarathonParentalControls: "FeatureMarathonParentalControls",
   FeatureMultiFranchiseAuthUpdate: "FeatureMultiFranchiseAuthUpdate",
   FeatureModernLinkCredentials: "FeatureModernLinkCredentials",
   FeatureAccountLinkingUpdate: "FeatureAccountLinkingUpdate",

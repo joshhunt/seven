@@ -345,6 +345,16 @@ export class RouteDefs {
           new ActionRoute(area, RouteActions.Article, { path: "articleUrl?" }),
       ],
     }),
+    ParentalControlsLanding: new Area({
+      name: AreaNames.ParentalControlsLanding,
+      lazyComponent: createAsyncComponent(
+        () =>
+          import(
+            "@Areas/ParentalControls/ParentalControlsArea" /* webpackChunkName: "ParentalControls" */
+          )
+      ),
+      routes: [(area) => new ActionRoute(area, RouteActions.Index)],
+    }),
     Pgcr: new Area({
       name: AreaNames.Pgcr,
       lazyComponent: createAsyncComponent(

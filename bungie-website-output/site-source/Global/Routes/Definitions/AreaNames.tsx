@@ -21,6 +21,7 @@ export enum AreaNames {
   Marathon = "Marathon",
   News = "News",
   Newsroom = "Newsroom",
+  ParentalControlsLanding = "ParentalControls",
   Pgcr = "Pgcr",
   Registration = "Registration",
   Rewards = "Rewards",

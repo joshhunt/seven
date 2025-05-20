@@ -116,7 +116,12 @@ export class RouteHelper {
   public static EmailAndSms = BasicReactPath(
     RouteDefs.AreaGroups.User.areas.Account.getAction("EmailSms")
   );
-  //public static ParentalControls = BasicReactPath(RouteDefs.AreaGroups.User.areas.Account.getAction("ParentalControls"));
+  public static ParentalControls = BasicReactPath(
+    RouteDefs.AreaGroups.User.areas.Account.getAction("ParentalControls")
+  );
+  public static ParentalControlsLanding = BasicReactPath(
+    RouteDefs.Areas.ParentalControlsLanding.getAction("Index")
+  );
   public static Notifications = BasicReactPath(
     RouteDefs.AreaGroups.User.areas.Account.getAction("Notifications")
   );
@@ -475,11 +480,13 @@ export class RouteHelper {
     return LegacyPath(`/Gear/${membershipType}/${membershipId}/${characterId}`);
   };
 
-  //public static ParentalControlsWithId = (playerId: string) => {
-  //	const baseurl = BasicReactPath(RouteDefs.AreaGroups.User.areas.Account.getAction("ParentalControls"))();
-  //
-  //	return `${baseurl.url}?playerId=${playerId}`;
-  //};
+  public static ParentalControlsWithId = (playerId: string) => {
+    const baseurl = BasicReactPath(
+      RouteDefs.AreaGroups.User.areas.Account.getAction("ParentalControls")
+    )();
+
+    return `${baseurl.url}?playerId=${playerId}`;
+  };
 
   public static SignIn = (title?: string, bru?: string) => {
     const encodedBru = encodeURIComponent(bru);

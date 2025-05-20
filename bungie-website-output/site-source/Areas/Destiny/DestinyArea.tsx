@@ -6,7 +6,6 @@ import React from "react";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { createAsyncComponent } from "../../Global/Routes/AsyncRoute";
-import Reveal from "./Reveal";
 import { Companion } from "./Companion/Companion";
 
 class DestinyArea extends React.Component<RouteComponentProps> {
@@ -18,7 +17,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
     const freeToPlayPath = RouteDefs.Areas.Destiny.getAction("FreeToPlay").path;
     const forsakenPath = RouteDefs.Areas.Destiny.getAction("Forsaken").path;
     const shadowkeepPath = RouteDefs.Areas.Destiny.getAction("Shadowkeep").path;
-    const revealPath = RouteDefs.Areas.Destiny.getAction("Reveal").path;
     const companionPath = RouteDefs.Areas.Destiny.getAction("Companion").path;
     const beyondLightPath = RouteDefs.Areas.Destiny.getAction("BeyondLight")
       .path;
@@ -126,7 +124,6 @@ class DestinyArea extends React.Component<RouteComponentProps> {
           />
           <Route path={beyondLightPath} component={BeyondLight} />
           <Route path={companionPath} component={Companion} />
-          <Route path={revealPath} component={Reveal} />
           <Route path={indexPath} component={Home} />
         </SwitchWithErrors>
       </React.Fragment>

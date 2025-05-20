@@ -5,6 +5,7 @@ import { AccountLinking } from "@Areas/User/AccountComponents/AccountLinking";
 import { ApplicationHistory } from "@Areas/User/AccountComponents/AppHistory";
 import { BlockedUsers } from "@Areas/User/AccountComponents/BlockedUsers";
 import { BungieFriends } from "@Areas/User/AccountComponents/BungieFriends";
+import { ParentalControls } from "@Areas/User/AccountComponents/ParentalControls";
 import { CrossSave } from "@Areas/User/AccountComponents/CrossSave";
 import { AccountDestinyMembershipDataStore } from "@Areas/User/AccountComponents/DataStores/AccountDestinyMembershipDataStore";
 import { EmailAndSms } from "@Areas/User/AccountComponents/EmailAndSms";
@@ -39,8 +40,9 @@ import classNames from "classnames";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
-import { Redirect } from "react-router-dom";
+import { Redirect, useLocation } from "react-router-dom";
 import styles from "./Account.module.scss";
+import { UserUtils } from "@Utilities/UserUtils";
 
 export const formatDateForAccountTable = (date: string) => {
   const ld = DateTime.fromISO(date);
@@ -84,6 +86,7 @@ const Account: React.FC = () => {
   ]);
   const destinyMembership = useDataStore(AccountDestinyMembershipDataStore);
   const responsive = useDataStore(Responsive);
+  const isLoggedIn = UserUtils.isAuthenticated(globalState);
 
   const area = RouteDefs.AreaGroups.User.areas.Account;
   const [showBlockBanner, setShowBlockBanner] = useState(false);
@@ -91,9 +94,8 @@ const Account: React.FC = () => {
   const membershipId = UrlUtils.QueryToObject().membershipId;
   const loggedInUserMembershipId =
     globalState?.loggedInUser?.user?.membershipId;
-  //const includeParentalControls = ConfigUtils.SystemStatus(
-  //	"ParentalControlUI"
-  //);
+  const { pathname } = useLocation();
+  const history = useHistory();
 
   const loggedInUserIsOnPageUser = (mid: string) => {
     if (!loggedInUserMembershipId) {
@@ -127,6 +129,13 @@ const Account: React.FC = () => {
   }, [membershipId]);
 
   useEffect(() => {
+    if (pathname?.toLowerCase()?.includes("parentalcontrols") && !isLoggedIn) {
+      history.push(RouteHelper.ParentalControlsLanding().url);
+      location.reload();
+    }
+  }, [isLoggedIn]);
+
+  useEffect(() => {
     Platform.IgnoreService.GlobalIgnoreImportsAvailable().then(
       (ignoresAvailable) => setShowBlockBanner(ignoresAvailable > 0)
     );
@@ -154,7 +163,7 @@ const Account: React.FC = () => {
       legacy: true,
       url: Localizer.Account.ParentalControlsUrl,
     } as IMultiSiteLink,
-    //ParentalControlsInternal: area.getAction("ParentalControls"),
+    ParentalControlsInternal: area.getAction("ParentalControls"),
     Privacy: area.getAction("Privacy"),
     LanguageRegion: area.getAction("LanguageRegion"),
     BlockedUsers: area.getAction("BlockedUsers"),
@@ -170,8 +179,7 @@ const Account: React.FC = () => {
   const eververseHistoryPath = actions.EververseHistory.resolve();
   const silverBalanceHistoryPath = actions.SilverBalanceHistory.resolve();
   const notificationsPath = actions.Notifications.resolve();
-  //const parentalControlsInternalPath = actions.ParentalControlsInternal.resolve();
-  const history = useHistory();
+  const parentalControlsInternalPath = actions.ParentalControlsInternal.resolve();
 
   const tabsOnly = StringUtils.equals(
     accountIndexPath.url,
@@ -190,13 +198,22 @@ const Account: React.FC = () => {
     </span>
   );
 
-  //	const parentalControlsTabData = {
-  //		tabLabel: Localizer.account.ParentalControls,
-  //		tabRender: renderAsExternalLink,
-  //		contentComponent: null as React.ReactNode,
-  //		tabTo: actions.ParentalControls,
-  //		pathName: actions.ParentalControls.url
-  //	};
+  const parentalControlsTabData = ConfigUtils.SystemStatus(
+    "FeatureParentalControls"
+  )
+    ? {
+        tabLabel: Localizer.account.ParentalControls,
+        contentComponent: <ParentalControls />,
+        tabTo: parentalControlsInternalPath,
+        pathName: actions.ParentalControlsInternal.path,
+      }
+    : {
+        tabLabel: Localizer.account.ParentalControls,
+        tabRender: renderAsExternalLink,
+        contentComponent: null as React.ReactNode,
+        tabTo: actions.ParentalControls,
+        pathName: actions.ParentalControls.url,
+      };
 
   const accountTabDetails: TabData[] = [
     {
@@ -223,13 +240,7 @@ const Account: React.FC = () => {
       tabTo: actions.BungieFriends.resolve(),
       pathName: actions.BungieFriends.path,
     },
-    {
-      tabLabel: Localizer.account.ParentalControls,
-      tabRender: renderAsExternalLink,
-      contentComponent: null as React.ReactNode,
-      tabTo: actions.ParentalControls,
-      pathName: actions.ParentalControls.url,
-    },
+    parentalControlsTabData,
     {
       tabLabel: Localizer.Userpages.EmailAndSmsLabel,
       contentComponent: <EmailAndSms />,

@@ -20557,6 +20557,202 @@ export declare namespace Friends {
   }
 }
 
+export declare namespace PnP {
+  /**
+	Contract representing a request to update permissions for a child account under PnP.
+	*/
+  export interface BulkUpdatePermissionsForChildRequest {
+    /**
+		The permissions to update for the child.
+		*/
+    permissionsToUpdate: PnP.ChildPermission[];
+  }
+
+  /**
+	Contract representing a child permission in PnP.
+	*/
+  export interface ChildPermission {
+    /**
+		The identifier for the type of permission.
+		*/
+    type: Globals.ChildPermissionEnum;
+
+    /**
+		The value of the permission.
+		*/
+    value: boolean;
+
+    /**
+		Whether the permission was last set by a parent or guardian.
+		*/
+    isSetByParentOrGuardian: boolean;
+  }
+
+  /**
+	Contract representing a request to update preferences for a child account under PnP.
+	*/
+  export interface BulkUpdatePreferencesForChildRequest {
+    /**
+		The preferences to update for the child.
+		*/
+    preferencesToUpdate: PnP.ChildPreference[];
+  }
+
+  /**
+	Contract representing a child preference in PnP.
+	*/
+  export interface ChildPreference {
+    /**
+		The identifier for the type of preference.
+		*/
+    type: Globals.ChildPreferenceEnum;
+
+    /**
+		The value of the preference.
+		*/
+    value: boolean;
+  }
+
+  /**
+	Contract representing a response for the current player's context details in PnP.
+	*/
+  export interface GetPlayerContextResponse {
+    /**
+		The response status.
+		*/
+    responseStatus: Globals.ResponseStatusEnum;
+
+    /**
+		The player context data for the calling user.
+		*/
+    playerContext: PnP.PlayerContextData;
+
+    /**
+		The list of children this player is assigned to if they are a parent or guardian.
+		Note: Only applies to players who are assigned parent or guardians. Will be an empty list otherwise.
+		*/
+    assignedChildren: PnP.PlayerContextData[];
+  }
+
+  /**
+	Contract representing a response for the current player's context details in PnP.
+	*/
+  export interface PlayerContextData {
+    /**
+		The player's bungie membership id.
+		*/
+    membershipId: string;
+
+    /**
+		The display name of the calling player.
+		*/
+    displayName: string;
+
+    /**
+		The path to the player's profile picture.
+		*/
+    profilePicturePath: string;
+
+    /**
+		The membership Id of the calling player's parent or guardian.
+		Note: Only applies to child accounts with an assigned parent or guardian.
+		*/
+    parentOrGuardianMembershipId: string;
+
+    /**
+		The display name of the calling player's parent or guardian.
+		Note: Only applies to child accounts with an assigned parent or guardian.
+		*/
+    parentOrGuardianDisplayName: string;
+
+    /**
+		The path to the parent or guardian's profile picture.
+		Note: Only applies to child accounts with an assigned parent or guardian.
+		*/
+    parentOrGuardianProfilePicturePath: string;
+
+    /**
+		The player's date of birth.
+		*/
+    dateOfBirth?: string;
+
+    /**
+		Whether the player has verified their email address.
+		*/
+    isEmailVerified: boolean;
+
+    /**
+		The age category this player belongs to.
+		*/
+    ageCategory: Globals.AgeCategoriesEnum;
+
+    /**
+		The parent or guardian assignment status for this user.
+		Note: Applies to both parents/guardians and children.
+		*/
+    parentOrGuardianAssignmentStatus: Globals.ParentOrGuardianAssignmentStatusEnum;
+
+    /**
+		The child data for this user, if they are a child with an assigned parent or guardian.
+		Note: Only applies to players who have an assigned parent or guardian. Will have empty fields otherwise.
+		*/
+    childData: PnP.PlayerContextChildData;
+  }
+
+  /**
+	Contract representing child data in a player context response object.
+	*/
+  export interface PlayerContextChildData {
+    /**
+		The preferences values for this player.
+		Note: Only applies to players who have an assigned parent or guardian.
+		*/
+    preferences: PnP.ChildPreference[];
+
+    /**
+		The permission values for this player.
+		Note: Only applies to players who have an assigned parent or guardian.
+		*/
+    permissions: PnP.ChildPermission[];
+  }
+
+  /**
+	Response contract for retrieving a unique PnP assignment invite Url that a child can send to a parent or guardian.
+	*/
+  export interface GetEncodedInviteUrlSequenceResponse {
+    /**
+		The response status.
+		*/
+    responseStatus: Globals.ResponseStatusEnum;
+
+    /**
+		The generated assignment invitation url sequence.
+		Note: This is a base 62 encoded sequence of characters representing the membership Id of the calling user.
+		*/
+    encodedSequence: string;
+  }
+
+  /**
+	Contract representing a webhook request from KWS (Kids Web Services).
+	*/
+  export interface KwsWebhookRequest {
+    /**
+		The email of the parent or guardian who accepted the
+		*/
+    parentEmail: string;
+
+    /**
+		Whether the relevant user successfully verified as an adult.
+		*/
+    verified: boolean;
+
+    /**
+		The external payload attached to this webhook.
+		*/
+    externalPayload: string;
+  }
+}
+
 class JsonpServiceInternal {
   /**
    * Gets the signed-in user.
@@ -30797,6 +30993,183 @@ class SocialServiceInternal {
     );
 }
 
+class PnpServiceInternal {
+  /**
+   * Sets a parent or guardian account and child account into a pending assignment state.
+   * @param childMembershipId The child's membership Id.
+   * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SetParentOrGuardianAsPendingForChild = (
+    childMembershipId: string,
+    parentOrGuardianMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/Pending/${e(childMembershipId)}/${e(
+        parentOrGuardianMembershipId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "SetParentOrGuardianAsPendingForChild",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Unassigns a parent or guardian account from a child account.
+   * @param childMembershipId The child's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static UnassignParentOrGuardianFromChild = (
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/Unassign/${e(childMembershipId)}/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "UnassignParentOrGuardianFromChild",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Updates permissions in bulk for an assigned child account.
+   * @param childMembershipId The child's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static BulkUpdatePermissionsForChild = (
+    input: PnP.BulkUpdatePermissionsForChildRequest,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/Permissions/${e(childMembershipId)}/Update/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "BulkUpdatePermissionsForChild",
+      input,
+      clientState
+    );
+
+  /**
+   * Updates preferences in bulk for an assigned child account.
+   * @param childMembershipId The child's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static BulkUpdatePreferencesForChild = (
+    input: PnP.BulkUpdatePreferencesForChildRequest,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/Preferences/${e(childMembershipId)}/Update/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "BulkUpdatePreferencesForChild",
+      input,
+      clientState
+    );
+
+  /**
+   * Retrieves an account's player context (permissions, preferences, guardians, etc.) in relation to the PnP system.
+   * @param membershipId The player's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerContext = (
+    membershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<PnP.GetPlayerContextResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/PnP/PlayerContext/${e(membershipId)}`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "GetPlayerContext",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Retrieves a unique assignment invite URL sequence for the acting child account to send to a parent or guardian.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetEncodedInviteUrlSequence = (
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<PnP.GetEncodedInviteUrlSequenceResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/PnP/Invite/Encode/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "GetEncodedInviteUrlSequence",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Sends an email to the acting parent or guardian account to verify themselves as an adult through KWS (Kids Web Services) for their pending child account.
+   * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
+   * @param childMembershipId The child's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SendVerificationEmail = (
+    parentOrGuardianMembershipId: string,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/KWS/Email/${e(parentOrGuardianMembershipId)}/For/${e(
+        childMembershipId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "SendVerificationEmail",
+      undefined,
+      clientState
+    );
+
+  /**
+   * The returning webhook for KWS (Kids Web Services) to alert the PnP system of a verification update or expiration.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static KwsWebhook = (
+    input: PnP.KwsWebhookRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/KWS/Webhook/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "KwsWebhook",
+      input,
+      clientState
+    );
+}
+
 class CoreServiceInternal {
   /**
    * Smoketest function
@@ -31024,6 +31397,7 @@ export class Platform {
   public static CrosssaveService = CrosssaveServiceInternal;
   public static RecaptchaService = RecaptchaServiceInternal;
   public static SocialService = SocialServiceInternal;
+  public static PnpService = PnpServiceInternal;
   public static CoreService = CoreServiceInternal;
   platformSettings: any;
 }
