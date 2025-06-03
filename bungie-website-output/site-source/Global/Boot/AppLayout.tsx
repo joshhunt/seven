@@ -18,7 +18,6 @@ import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { EmailValidationGlobalBar } from "@UI/GlobalAlerts/EmailValidationGlobalBar";
 import { GlobalAlerts } from "@UI/GlobalAlerts/GlobalAlerts";
 import { ServiceAlertBar } from "@UI/GlobalAlerts/ServiceAlertBar";
-import { StadiaSunsetGlobalBar } from "@UI/GlobalAlerts/StadiaSunsetGlobalBar";
 import { MainNavigation } from "@UI/Navigation/MainNavigation";
 import { GlobalErrorModal } from "@UI/UIKit/Controls/Modal/GlobalErrorModal";
 import {
