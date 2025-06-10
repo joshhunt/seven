@@ -5,7 +5,7 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import styles from "./SettingsPanel.module.scss";
 
 interface SettingsPanelProps {
-  heading: string;
+  heading?: string;
   subheading?: string;
   children?: ReactNode;
   subSection?: boolean;
@@ -21,9 +21,11 @@ const SettingsSection: FC<SettingsPanelProps> = ({
 
   return (
     <div className={styles.sectionContainer}>
-      <Typography variant={headingVariant} sx={{ fontWeight: 700 }}>
-        {heading}
-      </Typography>
+      {heading && (
+        <Typography variant={headingVariant} sx={{ fontWeight: 700 }}>
+          {heading}
+        </Typography>
+      )}
       {!subSection && (
         <Divider
           sx={(theme) => ({

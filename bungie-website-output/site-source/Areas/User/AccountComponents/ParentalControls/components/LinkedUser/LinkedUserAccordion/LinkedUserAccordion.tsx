@@ -2,15 +2,12 @@ import React, { FC } from "react";
 import { AccordionSummary, Accordion, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { UserPanel, SettingsPanel } from "../components";
-import {
-  ParentalControlsCategoryType,
-  PlayerContextProps,
-} from "@Areas/User/ParentalControls/types";
-import { ParentalControls } from "@Platform";
 
-interface LinkedUserAccordionProps extends ParentalControlsCategoryType {
-  linkedAccount?: ParentalControls.ParentalControlsPlayerContext;
-  assignedAccount?: any;
+import { PnP } from "@Platform";
+
+interface LinkedUserAccordionProps {
+  linkedAccount?: PnP.GetPlayerContextResponse;
+  assignedAccount?: PnP.GetPlayerContextResponse["assignedChildren"][number];
   currentUserType?: any;
 }
 
@@ -38,7 +35,6 @@ const LinkedUserAccordion: FC<LinkedUserAccordionProps> = ({
         }
       >
         <UserPanel
-          linkedAccount={linkedAccount}
           assignedAccount={assignedAccount}
           currentUserType={currentUserType}
         />

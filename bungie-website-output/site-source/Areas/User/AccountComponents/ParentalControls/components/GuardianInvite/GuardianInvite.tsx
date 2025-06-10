@@ -5,12 +5,10 @@ import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Localizer } from "@bungie/localization";
 import { InviteContainer } from "./Components.styled";
 import styles from "./GuardianInvite.module.scss";
-import { RouteDefs } from "@Routes/RouteDefs";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { ParentalControls } from "@Platform";
+import { Platform, PnP } from "@Platform";
 
 interface GuardianInviteProps {
-  childAccount: ParentalControls.ParentalControlsGetPlayerContextResponse["Player"];
+  childAccount: PnP.GetPlayerContextResponse["playerContext"];
 }
 
 const GuardianInvite: FC<GuardianInviteProps> = ({ childAccount }) => {
@@ -45,10 +43,19 @@ const GuardianInvite: FC<GuardianInviteProps> = ({ childAccount }) => {
     }
   };
 
-  useEffect(() => {
-    if (!origin) {
-      setInvitationLink(`${window?.location?.href}`);
+  const getEncodedInvite = async () => {
+    try {
+      const res = await Platform.PnpService.GetEncodedInviteUrlSequence();
+      setInvitationLink(
+        `${window?.location?.href}?playerId=${res?.encodedSequence}`
+      );
+    } catch (e) {
+      console.log(e);
     }
+  };
+
+  useEffect(() => {
+    getEncodedInvite();
   }, []);
 
   /*Strings*/

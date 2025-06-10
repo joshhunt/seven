@@ -1,15 +1,15 @@
-import React, { FC, useState, useEffect } from "react";
+import { usePlayerContext } from "@Areas/User/AccountComponents/ParentalControls/lib/usePlayerContext";
 import { Localizer } from "@bungie/localization";
-import classNames from "classnames";
+import { AgeCategoriesEnum, ChildPermissionEnum } from "@Enum";
 import { Snackbar } from "@mui/material";
-import { Alert } from "plxp-web-ui/components/base";
-import SettingsSection from "./SettingsSection";
-import { ParentalControls, Platform } from "@Platform";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { ParentalControlsResponseStatus } from "@Enum";
-import UserSettingsCheckbox from "../UserSettingsCheckbox";
+import { PnP } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import classNames from "classnames";
+import { Alert } from "plxp-web-ui/components/base";
+import React, { FC, useEffect, useState } from "react";
+import UserSettingsCheckbox from "../UserSettingsCheckbox";
 import styles from "./SettingsPanel.module.scss";
+import SettingsSection from "./SettingsSection";
 
 interface SettingsPanelProps {
   asContainer?: boolean;
@@ -29,7 +29,13 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   const showMarathonControls = ConfigUtils.SystemStatus(
     "FeatureMarathonParentalControls"
   );
-  /*  const { updatePreferences, updatePermissions, refreshPlayerContext  } = usePlayerContext();*/
+  const {
+    playerContext,
+    updatePreferences,
+    updatePermissions,
+    error,
+  } = usePlayerContext();
+  const isChild = playerContext?.ageCategory === AgeCategoriesEnum.Child;
 
   const resetSnackbarKey = () => {
     setSnackbarKey(undefined);
@@ -41,6 +47,9 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
 
   useEffect(() => {
     if (snackPack.length) {
+      if (error) {
+        setHasError(error);
+      }
       // Set a new snack when we don't have an active one
       setSnackbarKey(snackPack[0]);
       setSnackPack((prev) => prev.slice(1));
@@ -49,93 +58,68 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
       // Close an active snack when a new one is added
       setOpen(false);
     }
-  }, [snackPack, open]);
+  }, [snackPack, open, error]);
 
-  const [isSaved, setIsSaved] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isUpdated, setIsUpdated] = useState(false);
-  const [error, setError] = useState(null);
-  const [updatedPreference, setUpdatedPreference] = useState([]);
+  const [hasError, setHasError] = useState(null);
 
-  /* Remove logs, remove timeout */
-  const updateSettings = () => {
-    let status: ParentalControlsResponseStatus;
-
-    setIsLoading(true);
-    /* const membershipId = currentUserType === 3 ? playerContext.membershipId ? : assignedAccount.childData.memberShipId*/
-    /*updatePreferences(playerContext.membershipId, {...newSettings})*/
-
-    /*      
-		  Preserving just in case but will probably be removed with function above.
-		  Platform.UserService.UpdateParentalControlPermissionsForChild({Permissions: updatedPermissions}, linkedAccount.PlayerId)
-                    .then(r => {
-                        status = r.StatusCode;
-        
-                        if (r.StatusCode === 20) {
-                            setIsSaved(true)
-                            setIsUpdated(false)
-                        }
-        
-                        if (r.StatusCode === 50) {
-                            setError(r?.ErrorMessage);
-                            setIsSaved(false)
-                            setIsUpdated(true)
-                            setIsLoading(false)
-                        }
-                    })
-                    .catch(ConvertToPlatformError)
-                    .catch(e => {
-                        console.log(e)
-                    })
-                    .finally(() => {
-                        setIsLoading(false)
-                    });*/
-  };
-
-  /* wire this onchange up */
   const onChange = (id: number, value: boolean) => {
-    if (id) {
+    const deploySnacks = () => {
       setSnackPack((prev) => [...prev, id]);
-      const updatedItem = updatedPreference.map((itm) =>
-        itm.id === id ? { ...itm, Value: value } : itm
-      );
       setSnackbarKey(id);
       setOpen(true);
-      setUpdatedPreference(updatedItem);
+    };
+    const membershipId = assignedAccount.membershipId;
+    if (playerContext?.ageCategory === AgeCategoriesEnum.Adult) {
+      updatePermissions(
+        membershipId,
+        [{ type: id, value: value, isSetByParentOrGuardian: true }],
+        true
+      ).then((r) => {
+        if (error) {
+          setHasError(true);
+        }
+        deploySnacks();
+      });
+    } else {
+      updatePreferences(membershipId, [{ type: id, value }]).then((r) => {
+        if (error) {
+          setHasError(true);
+        }
+        deploySnacks();
+      });
     }
   };
 
   /* Localization */
   const ParentalControlLoc = Localizer.parentalcontrols;
-  const saveLabel = ParentalControlLoc.SaveSettings;
-  const saveMessage = ParentalControlLoc.SettingsHaveChanged;
-  const errorLabel = ParentalControlLoc.ErrorLabel;
+  const {
+    SaveSettings,
+    SettingsHaveChanged,
+    ErrorLabel,
+  } = Localizer.parentalcontrols;
 
   const settingsCopy = {
-    summaryText:
-      currentUserType === 3
-        ? null
-        : ParentalControlLoc.ChildControlYourGamingExperience,
+    summaryText: !isChild
+      ? null
+      : ParentalControlLoc.ChildControlYourGamingExperience,
     socialSection: {
       heading: ParentalControlLoc.SocialLabel,
-      subheading:
-        currentUserType === 3
-          ? ParentalControlLoc.AdultSocialSubheading
-          : ParentalControlLoc.ChildSocialSubheading,
+      subheading: !isChild
+        ? ParentalControlLoc.AdultSocialSubheading
+        : ParentalControlLoc.ChildSocialSubheading,
       formElements: {
         one: ParentalControlLoc.AllowVoiceChatAccess,
         two: ParentalControlLoc.AllowTextChatAccess,
       },
     },
-    maratonSection: {
+    marathonSection: {
       heading: "Marathon",
     },
     storeSection: {
       heading: ParentalControlLoc.StoreAndPurchasesLabel,
-      subheading:
-        currentUserType === 3
-          ? ParentalControlLoc.AdultStoreAndPurchasesSubheading
-          : null,
+      subheading: !isChild
+        ? ParentalControlLoc.AdultStoreAndPurchasesSubheading
+        : null,
       formElements: {
         one: ParentalControlLoc.EnableLinktoPlatformStore,
       },
@@ -143,17 +127,18 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   };
 
   const extractSettingsById = (id: number) => {
-    if (
-      Array.isArray(assignedAccount.childData) &&
-      assignedAccount.childData?.length > 0
-    ) {
-      const [child] = assignedAccount.childData;
-      const permission = child.permissions.find((p) => p.id === id);
-      const preference = child.preferences.find((p) => p.id === id);
+    if (assignedAccount.childData) {
+      const { childData } = assignedAccount;
+      const permission = childData.permissions.find(
+        (p: PnP.ChildPermission) => p?.type === id
+      ) || { id: id, value: true };
+      const preference = childData.preferences.find(
+        (p: PnP.ChildPreference) => p?.type === id
+      ) || { id: id, value: false };
 
       return {
-        permission: permission || null,
-        preference: preference || null,
+        permission: permission,
+        preference: preference,
       };
     }
   };
@@ -168,57 +153,81 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
       {settingsCopy?.summaryText && (
         <p className={styles.sectionCopy}>{settingsCopy.summaryText}</p>
       )}
+      {/* Experience */}
       <SettingsSection
         heading={settingsCopy.socialSection.heading}
         subheading={settingsCopy.socialSection.subheading}
       >
         <UserSettingsCheckbox
-          userPermissionsAndPreferences={extractSettingsById(2)}
-          variant={2}
-          isChild={currentUserType === 1}
+          userPermissionsAndPreferences={extractSettingsById(
+            ChildPermissionEnum.IsAccessVoiceChatAllowed
+          )}
+          variant={ChildPermissionEnum.IsAccessVoiceChatAllowed}
+          isChild={isChild}
+          handleOnChange={onChange}
         />
         <UserSettingsCheckbox
-          userPermissionsAndPreferences={extractSettingsById(1)}
-          variant={1}
-          isChild={currentUserType === 1}
+          userPermissionsAndPreferences={extractSettingsById(
+            ChildPermissionEnum.IsAccessTextChatAllowed
+          )}
+          variant={ChildPermissionEnum.IsAccessTextChatAllowed}
+          isChild={isChild}
+          handleOnChange={onChange}
         />
+        {/* Marathon */}
         {showMarathonControls ? (
           <SettingsSection
-            heading={settingsCopy.maratonSection.heading}
+            heading={settingsCopy.marathonSection.heading}
             subSection
           >
             <UserSettingsCheckbox
-              userPermissionsAndPreferences={extractSettingsById(8)}
-              variant={8}
-              isChild={currentUserType === 1}
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsJoinGroupWithoutInviteAllowed
+              )}
+              variant={ChildPermissionEnum.IsJoinGroupWithoutInviteAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
             />
             <UserSettingsCheckbox
-              userPermissionsAndPreferences={extractSettingsById(9)}
-              variant={9}
-              isChild={currentUserType === 1}
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsReceiveGroupInvitesAllowed
+              )}
+              variant={ChildPermissionEnum.IsReceiveGroupInvitesAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
             />
 
             <UserSettingsCheckbox
-              userPermissionsAndPreferences={extractSettingsById(10)}
-              variant={10}
-              isChild={currentUserType === 1}
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsSendGroupInvitesAllowed
+              )}
+              variant={ChildPermissionEnum.IsSendGroupInvitesAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
             />
             <UserSettingsCheckbox
-              userPermissionsAndPreferences={extractSettingsById(11)}
-              variant={11}
-              isChild={currentUserType === 1}
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsReceiveBungieFriendRequestsAllowed
+              )}
+              variant={ChildPermissionEnum.IsReceiveBungieFriendRequestsAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
             />
           </SettingsSection>
         ) : null}
       </SettingsSection>
+      {/* Store */}
       <SettingsSection
-        heading={settingsCopy.storeSection.heading}
+        heading={settingsCopy?.storeSection?.heading}
         subheading={settingsCopy.storeSection?.subheading}
       >
         <UserSettingsCheckbox
-          userPermissionsAndPreferences={extractSettingsById(4)}
-          variant={4}
-          isChild={currentUserType === 1}
+          userPermissionsAndPreferences={extractSettingsById(
+            ChildPermissionEnum.IsCommerceBuySilverAllowed
+          )}
+          variant={ChildPermissionEnum.IsCommerceBuySilverAllowed}
+          isChild={isChild}
+          handleOnChange={onChange}
         />
       </SettingsSection>
       <Snackbar
@@ -232,12 +241,12 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
         <div>
           <Alert
             onClose={() => setOpen(false)}
-            severity={error?.length > 0 ? "error" : "success"}
+            severity={hasError ? "error" : "success"}
             variant="filled"
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", minWidth: "200px" }}
           >
-            <p>{error?.length > 0 ? errorLabel : saveLabel}</p>
-            <p>{error?.length > 0 ? error : saveMessage}</p>
+            <p>{hasError ? ErrorLabel : SaveSettings}</p>
+            <p>{hasError ? hasError : SettingsHaveChanged}</p>
           </Alert>
         </div>
       </Snackbar>

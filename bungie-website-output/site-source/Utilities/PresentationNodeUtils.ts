@@ -148,15 +148,19 @@ export class PresentationNodeUtils {
     profileStringVariables: Responses.DestinyProfileResponse["profileStringVariables"]
   ) {
     /* Match {var: + one or more digits + } */
-    const VARIABLE_HASH_REGEX = /\{var:(\d+)\}/g;
-    const stringVariables =
-      profileStringVariables?.data.integerValuesByHash || {};
+    if (description) {
+      const VARIABLE_HASH_REGEX = /\{var:(\d+)\}/g;
+      const stringVariables =
+        profileStringVariables?.data.integerValuesByHash || {};
 
-    /* Replace the {var:SOME_NUMBERS} in the provided string with the matching variable OR return it if there is no match. */
-    return description.replace(VARIABLE_HASH_REGEX, (fullMatch, key) =>
-      Object.hasOwn(stringVariables, key)
-        ? String(stringVariables[key])
-        : fullMatch
-    );
+      /* Replace the {var:SOME_NUMBERS} in the provided string with the matching variable OR return it if there is no match. */
+      return description.replace(VARIABLE_HASH_REGEX, (fullMatch, key) =>
+        Object?.hasOwn(stringVariables, key)
+          ? String(stringVariables[key])
+          : fullMatch
+      );
+    }
+
+    return null;
   }
 }

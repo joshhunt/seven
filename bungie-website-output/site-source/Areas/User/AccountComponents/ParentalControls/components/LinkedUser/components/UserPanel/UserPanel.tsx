@@ -1,18 +1,27 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
+import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization";
-import { Button, Avatar } from "plxp-web-ui/components/base";
+import {
+  ParentOrGuardianAssignmentStatusEnum,
+  ResponseStatusEnum,
+} from "@Enum";
+import { Platform, PnP } from "@Platform";
 import classNames from "classnames";
-import styles from "./UserPanel.module.scss";
+import { Avatar, Button } from "plxp-web-ui/components/base";
+import {
+  usePlayerContext,
+  removePendingChildCookie,
+} from "@Areas/User/AccountComponents/ParentalControls/lib";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
+import { useHistory, useLocation } from "react-router-dom";
 import KwsAcceptModal from "../../../KwsModals/KwsAcceptModal";
 import KwsConfirmModal from "../../../KwsModals/KwsConfirmModal";
-import { ParentalControls, Platform } from "@Platform";
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
+import styles from "./UserPanel.module.scss";
 
 interface UserPanelProps {
   asContainer?: boolean;
-  assignedAccount?: any;
-  currentUserType?: any;
+  assignedAccount?: PnP.GetPlayerContextResponse["playerContext"];
+  currentUserType?: number;
 }
 
 interface ButtonProps {
@@ -27,11 +36,7 @@ interface ButtonProps {
 const parseLocale = (defaultLocale: string, locale?: string): string[] =>
   locale ? locale.split("-") : defaultLocale.split("-");
 
-const UserPanel: FC<UserPanelProps> = ({
-  assignedAccount,
-  currentUserType,
-  asContainer,
-}) => {
+const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   const ParentalControlsLoc = Localizer.parentalcontrols;
   const requestsToJoin = Localizer.Format(
     ParentalControlsLoc.RequestsToJoinFamily,
@@ -43,107 +48,159 @@ const UserPanel: FC<UserPanelProps> = ({
   const currentLang = parsedLocale[0] ?? "en";
 
   /* Accept */
-  const url = new URL(window.location.href);
-  const requestingChildId = url.searchParams.get("playerId");
-  const adultWithUnacceptedInvite =
-    requestingChildId?.length > 0 && currentUserType === 3;
   const [openKws, setKwsOpen] = useState(false);
-  const [hasAcceptedRequest, setHasAcceptedRequest] = useState(false);
   const [openConfirm, setConfirmOpen] = useState(false);
 
+  const {
+    playerContext,
+    pendingChildId,
+    refreshPlayerContext,
+  } = usePlayerContext();
+
+  const history = useHistory();
+  const location = useLocation();
+
+  const clearParams = () => {
+    history.replace(location.pathname);
+  };
+
   /* Controls what happens when a user clicks "Accept" in the KWS Acceptance Modal*/
-  const onKWSAccept = () => {
-    /*		Platform.UserService.LinkParentalControlGuardian(requestingChildId)
-			.then(r => {
-				setHasAcceptedRequest(true);
-				return r;
-			})
-			.catch(ConvertToPlatformError)
-			.catch(e => {
-				console.log(e);
-				Modal.error(e);
-			});*/
+  const onKWSAccept = async () => {
     setKwsOpen(false);
-    /*
-     * Once API call is complete:
-     * show confirm modal if the parent is NOT already verified
-     * Send an email regarding KWS
-     * */
-    if (!assignedAccount.isEmailVerified) {
+
+    const setChildAsPending = () => {
+      Platform.PnpService.SetParentOrGuardianAsPendingForChild(
+        pendingChildId,
+        playerContext?.membershipId
+      )
+        .then((r) => {
+          if (r !== ResponseStatusEnum.Success) {
+            Modal.error({
+              name: ResponseStatusEnum[r],
+              message: Localizer.errors.UnhandledError,
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          clearParams();
+          removePendingChildCookie();
+          refreshPlayerContext();
+        });
+    };
+
+    /* Try to refresh them in the event that emailVerified has changed since their last attempt.*/
+    /* If they are not verified they must verify first */
+    if (!playerContext.isEmailVerified) {
+      refreshPlayerContext();
       setConfirmOpen(true);
+    } else {
+      /* On accept, send KWS email - then set them as "pending", remove cookie - then refresh playerContext */
+      await Platform.PnpService.SendVerificationEmail(
+        playerContext?.membershipId,
+        pendingChildId
+      )
+        .then((r) => {
+          if (r !== ResponseStatusEnum.Success) {
+            Modal.error({
+              name: ResponseStatusEnum[r],
+              message: Localizer.errors.UnhandledError,
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => {
+          setChildAsPending();
+        });
     }
   };
 
-  const panelUserLabel = adultWithUnacceptedInvite
-    ? requestsToJoin
-    : assignedAccount.displayName;
+  const panelUserLabel =
+    assignedAccount?.parentOrGuardianAssignmentStatus === 0
+      ? requestsToJoin
+      : assignedAccount.displayName;
 
-  /* Update button states to use enums */
-  const keys = [0, 1, 2, 3] as const;
-  type Key = typeof keys[number];
+  const unlinkParent = async () => {
+    await Platform.PnpService.UnassignParentOrGuardianFromChild(
+      assignedAccount?.membershipId
+    )
+      .then((r) => r)
+      .catch(ConvertToPlatformError)
+      .catch((e) => {
+        console.log(e);
+        Modal.error(e);
+      })
+      .finally(() => {
+        refreshPlayerContext();
+      });
+  };
 
-  const BUTTON_STATES: Record<Key, ButtonProps> = {
-    /* None = 0 */
-    0: {
-      label: ParentalControlsLoc.AcceptLabel,
+  type ButtonStateMap = {
+    [K in ParentOrGuardianAssignmentStatusEnum]: ButtonProps;
+  };
+  const BUTTON_STATES: ButtonStateMap = {
+    [ParentOrGuardianAssignmentStatusEnum.None]: {
+      // Shows for Cookie child
       onClick: () => setKwsOpen(true),
-      disabled: false,
-      variant: "outlined",
+      label: "Pending" as string,
+      disabled: false as boolean,
+      variant: "contained",
     },
-    /* Pending = 1 */
-    1: {
-      label: "Pending",
-      disabled: true,
-      variant: "outlined",
+    [ParentOrGuardianAssignmentStatusEnum.Pending]: {
+      // Shows for pending child
+      onClick: () => setKwsOpen(true),
+      label: "Pending" as string,
+      disabled: true as boolean,
+      variant: "contained",
       sx: { pointerEvents: "none" },
     },
-    /* Assigned = 2 */
-    2: {
+    [ParentOrGuardianAssignmentStatusEnum.Assigned]: {
+      // Shows for assigned child
       label: ParentalControlsLoc.UnlinkLabel,
-      onClick: () => {
-        Platform.UserService.UnlinkParentalControlGuardian()
-          .then((r) => r)
-          .catch(ConvertToPlatformError)
-          .catch((e) => {
-            console.log(e);
-            Modal.error(e);
-          });
-      },
-      disabled: false,
+      onClick: () => unlinkParent(),
+      disabled: false as boolean,
       variant: "outlined",
       color: "error",
     },
-    /* Unassigned = 3 */
-    3: {
-      label: ParentalControlsLoc.AcceptLabel,
+    [ParentOrGuardianAssignmentStatusEnum.Unassigned]: {
+      // Shouldn't show
+      label: ParentalControlsLoc.AcceptLabel as string,
       onClick: () => setKwsOpen(true),
-      disabled: false,
+      disabled: true as boolean,
       variant: "contained",
     },
   };
 
+  const PanelButton = () => (
+    <Button
+      {...BUTTON_STATES[assignedAccount.parentOrGuardianAssignmentStatus]}
+    >
+      {BUTTON_STATES[assignedAccount.parentOrGuardianAssignmentStatus]?.label}
+    </Button>
+  );
+
   return asContainer ? (
     <div
       className={classNames(styles.container, {
-        [styles.backgroundBase]: !adultWithUnacceptedInvite,
-        [styles.backgroundAccept]: adultWithUnacceptedInvite,
+        [styles.backgroundBase]:
+          assignedAccount?.parentOrGuardianAssignmentStatus !==
+          ParentOrGuardianAssignmentStatusEnum.Unassigned,
+        [styles.backgroundAccept]:
+          assignedAccount?.parentOrGuardianAssignmentStatus ===
+          ParentOrGuardianAssignmentStatusEnum.Unassigned,
       })}
     >
       <div className={styles.userContainer}>
-        <Avatar />
+        <Avatar src={assignedAccount?.profilePicturePath} />
         <p lang={currentLang} className={styles.userLabel}>
           {panelUserLabel}
         </p>
       </div>
-      <Button
-        // @ts-ignore
-        {...BUTTON_STATES[assignedAccount.parentOrGuardianAssignmentStatus]}
-      >
-        {
-          // @ts-ignore
-          BUTTON_STATES[assignedAccount.parentOrGuardianAssignmentStatus]?.label
-        }
-      </Button>
+      <PanelButton />
       <KwsAcceptModal
         open={openKws}
         onAccept={() => onKWSAccept()}
@@ -153,12 +210,13 @@ const UserPanel: FC<UserPanelProps> = ({
         open={openConfirm}
         onAccept={() => {
           setConfirmOpen(false);
+          refreshPlayerContext();
         }}
       />
     </div>
   ) : (
     <div className={styles.userContainer}>
-      <Avatar />
+      <Avatar src={assignedAccount?.profilePicturePath} />
       <p className={styles.userLabel}>{assignedAccount.displayName}</p>
     </div>
   );
