@@ -20645,11 +20645,13 @@ export declare namespace PnP {
 
     /**
 		The display name of the calling player.
+		Note: Exposed for encoded membership Id requests.
 		*/
     displayName: string;
 
     /**
 		The path to the player's profile picture.
+		Note: Exposed for encoded membership Id requests.
 		*/
     profilePicturePath: string;
 
@@ -20733,23 +20735,73 @@ export declare namespace PnP {
   }
 
   /**
-	Contract representing a webhook request from KWS (Kids Web Services).
+	Contract representing the request body from a KWS webhook hit.
 	*/
-  export interface KwsWebhookRequest {
+  export interface KwsWebhookBody {
     /**
-		The email of the parent or guardian who accepted the
+		The name of the member who verified.
+		*/
+    name: string;
+
+    /**
+		The timestamp of verification, i.e., "ISO8601 timestamp"
+		*/
+    time: string;
+
+    /**
+		The KWS organization uuid.
+		*/
+    orgId: string;
+
+    /**
+		The KWS product uuid.
+		*/
+    productId: string;
+
+    /**
+		The KWS environment uuid.
+		*/
+    environmentId: string;
+
+    /**
+		The verification payload that was given to KWS.
+		*/
+    payload: PnP.KwsWebhookPayload;
+  }
+
+  /**
+	The payload object being trasferred by KWS.
+	*/
+  export interface KwsWebhookPayload {
+    /**
+		The parent or guardian's email.
 		*/
     parentEmail: string;
 
     /**
-		Whether the relevant user successfully verified as an adult.
+		The payload value.
+		*/
+    externalPayload: string;
+
+    /**
+		The verification status object.
+		*/
+    status: PnP.KwsWebhookPayloadStatus;
+  }
+
+  /**
+	The KWS verification status object.
+	*/
+  export interface KwsWebhookPayloadStatus {
+    /**
+		Whether or not the user verified as an adult successfully.
 		*/
     verified: boolean;
 
     /**
-		The external payload attached to this webhook.
+		The transaction Id.
 		*/
-    externalPayload: string;
+    transactionId: string;
   }
 }
 
@@ -30996,19 +31048,19 @@ class SocialServiceInternal {
 class PnpServiceInternal {
   /**
    * Sets a parent or guardian account and child account into a pending assignment state.
-   * @param childMembershipId The child's membership Id.
+   * @param encodedChildMembershipId The encoded child's membership Id.
    * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static SetParentOrGuardianAsPendingForChild = (
-    childMembershipId: string,
+    encodedChildMembershipId: string,
     parentOrGuardianMembershipId: string,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Globals.ResponseStatusEnum> =>
     ApiIntermediary.doPostRequest(
-      `/PnP/Pending/${e(childMembershipId)}/${e(
+      `/PnP/Pending/${e(encodedChildMembershipId)}/${e(
         parentOrGuardianMembershipId
       )}/`,
       [],
@@ -31106,6 +31158,27 @@ class PnpServiceInternal {
     );
 
   /**
+   * Retrieves a distilled version of an account's player context data, provided an encoded membership Id.
+   * @param encodedMembershipId The player's encoded membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GetPlayerContextWithEncodedMembershipId = (
+    encodedMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<PnP.GetPlayerContextResponse> =>
+    ApiIntermediary.doGetRequest(
+      `/PnP/PlayerContextEncoded/${e(encodedMembershipId)}`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "GetPlayerContextWithEncodedMembershipId",
+      undefined,
+      clientState
+    );
+
+  /**
    * Retrieves a unique assignment invite URL sequence for the acting child account to send to a parent or guardian.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
@@ -31127,19 +31200,19 @@ class PnpServiceInternal {
   /**
    * Sends an email to the acting parent or guardian account to verify themselves as an adult through KWS (Kids Web Services) for their pending child account.
    * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
-   * @param childMembershipId The child's membership Id.
+   * @param encodedChildMembershipId The encoded child's membership Id.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static SendVerificationEmail = (
     parentOrGuardianMembershipId: string,
-    childMembershipId: string,
+    encodedChildMembershipId: string,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Globals.ResponseStatusEnum> =>
     ApiIntermediary.doPostRequest(
       `/PnP/KWS/Email/${e(parentOrGuardianMembershipId)}/For/${e(
-        childMembershipId
+        encodedChildMembershipId
       )}/`,
       [],
       optionalQueryAppend,
@@ -31155,7 +31228,7 @@ class PnpServiceInternal {
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static KwsWebhook = (
-    input: PnP.KwsWebhookRequest,
+    input: PnP.KwsWebhookBody,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Globals.ResponseStatusEnum> =>

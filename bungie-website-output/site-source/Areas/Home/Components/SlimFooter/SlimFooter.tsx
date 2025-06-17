@@ -46,6 +46,8 @@ const SlimFooter: FC<Props> = ({ socialLinks, links, siteLogo }) => {
     year: DateTime.local().year,
   });
 
+  const lucasCopyright = Localizer.nav.StarWars2024Lucasfilm;
+
   return (
     <footer className={styles.slimFooter}>
       <div className={styles.footerContainer}>
@@ -74,6 +76,7 @@ const SlimFooter: FC<Props> = ({ socialLinks, links, siteLogo }) => {
             </Anchor>
           )}
           <p dangerouslySetInnerHTML={sanitizeHTML(copyright)} />
+          <p dangerouslySetInnerHTML={sanitizeHTML(lucasCopyright)} />
         </div>
       </div>
     </footer>
