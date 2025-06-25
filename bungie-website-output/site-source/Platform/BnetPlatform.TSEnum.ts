@@ -421,6 +421,9 @@ export enum AclEnum {
   MarathonAlpha_PublicFriends = 45,
   MarathonAlpha_DiaryStudy = 46,
   MarathonAlpha_CSCreators = 47,
+  Marathon_Playtest_Bungie = 48,
+  Marathon_Playtest_1 = 49,
+  Marathon_Playtest_2 = 50,
 }
 
 /**

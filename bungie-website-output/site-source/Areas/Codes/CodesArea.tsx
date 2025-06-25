@@ -11,7 +11,6 @@ import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { WithRouteData } from "@UI/Navigation/WithRouteData";
 import { ISubNavLink, SubNav } from "@UI/UIKit/Controls/SubNav";
-import { EnumUtils } from "@Utilities/EnumUtils";
 import React from "react";
 import { Route, RouteComponentProps } from "react-router-dom";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -25,7 +24,6 @@ import { PartnerRewards } from "./PartnerRewards/PartnerRewards";
 import { GameCodes } from "@Areas/Codes/GameCodes/GameCodesSection";
 import styles from "./Codes.module.scss";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { AclHelper } from "@Areas/Marathon/Alpha/Helpers/AclHelper";
 
 interface CodesAreaProps
@@ -40,6 +38,7 @@ interface CodesAreaProps
 class CodesArea extends React.Component<CodesAreaProps> {
   public render() {
     const currentAction = UrlUtils.GetUrlAction(this.props.location);
+    const codeLoc = Localizer.CodeRedemption;
 
     const redemption = RouteDefs.Areas.Codes.getAction("Redeem");
     const history = RouteDefs.Areas.Codes.getAction("History");
@@ -48,17 +47,17 @@ class CodesArea extends React.Component<CodesAreaProps> {
 
     const links: ISubNavLink[] = [
       {
-        label: Localizer.Coderedemption.CodeRedemption,
+        label: codeLoc.CodeRedemption,
         to: redemption.resolve(),
         current: redemption.action === currentAction,
       },
       {
-        label: Localizer.Coderedemption.CodeHistoryTitle,
+        label: codeLoc.CodeHistoryTitle,
         to: history.resolve(),
         current: history.action === currentAction,
       },
       {
-        label: Localizer.Coderedemption.PartnerRewards,
+        label: codeLoc.PartnerRewards,
         to: partnerRewards.resolve(),
         current: partnerRewards.action === currentAction,
       },
@@ -80,20 +79,18 @@ class CodesArea extends React.Component<CodesAreaProps> {
       <Route path={gameCodes.path} component={GameCodes} />
     );
 
-    const alphaUnlocked = ConfigUtils.SystemStatus(SystemNames.MarathonAlpha);
-
-    const hasAlphaAccess = AclHelper.hasMarathonAccess(
+    const canSeeGameCodes = AclHelper.hasGameCodesAccess(
       this.props.globalState?.loggedInUser?.userAcls
     );
 
-    if (hasAlphaAccess && alphaUnlocked) {
+    if (canSeeGameCodes) {
       links.push(gameCodesTab);
     }
 
     return (
       <React.Fragment>
         <BungieHelmet
-          title={Localizer.Coderedemption.Coderedemption}
+          title={codeLoc.Coderedemption}
           image={BungieHelmet.DefaultBoringMetaImage}
         >
           <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
@@ -103,15 +100,15 @@ class CodesArea extends React.Component<CodesAreaProps> {
             <GridCol cols={12} className={`bungie-title`}>
               <SwitchWithErrors>
                 <Route path={redemption.path}>
-                  <h2>{Localizer.Coderedemption.CodeRedemption}</h2>
+                  <h2>{codeLoc.CodeRedemption}</h2>
                 </Route>
                 <Route path={history.path}>
-                  <h2>{Localizer.Coderedemption.CodeHistoryTitle}</h2>
+                  <h2>{codeLoc.CodeHistoryTitle}</h2>
                 </Route>
                 <Route path={partnerRewards.path}>
-                  <h2>{Localizer.Coderedemption.PartnerRewards}</h2>
+                  <h2>{codeLoc.PartnerRewards}</h2>
                 </Route>
-                {alphaUnlocked && gameCodesRoute}
+                {canSeeGameCodes && gameCodesRoute}
               </SwitchWithErrors>
             </GridCol>
           </Grid>
@@ -131,7 +128,7 @@ class CodesArea extends React.Component<CodesAreaProps> {
               <Route path={redemption.path} component={CodesRedemption} />
               <Route path={history.path} component={CodesHistory} />
               <Route path={partnerRewards.path} component={PartnerRewards} />
-              {alphaUnlocked && gameCodesComponentRoute}
+              {canSeeGameCodes && gameCodesComponentRoute}
             </AnimatedRouter>
           </GridCol>
         </Grid>

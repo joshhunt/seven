@@ -11,11 +11,11 @@ interface UserSettingsCheckboxProps {
   variant?: ChildPermissionEnum;
   userPermissionsAndPreferences?: {
     permission: {
-      id: ChildPermissionEnum;
+      type: ChildPermissionEnum;
       value: boolean;
     };
     preference: {
-      id: ChildPermissionEnum;
+      type: ChildPermissionEnum;
       value: boolean;
     };
   };
@@ -39,7 +39,7 @@ const UserSettingsCheckbox: FC<UserSettingsCheckboxProps> = ({
     }
 
     if (!isChild) {
-      return preference?.value;
+      return permission?.value;
     }
 
     return false;
@@ -58,7 +58,10 @@ const UserSettingsCheckbox: FC<UserSettingsCheckboxProps> = ({
             disabled={isChild ? !permission.value : false}
             defaultChecked={getDefaultChecked()}
             onChange={(value) =>
-              handleOnChange(preference?.id, value?.currentTarget?.checked)
+              handleOnChange(
+                isChild ? preference?.type : permission?.type,
+                value?.currentTarget?.checked
+              )
             }
           />
         }

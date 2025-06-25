@@ -24,7 +24,7 @@ const AlertNotification: FC<AlertProps> = ({
       sx={{
         marginBottom: bottomMargin,
       }}
-      icon={icon}
+      icon={icon || <div />}
       severity={severity}
       onClick={null}
     >

@@ -1,3 +1,4 @@
+import { Typography } from "plxp-web-ui/components/base";
 import React, { FC } from "react";
 import { Localizer } from "@bungie/localization";
 import { ParentOrGuardianAssignmentStatusEnum } from "@Enum";
@@ -8,11 +9,7 @@ import { LinkedUser } from "../../components/LinkedUser";
 interface ChildViewProps {}
 
 const ChildView: FC<ChildViewProps> = () => {
-  const {
-    ChildViewSubheading,
-    ParentOrGuardian,
-    CreateALink,
-  } = Localizer.parentalcontrols;
+  const { ParentOrGuardian, CreateALink } = Localizer.parentalcontrols;
 
   const { playerContext } = usePlayerContext();
 
@@ -25,10 +22,12 @@ const ChildView: FC<ChildViewProps> = () => {
       ParentOrGuardianAssignmentStatusEnum.Pending;
 
   return playerContext?.membershipId ? (
-    <PageTemplate
-      hero={{ subheading: ChildViewSubheading }}
-      faqEntryId={"blte68395781113b3b8"}
-    >
+    <PageTemplate faqEntryId={"blte68395781113b3b8"}>
+      {hasAdult && (
+        <Typography component={"h2"} variant={"h6"}>
+          {ParentOrGuardian}
+        </Typography>
+      )}
       {hasAdult ? (
         <LinkedUser
           currentUserType={playerContext.ageCategory}

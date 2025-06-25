@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useState } from "react";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization";
 import {
@@ -8,6 +8,7 @@ import {
 import { Platform, PnP } from "@Platform";
 import classNames from "classnames";
 import { Avatar, Button } from "plxp-web-ui/components/base";
+import { ButtonProps } from "@mui/material";
 import {
   usePlayerContext,
   removePendingChildCookie,
@@ -24,13 +25,8 @@ interface UserPanelProps {
   currentUserType?: number;
 }
 
-interface ButtonProps {
+interface InternalButtonProps extends ButtonProps {
   label: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  variant?: "outlined" | "contained";
-  color?: "error";
-  sx?: string | object;
 }
 
 const parseLocale = (defaultLocale: string, locale?: string): string[] =>
@@ -64,33 +60,33 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     history.replace(location.pathname);
   };
 
+  const setChildAsPending = () => {
+    Platform.PnpService.SetParentOrGuardianAsPendingForChild(
+      pendingChildId,
+      playerContext?.membershipId
+    )
+      .then((r) => {
+        if (r !== ResponseStatusEnum.Success) {
+          Modal.error({
+            name: ResponseStatusEnum[r],
+            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
+          });
+        }
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => {
+        console.log(e);
+      })
+      .finally(() => {
+        clearParams();
+        removePendingChildCookie();
+        refreshPlayerContext();
+      });
+  };
+
   /* Controls what happens when a user clicks "Accept" in the KWS Acceptance Modal*/
   const onKWSAccept = async () => {
     setKwsOpen(false);
-
-    const setChildAsPending = () => {
-      Platform.PnpService.SetParentOrGuardianAsPendingForChild(
-        pendingChildId,
-        playerContext?.membershipId
-      )
-        .then((r) => {
-          if (r !== ResponseStatusEnum.Success) {
-            Modal.error({
-              name: ResponseStatusEnum[r],
-              message: Localizer.errors.UnhandledError,
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        })
-        .finally(() => {
-          clearParams();
-          removePendingChildCookie();
-          refreshPlayerContext();
-        });
-    };
-
     /* Try to refresh them in the event that emailVerified has changed since their last attempt.*/
     /* If they are not verified they must verify first */
     if (!playerContext.isEmailVerified) {
@@ -106,15 +102,15 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
           if (r !== ResponseStatusEnum.Success) {
             Modal.error({
               name: ResponseStatusEnum[r],
-              message: Localizer.errors.UnhandledError,
+              message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
             });
+          } else {
+            /* Open confirmation modal */
+            setConfirmOpen(true);
           }
         })
         .catch((e) => {
           console.log(e);
-        })
-        .finally(() => {
-          setChildAsPending();
         });
     }
   };
@@ -128,10 +124,16 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     await Platform.PnpService.UnassignParentOrGuardianFromChild(
       assignedAccount?.membershipId
     )
-      .then((r) => r)
+      .then((r) => {
+        if (r !== ResponseStatusEnum.Success) {
+          Modal.error({
+            name: ResponseStatusEnum[r],
+            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
+          });
+        }
+      })
       .catch(ConvertToPlatformError)
       .catch((e) => {
-        console.log(e);
         Modal.error(e);
       })
       .finally(() => {
@@ -140,20 +142,20 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   };
 
   type ButtonStateMap = {
-    [K in ParentOrGuardianAssignmentStatusEnum]: ButtonProps;
+    [K in ParentOrGuardianAssignmentStatusEnum]: InternalButtonProps;
   };
   const BUTTON_STATES: ButtonStateMap = {
     [ParentOrGuardianAssignmentStatusEnum.None]: {
       // Shows for Cookie child
       onClick: () => setKwsOpen(true),
-      label: "Pending" as string,
+      label: ParentalControlsLoc.AcceptLabel,
       disabled: false as boolean,
       variant: "contained",
     },
     [ParentOrGuardianAssignmentStatusEnum.Pending]: {
       // Shows for pending child
       onClick: () => setKwsOpen(true),
-      label: "Pending" as string,
+      label: ParentalControlsLoc.PendingLabel,
       disabled: true as boolean,
       variant: "contained",
       sx: { pointerEvents: "none" },
@@ -168,7 +170,7 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     },
     [ParentOrGuardianAssignmentStatusEnum.Unassigned]: {
       // Shouldn't show
-      label: ParentalControlsLoc.AcceptLabel as string,
+      label: ParentalControlsLoc.AcceptLabel,
       onClick: () => setKwsOpen(true),
       disabled: true as boolean,
       variant: "contained",
@@ -209,8 +211,9 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
       <KwsConfirmModal
         open={openConfirm}
         onAccept={() => {
+          /* Close modal and set child as pending */
           setConfirmOpen(false);
-          refreshPlayerContext();
+          setChildAsPending();
         }}
       />
     </div>

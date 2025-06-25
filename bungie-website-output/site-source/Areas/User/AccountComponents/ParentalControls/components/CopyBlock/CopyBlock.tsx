@@ -10,7 +10,7 @@ const CopyBlock: FC<CopyBlockProps> = ({ heading, subheading }) => {
   return (
     <div>
       <h2 className={styles.heading}>{heading}</h2>
-      <p className={styles.subheading}>{subheading}</p>
+      {subheading && <p className={styles.subheading}>{subheading}</p>}
     </div>
   );
 };

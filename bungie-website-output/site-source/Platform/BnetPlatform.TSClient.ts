@@ -31223,7 +31223,7 @@ class PnpServiceInternal {
     );
 
   /**
-   * The returning webhook for KWS (Kids Web Services) to alert the PnP system of a verification update or expiration.
+   * The returning webhook for KWS (Kids Web Services) to alert Bnet of an adult verification update or expiration.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */

@@ -42,7 +42,7 @@ const FrequentlyAskedQuestions: FC<FrequentlyAskedQuestionsProps> = ({
   buttonData,
 }) =>
   Array.isArray(questions) && questions?.length > 0 ? (
-    <div>
+    <>
       {sectionTitle && <h3 className={styles.heading}>{sectionTitle}</h3>}
       <dl className={styles.questionsList}>
         {questions.map((questionBlock) => (
@@ -64,7 +64,7 @@ const FrequentlyAskedQuestions: FC<FrequentlyAskedQuestionsProps> = ({
       >
         {buttonData?.title}
       </Button>
-    </div>
+    </>
   ) : null;
 
 export default FrequentlyAskedQuestions;

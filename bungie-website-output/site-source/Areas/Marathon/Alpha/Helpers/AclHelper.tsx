@@ -9,13 +9,13 @@ export class AclHelper {
     return EnumUtils.getStringValue(acl, AclEnum);
   };
 
-  static hasMarathonAccess(userAcls: AclEnum[]): boolean {
+  static hasGameCodesAccess(userAcls: AclEnum[]): boolean {
     if (!userAcls) {
       return null;
     }
 
     return userAcls.some((role: AclEnum) =>
-      this.getAclAsString(role).startsWith("MarathonAlpha_")
+      this.getAclAsString(role)?.startsWith("Marathon_")
     );
   }
 
@@ -25,7 +25,7 @@ export class AclHelper {
     }
 
     return userAcls.find((role) =>
-      this.getAclAsString(role).startsWith("MarathonAlpha_")
+      this.getAclAsString(role)?.startsWith("Marathon_")
     );
   }
 

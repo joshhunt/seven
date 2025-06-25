@@ -216,7 +216,7 @@ export class AccountSidebar extends React.Component<
           <OneLineItem
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_signout.png" />
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_gamehistory.png" />
             }
             itemTitle={Localizer.Nav.TopNavGameHistory}
           />
@@ -229,7 +229,7 @@ export class AccountSidebar extends React.Component<
             clickable={true}
             size={BasicSize.Small}
             icon={
-              <IconCoin iconImageUrl="7/ca/bungie/icons/profile/accountmenu_signout.png" />
+              <IconCoin iconImageUrl="/img/theme/bungienet/account_sidebar/accountmenu_signout.png" />
             }
             itemTitle={Localizer.Community.signoutheader}
           />

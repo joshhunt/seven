@@ -1,12 +1,22 @@
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { Localizer } from "@bungie/localization";
+import { Modal } from "@UIKit/Controls/Modal/Modal";
 import cookie from "js-cookie";
-import React, { createContext, useContext, ReactNode } from "react";
 import { Platform, PnP } from "@Platform";
-import { useState, useEffect, useCallback } from "react";
 import {
   ChildPermissionEnum,
   ChildPreferenceEnum,
   ResponseStatusEnum,
 } from "@Enum";
+
+import { ConvertToPlatformError } from "@ApiIntermediary";
 
 type Child = PnP.GetPlayerContextResponse["assignedChildren"][number];
 
@@ -73,9 +83,20 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
     setLoading(true);
     try {
       const res = await Platform.PnpService.GetPlayerContext(membershipId);
-      setPlayerContext(res.playerContext);
-      setChildrenById(res.assignedChildren);
+
+      if (res.responseStatus !== ResponseStatusEnum.Success) {
+        Modal.error({
+          name: ResponseStatusEnum[res.responseStatus],
+          message: `${Localizer.errors.UnhandledError} Error: ${
+            ResponseStatusEnum[res.responseStatus]
+          }`,
+        });
+      } else {
+        setPlayerContext(res.playerContext);
+        setChildrenById(res.assignedChildren);
+      }
     } catch (err) {
+      ConvertToPlatformError(err);
       setError(err);
     } finally {
       setLoading(false);
@@ -202,7 +223,11 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
 
   return {
     playerContext,
-    assignedChildren: childrenById,
+    assignedChildren: childrenById?.sort(
+      (a, b) =>
+        parseInt(a?.parentOrGuardianMembershipId || "0", 10) -
+        parseInt(b?.parentOrGuardianMembershipId || "0", 10)
+    ),
     loading,
     error,
     refreshPlayerContext: fetchContext,

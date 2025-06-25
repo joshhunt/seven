@@ -1,3 +1,5 @@
+import React, { FC, useEffect, useState } from "react";
+import { AlertNotification } from "@Areas/User/AccountComponents/ParentalControls/components";
 import { usePlayerContext } from "@Areas/User/AccountComponents/ParentalControls/lib/usePlayerContext";
 import { Localizer } from "@bungie/localization";
 import { AgeCategoriesEnum, ChildPermissionEnum } from "@Enum";
@@ -6,7 +8,6 @@ import { PnP } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import { Alert } from "plxp-web-ui/components/base";
-import React, { FC, useEffect, useState } from "react";
 import UserSettingsCheckbox from "../UserSettingsCheckbox";
 import styles from "./SettingsPanel.module.scss";
 import SettingsSection from "./SettingsSection";
@@ -213,6 +214,14 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
               isChild={isChild}
               handleOnChange={onChange}
             />
+            <UserSettingsCheckbox
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsSharePlatformIdAllowed
+              )}
+              variant={ChildPermissionEnum.IsSharePlatformIdAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
+            />
           </SettingsSection>
         ) : null}
       </SettingsSection>
@@ -230,6 +239,11 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
           handleOnChange={onChange}
         />
       </SettingsSection>
+      <AlertNotification
+        alertTitle={Localizer.parentalcontrols.TheseSettingsDoNotImpact}
+        icon={null}
+        alertMessage={Localizer.parentalcontrols.ThereAreOtherControls}
+      />
       <Snackbar
         key={snackbarKey}
         TransitionProps={{ onExited: resetSnackbarKey }}

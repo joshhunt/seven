@@ -30,14 +30,6 @@ export class EnumUtils {
     enumValue: string | number,
     enumType: T
   ): EnumStrings<T> {
-    if (!(enumValue in enumType)) {
-      throw new Error(
-        `${enumValue} is not a valid value of the given enum type ${JSON.stringify(
-          enumType
-        )}`
-      );
-    }
-
     return isNaN(parseInt(enumValue as string))
       ? (enumValue as EnumStrings<T>)
       : ((enumType as any)[enumValue] as EnumStrings<T>);
@@ -53,14 +45,6 @@ export class EnumUtils {
     enumValue: string | number,
     enumType: T
   ): number {
-    if (!(enumValue in enumType)) {
-      throw new Error(
-        `${enumValue} is not a valid value of the given enum type ${JSON.stringify(
-          enumType
-        )}`
-      );
-    }
-
     return isNaN(parseInt(enumValue as string))
       ? ((enumType as any)[enumValue] as number)
       : (enumValue as number);
