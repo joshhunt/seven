@@ -1,16 +1,16 @@
 import { Responsive } from "@Boot/Responsive";
-import { ClientDeviceType } from "@Enum";
-import { Button, Typography } from "plxp-web-ui/components/base";
-import React, { useState } from "react";
-import styles from "./GameCodesSection.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { SiPlaystation } from "@react-icons/all-files/si/SiPlaystation";
+import { Localizer } from "@bungie/localization/Localizer";
+import { ClientDeviceType } from "@Enum";
+import { FaMicrosoft } from "@react-icons/all-files/fa/FaMicrosoft";
 import { FaSteam } from "@react-icons/all-files/fa/FaSteam";
 import { FaXbox } from "@react-icons/all-files/fa/FaXbox";
 import { SiEpicgames } from "@react-icons/all-files/si/SiEpicgames";
-import { FaMicrosoft } from "@react-icons/all-files/fa/FaMicrosoft";
+import { SiPlaystation } from "@react-icons/all-files/si/SiPlaystation";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { Localizer } from "@bungie/localization/Localizer";
+import { Button, Typography } from "plxp-web-ui/components/base";
+import React, { useState } from "react";
+import styles from "./GameCodesSection.module.scss";
 
 interface CodeRowProps {
   title: string;
@@ -92,8 +92,8 @@ export const CodeRow: React.FC<CodeRowProps> = ({ title, platform, code }) => {
       </div>
       <div className={styles.content}>
         <span className={styles.platform}>
-          Use this code in the {Localizer.platforms[platform]} store to claim
-          your Alpha copy of Marathon.
+          Redeem this code in the {Localizer.platforms[platform]} store to claim
+          your copy of Marathon.
         </span>
         <div className={styles.codeContainer}>
           {tiny ? (
