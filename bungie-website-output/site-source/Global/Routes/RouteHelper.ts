@@ -225,12 +225,6 @@ export class RouteHelper {
   public static Fireteams = LegacyPathWithQuery(
     "ClanV2/FireteamSearch?activityType=0&platform=0"
   );
-  public static DeprecatedReactFireteams = BasicReactPath<
-    IFireteamSearchParams
-  >(RouteDefs.Areas.Fireteams.getAction("Search"));
-  public static DeprecatedReactFireteam = BasicReactPath<IFireteamParams>(
-    RouteDefs.Areas.Fireteams.getAction("Fireteam")
-  );
   public static FireteamFinderCreate = BasicReactPath<IFireteamFinderParams>(
     RouteDefs.Areas.FireteamFinder.getAction("Create")
   );

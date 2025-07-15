@@ -1,7 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import { Button, Dialog } from "plxp-web-ui/components/base";
 import { Localizer } from "@bungie/localization";
-import MailIcon from "@mui/icons-material/Mail";
 
 interface DialogProps {
   open: boolean;

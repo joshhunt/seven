@@ -1,29 +1,27 @@
+import { AgeCategoriesEnum, ParentOrGuardianAssignmentStatusEnum } from "@Enum";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { FC } from "react";
 import { SettingsPanel, UserPanel } from "../components";
 
 interface LinkedUserProps {
   assignedAccount: any;
-  currentUserType?: any;
 }
 
-const LinkedUser: FC<LinkedUserProps> = ({
-  currentUserType,
-  assignedAccount,
-}) => (
-  <div>
-    <UserPanel
-      assignedAccount={assignedAccount}
-      currentUserType={currentUserType}
-      asContainer
-    />
-    {assignedAccount?.parentOrGuardianAssignmentStatus === 2 && (
-      <SettingsPanel
-        currentUserType={currentUserType}
-        assignedAccount={assignedAccount}
-        asContainer
-      />
-    )}
-  </div>
-);
+const LinkedUser: FC<LinkedUserProps> = ({ assignedAccount }) => {
+  const isAssigned = EnumUtils.looseEquals(
+    assignedAccount?.parentOrGuardianAssignmentStatus,
+    ParentOrGuardianAssignmentStatusEnum.Assigned,
+    ParentOrGuardianAssignmentStatusEnum
+  );
+
+  return (
+    <div>
+      <UserPanel assignedAccount={assignedAccount} asContainer />
+      {isAssigned && (
+        <SettingsPanel assignedAccount={assignedAccount} asContainer />
+      )}
+    </div>
+  );
+};
 
 export default LinkedUser;

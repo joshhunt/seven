@@ -2,28 +2,22 @@
 
 import { Localizer } from "@bungie/localization/Localizer";
 import { DetailedError } from "@CustomErrors";
-import { BungieCredentialType } from "@Enum";
 import * as Globals from "@Enum";
+import { BungieCredentialType } from "@Enum";
 import { DestinyMembershipDataStorePayload } from "@Global/DataStore/DestinyMembershipDataStore";
 import {
   GlobalState,
   GlobalStateComponentProps,
 } from "@Global/DataStore/GlobalStateDataStore";
-import {
-  Fireteam,
-  Friends,
-  GroupsV2,
-  Ignores,
-  Platform,
-  Responses,
-  User,
-} from "@Platform";
+import { Fireteam, Friends, GroupsV2, Ignores, User } from "@Platform";
 import Cookies from "js-cookie";
 // @ts-ignore
 import * as h from "history";
 import { DateTime } from "luxon";
 import { ConfigUtils } from "./ConfigUtils";
 import { EnumUtils } from "./EnumUtils";
+
+import React from "react";
 
 export interface IBungieName {
   /** This will fallback to the name to use if we do not have a bungie Global Name for them */

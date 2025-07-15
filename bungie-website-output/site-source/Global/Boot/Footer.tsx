@@ -151,7 +151,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               )}
               {this.renderLink(
                 RouteHelper.SeasonsProgress(),
-                navLoc.TopNavSeasonPassProgress
+                navLoc.TopNavRewardsPassProgress
               )}
               {this.renderLink(
                 RouteHelper.NewTriumphs(),

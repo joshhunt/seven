@@ -47,7 +47,6 @@ interface DestinyDetailItemModalProps
 const DestinyCollectibleDetailItemModalContent: React.FC<DestinyDetailItemModalProps> = (
   props
 ) => {
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(
     PresentationNodeDestinyMembershipDataStore
   );

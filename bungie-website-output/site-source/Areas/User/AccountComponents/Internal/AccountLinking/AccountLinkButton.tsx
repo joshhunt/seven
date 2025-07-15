@@ -4,15 +4,12 @@
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import React from "react";
-import { RouteHelper } from "../../../../../Global/Routes/RouteHelper";
-import { BungieCredentialType } from "../../../../../Platform/BnetPlatform.TSEnum";
-import {
-  Button,
-  ButtonProps,
-} from "../../../../../UI/UIKit/Controls/Button/Button";
-import { BasicSize } from "../../../../../UI/UIKit/UIKitUtils";
-import { BrowserUtils } from "../../../../../Utilities/BrowserUtils";
-import { EnumUtils } from "../../../../../Utilities/EnumUtils";
+import { RouteHelper } from "@Routes/RouteHelper";
+import { BungieCredentialType } from "@Enum";
+import { Button, ButtonProps } from "@UI/UIKit/Controls/Button/Button";
+import { BasicSize } from "@UI/UIKit/UIKitUtils";
+import { BrowserUtils } from "@Utilities/BrowserUtils";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import styles from "../../AccountLinking.module.scss";
 import { AccountDestinyMembershipDataStore } from "../../DataStores/AccountDestinyMembershipDataStore";
 import { AccountLinkingFlags } from "./AccountLinkSection";

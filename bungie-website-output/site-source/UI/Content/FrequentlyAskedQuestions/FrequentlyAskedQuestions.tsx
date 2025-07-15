@@ -1,7 +1,8 @@
 import React, { FC } from "react";
-import styles from "./FrequentlyAskedQuestions.module.scss";
+import { sanitizeHTML } from "@UI/Content/SafelySetInnerHTML";
 import { Button } from "plxp-web-ui/components/base";
 import { Launch } from "@mui/icons-material";
+import styles from "./FrequentlyAskedQuestions.module.scss";
 
 interface QuestionBlockProps {
   question?: string;
@@ -17,7 +18,10 @@ const QuestionBlock: FC<QuestionBlockProps> = ({ question, answer }) =>
   question && answer ? (
     <div className={styles.questionContainer}>
       <dt className={styles.question}>{question}</dt>
-      <dd className={styles.answer}>{answer}</dd>
+      <dd
+        className={styles.answer}
+        dangerouslySetInnerHTML={sanitizeHTML(answer)}
+      />
     </div>
   ) : null;
 

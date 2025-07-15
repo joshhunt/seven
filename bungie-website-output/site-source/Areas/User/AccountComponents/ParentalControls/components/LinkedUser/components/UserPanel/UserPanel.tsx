@@ -1,7 +1,10 @@
+import VerifyEmailModal from "@Areas/User/AccountComponents/ParentalControls/components/KwsModals/VerifyEmailModal";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { FC, useState } from "react";
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization";
 import {
+  AgeCategoriesEnum,
   ParentOrGuardianAssignmentStatusEnum,
   ResponseStatusEnum,
 } from "@Enum";
@@ -22,7 +25,6 @@ import styles from "./UserPanel.module.scss";
 interface UserPanelProps {
   asContainer?: boolean;
   assignedAccount?: PnP.GetPlayerContextResponse["playerContext"];
-  currentUserType?: number;
 }
 
 interface InternalButtonProps extends ButtonProps {
@@ -46,6 +48,7 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   /* Accept */
   const [openKws, setKwsOpen] = useState(false);
   const [openConfirm, setConfirmOpen] = useState(false);
+  const [openValidateEmail, setOpenValidateEmail] = useState(false);
 
   const {
     playerContext,
@@ -87,38 +90,46 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   /* Controls what happens when a user clicks "Accept" in the KWS Acceptance Modal*/
   const onKWSAccept = async () => {
     setKwsOpen(false);
-    /* Try to refresh them in the event that emailVerified has changed since their last attempt.*/
-    /* If they are not verified they must verify first */
-    if (!playerContext.isEmailVerified) {
-      refreshPlayerContext();
-      setConfirmOpen(true);
-    } else {
-      /* On accept, send KWS email - then set them as "pending", remove cookie - then refresh playerContext */
-      await Platform.PnpService.SendVerificationEmail(
-        playerContext?.membershipId,
-        pendingChildId
-      )
-        .then((r) => {
-          if (r !== ResponseStatusEnum.Success) {
-            Modal.error({
-              name: ResponseStatusEnum[r],
-              message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
-            });
-          } else {
-            /* Open confirmation modal */
-            setConfirmOpen(true);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    }
+
+    /* On accept, send KWS email - then set them as "pending", remove cookie - then refresh playerContext */
+    await Platform.PnpService.SendVerificationEmail(
+      playerContext?.membershipId,
+      pendingChildId
+    )
+      .then((r) => {
+        if (r !== ResponseStatusEnum.Success) {
+          Modal.error({
+            name: ResponseStatusEnum[r],
+            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
+          });
+        } else {
+          /* Open confirmation modal */
+          setConfirmOpen(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
-  const panelUserLabel =
-    assignedAccount?.parentOrGuardianAssignmentStatus === 0
-      ? requestsToJoin
-      : assignedAccount.displayName;
+  const isChild = EnumUtils.looseEquals(
+    playerContext?.ageCategory,
+    AgeCategoriesEnum.Child,
+    AgeCategoriesEnum
+  );
+  const displayName = isChild
+    ? playerContext?.parentOrGuardianDisplayName
+    : assignedAccount?.displayName;
+  const userAvatar = isChild
+    ? playerContext?.parentOrGuardianProfilePicturePath
+    : assignedAccount?.profilePicturePath;
+  const hasNoAssignment = EnumUtils.looseEquals(
+    assignedAccount?.parentOrGuardianAssignmentStatus,
+    ParentOrGuardianAssignmentStatusEnum.None,
+    ParentOrGuardianAssignmentStatusEnum
+  );
+
+  const panelUserLabel = hasNoAssignment ? requestsToJoin : displayName;
 
   const unlinkParent = async () => {
     await Platform.PnpService.UnassignParentOrGuardianFromChild(
@@ -141,20 +152,28 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
       });
   };
 
+  const handleClick = () => {
+    if (playerContext?.isEmailVerified) {
+      setKwsOpen(true);
+    } else {
+      setOpenValidateEmail(true);
+    }
+  };
+
   type ButtonStateMap = {
     [K in ParentOrGuardianAssignmentStatusEnum]: InternalButtonProps;
   };
   const BUTTON_STATES: ButtonStateMap = {
     [ParentOrGuardianAssignmentStatusEnum.None]: {
       // Shows for Cookie child
-      onClick: () => setKwsOpen(true),
+      onClick: () => handleClick(),
       label: ParentalControlsLoc.AcceptLabel,
       disabled: false as boolean,
       variant: "contained",
     },
     [ParentOrGuardianAssignmentStatusEnum.Pending]: {
       // Shows for pending child
-      onClick: () => setKwsOpen(true),
+      onClick: () => handleClick(),
       label: ParentalControlsLoc.PendingLabel,
       disabled: true as boolean,
       variant: "contained",
@@ -162,16 +181,16 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     },
     [ParentOrGuardianAssignmentStatusEnum.Assigned]: {
       // Shows for assigned child
-      label: ParentalControlsLoc.UnlinkLabel,
       onClick: () => unlinkParent(),
+      label: ParentalControlsLoc.UnlinkLabel,
       disabled: false as boolean,
       variant: "outlined",
       color: "error",
     },
     [ParentOrGuardianAssignmentStatusEnum.Unassigned]: {
       // Shouldn't show
+      onClick: () => handleClick(),
       label: ParentalControlsLoc.AcceptLabel,
-      onClick: () => setKwsOpen(true),
       disabled: true as boolean,
       variant: "contained",
     },
@@ -188,16 +207,12 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   return asContainer ? (
     <div
       className={classNames(styles.container, {
-        [styles.backgroundBase]:
-          assignedAccount?.parentOrGuardianAssignmentStatus !==
-          ParentOrGuardianAssignmentStatusEnum.Unassigned,
-        [styles.backgroundAccept]:
-          assignedAccount?.parentOrGuardianAssignmentStatus ===
-          ParentOrGuardianAssignmentStatusEnum.Unassigned,
+        [styles.backgroundBase]: !hasNoAssignment,
+        [styles.backgroundAccept]: hasNoAssignment,
       })}
     >
       <div className={styles.userContainer}>
-        <Avatar src={assignedAccount?.profilePicturePath} />
+        <Avatar src={userAvatar} />
         <p lang={currentLang} className={styles.userLabel}>
           {panelUserLabel}
         </p>
@@ -215,6 +230,10 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
           setConfirmOpen(false);
           setChildAsPending();
         }}
+      />
+      <VerifyEmailModal
+        open={openValidateEmail}
+        onDismiss={() => setOpenValidateEmail(false)}
       />
     </div>
   ) : (

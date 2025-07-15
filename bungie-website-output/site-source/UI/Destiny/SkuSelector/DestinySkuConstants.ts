@@ -21,4 +21,5 @@ export class DestinyProductFamilies {
   public static BeyondLight = "beyondlight";
   public static SilverBundle = "silverbundle";
   public static FinalShape = "thefinalshape";
+  public static YearOfProphecy = "yearofprophecy";
 }

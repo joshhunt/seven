@@ -159,7 +159,7 @@ export class AccountSidebar extends React.Component<
             />
           </Anchor>
         )}
-        {/* Season Pass Progress */}
+        {/* Rewards Pass Progress */}
         <Anchor url={RouteHelper.SeasonProgress()}>
           <OneLineItem
             size={BasicSize.Small}
@@ -168,7 +168,7 @@ export class AccountSidebar extends React.Component<
                 iconImageUrl={"/img/theme/bungienet/icons/icon_seasons.png"}
               />
             }
-            itemTitle={Localizer.Nav.TopNavSeasonPassProgress}
+            itemTitle={Localizer.Nav.TopNavRewardsPassProgress}
           />
         </Anchor>
         {/* Clans */}

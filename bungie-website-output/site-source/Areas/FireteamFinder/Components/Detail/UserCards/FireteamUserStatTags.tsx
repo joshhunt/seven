@@ -1,8 +1,8 @@
 // Created by atseng, 2022
 // Copyright Bungie, Inc.
 
-import { FireteamCommendations } from "@Areas/Fireteams/Shared/FireteamCommendations";
-import FireteamGuardianRank from "@Areas/Fireteams/Shared/FireteamGuardianRank";
+import { FireteamCommendations } from "@Areas/FireteamFinder/Components/Shared/FireteamCommendations";
+import FireteamGuardianRank from "@Areas/FireteamFinder/Components/Shared/FireteamGuardianRank";
 import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { Platform, Responses } from "@Platform";
 import React, { useEffect, useState } from "react";

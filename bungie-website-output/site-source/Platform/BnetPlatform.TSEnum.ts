@@ -220,6 +220,7 @@ export enum BungieMembershipType {
   TigerStadia = 5,
   TigerEgs = 6,
   TigerDemon = 10,
+  GoliathGame = 20,
   BungieNext = 254,
   /**
 		"All" is only valid for searching capabilities: you need to pass the actual matching BungieMembershipType
@@ -369,7 +370,8 @@ export enum BungieMembershipRoleMappings {
   D2Clans = 32,
   D2Tokens = 64,
   CrossSaveCreate = 128,
-  All = 255,
+  Marathon = 256,
+  All = 511,
 }
 
 export enum AclEnum {
@@ -1900,6 +1902,8 @@ export enum DestinyRecordToastStyle {
   PathfinderObjectiveCompletePvp = 12,
   PathfinderObjectiveCompleteStrikes = 13,
   PathfinderObjectiveCompleteGambit = 14,
+  SeasonWeeklyComplete = 15,
+  SeasonDailyComplete = 16,
 }
 
 export enum TierType {
@@ -2271,6 +2275,8 @@ export enum DestinyGameVersions {
   TheWitchQueen = 256,
   Lightfall = 512,
   TheFinalShape = 1024,
+  EdgeOfFate = 28535,
+  Renegades = 28536,
 }
 
 export enum DestinyRace {
@@ -2992,6 +2998,12 @@ export enum DestinyObjectiveUiStyle {
   CraftingWeaponTimestamp = 4,
   CraftingMementos = 5,
   CraftingMementoTitle = 6,
+  DiscoverableMystery0 = 7,
+  DiscoverableMystery1 = 8,
+  DiscoverableMystery2 = 9,
+  DiscoverableMystery3 = 10,
+  DiscoverableMystery4 = 11,
+  DiscoverableExotic = 12,
 }
 
 export enum DestinyActivityNavPointType {

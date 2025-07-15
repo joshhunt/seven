@@ -1,0 +1,120 @@
+var _g, _defs;
+
+var _excluded = ["svgRef", "title"];
+
+function _extends() {
+  _extends = Object.assign
+    ? Object.assign.bind()
+    : function (target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      };
+  return _extends.apply(this, arguments);
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+  var key, i;
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+
+import React from "react";
+
+var SvgSeasonicon27 = function SvgSeasonicon27(_ref) {
+  var svgRef = _ref.svgRef,
+    title = _ref.title,
+    props = _objectWithoutProperties(_ref, _excluded);
+
+  return /*#__PURE__*/ React.createElement(
+    "svg",
+    _extends(
+      {
+        width: 80,
+        height: 80,
+        viewBox: "0 0 80 80",
+        fill: "none",
+        ref: svgRef,
+      },
+      props
+    ),
+    title ? /*#__PURE__*/ React.createElement("title", null, title) : null,
+    _g ||
+      (_g = /*#__PURE__*/ React.createElement(
+        "g",
+        {
+          clipPath: "url(#clip0_167_6)",
+        },
+        /*#__PURE__*/ React.createElement("path", {
+          d:
+            "M39.5044 60.2618L32.0947 67.6353L39.5044 75.0087L46.9141 67.6353L39.5044 60.2618Z",
+          fill: "white",
+        }),
+        /*#__PURE__*/ React.createElement("path", {
+          d:
+            "M65.9995 16.9416H44.1479L55.1433 6H23.8359L34.8213 16.9416H12.9697L31.1661 36.9269L12.9995 56.8728H36.3509V23.0894H42.6481V56.8827H65.9995L47.823 36.9269L65.9995 16.9416Z",
+          fill: "white",
+        })
+      )),
+    _defs ||
+      (_defs = /*#__PURE__*/ React.createElement(
+        "defs",
+        null,
+        /*#__PURE__*/ React.createElement(
+          "clipPath",
+          {
+            id: "clip0_167_6",
+          },
+          /*#__PURE__*/ React.createElement("rect", {
+            width: 53,
+            height: 69,
+            fill: "white",
+            transform: "translate(13 6)",
+          })
+        )
+      ))
+  );
+};
+
+var ForwardRef = /*#__PURE__*/ React.forwardRef(function (props, ref) {
+  return /*#__PURE__*/ React.createElement(
+    SvgSeasonicon27,
+    _extends(
+      {
+        svgRef: ref,
+      },
+      props
+    )
+  );
+});
+export default "data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' fill='none' xmlns='http://www.w3.org/2000/svg'%3E %3Cg clip-path='url(%23clip0_167_6)'%3E %3Cpath d='M39.5044 60.2618L32.0947 67.6353L39.5044 75.0087L46.9141 67.6353L39.5044 60.2618Z' fill='white'/%3E %3Cpath d='M65.9995 16.9416H44.1479L55.1433 6H23.8359L34.8213 16.9416H12.9697L31.1661 36.9269L12.9995 56.8728H36.3509V23.0894H42.6481V56.8827H65.9995L47.823 36.9269L65.9995 16.9416Z' fill='white'/%3E %3C/g%3E %3Cdefs%3E %3CclipPath id='clip0_167_6'%3E %3Crect width='53' height='69' fill='white' transform='translate(13 6)'/%3E %3C/clipPath%3E %3C/defs%3E %3C/svg%3E";
+export { ForwardRef as ReactComponent };

@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
+import { EnumUtils } from "@Utilities/EnumUtils";
 import { AlertNotification } from "@Areas/User/AccountComponents/ParentalControls/components";
 import { usePlayerContext } from "@Areas/User/AccountComponents/ParentalControls/lib/usePlayerContext";
 import { Localizer } from "@bungie/localization";
@@ -15,12 +16,10 @@ import SettingsSection from "./SettingsSection";
 interface SettingsPanelProps {
   asContainer?: boolean;
   assignedAccount: any;
-  currentUserType?: any;
 }
 
 const SettingsPanel: FC<SettingsPanelProps> = ({
   assignedAccount,
-  currentUserType,
   asContainer,
 }) => {
   /* Snackbar Config + Settings */
@@ -36,8 +35,11 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
     updatePermissions,
     error,
   } = usePlayerContext();
-  const isChild = playerContext?.ageCategory === AgeCategoriesEnum.Child;
-
+  const isChild = EnumUtils.looseEquals(
+    playerContext?.ageCategory,
+    AgeCategoriesEnum.Child,
+    AgeCategoriesEnum
+  );
   const resetSnackbarKey = () => {
     setSnackbarKey(undefined);
   };
@@ -70,7 +72,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
       setOpen(true);
     };
     const membershipId = assignedAccount.membershipId;
-    if (playerContext?.ageCategory === AgeCategoriesEnum.Adult) {
+    if (!isChild) {
       updatePermissions(
         membershipId,
         [{ type: id, value: value, isSetByParentOrGuardian: true }],
@@ -125,6 +127,12 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
         one: ParentalControlLoc.EnableLinktoPlatformStore,
       },
     },
+    alertSection: {
+      heading: ParentalControlLoc.TheseSettingsDoNotImpact,
+      subheading: isChild
+        ? ParentalControlLoc.ThereAreOtherControlsChild
+        : ParentalControlLoc.ThereAreOtherControlsAdult,
+    },
   };
 
   const extractSettingsById = (id: number) => {
@@ -154,7 +162,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
       {settingsCopy?.summaryText && (
         <p className={styles.sectionCopy}>{settingsCopy.summaryText}</p>
       )}
-      {/* Experience */}
+      {/* Social */}
       <SettingsSection
         heading={settingsCopy.socialSection.heading}
         subheading={settingsCopy.socialSection.subheading}
@@ -240,9 +248,9 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
         />
       </SettingsSection>
       <AlertNotification
-        alertTitle={Localizer.parentalcontrols.TheseSettingsDoNotImpact}
+        alertTitle={settingsCopy.alertSection.heading}
         icon={null}
-        alertMessage={Localizer.parentalcontrols.ThereAreOtherControls}
+        alertMessage={settingsCopy.alertSection.subheading}
       />
       <Snackbar
         key={snackbarKey}

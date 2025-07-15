@@ -30,10 +30,6 @@ interface SeasonsTableProps
 }
 
 const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
-  if (!ConfigUtils.SystemStatus("CrossSaveEntitlementTables")) {
-    return null;
-  }
-
   const crosssaveLoc = Localizer.Crosssave;
 
   const entitlementsResponse = props.flowState.entitlements;
@@ -116,24 +112,6 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
     }
   };
 
-  const entitlementRow = (gameVersion: DestinyGameVersions) => {
-    const unlinked = CrossSaveUtils.getUnLinkedPairableMembershipTypes(
-      props.flowState
-    );
-
-    return (
-      <>
-        {platformCell(primaryMembershipType, gameVersion, "active")}
-        {pairableMembershipTypes
-          .filter(
-            (pm) => pm !== primaryMembershipType && !unlinked.includes(pm)
-          )
-          ?.map((lp) => platformCell(lp, gameVersion, "linked"))}
-        {unlinked.map((un) => platformCell(un, gameVersion, "unlinked"))}
-      </>
-    );
-  };
-
   const msCell = (
     seasonHash: number,
     platformStatus: PlatformStatus,
@@ -186,7 +164,12 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
     setAllSeasons(getAllSeasons(entitlementsResponse?.profileSeasons));
   }, [profileSeasonsItems]);
 
-  if (allSeasons.length === 0 || !entitlementsResponse || !linkedProfiles) {
+  if (
+    !ConfigUtils.SystemStatus("CrossSaveEntitlementTables") ||
+    allSeasons.length === 0 ||
+    !entitlementsResponse ||
+    !linkedProfiles
+  ) {
     return null;
   }
 
@@ -196,39 +179,6 @@ const SeasonsTable: React.FC<SeasonsTableProps> = (props) => {
         {Localizer.Crosssave.SeasonsHeaderUpper}
       </p>
       <p>{crosssaveLoc.ActiveAccountSeasonsWill}</p>
-      <table className={styles.entitlementsTable}>
-        <colgroup>
-          <col />
-          <col />
-          <col />
-          <col />
-          <col />
-        </colgroup>
-        <EntitlementsTableHeader
-          title={crosssaveLoc.SeasonsHeader}
-          flowState={props.flowState}
-        />
-        {
-          <tbody>
-            {allSeasons.map((sHash) => {
-              const seasonDef = props?.definitions?.DestinySeasonDefinition?.get(
-                sHash
-              ).displayProperties;
-
-              if (!seasonDef) {
-                return null;
-              }
-
-              return (
-                <tr key={sHash}>
-                  <th scope="row">{seasonDef.name}</th>
-                  {entitlementRow(sHash)}
-                </tr>
-              );
-            })}
-          </tbody>
-        }
-      </table>
     </div>
   );
 };

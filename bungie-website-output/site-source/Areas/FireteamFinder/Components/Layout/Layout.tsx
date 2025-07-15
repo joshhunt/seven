@@ -4,16 +4,11 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { LoggedOutView } from "@Areas/FireteamFinder/Components/Layout/LoggedOutView";
 import { BreadcrumbConfiguration } from "@Areas/FireteamFinder/Components/Shared/FireteamFinderBreadcrumb";
-import { FireteamLegacyExperienceButton } from "@Areas/FireteamFinder/Components/Shared/FireteamLegacyExperienceButton";
 import SelectActivity from "@Areas/FireteamFinder/Components/Shared/SelectActivity";
 import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import {
-  BungieMembershipType,
-  DestinyComponentType,
-  RealTimeEventType,
-} from "@Enum";
+import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform, Responses } from "@Platform";
 import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
@@ -27,18 +22,17 @@ import React, {
   cloneElement,
   isValidElement,
   ReactElement,
-  useEffect,
-  useRef,
   useState,
 } from "react";
 import { Header } from "./Header";
 import { ButtonConfiguration } from "./HeaderButtons";
 import styles from "./Layout.module.scss";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 export type FireteamFinderErrorViewType =
   | "SignedOut"
   | "NoCharacter"
-  | "NotGuardianRankFive"
+  | "NotHighEnoughRank"
   | "None";
 
 interface LayoutProps {
@@ -47,7 +41,6 @@ interface LayoutProps {
   title: string;
   subtitle: string;
   backgroundImage: string;
-  withBetaTag?: boolean;
   activityFilterString?: string;
   setActivityFilterString?: (value: string) => void;
 }
@@ -68,6 +61,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
   const { activityFilterString, setActivityFilterString } = props;
   const [destinyDataLoaded, setDestinyDataLoaded] = useState(false);
+  const MinimumLifetimeGuardianRank = ConfigUtils.GetParameter(
+    "FireteamFinderCreationGuardianRankRequirement",
+    "MinimumLifetimeGuardianRank",
+    3
+  );
 
   const loadDestinyMembership = () => {
     Platform?.UserService?.GetMembershipDataById(
@@ -95,6 +93,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         Modal.error(e);
       });
   };
+
   const getProfileResponse = (
     membershipType: BungieMembershipType,
     membershipId: string
@@ -112,8 +111,11 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         ) {
           setErrorState("NoCharacter");
           setDestinyDataLoaded(true);
-        } else if (result.profile.data?.lifetimeHighestGuardianRank < 5) {
-          setErrorState("NotGuardianRankFive");
+        } else if (
+          result.profile.data?.lifetimeHighestGuardianRank <
+          MinimumLifetimeGuardianRank
+        ) {
+          setErrorState("NotHighEnoughRank");
           setDestinyDataLoaded(true);
           setProfileResponse(result);
         } else {
@@ -149,6 +151,12 @@ export const Layout: React.FC<LayoutProps> = (props) => {
           destinyData.selectedMembership.membershipType,
           destinyData.selectedMembership.membershipId
         );
+      } else if (
+        profileResponse?.profile?.data?.lifetimeHighestGuardianRank <
+        MinimumLifetimeGuardianRank
+      ) {
+        setErrorState("NotHighEnoughRank");
+        setDestinyDataLoaded(true);
       } else if (
         destinyMemberships &&
         destinyMemberships.length > 0 &&
@@ -207,7 +215,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 title={props.title}
                 subtitle={props.subtitle}
                 isLoggedIn={UserUtils.isAuthenticated(globalState)}
-                withBetaTag={props.withBetaTag}
               />
               {renderChildren()}
             </GridCol>
@@ -215,7 +222,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
         ) : (
           <LoggedOutView errorType={errorState} className={styles.content} />
         )}
-        <FireteamLegacyExperienceButton />
       </SpinnerContainer>
     </div>
   );

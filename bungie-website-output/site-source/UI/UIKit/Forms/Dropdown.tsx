@@ -31,6 +31,7 @@ interface IDropdownProps {
   childrenClassName?: string;
   /** Icon for the overall dropdown - shown only on the visible selected option **/
   iconPath?: string;
+  iconOnly?: boolean;
 }
 
 export interface IDropdownOption<T = any> {
@@ -131,6 +132,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
           >
             {this.props.placeholderValue && !this.state.currentValue ? (
               <DropdownPrettyOptionItem
+                iconOnly={this.props.iconOnly}
                 iconPath={this.props.iconPath}
                 className={this.props.optionItemClassName}
                 option={{
@@ -142,6 +144,7 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
               />
             ) : (
               <DropdownPrettyOptionItem
+                iconOnly={this.props.iconOnly}
                 iconPath={this.props.iconPath}
                 className={this.props.optionItemClassName}
                 option={this.selectedOption}

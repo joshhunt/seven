@@ -15,7 +15,7 @@ import { Checkbox } from "@UIKit/Forms/Checkbox";
 import { Grid, GridCol, GridDivider } from "@UIKit/Layout/Grid/Grid";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import accountStyles from "../Account.module.scss";
 
 interface NotificationDetail {
@@ -45,6 +45,25 @@ export const Notifications: React.FC = () => {
     )
       .then((notifs) => {
         initialNotifications = notifs.map((notification) => {
+          /*JIRA: CTPLXP-2149 -- This is not the ideal method of removing these notifications
+           * Deprecation needs to occur within services, full scope undefined but seen in:
+           * NotificationTypes.cs, NotificationDefinitions.cs, NotificationController.cs, GroupActivityProcessor.cs
+           * */
+          if (
+            notification?.notificationType === "43" ||
+            notification?.notificationType === "11" ||
+            notification?.notificationType === "5"
+          ) {
+            return {
+              name: null,
+              type: null,
+              EMAIL: null,
+              MOBILE_PUSH: null,
+              WEB_ONLY: null,
+              grouping: null,
+            };
+          }
+
           const emailValid = EnumUtils.hasFlag(
             notification.possibleMethods,
             NotificationMethods.EMAIL
@@ -176,7 +195,7 @@ export const Notifications: React.FC = () => {
       </GridCol>
       <Grid>
         {EnumUtils.getStringKeys(NotificationGrouping).map(
-          (grouping: string) => {
+          (grouping: string, i) => {
             // Filter notifications for the current grouping
             const groupingNotifications = notifications.filter(
               (ns) => ns.grouping === grouping
@@ -184,7 +203,7 @@ export const Notifications: React.FC = () => {
 
             return grouping.toLowerCase() !== "none" &&
               groupingNotifications.length > 0 ? (
-              <>
+              <Fragment key={`${grouping}-${i}`}>
                 <GridDivider cols={12} className={accountStyles.mainDivider} />
                 <GridCol
                   key={grouping.toString()}
@@ -215,7 +234,7 @@ export const Notifications: React.FC = () => {
                   </div>
                   {groupingNotifications.map((notification, i) => {
                     return (
-                      <>
+                      <Fragment key={`${notification?.name}-${i}`}>
                         {i !== 0 ? (
                           <GridDivider
                             cols={12}
@@ -285,11 +304,11 @@ export const Notifications: React.FC = () => {
                             );
                           }
                         )}
-                      </>
+                      </Fragment>
                     );
                   })}
                 </GridCol>
-              </>
+              </Fragment>
             ) : null;
           }
         )}

@@ -200,6 +200,7 @@ export declare namespace DestinyDefinitions {
     FunctionClamp = 32,
     FunctionExp = 33,
     FunctionAbs = 34,
+    ItemPower = 35,
   }
 
   enum DestinyGatingScope {
@@ -482,6 +483,12 @@ export declare namespace DestinyDefinitions {
     CraftingWeaponTimestamp = 4,
     CraftingMementos = 5,
     CraftingMementoTitle = 6,
+    DiscoverableMystery0 = 7,
+    DiscoverableMystery1 = 8,
+    DiscoverableMystery2 = 9,
+    DiscoverableMystery3 = 10,
+    DiscoverableMystery4 = 11,
+    DiscoverableExotic = 12,
   }
 
   enum DestinyProgressionScope {
@@ -751,12 +758,28 @@ export declare namespace DestinyDefinitions {
     PathfinderObjectiveCompletePvp = 12,
     PathfinderObjectiveCompleteStrikes = 13,
     PathfinderObjectiveCompleteGambit = 14,
+    SeasonWeeklyComplete = 15,
+    SeasonDailyComplete = 16,
   }
 
   enum DestinyPresentationScreenStyle {
     Default = 0,
     CategorySets = 1,
     Badge = 2,
+  }
+
+  enum DestinyActivityTreeType {
+    FireteamFinder = 0,
+    Curator = 1,
+    EventHome = 2,
+    SeasonHome = 3,
+    Count = 4,
+  }
+
+  enum DestinyActivityTreeChildSortMode {
+    Investment = 0,
+    FocusFirst = 1,
+    BonusAndFocusFirst = 2,
   }
 
   enum FireteamFinderLabelFieldType {
@@ -819,6 +842,7 @@ export declare namespace DestinyDefinitions {
     PlayerCount = 2,
     FireteamFinderLabels = 3,
     FireteamFinderActivityGraph = 4,
+    FireteamFinderUIActivityTree = 5,
   }
 
   enum FireteamFinderOptionValueFlags {
@@ -848,6 +872,53 @@ export declare namespace DestinyDefinitions {
     AlwaysWear = 1,
   }
 
+  enum DestinyActivityDifficultyId {
+    Trivial = 0,
+    Easy = 1,
+    Normal = 2,
+    Challenging = 3,
+    Hard = 4,
+    Brave = 5,
+    AlmostImpossible = 6,
+    Impossible = 7,
+    Count = 8,
+  }
+
+  enum DestinyActivitySkullDynamicUse {
+    Unknown = 0,
+    Allowed = 1,
+    Disallowed = 2,
+    Count = 3,
+  }
+
+  enum DestinyActivityModifierDisplayCategory {
+    None = 0,
+    ModeRules = 1,
+    SelfBuildcraft = 2,
+    EnemyAdjustment = 3,
+    EnemyBuildcraft = 4,
+    Seasonal = 5,
+    Fun = 6,
+    Count = 7,
+  }
+
+  enum DestinyActivityModifierConnotation {
+    Neutral = 0,
+    Positive = 1,
+    Negative = 2,
+    Affix = 3,
+    Informational = 4,
+    Reward = 5,
+    Event = 6,
+    Count = 7,
+  }
+
+  enum DestinyActivityDifficultyTierType {
+    Default = 0,
+    Training = 1,
+    Count = 2,
+  }
+
   enum BungieMembershipType {
     None = 0,
     TigerXbox = 1,
@@ -857,6 +928,7 @@ export declare namespace DestinyDefinitions {
     TigerStadia = 5,
     TigerEgs = 6,
     TigerDemon = 10,
+    GoliathGame = 20,
     BungieNext = 254,
     All = -1,
   }
@@ -919,6 +991,10 @@ export declare namespace DestinyDefinitions {
 
     inheritFromFreeRoam: boolean;
 
+    activityFamilyHashes: number[];
+
+    traitHashes: number[];
+
     suppressOtherRewards: boolean;
 
     rewardMappingReferences: DestinyRewardMappingGatedReference[];
@@ -930,6 +1006,10 @@ export declare namespace DestinyDefinitions {
     activityRequirementLabelHashes: number[];
 
     requirements: DestinyActivityRequirementsBlock;
+
+    difficultyTierCollectionHash?: number;
+
+    selectableSkullCollectionHashes: number[];
 
     playlistItems: DestinyActivityPlaylistItemDefinition[];
 
@@ -1535,6 +1615,8 @@ export declare namespace DestinyDefinitions {
 
     iconWatermarkShelved: string;
 
+    iconWatermarkFeatured: string;
+
     secondaryIcon: string;
 
     secondaryOverlay: string;
@@ -1542,6 +1624,8 @@ export declare namespace DestinyDefinitions {
     secondarySpecial: string;
 
     backgroundColor: DestinyColor;
+
+    isFeaturedItem: boolean;
 
     screenshot: string;
 
@@ -1872,6 +1956,8 @@ export declare namespace DestinyDefinitions {
     ammoType: DestinyAmmunitionType;
 
     displayStrings: string[];
+
+    equipableItemSetHash?: number;
   }
 
   export interface DestinyItemTranslationBlockDefinition {
@@ -3995,12 +4081,6 @@ export declare namespace DestinyDefinitions {
   export interface DestinyPathfinderConstantsDefinition {
     thePaleHeartPathfinderRootNodeHash: number;
 
-    vanguardPathfinderRootNodeHash: number;
-
-    cruciblePathfinderRootNodeHash: number;
-
-    gambitPathfinderRootNodeHash: number;
-
     allPathfinderRootNodeHashes: number[];
 
     pathfinderTreeTiers: { [key: number]: number };
@@ -4198,6 +4278,48 @@ export declare namespace DestinyDefinitions {
     energyTypeHash: number;
 
     energyType: DestinyEnergyType;
+  }
+
+  export interface DestinyEquipableItemSetDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    setItems: number[];
+
+    setPerks: DestinyItemSetPerkDefinition[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyItemSetPerkDefinition {
+    requiredSetCount: number;
+
+    sandboxPerkHash: number;
+  }
+
+  export interface DestinyInventoryItemConstantsDefinition {
+    gearTierOverlayImagePaths: string[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
   }
 
   export interface DestinyInventoryItemLiteDefinition {
@@ -4989,6 +5111,8 @@ export declare namespace DestinyDefinitions {
 
     seasonPassHash?: number;
 
+    seasonPassList: DestinySeasonPassReference[];
+
     seasonPassProgressionHash?: number;
 
     artifactItemHash?: number;
@@ -5030,6 +5154,20 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinySeasonPassReference {
+    seasonPassHash: number;
+
+    ownershipUnlockFlagHash: number;
+
+    seasonPassOwnershipExpression: DestinyUnlockExpressionDefinition;
+
+    seasonPassStartTime: string;
+
+    seasonPassStartDate?: string;
+
+    seasonPassEndDate?: string;
+  }
+
   export interface DestinySeasonActDefinition {
     displayName: string;
 
@@ -5063,6 +5201,12 @@ export declare namespace DestinyDefinitions {
 
     prestigeProgressionHash: number;
 
+    linkRedirectPath: string;
+
+    color: DestinyColor;
+
+    images: DestinySeasonPassImages;
+
     boundToRelease: string;
 
     hash: number;
@@ -5074,6 +5218,14 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
+  }
+
+  export interface DestinySeasonPassImages {
+    iconImagePath: string;
+
+    themeBackgroundImagePath: string;
+
+    seasonRankBackgroundImagePath: string;
   }
 
   export interface DestinySackRewardItemListDefinition {
@@ -5852,6 +6004,22 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinyItemFilterDefinition {
+    setItems: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DestinyGuardianRankConstantsDefinition {
     displayProperties: DestinyDisplayPropertiesDefinition;
 
@@ -5958,6 +6126,16 @@ export declare namespace DestinyDefinitions {
     relatedEnvironmentConstantsLocationIndices: number[];
 
     relatedLocationHashes: number[];
+
+    sortMatchmadeActivitiesToFront: boolean;
+
+    enabledOnTreeTypesList: DestinyBitVector;
+
+    enabledOnTreeTypesListEnum: DestinyActivityTreeType[];
+
+    activityTreeChildSortMode: DestinyActivityTreeChildSortMode;
+
+    sortPriority?: number;
 
     boundToRelease: string;
 
@@ -6660,6 +6838,138 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinyActivityDifficultyTierCollectionDefinition {
+    difficultyTiers: DestinyActivityDifficultyTierDefinition[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyActivityDifficultyTierDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    recommendedActivityLevelOffset: number;
+
+    fixedActivitySkulls: DestinyActivitySkull[];
+
+    tierEnabledUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    tierType: DestinyActivityDifficultyTierType;
+
+    optionalRequiredTrait?: number;
+
+    activityLevel: number;
+
+    tierRank: number;
+
+    minimumFireteamLeaderPower: number;
+
+    maximumFireteamLeaderPower: number;
+
+    scoreTimeLimitMultiplier: number;
+
+    intrinsicUnlockFlags: DestinyIntrinsicUnlockDefinition[];
+
+    selectableSkullCollectionHashes: number[];
+
+    skullSubcategoryOverrides: DestinyActivityDifficultyTierSubcategoryOverride[];
+  }
+
+  export interface DestinyActivitySkull {
+    hash: number;
+
+    contentIdentifier: number;
+
+    skullIdentifierHash: number;
+
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    unlockExpression: DestinyUnlockExpressionDefinition;
+
+    skullOptions: DestinyActivitySkullOption[];
+
+    intrinsicUnlockFlags: DestinyActivitySkullIntrinsicUnlockFlags[];
+
+    dynamicUse: DestinyActivitySkullDynamicUse;
+
+    modifierPowerContribution: number;
+
+    modifierMultiplierContribution: number;
+
+    skullExclusionGroupHash?: number;
+
+    hasUi: boolean;
+
+    displayDescriptionOverrideForNavMode: string;
+
+    activityModifierDisplayCategory: DestinyActivityModifierDisplayCategory;
+
+    activityModifierConnotation: DestinyActivityModifierConnotation;
+
+    displayInNavMode: boolean;
+
+    displayInActivitySelection: boolean;
+  }
+
+  export interface DestinyActivitySkullOption {
+    optionHash: number;
+
+    stringValue: string;
+
+    boolValue: boolean;
+
+    integerValue: number;
+
+    floatValue: number;
+
+    minDisplayDifficultyId: DestinyActivityDifficultyId;
+  }
+
+  export interface DestinyActivitySkullIntrinsicUnlockFlags {
+    unlockFlagHash: number;
+
+    value: DestinyUnlockState;
+  }
+
+  export interface DestinyActivityDifficultyTierSubcategoryOverride {
+    skullSubcategoryHash: number;
+
+    refreshTimeMinutes: number;
+
+    refreshTimeOffsetMinutes: number;
+  }
+
+  export interface DestinyActivityFamilyDefinition {
+    traits: number[];
+
+    disabledSkullCategoryHashes: number[];
+
+    disabledSkullSubcategoryHashes: number[];
+
+    fixedSkullSubcategoryHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DestinyActivityInteractableDefinition {
     entries: DestinyActivityInteractableEntryDefinition[];
 
@@ -6680,6 +6990,138 @@ export declare namespace DestinyDefinitions {
     unlockExpression: DestinyUnlockExpressionDefinition;
 
     activityHash: number;
+  }
+
+  export interface DestinyActivityLoadoutRestrictionDefinition {
+    restrictedItemFilterHash: number;
+
+    restrictedEquipmentSlotHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyActivitySelectableSkullCollectionDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    skullSubcategoryHashes: number[];
+
+    selectionType: DestinyActivitySelectableSkullCollectionSelectionType;
+
+    selectableActivitySkulls: DestinyActivitySelectableSkull[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyActivitySelectableSkullCollectionSelectionType {
+    selectionCount: number;
+
+    refreshTimeMinutes: number;
+
+    refreshTimeOffsetMinutes: number;
+  }
+
+  export interface DestinyActivitySelectableSkull {
+    requiredTraitHash?: number;
+
+    requiredTraitExistence: boolean;
+
+    isEmptySkull: boolean;
+
+    loadoutRestrictionHash?: number;
+
+    debugSelectableSkull: boolean;
+
+    activitySkull: DestinyActivitySkull;
+  }
+
+  export interface DestinyActivitySelectableSkullExclusionGroupDefinition {
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyActivitySkullCategoryDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+
+    skullSubcategoryHashes: number[];
+  }
+
+  export interface DestinyActivitySkullCollectionDefinition {
+    skulls: DestinyActivitySkull[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
+  export interface DestinyActivitySkullSubcategoryDefinition {
+    displayProperties: DestinyDisplayPropertiesDefinition;
+
+    parentSkullCategoryHash: number;
+
+    availabilityTierRank: number;
+
+    defaultSkullHashes: number[];
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
   }
 
   export interface DestinyAchievementDefinition {
@@ -6715,17 +7157,49 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyActivityDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityDefinition;
   };
+  DestinyActivityDifficultyTierCollectionDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyActivityDifficultyTierCollectionDefinition;
+  };
+  DestinyActivityFamilyDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyActivityFamilyDefinition;
+  };
   DestinyActivityGraphDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityGraphDefinition;
   };
   DestinyActivityInteractableDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityInteractableDefinition;
   };
+  DestinyActivityLoadoutRestrictionDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyActivityLoadoutRestrictionDefinition;
+  };
   DestinyActivityModeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityModeDefinition;
   };
   DestinyActivityModifierDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityModifierDefinition;
+  };
+  DestinyActivitySelectableSkullCollectionDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyActivitySelectableSkullCollectionDefinition;
+  };
+  DestinyActivitySelectableSkullExclusionGroupDefinition?: {
+    [
+      key: string
+    ]: DestinyDefinitions.DestinyActivitySelectableSkullExclusionGroupDefinition;
+  };
+  DestinyActivitySkullCategoryDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyActivitySkullCategoryDefinition;
+  };
+  DestinyActivitySkullCollectionDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyActivitySkullCollectionDefinition;
+  };
+  DestinyActivitySkullSubcategoryDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyActivitySkullSubcategoryDefinition;
   };
   DestinyActivityTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyActivityTypeDefinition;
@@ -6775,6 +7249,9 @@ export interface DestinyWorldDefinitionsGenerated {
   };
   DestinyEntitlementOfferDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEntitlementOfferDefinition;
+  };
+  DestinyEquipableItemSetDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyEquipableItemSetDefinition;
   };
   DestinyEquipmentSlotDefinition?: {
     [key: string]: DestinyDefinitions.DestinyEquipmentSlotDefinition;
@@ -6827,6 +7304,9 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyInventoryBucketDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryBucketDefinition;
   };
+  DestinyInventoryItemConstantsDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyInventoryItemConstantsDefinition;
+  };
   DestinyInventoryItemDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryItemDefinition;
   };
@@ -6835,6 +7315,9 @@ export interface DestinyWorldDefinitionsGenerated {
   };
   DestinyItemCategoryDefinition?: {
     [key: string]: DestinyDefinitions.DestinyItemCategoryDefinition;
+  };
+  DestinyItemFilterDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyItemFilterDefinition;
   };
   DestinyItemTierTypeDefinition?: {
     [key: string]: DestinyDefinitions.DestinyItemTierTypeDefinition;
@@ -7058,8 +7541,11 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyLoadoutConstantsDefinition?: DestinyDefinitions.DestinyLoadoutConstantsDefinition;
   DestinyLoadoutIconDefinition?: DestinyDefinitions.DestinyLoadoutIconDefinition;
   DestinyLoadoutNameDefinition?: DestinyDefinitions.DestinyLoadoutNameDefinition;
+  DestinyEquipableItemSetDefinition?: DestinyDefinitions.DestinyEquipableItemSetDefinition;
+  DestinyInventoryItemConstantsDefinition?: DestinyDefinitions.DestinyInventoryItemConstantsDefinition;
   DestinyInventoryItemLiteDefinition?: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
   DestinyItemTierTypeDefinition?: DestinyDefinitions.DestinyItemTierTypeDefinition;
+  DestinyItemFilterDefinition?: DestinyDefinitions.DestinyItemFilterDefinition;
   DestinyGuardianRankConstantsDefinition?: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
   DestinyGuardianRankDefinition?: DestinyDefinitions.DestinyGuardianRankDefinition;
   DestinyFireteamFinderActivityGraphDefinition?: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition;
@@ -7079,7 +7565,15 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyBreakerTypeDefinition?: DestinyDefinitions.DestinyBreakerTypeDefinition;
   DestinyArtifactDefinition?: DestinyDefinitions.DestinyArtifactDefinition;
   DestinyActivityModifierDefinition?: DestinyDefinitions.DestinyActivityModifierDefinition;
+  DestinyActivityDifficultyTierCollectionDefinition?: DestinyDefinitions.DestinyActivityDifficultyTierCollectionDefinition;
+  DestinyActivityFamilyDefinition?: DestinyDefinitions.DestinyActivityFamilyDefinition;
   DestinyActivityInteractableDefinition?: DestinyDefinitions.DestinyActivityInteractableDefinition;
+  DestinyActivityLoadoutRestrictionDefinition?: DestinyDefinitions.DestinyActivityLoadoutRestrictionDefinition;
+  DestinyActivitySelectableSkullCollectionDefinition?: DestinyDefinitions.DestinyActivitySelectableSkullCollectionDefinition;
+  DestinyActivitySelectableSkullExclusionGroupDefinition?: DestinyDefinitions.DestinyActivitySelectableSkullExclusionGroupDefinition;
+  DestinyActivitySkullCategoryDefinition?: DestinyDefinitions.DestinyActivitySkullCategoryDefinition;
+  DestinyActivitySkullCollectionDefinition?: DestinyDefinitions.DestinyActivitySkullCollectionDefinition;
+  DestinyActivitySkullSubcategoryDefinition?: DestinyDefinitions.DestinyActivitySkullSubcategoryDefinition;
   DestinyAchievementDefinition?: DestinyDefinitions.DestinyAchievementDefinition;
 }
 export const DestinyWorldDefinitionsTypeNameList = [
@@ -7149,8 +7643,11 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyLoadoutConstantsDefinition",
   "DestinyLoadoutIconDefinition",
   "DestinyLoadoutNameDefinition",
+  "DestinyEquipableItemSetDefinition",
+  "DestinyInventoryItemConstantsDefinition",
   "DestinyInventoryItemLiteDefinition",
   "DestinyItemTierTypeDefinition",
+  "DestinyItemFilterDefinition",
   "DestinyGuardianRankConstantsDefinition",
   "DestinyGuardianRankDefinition",
   "DestinyFireteamFinderActivityGraphDefinition",
@@ -7170,6 +7667,14 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyBreakerTypeDefinition",
   "DestinyArtifactDefinition",
   "DestinyActivityModifierDefinition",
+  "DestinyActivityDifficultyTierCollectionDefinition",
+  "DestinyActivityFamilyDefinition",
   "DestinyActivityInteractableDefinition",
+  "DestinyActivityLoadoutRestrictionDefinition",
+  "DestinyActivitySelectableSkullCollectionDefinition",
+  "DestinyActivitySelectableSkullExclusionGroupDefinition",
+  "DestinyActivitySkullCategoryDefinition",
+  "DestinyActivitySkullCollectionDefinition",
+  "DestinyActivitySkullSubcategoryDefinition",
   "DestinyAchievementDefinition",
 ];

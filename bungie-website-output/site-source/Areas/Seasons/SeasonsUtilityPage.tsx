@@ -3,13 +3,19 @@
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { SeasonsDestinyMembershipDataStore } from "@Areas/Seasons/DataStores/SeasonsDestinyMembershipDataStore";
+import SeasonProgressUtils from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
+import {
+  D2DatabaseComponentProps,
+  withDestinyDefinitions,
+} from "@Database/DestinyDefinitions/WithDestinyDefinitions";
+import * as Globals from "@Enum";
 import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
-import { Actions, Components, Platform } from "@Platform";
+import { Actions, Components, Platform, Seasons } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import {
   DestinyAccountWrapper,
@@ -20,15 +26,15 @@ import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import React, { ReactNode, useEffect, useState } from "react";
-import seasonItemModalStyles from "./Progress/SeasonItemModal.module.scss";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import SeasonHeader from "./Progress/SeasonHeader";
-import SeasonPassRewardProgression from "./Progress/SeasonPassRewardProgression";
-import SeasonsPageNav from "./Progress/SeasonsPageNav";
-import RedeemSeasonRewards from "./Redeem/RedeemSeasonRewards";
+import React, { ReactNode, useEffect, useState } from "react";
+import SeasonHeader from "./SeasonHeader";
+import seasonItemModalStyles from "./SeasonItemModal.module.scss";
+import SeasonPassRewardProgression from "./SeasonPassRewardProgression";
+import RedeemSeasonRewards from "./SeasonProgress/components/SeasonProgressRewardsSection/RedeemSeasonRewards/RedeemSeasonRewards";
+import SeasonsPageNav from "./SeasonsPageNav";
 import styles from "./SeasonsUtilityPage.module.scss";
 
 export interface IClaimedReward {
@@ -36,7 +42,14 @@ export interface IClaimedReward {
   itemHash: number;
 }
 
-interface ISeasonsUtilityPageProps {
+interface ISeasonsUtilityPageProps
+  extends D2DatabaseComponentProps<
+    | "DestinyClassDefinition"
+    | "DestinySeasonDefinition"
+    | "DestinyProgressionDefinition"
+    | "DestinySeasonPassDefinition"
+    | "DestinyInventoryItemLiteDefinition"
+  > {
   seasonHash: number;
 }
 
@@ -46,12 +59,12 @@ interface ISeasonsUtilityPageProps {
  * @param {ISeasonsUtilityPageProps} props
  * @returns
  */
-const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
-  props: ISeasonsUtilityPageProps
-) => {
+const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = ({
+  seasonHash,
+  definitions,
+}) => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const destinyMembership = useDataStore(SeasonsDestinyMembershipDataStore);
-
   const [itemDetailCanClaim, setItemDetailCanClaim] = useState(false);
   const [itemDetailModalOpen, setItemDetailModalOpen] = useState(false);
   const [itemDetailLoading, setItemDetailLoading] = useState(false);
@@ -68,6 +81,11 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
   >();
 
   const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
+
+  const seasonPassHash = SeasonProgressUtils?.getCurrentSeasonPass({
+    seasonHash,
+    definitions,
+  })?.hash;
 
   useEffect(() => {
     if (!destiny2Disabled) {
@@ -88,7 +106,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
         .catch(ConvertToPlatformError)
         .catch((e: PlatformError) => {
           if (e.errorCode === PlatformErrorCodes.DestinyAccountNotFound) {
-            Modal.open(Localizer.Seasons.PlayDestiny2ToUnlock);
+            // don't do anything, we already pop a lot of modals, they'll know if they see no characters on an accounts
           } else {
             Modal.error(e);
           }
@@ -122,8 +140,6 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
         ]
       : null;
 
-  const seasonHash = props.seasonHash;
-
   const isCurrentSeason =
     seasonHash ===
     globalState.coreSettings.destiny2CoreSettings.currentSeasonHash;
@@ -155,10 +171,11 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
       setItemDetailClaiming(true);
 
       const input: Actions.DestinyClaimSeasonPassRewardActionRequest = {
+        seasonHash: seasonHash,
+        seasonPassHash: seasonPassHash,
+        rewardIndex: itemDetailRewardIndex,
         characterId: destinyMembership?.selectedCharacter?.characterId,
         membershipType: destinyMembership?.selectedMembership?.membershipType,
-        rewardIndex: itemDetailRewardIndex,
-        seasonHash: props.seasonHash,
       };
 
       Platform.Destiny2Service.ClaimSeasonPassReward(input)
@@ -228,26 +245,18 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
       <Grid>
         <GridCol cols={12}>
           <SystemDisabledHandler systems={["Destiny2"]}>
-            {!isAnonymous &&
-              destinyMembership?.memberships &&
-              charactersLoaded && (
-                <SeasonsPageNav
-                  characterId={
-                    destinyMembership?.selectedCharacter?.characterId
-                  }
-                  seasonHash={seasonHash}
-                  characterProgressions={forCharacter?.progressions}
-                  platformProgression={characterProgressions}
-                  membershipType={
-                    destinyMembership?.selectedMembership?.membershipType
-                  }
-                />
-              )}
+            {
+              <SeasonsPageNav
+                characterId={destinyMembership?.selectedCharacter?.characterId}
+                seasonHash={seasonHash}
+                characterProgressions={forCharacter?.progressions}
+                platformProgression={characterProgressions}
+                membershipType={
+                  destinyMembership?.selectedMembership?.membershipType
+                }
+              />
+            }
           </SystemDisabledHandler>
-          {!isAnonymous &&
-            (!destinyMembership?.memberships || !charactersLoaded) && (
-              <SeasonsPageNav seasonHash={seasonHash} />
-            )}
           <div className={styles.seasonInfoContainer}>
             <SeasonHeader seasonHash={seasonHash} />
 
@@ -262,23 +271,19 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
                 {Localizer.Seasons.LinkADestinyAccountTo}
               </Button>
             )}
-
-            {charactersLoaded && (
-              <DestinyAccountWrapper
-                membershipDataStore={SeasonsDestinyMembershipDataStore}
-              >
-                {({
-                  platformSelector,
-                  characterSelector,
-                }: IAccountFeatures) => (
-                  <div className={styles.dropdownFlexWrapper}>
-                    {platformSelector}
-                    {characterSelector}
-                  </div>
-                )}
-              </DestinyAccountWrapper>
-            )}
           </div>
+          {charactersLoaded && (
+            <DestinyAccountWrapper
+              membershipDataStore={SeasonsDestinyMembershipDataStore}
+            >
+              {({ platformSelector, characterSelector }: IAccountFeatures) => (
+                <div className={styles.dropdownFlexWrapper}>
+                  {platformSelector}
+                  {characterSelector}
+                </div>
+              )}
+            </DestinyAccountWrapper>
+          )}
 
           <SeasonPassRewardProgression
             seasonHash={seasonHash}
@@ -322,4 +327,12 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = (
   );
 };
 
-export default SeasonsUtilityPage;
+export default withDestinyDefinitions(SeasonsUtilityPage, {
+  types: [
+    "DestinyClassDefinition",
+    "DestinySeasonDefinition",
+    "DestinyProgressionDefinition",
+    "DestinySeasonPassDefinition",
+    "DestinyInventoryItemLiteDefinition",
+  ],
+});

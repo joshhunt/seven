@@ -120,6 +120,8 @@ export const SystemNames = {
   DirectVideoCS: "DirectVideoCS",
   StadiaSunsetAlerts: "StadiaSunsetAlerts",
   Fireteams: "ClanFireteams",
+  FireteamFinderCreationGuardianRankRequirement:
+    "FireteamFinderCreationGuardianRankRequirement",
   ReactFireteamUI: "ReactFireteamUI",
   ClanReactUI: "ClanReactUI",
   RemoveBirthdayAndCountry: "RemoveBirthdayAndCountry",

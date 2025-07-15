@@ -1,12 +1,12 @@
 // Created by a-larobinson, 2019
 // Copyright Bungie, Inc.
 
-import LazyLoadWrapper from "@Areas/Seasons/ProductPages/Season14/Components/LazyLoadWrapper";
 import { Responsive } from "@Boot/Responsive";
 import { DestroyCallback } from "@bungie/datastore/Broadcaster";
 import { DataStore } from "@bungie/datastore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { IResponsiveState } from "@bungie/responsive/Responsive";
+import LazyLoadWrapper from "@UI/Routing/LazyLoadWrapper/LazyLoadWrapper";
 import * as React from "react";
 import styles from "./ScrollingSeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";

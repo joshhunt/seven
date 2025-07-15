@@ -16,14 +16,12 @@ interface HeaderProps {
   buttonConfiguration: ButtonConfiguration;
   breadcrumbConfiguration: BreadcrumbConfiguration;
   isLoggedIn?: boolean;
-  withBetaTag?: boolean;
   activityFilterString?: string;
   setActivityFilterString?: (value: string) => void;
 }
 
 export const Header: FC<HeaderProps> = (props) => {
   const {
-    withBetaTag,
     setActivityFilterString,
     activityFilterString,
     buttonConfiguration,
@@ -50,9 +48,6 @@ export const Header: FC<HeaderProps> = (props) => {
       <FireteamFinderBreadcrumb breadcrumbConfig={breadcrumbConfiguration} />
       <div className={styles.titleWrap}>
         <h3 className={styles.title}>{title}</h3>
-        {withBetaTag && (
-          <div className={styles.beta}>{Localizer.fireteams.beta}</div>
-        )}
       </div>
       <div id={"headerSecondLine"} className={styles.secondLine}>
         <div className={styles.subtitle}>{subtitle}</div>

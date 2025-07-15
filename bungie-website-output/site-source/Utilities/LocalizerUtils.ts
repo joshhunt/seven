@@ -20,7 +20,7 @@ export class LocalizerUtils {
    */
   public static getPlatformNameFromMembershipType(
     membershipType: BungieMembershipType
-  ) {
+  ): string {
     switch (membershipType) {
       case BungieMembershipType.TigerPsn:
         return Localizer.Registration.networksigninoptionplaystation;
@@ -52,7 +52,7 @@ export class LocalizerUtils {
    */
   public static getPlatformAbbrForMembershipType(
     membershipType: BungieMembershipType
-  ) {
+  ): string {
     return Localizer.Registration[
       `MembershipAbbreviation${BungieMembershipType[membershipType]}`
     ];

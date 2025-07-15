@@ -71,6 +71,7 @@ export interface IDropdownPrettyOption {
   children?: undefined;
   className?: string;
   iconPath?: string;
+  iconOnly?: boolean;
 }
 
 export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
@@ -81,11 +82,15 @@ export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
   hovered,
   option,
   className,
+  iconOnly,
 }) => {
   const icon = iconPath ?? option?.iconPath;
 
   const iconRendered = icon && (
-    <div className={styles.icon} style={{ backgroundImage: `url(${icon})` }} />
+    <div
+      className={classNames(styles.icon, { [styles.iconSpacing]: !iconOnly })}
+      style={{ backgroundImage: `url(${icon})` }}
+    />
   );
 
   return (

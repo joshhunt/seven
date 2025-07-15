@@ -29,10 +29,7 @@ const ChildView: FC<ChildViewProps> = () => {
         </Typography>
       )}
       {hasAdult ? (
-        <LinkedUser
-          currentUserType={playerContext.ageCategory}
-          assignedAccount={playerContext}
-        />
+        <LinkedUser assignedAccount={playerContext} />
       ) : (
         <>
           <CopyBlock heading={ParentOrGuardian} subheading={CreateALink} />

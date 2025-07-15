@@ -1,3 +1,4 @@
+import { EnumUtils } from "@Utilities/EnumUtils";
 import React, {
   createContext,
   useContext,
@@ -11,6 +12,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import cookie from "js-cookie";
 import { Platform, PnP } from "@Platform";
 import {
+  AgeCategoriesEnum,
   ChildPermissionEnum,
   ChildPreferenceEnum,
   ResponseStatusEnum,
@@ -219,7 +221,13 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
   const requestingChildIdfromParam = url.searchParams.get("playerId");
   const childIdCookie = cookie.get("playerId");
   const requestingChildId = childIdCookie ?? requestingChildIdfromParam;
-  const hasPendingChild = requestingChildId && playerContext?.ageCategory === 3;
+  const hasPendingChild =
+    requestingChildId &&
+    EnumUtils.looseEquals(
+      playerContext?.ageCategory,
+      AgeCategoriesEnum.Adult,
+      AgeCategoriesEnum
+    );
 
   return {
     playerContext,

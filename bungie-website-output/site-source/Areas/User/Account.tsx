@@ -14,6 +14,7 @@ import { IdentitySettings } from "@Areas/User/AccountComponents/IdentitySettings
 import { ImportMutedUsersBanner } from "@Areas/User/AccountComponents/Internal/PlatformFriendsImport/ImportMutedUsersBanner";
 import { LanguageAndRegion } from "@Areas/User/AccountComponents/LanguageAndRegion";
 import { Notifications } from "@Areas/User/AccountComponents/Notifications";
+import { setPendingChildCookie } from "@Areas/User/AccountComponents/ParentalControls/lib";
 import { Privacy } from "@Areas/User/AccountComponents/Privacy";
 import { SilverBalanceHistory } from "@Areas/User/AccountComponents/SilverBalanceHistory";
 import { Responsive } from "@Boot/Responsive";
@@ -130,6 +131,7 @@ const Account: React.FC = () => {
 
   useEffect(() => {
     if (pathname?.toLowerCase()?.includes("parentalcontrols") && !isLoggedIn) {
+      setPendingChildCookie();
       history.push(RouteHelper.ParentalControlsLanding().url);
       location.reload();
     }

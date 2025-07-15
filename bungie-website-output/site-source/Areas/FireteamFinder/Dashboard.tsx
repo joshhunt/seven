@@ -96,7 +96,6 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
         title={Localizer.Fireteams.FireteamFinder}
         subtitle={Localizer.Fireteams.FindPlayersAndInviteThem}
         backgroundImage={bgImage}
-        withBetaTag={true}
       >
         <CharacterSelect />
         <LobbyStatusCard activeFireteam={activeFireteam} />

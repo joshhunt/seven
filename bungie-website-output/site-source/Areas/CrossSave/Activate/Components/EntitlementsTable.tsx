@@ -214,6 +214,14 @@ export const EntitlementsTable: React.FC<EntitlementsTableProps> = (props) => {
             <th scope="row">{crosssaveLoc.TheFinalShapeHeader}</th>
             {entitlementRow(DestinyGameVersions.TheFinalShape)}
           </tr>
+          <tr>
+            <th scope="row">{crosssaveLoc.EdgeOfFateHeader}</th>
+            {entitlementRow(DestinyGameVersions.EdgeOfFate)}
+          </tr>
+          <tr>
+            <th scope="row">{crosssaveLoc.RenegadesHeader}</th>
+            {entitlementRow(DestinyGameVersions.Renegades)}
+          </tr>
         </tbody>
       </table>
     </div>

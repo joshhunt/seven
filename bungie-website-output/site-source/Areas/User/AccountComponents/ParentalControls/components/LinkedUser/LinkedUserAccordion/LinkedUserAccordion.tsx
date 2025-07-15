@@ -8,11 +8,9 @@ import { PnP } from "@Platform";
 interface LinkedUserAccordionProps {
   linkedAccount?: PnP.GetPlayerContextResponse;
   assignedAccount?: PnP.GetPlayerContextResponse["assignedChildren"][number];
-  currentUserType?: any;
 }
 
 const LinkedUserAccordion: FC<LinkedUserAccordionProps> = ({
-  currentUserType,
   assignedAccount,
   linkedAccount,
 }) => {
@@ -34,16 +32,10 @@ const LinkedUserAccordion: FC<LinkedUserAccordionProps> = ({
           />
         }
       >
-        <UserPanel
-          assignedAccount={assignedAccount}
-          currentUserType={currentUserType}
-        />
+        <UserPanel assignedAccount={assignedAccount} />
       </AccordionSummary>
       <AccordionDetails>
-        <SettingsPanel
-          assignedAccount={assignedAccount}
-          currentUserType={currentUserType}
-        />
+        <SettingsPanel assignedAccount={assignedAccount} />
       </AccordionDetails>
     </Accordion>
   );

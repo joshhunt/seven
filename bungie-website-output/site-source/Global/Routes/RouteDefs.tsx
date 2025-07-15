@@ -271,17 +271,6 @@ export class RouteDefs {
           }),
       ],
     }),
-    Fireteams: new Area({
-      name: AreaNames.Fireteams,
-      lazyComponent: createAsyncComponent(
-        () => import("@Areas/Fireteams/FireteamsArea")
-      ),
-      routes: [
-        (area) => new ActionRoute(area, RouteActions.Search),
-        (area) =>
-          new ActionRoute(area, RouteActions.Fireteam, { path: ":fireteamId" }),
-      ],
-    }),
     Guide: new Area({
       name: AreaNames.Guide,
       lazyComponent: createAsyncComponent(

@@ -42,6 +42,7 @@ import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
 import { ParallaxContainer } from "@UI/UIKit/Layout/ParallaxContainer";
 import { StickySubNav } from "@UI/Navigation/StickySubNav";
 import { DestinyBuyDataStore } from "./Shared/DestinyBuyDataStore";
+import DestinyIncludedExpansions from "./Shared/DestinyIncludedExpansions";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -359,6 +360,9 @@ class DestinyBuyProductDetailInternal extends React.Component<
       const heroBackground = isCollectorsTest
         ? variantBg
         : `url(${backgroundImage})`;
+      const showIncludedExpansions =
+        destinyProductFamily?.productFamilyTag ===
+        DestinyProductFamilies.YearOfProphecy;
 
       return (
         <SystemDisabledHandler systems={["BuyFlow"]}>
@@ -556,6 +560,13 @@ class DestinyBuyProductDetailInternal extends React.Component<
                       />
                     </GridCol>
                   )}
+
+                  {showIncludedExpansions ? (
+                    <DestinyIncludedExpansions
+                      entryId={"blt131feb7776e6153b"}
+                      contentUid={"yop_two_expansions"}
+                    />
+                  ) : null}
 
                   <GridCol cols={12}>
                     <DestinyBuyDetailItem

@@ -247,6 +247,13 @@ export declare namespace User {
 		*/
     primaryMembershipId?: string;
 
+    /**
+		If this property is populated, it will have the membershipId for the Marathon Membership on this user's account
+		
+		 If null, this user has no Marathon (i.e. "GoliathGame") membership.
+		*/
+    marathonMembershipId?: string;
+
     bungieNetUser: User.GeneralUser;
   }
 
@@ -5931,6 +5938,14 @@ export declare namespace Models {
 
     fireteamFinderConstantsHash: number;
 
+    inventoryItemConstantsHash: number;
+
+    featuredItemsListHash: number;
+
+    armorArchetypePlugSetHash: number;
+
+    seasonalHubEventCardHash: number;
+
     guardianRanksRootNodeHash: number;
 
     currentRankProgressionHashes: number[];
@@ -7168,6 +7183,12 @@ export declare namespace Definitions {
     iconWatermarkShelved: string;
 
     /**
+		This is the active watermark for the item if it is currently Featured in-game. 
+		Clients should use the isFeaturedItem boolean to decide whether or not to show this as opposed to iconWatermark.
+		*/
+    iconWatermarkFeatured: string;
+
+    /**
 		A secondary icon associated with the item.  Currently this is used in very context specific
 		applications, such as Emblem Nameplates.
 		*/
@@ -7195,6 +7216,11 @@ export declare namespace Definitions {
 		use it as you will.
 		*/
     backgroundColor: Misc.DestinyColor;
+
+    /**
+		Whether or not this item is currently featured in the game, giving it a special watermark
+		*/
+    isFeaturedItem: boolean;
 
     /**
 		If we were able to acquire an in-game screenshot for the item, the path to that screenshot
@@ -8038,6 +8064,11 @@ export declare namespace Definitions {
 		that can occur when trying to equip the item.  They match up one-to-one with requiredUnlockExpressions.
 		*/
     displayStrings: string[];
+
+    /**
+		If this item is part of an item set with bonus perks, this will the hash of that set.
+		*/
+    equipableItemSetHash?: number;
   }
 
   /**
@@ -10698,7 +10729,15 @@ export declare namespace Definitions {
 		*/
     optionalUnlockStrings: Definitions.DestinyActivityUnlockStringDefinition[];
 
+    activityFamilyHashes: number[];
+
+    traitHashes: number[];
+
     requirements: Definitions.DestinyActivityRequirementsBlock;
+
+    difficultyTierCollectionHash?: number;
+
+    selectableSkullCollectionHashes: number[];
 
     /**
 		Represents all of the possible activities that could be played in the Playlist, along with information
@@ -13176,6 +13215,11 @@ export declare namespace Items {
 		details of its energy type and available capacity to spend energy points.
 		*/
     energy: Items.DestinyItemInstanceEnergy;
+
+    /**
+		Gear Tier, if applicable, fished up from the unlock value items.gear_tier
+		*/
+    gearTier?: number;
   }
 
   export interface DestinyItemInstanceEnergy {
@@ -17988,6 +18032,11 @@ export declare namespace Actions {
     seasonHash: number;
 
     /**
+		The hash identifier of the Season Pass for the reward being claimed.
+		*/
+    seasonPassHash: number;
+
+    /**
 		The index into the rewardItems entry under the season's season pass progression that is being claimed.
 		*/
     rewardIndex: number;
@@ -18145,6 +18194,16 @@ export declare namespace HistoricalStats {
 		True if the activity was started from the beginning, if that information is available and the activity was played post Witch Queen release.
 		*/
     activityWasStartedFromBeginning?: boolean;
+
+    /**
+		Difficulty tier index value for the activity.
+		*/
+    activityDifficultyTier?: number;
+
+    /**
+		Collection of player-selected skull hashes active for the activity.
+		*/
+    selectedSkullHashes: number[];
 
     /**
 		Details about the activity.
@@ -19498,6 +19557,8 @@ export declare namespace Seasons {
 
     seasonPassHash?: number;
 
+    seasonPassList: Seasons.DestinySeasonPassReference[];
+
     seasonPassProgressionHash?: number;
 
     artifactItemHash?: number;
@@ -19521,6 +19582,26 @@ export declare namespace Seasons {
     index: number;
 
     redacted: boolean;
+  }
+
+  /**
+	Defines the hash, unlock flag and start time of season passes
+	*/
+  export interface DestinySeasonPassReference {
+    /**
+		The Season Pass Hash
+		*/
+    seasonPassHash: number;
+
+    /**
+		The Season Pass Start Date
+		*/
+    seasonPassStartDate?: string;
+
+    /**
+		The Season Pass End Date
+		*/
+    seasonPassEndDate?: string;
   }
 
   /**
@@ -19603,11 +19684,25 @@ export declare namespace Seasons {
 		*/
     prestigeProgressionHash: number;
 
+    linkRedirectPath: string;
+
+    color: Misc.DestinyColor;
+
+    images: Seasons.DestinySeasonPassImages;
+
     hash: number;
 
     index: number;
 
     redacted: boolean;
+  }
+
+  export interface DestinySeasonPassImages {
+    iconImagePath: string;
+
+    themeBackgroundImagePath: string;
+
+    seasonRankBackgroundImagePath: string;
   }
 
   /**

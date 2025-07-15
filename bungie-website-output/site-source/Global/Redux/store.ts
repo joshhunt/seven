@@ -1,33 +1,41 @@
-import { authenticationSlice } from "@Global/Redux/slices/authenticationSlice";
-import { exampleSlice } from "@Global/Redux/slices/exampleSlice";
+import authenticationSlice from "@Global/Redux/slices/authenticationSlice";
+import exampleSlice from "@Global/Redux/slices/exampleSlice";
+import destinyAccountSlice from "@Global/Redux/slices/destinyAccountSlice";
+import registrationSlice from "@Global/Redux/slices/registrationSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { registrationSlice } from "./slices/registrationSlice";
 
-const persistConfig = {
+// Persist only certain fields from registration slice
+const registrationPersistConfig = {
   key: "registration",
   storage,
-  whitelist: ["registration"], // Only persist registration state
+  whitelist: ["someField", "anotherField"],
 };
 
+// Create persisted reducers
 const persistedRegistrationReducer = persistReducer(
-  persistConfig,
-  registrationSlice.reducer
+  registrationPersistConfig,
+  registrationSlice
 );
 
+// Create and configure store
 const store = configureStore({
   reducer: {
-    example: exampleSlice.reducer,
+    example: exampleSlice,
     registration: persistedRegistrationReducer,
-    authentication: authenticationSlice.reducer,
+    authentication: authenticationSlice,
+    destinyAccount: destinyAccountSlice, // <- Don't forget this!
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/REGISTER",
+        ],
       },
     }),
 });
@@ -38,8 +46,8 @@ export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Typed hooks for Dispatch and Selector
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+// Typed hooks for use throughout your app
+export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default store;

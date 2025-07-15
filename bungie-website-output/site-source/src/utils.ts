@@ -1,177 +1,156 @@
-import { formatProdErrorMessage as _formatProdErrorMessage } from "@reduxjs/toolkit";
-import { produce as createNextState, isDraftable } from "immer";
-import type { Middleware, StoreEnhancer } from "redux";
-export function getTimeMeasureUtils(maxDelay: number, fnName: string) {
-  let elapsed = 0;
-  return {
-    measureTime<T>(fn: () => T): T {
-      const started = Date.now();
+import { runIdentityFunctionCheck } from './devModeChecks/identityFunctionCheck'
+import { runInputStabilityCheck } from './devModeChecks/inputStabilityCheck'
+import { globalDevModeChecks } from './devModeChecks/setGlobalDevModeChecks'
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import type {
+  DevModeChecks,
+  Selector,
+  SelectorArray,
+  DevModeChecksExecutionInfo
+} from './types'
 
-      try {
-        return fn();
-      } finally {
-        const finished = Date.now();
-        elapsed += finished - started;
-      }
-    },
+export const NOT_FOUND = /* @__PURE__ */ Symbol('NOT_FOUND')
+export type NOT_FOUND_TYPE = typeof NOT_FOUND
 
-    warnIfExceeded() {
-      if (elapsed > maxDelay) {
-        console.warn(`${fnName} took ${elapsed}ms, which is more than the warning threshold of ${maxDelay}ms. 
-If your state or actions are very large, you may want to disable the middleware as it might cause too much of a slowdown in development mode. See https://redux-toolkit.js.org/api/getDefaultMiddleware for instructions.
-It is disabled in production builds, so you don't need to worry about that.`);
-      }
-    },
-  };
-}
-export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-export function find<T>(
-  iterable: Iterable<T>,
-  comparator: (item: T) => boolean
-): T | undefined {
-  for (const entry of iterable) {
-    if (comparator(entry)) {
-      return entry;
-    }
-  }
-
-  return undefined;
-}
-export class Tuple<Items extends ReadonlyArray<unknown> = []> extends Array<
-  Items[number]
-> {
-  constructor(length: number);
-  constructor(...items: Items);
-
-  constructor(...items: any[]) {
-    super(...items);
-    Object.setPrototypeOf(this, Tuple.prototype);
-  }
-
-  static get [Symbol.species]() {
-    return Tuple as any;
-  }
-
-  concat<AdditionalItems extends ReadonlyArray<unknown>>(
-    items: Tuple<AdditionalItems>
-  ): Tuple<[...Items, ...AdditionalItems]>;
-  concat<AdditionalItems extends ReadonlyArray<unknown>>(
-    items: AdditionalItems
-  ): Tuple<[...Items, ...AdditionalItems]>;
-  concat<AdditionalItems extends ReadonlyArray<unknown>>(
-    ...items: AdditionalItems
-  ): Tuple<[...Items, ...AdditionalItems]>;
-
-  concat(...arr: any[]) {
-    return super.concat.apply(this, arr);
-  }
-
-  prepend<AdditionalItems extends ReadonlyArray<unknown>>(
-    items: Tuple<AdditionalItems>
-  ): Tuple<[...AdditionalItems, ...Items]>;
-  prepend<AdditionalItems extends ReadonlyArray<unknown>>(
-    items: AdditionalItems
-  ): Tuple<[...AdditionalItems, ...Items]>;
-  prepend<AdditionalItems extends ReadonlyArray<unknown>>(
-    ...items: AdditionalItems
-  ): Tuple<[...AdditionalItems, ...Items]>;
-
-  prepend(...arr: any[]) {
-    if (arr.length === 1 && Array.isArray(arr[0])) {
-      return new Tuple(...arr[0].concat(this));
-    }
-
-    return new Tuple(...arr.concat(this));
-  }
-}
-export function freezeDraftable<T>(val: T) {
-  return isDraftable(val) ? createNextState(val, () => {}) : val;
-}
-interface WeakMapEmplaceHandler<K extends object, V> {
-  /**
-   * Will be called to get value, if no value is currently in map.
-   */
-  insert?(key: K, map: WeakMap<K, V>): V;
-  /**
-   * Will be called to update a value, if one exists already.
-   */
-
-  update?(previous: V, key: K, map: WeakMap<K, V>): V;
-}
-interface MapEmplaceHandler<K, V> {
-  /**
-   * Will be called to get value, if no value is currently in map.
-   */
-  insert?(key: K, map: Map<K, V>): V;
-  /**
-   * Will be called to update a value, if one exists already.
-   */
-
-  update?(previous: V, key: K, map: Map<K, V>): V;
-}
-export function emplace<K, V>(
-  map: Map<K, V>,
-  key: K,
-  handler: MapEmplaceHandler<K, V>
-): V;
-export function emplace<K extends object, V>(
-  map: WeakMap<K, V>,
-  key: K,
-  handler: WeakMapEmplaceHandler<K, V>
-): V;
 /**
- * Allow inserting a new value, or updating an existing one
- * @throws if called for a key with no current value and no `insert` handler is provided
- * @returns current value in map (after insertion/updating)
- * ```ts
- * // return current value if already in map, otherwise initialise to 0 and return that
- * const num = emplace(map, key, {
- *   insert: () => 0
- * })
+ * Assert that the provided value is a function. If the assertion fails,
+ * a `TypeError` is thrown with an optional custom error message.
  *
- * // increase current value by one if already in map, otherwise initialise to 0
- * const num = emplace(map, key, {
- *   update: (n) => n + 1,
- *   insert: () => 0,
- * })
- *
- * // only update if value's already in the map - and increase it by one
- * if (map.has(key)) {
- *   const num = emplace(map, key, {
- *     update: (n) => n + 1,
- *   })
- * }
- * ```
- *
- * @remarks
- * Based on https://github.com/tc39/proposal-upsert currently in Stage 2 - maybe in a few years we'll be able to replace this with direct method calls
+ * @param func - The value to be checked.
+ * @param  errorMessage - An optional custom error message to use if the assertion fails.
+ * @throws A `TypeError` if the assertion fails.
  */
-
-export function emplace<K extends object, V>(
-  map: WeakMap<K, V>,
-  key: K,
-  handler: WeakMapEmplaceHandler<K, V>
-): V {
-  if (map.has(key)) {
-    let value = map.get(key) as V;
-
-    if (handler.update) {
-      value = handler.update(value, key, map);
-      map.set(key, value);
-    }
-
-    return value;
+export function assertIsFunction<FunctionType extends Function>(
+  func: unknown,
+  errorMessage = `expected a function, instead received ${typeof func}`
+): asserts func is FunctionType {
+  if (typeof func !== 'function') {
+    throw new TypeError(errorMessage)
   }
+}
 
-  if (!handler.insert)
-    throw new Error(
-      process.env.NODE_ENV === "production"
-        ? _formatProdErrorMessage(10)
-        : "No insert provided for key not already in map"
-    );
-  const inserted = handler.insert(key, map);
-  map.set(key, inserted);
-  return inserted;
+/**
+ * Assert that the provided value is an object. If the assertion fails,
+ * a `TypeError` is thrown with an optional custom error message.
+ *
+ * @param object - The value to be checked.
+ * @param  errorMessage - An optional custom error message to use if the assertion fails.
+ * @throws A `TypeError` if the assertion fails.
+ */
+export function assertIsObject<ObjectType extends Record<string, unknown>>(
+  object: unknown,
+  errorMessage = `expected an object, instead received ${typeof object}`
+): asserts object is ObjectType {
+  if (typeof object !== 'object') {
+    throw new TypeError(errorMessage)
+  }
+}
+
+/**
+ * Assert that the provided array is an array of functions. If the assertion fails,
+ * a `TypeError` is thrown with an optional custom error message.
+ *
+ * @param array - The array to be checked.
+ * @param  errorMessage - An optional custom error message to use if the assertion fails.
+ * @throws A `TypeError` if the assertion fails.
+ */
+export function assertIsArrayOfFunctions<FunctionType extends Function>(
+  array: unknown[],
+  errorMessage = `expected all items to be functions, instead received the following types: `
+): asserts array is FunctionType[] {
+  if (
+    !array.every((item): item is FunctionType => typeof item === 'function')
+  ) {
+    const itemTypes = array
+      .map(item =>
+        typeof item === 'function'
+          ? `function ${item.name || 'unnamed'}()`
+          : typeof item
+      )
+      .join(', ')
+    throw new TypeError(`${errorMessage}[${itemTypes}]`)
+  }
+}
+
+/**
+ * Ensure that the input is an array. If it's already an array, it's returned as is.
+ * If it's not an array, it will be wrapped in a new array.
+ *
+ * @param item - The item to be checked.
+ * @returns An array containing the input item. If the input is already an array, it's returned without modification.
+ */
+export const ensureIsArray = (item: unknown) => {
+  return Array.isArray(item) ? item : [item]
+}
+
+/**
+ * Extracts the "dependencies" / "input selectors" from the arguments of `createSelector`.
+ *
+ * @param createSelectorArgs - Arguments passed to `createSelector` as an array.
+ * @returns An array of "input selectors" / "dependencies".
+ * @throws A `TypeError` if any of the input selectors is not function.
+ */
+export function getDependencies(createSelectorArgs: unknown[]) {
+  const dependencies = Array.isArray(createSelectorArgs[0])
+    ? createSelectorArgs[0]
+    : createSelectorArgs
+
+  assertIsArrayOfFunctions<Selector>(
+    dependencies,
+    `createSelector expects all input-selectors to be functions, but received the following types: `
+  )
+
+  return dependencies as SelectorArray
+}
+
+/**
+ * Runs each input selector and returns their collective results as an array.
+ *
+ * @param dependencies - An array of "dependencies" or "input selectors".
+ * @param inputSelectorArgs - An array of arguments being passed to the input selectors.
+ * @returns An array of input selector results.
+ */
+export function collectInputSelectorResults(
+  dependencies: SelectorArray,
+  inputSelectorArgs: unknown[] | IArguments
+) {
+  const inputSelectorResults = []
+  const { length } = dependencies
+  for (let i = 0; i < length; i++) {
+    // @ts-ignore
+    // apply arguments instead of spreading and mutate a local list of params for performance.
+    inputSelectorResults.push(dependencies[i].apply(null, inputSelectorArgs))
+  }
+  return inputSelectorResults
+}
+
+/**
+ * Retrieves execution information for development mode checks.
+ *
+ * @param devModeChecks - Custom Settings for development mode checks. These settings will override the global defaults.
+ * @param firstRun - Indicates whether it is the first time the selector has run.
+ * @returns  An object containing the execution information for each development mode check.
+ */
+export const getDevModeChecksExecutionInfo = (
+  firstRun: boolean,
+  devModeChecks: Partial<DevModeChecks>
+) => {
+  const { identityFunctionCheck, inputStabilityCheck } = {
+    ...globalDevModeChecks,
+    ...devModeChecks
+  }
+  return {
+    identityFunctionCheck: {
+      shouldRun:
+        identityFunctionCheck === 'always' ||
+        (identityFunctionCheck === 'once' && firstRun),
+      run: runIdentityFunctionCheck
+    },
+    inputStabilityCheck: {
+      shouldRun:
+        inputStabilityCheck === 'always' ||
+        (inputStabilityCheck === 'once' && firstRun),
+      run: runInputStabilityCheck
+    }
+  } satisfies DevModeChecksExecutionInfo
 }

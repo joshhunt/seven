@@ -64,6 +64,8 @@ export interface ActivityItemProps {
 }
 
 const SelectActivity: React.FC<SelectActivityProps> = (props) => {
+  /* CTPLXP-2176: TODO - Definition for DestinyActivityTreeType is not behaving as expected. This must be resolved, hardcoding value for immediate resolution */
+  const FIRETEAM_ACTIVITY_TREE_TYPE = 0;
   const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const allFireteamSets = props.definitions?.DestinyFireteamFinderActivitySetDefinition?.all();
   const allFireteamActivityGraphDefs = props.definitions?.DestinyFireteamFinderActivityGraphDefinition?.all();
@@ -93,6 +95,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
   }, [props.definitions]);
 
   const fireteamsLoc = Localizer.Fireteams;
+
   const fetchCharacterAccess = () => {
     if (destinyMembership?.selectedCharacter?.characterId) {
       Platform.FireteamfinderService.GetCharacterActivityAccess(
@@ -273,6 +276,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       </div>
     );
   };
+
   const allItems: any[] = [];
   const parentHashArr: number[] = [];
   const nodeIsVisible = (node: FireteamGraphExplorerNode) => {
@@ -311,6 +315,15 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
           node?.graphDefinition?.hash
         );
 
+        /*CTPLXP-2176: Filter out non-FtF Activity Types*/
+        if (
+          !node?.graphDefinition?.enabledOnTreeTypesListEnum?.includes(
+            FIRETEAM_ACTIVITY_TREE_TYPE
+          )
+        ) {
+          return false;
+        }
+
         if (nodeIsVisible(node)) {
           if (isSubStr || isSelectableChild) {
             if (node?.graphDefinition?.selfAndAllDescendantHashes) {
@@ -334,8 +347,10 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
 
       return false;
     };
+
     const filteredNodes =
       nodes?.filter((node) => shouldIncludeNode(node)) ?? [];
+
     const accordionItems: {
       triggerElement: JSX.Element;
       collapsibleElement: JSX.Element;

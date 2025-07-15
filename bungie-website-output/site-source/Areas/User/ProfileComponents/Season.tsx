@@ -1,17 +1,16 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
+import { SeasonProgressBar } from "@Areas/Seasons/SeasonProgress/components/SeasonProgressBar";
+import {
+  SeasonsArray,
+  SeasonsDefinitions,
+} from "@Areas/Seasons/SeasonProgress/constants/SeasonsDefinitions";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import styles from "./Season.module.scss";
-import { SeasonProgressBar } from "@Areas/Seasons/Progress/SeasonProgressBar";
-import {
-  SeasonsArray,
-  SeasonsDefinitions,
-} from "@Areas/Seasons/SeasonsDefinitions";
 import { Characters, Responses } from "@Platform";
 import React from "react";
 import { SeasonalRanks } from "./SeasonalRanks";

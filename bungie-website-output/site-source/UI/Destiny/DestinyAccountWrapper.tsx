@@ -39,6 +39,7 @@ interface IDestinyAccountWrapperProps extends GlobalStateComponentProps<any> {
   onCharacterChange?: (value: string) => void;
   /** Shows the cross save banner in the platformSelector if user is cross saved */
   showCrossSaveBanner?: boolean;
+  iconOnly?: boolean;
 }
 
 // Default props - these will have values set in DestinyAccountWrapper.defaultProps
@@ -62,6 +63,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
   onCharacterChange,
   bnetProfileSubtitle,
   showCrossSaveBanner,
+  iconOnly,
 }) => {
   //check for changes in auth status
 
@@ -131,6 +133,7 @@ export const DestinyAccountWrapper: React.FC<Props> = ({
               }
               isViewingOthers={!isViewingSelf}
               showCrossSaveBanner={showCrossSaveBanner}
+              iconOnly={iconOnly}
             />
           ),
           characterSelector: (

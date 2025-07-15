@@ -2,7 +2,7 @@
 // Copyright Bungie, Inc.
 
 import FireteamUserInternal from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamUserInternal";
-import styles from "@Areas/Fireteams/Fireteam.module.scss";
+import styles from "./Fireteams.module.scss";
 import { FireteamFinder } from "@Platform";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import React, { useState } from "react";

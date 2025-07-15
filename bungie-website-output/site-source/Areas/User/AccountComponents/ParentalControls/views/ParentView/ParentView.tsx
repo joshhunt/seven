@@ -19,8 +19,6 @@ interface ParentViewProps {}
 
 const ParentView: FC<ParentViewProps> = () => {
   const {
-    IfYouAreAParentRequestInvite,
-    ManageFamily,
     MyFamilyMembers,
     RequestInvite,
     EmailVerificationRequired,
@@ -95,27 +93,18 @@ const ParentView: FC<ParentViewProps> = () => {
         )}
         <div>
           {pendingChildData && (
-            <LinkedUser
-              currentUserType={playerContext?.ageCategory}
-              assignedAccount={pendingChildData}
-            />
+            <LinkedUser assignedAccount={pendingChildData} />
           )}
           {hasLinkedChildAccounts &&
             assignedChildren?.map((child, i) => (
               <Fragment key={`${i}-${child?.membershipId}`}>
                 {child?.parentOrGuardianAssignmentStatus ===
                   ParentOrGuardianAssignmentStatusEnum.Pending && (
-                  <LinkedUser
-                    currentUserType={playerContext?.ageCategory}
-                    assignedAccount={child}
-                  />
+                  <LinkedUser assignedAccount={child} />
                 )}
                 {child?.parentOrGuardianAssignmentStatus ===
                   ParentOrGuardianAssignmentStatusEnum.Assigned && (
-                  <LinkedUserAccordion
-                    currentUserType={playerContext?.ageCategory}
-                    assignedAccount={child}
-                  />
+                  <LinkedUserAccordion assignedAccount={child} />
                 )}
               </Fragment>
             ))}
