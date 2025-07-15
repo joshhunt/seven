@@ -36,6 +36,7 @@ export interface IClaimedReward {
 
 interface IRewardsCarouselProps {
   seasonHash: number;
+  seasonPassHash: number;
 }
 
 /**
@@ -44,7 +45,10 @@ interface IRewardsCarouselProps {
  * @param {IRewardsCarouselProps} props
  * @returns
  */
-const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({ seasonHash }) => {
+const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
+  seasonHash,
+  seasonPassHash,
+}) => {
   const globalState = useDataStore(GlobalStateDataStore, [
     "loggedInUser",
     "coreSettings",
@@ -129,6 +133,7 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({ seasonHash }) => {
       membershipType: selectedMembership.membershipType,
       rewardIndex: itemDetailRewardIndex,
       seasonHash: seasonHash,
+      seasonPassHash: seasonPassHash,
     };
 
     Platform.Destiny2Service.ClaimSeasonPassReward(input)

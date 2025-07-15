@@ -24,6 +24,7 @@ export interface IRedeemSeasonRewardItemProps {
   membershipType: Globals.BungieMembershipType;
   rewardIndex: number;
   seasonHash: number;
+  seasonPassHash: number;
   isHighlightedObjective: boolean;
   itemClaimed: (rewardIndex: number, itemHash: number) => void;
   handleClick: (itemHash: number, rewardIndex: number) => void;
@@ -110,10 +111,11 @@ export class RedeemSeasonRewardItem extends React.Component<
       this.setState({ isClaiming: true });
 
       const input: Actions.DestinyClaimSeasonPassRewardActionRequest = {
+        seasonHash: this.props.seasonHash,
+        seasonPassHash: this.props.seasonPassHash,
+        rewardIndex: this.props.rewardIndex,
         characterId: this.props.characterId,
         membershipType: this.props.membershipType,
-        rewardIndex: this.props.rewardIndex,
-        seasonHash: this.props.seasonHash,
       };
 
       Platform.Destiny2Service.ClaimSeasonPassReward(input)

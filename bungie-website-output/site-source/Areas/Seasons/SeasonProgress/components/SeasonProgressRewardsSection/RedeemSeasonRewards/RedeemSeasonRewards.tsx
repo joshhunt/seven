@@ -181,6 +181,7 @@ class RedeemSeasonRewards extends React.Component<
                       characterSeasonalOverrideStates
                     )}
                     seasonHash={value.seasonHash}
+                    seasonPassHash={seasonPassDef?.hash}
                     itemClaimed={() =>
                       this.props.itemClaimed(value.itemHash, value.rewardIndex)
                     }
@@ -261,6 +262,7 @@ class RedeemSeasonRewards extends React.Component<
                     membershipType: this.props.membershipType,
                     rewardIndex: index,
                     seasonHash: seasonHash,
+                    seasonPassHash: seasonPassDef?.hash,
                     itemClaimed: () =>
                       this.props.itemClaimed(value.itemHash, index),
                     handleClick: () =>
