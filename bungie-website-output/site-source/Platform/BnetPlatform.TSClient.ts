@@ -19701,8 +19701,6 @@ export declare namespace Seasons {
     iconImagePath: string;
 
     themeBackgroundImagePath: string;
-
-    seasonRankBackgroundImagePath: string;
   }
 
   /**

@@ -4065,6 +4065,10 @@ export declare namespace DestinyDefinitions {
 
     guardianRanksRootNodeHash: number;
 
+    seasonalHubEventCardHash: number;
+
+    destinyRewardPassRankSealImages: DestinyRewardPassRankSealImages;
+
     boundToRelease: string;
 
     hash: number;
@@ -4098,6 +4102,16 @@ export declare namespace DestinyDefinitions {
     redacted: boolean;
 
     blacklisted: boolean;
+  }
+
+  export interface DestinyRewardPassRankSealImages {
+    rewardPassRankSealImagePath: string;
+
+    rewardPassRankSealPremiumImagePath: string;
+
+    rewardPassRankSealPrestigeImagePath: string;
+
+    rewardPassRankSealPremiumPrestigeImagePath: string;
   }
 
   export interface DateRange {
@@ -5224,8 +5238,6 @@ export declare namespace DestinyDefinitions {
     iconImagePath: string;
 
     themeBackgroundImagePath: string;
-
-    seasonRankBackgroundImagePath: string;
   }
 
   export interface DestinySackRewardItemListDefinition {

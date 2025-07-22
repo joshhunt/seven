@@ -67,7 +67,6 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
   const qs = new URLSearchParams(location.search);
   const pageCategory = UrlUtils.GetUrlAction(location).toLowerCase();
   const pageQueryToNumber = parseInt(qs.get("page"), 10);
-  const [page, setPage] = useState(pageQueryToNumber || 1);
   const [articles, setArticles] = useState<any[]>([]);
   const articlesPerPage = 25;
   const [total, setTotal] = useState(articlesPerPage);
@@ -100,13 +99,8 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
         Logger.logToServer(error, RendererLogLevel.Error);
       });
   };
-
-  useEffect(() => {
-    if (pageQueryToNumber < 1 || pageQueryToNumber > totalPages) {
-      setPage(1);
-    }
-  }, [pageQueryToNumber, totalPages]);
-
+  const page =
+    isNaN(pageQueryToNumber) || pageQueryToNumber < 1 ? 1 : pageQueryToNumber;
   useEffect(() => {
     fetchArticles(pageCategory, page);
   }, [pageCategory, page]);
@@ -120,7 +114,7 @@ const NewsByCategory: React.FC<NewsByCategoryProps> = () => {
 
         {totalPages > 1 && (
           <ReactPaginate
-            forcePage={page - 1 ?? 1}
+            forcePage={page - 1}
             onPageChange={(selectedItem) =>
               history.push({
                 search: `?page=${selectedItem.selected + 1}`,

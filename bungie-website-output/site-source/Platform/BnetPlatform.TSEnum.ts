@@ -2275,8 +2275,8 @@ export enum DestinyGameVersions {
   TheWitchQueen = 256,
   Lightfall = 512,
   TheFinalShape = 1024,
-  EdgeOfFate = 28535,
-  Renegades = 28536,
+  EdgeOfFate = 2048,
+  Renegades = 4096,
 }
 
 export enum DestinyRace {
