@@ -20,8 +20,6 @@ import {
 import styles from "./withDestinyDefinitions.module.scss";
 
 interface D2DatabaseComponentState extends ManifestPayload {
-  // The first time we receive data, we mark this as true. That way we can reliably know if things are loading or not.
-  receivedInitialState: boolean;
   indexedDBNotSupported: boolean;
 }
 
@@ -62,78 +60,76 @@ export const withDestinyDefinitions = <
     constructor(props: P) {
       super(props);
       this.state = {
-        isLoading: false,
-        isLoaded: false,
+        isLoading: true,
         locale: Localizer.CurrentCultureName,
-        receivedInitialState: false,
         indexedDBNotSupported: false,
       };
     }
 
     public componentDidMount() {
-      const initialState: D2DatabaseComponentState = {
-        isLoading: DestinyDefinitions.state.isLoading,
-        isLoaded: DestinyDefinitions.state.isLoaded,
-        locale: DestinyDefinitions.state.locale,
-        receivedInitialState: false,
-        indexedDBNotSupported: false,
-      };
-      this.setState(initialState);
       this.checkIndexedDBSupport();
       this.tryRequestDefinitions();
     }
 
     public componentDidUpdate(
       prevProps: Readonly<P>,
-      prevState: Readonly<D2DatabaseComponentState>,
-      snapshot?: any
+      prevState: Readonly<D2DatabaseComponentState>
     ) {
-      this.tryRequestDefinitions();
+      if (DestinyDefinitions.state.locale !== this.state.locale) {
+        this.setState({
+          locale: DestinyDefinitions.state.locale,
+        });
+      }
+      if (
+        this.props.definitions !== prevProps.definitions ||
+        this.state.locale !== prevState.locale ||
+        this.state.indexedDBNotSupported !== prevState.indexedDBNotSupported
+      ) {
+        this.destroyer?.();
+        this.tryRequestDefinitions();
+      }
     }
 
     private tryRequestDefinitions() {
-      if (
-        !this.state.indexedDBNotSupported &&
-        !this.state.receivedInitialState
-      ) {
-        const updatedLocale =
-          this.state.locale !== DestinyDefinitions.state.locale;
-
-        const loadedDefinitions = Object.keys(DestinyDefinitions.definitions);
-
-        const needsDefs =
-          observerProps.types.some(
-            (defType) => loadedDefinitions.indexOf(defType) < 0
-          ) || updatedLocale;
-
-        if (!needsDefs) {
-          this.setState({
-            isLoaded: true,
-            isLoading: false,
-            receivedInitialState: true,
-          });
-
-          return;
-        }
-
-        this.destroyer = DestinyDefinitions.observe(
-          (data) => {
-            this.setState({
-              isLoaded: data.isLoaded,
-              isLoading: data.isLoading,
-              receivedInitialState: true,
-            });
-          },
-          observerProps,
-          true
-        );
+      if (this.state.indexedDBNotSupported) {
+        return;
       }
+      const needsDefs = observerProps.types.some(
+        (type) =>
+          !DestinyDefinitions.definitions[type] ||
+          this.state.locale !== DestinyDefinitions.state.locale
+      );
+
+      if (!needsDefs) {
+        this.setState({
+          isLoading: false,
+        });
+
+        return;
+      }
+
+      this.destroyer = DestinyDefinitions.observe(
+        (data) => {
+          // This callback will run whenever any component that uses DestinyDefinitions needs to load something.
+          // To prevent isLoading being set to true when nothing in this instance needs to be loaded the definition list is consulted for missing data
+          const isLoading =
+            data.isLoading &&
+            (observerProps.types.some(
+              (type) => !DestinyDefinitions.definitions[type]
+            ) ||
+              this.state.locale !== DestinyDefinitions.state.locale);
+          this.setState({
+            isLoading: isLoading,
+            hasError: data.hasError,
+          });
+        },
+        observerProps,
+        true
+      );
     }
 
     public componentWillUnmount() {
-      if (this.destroyer) {
-        this.destroyer();
-      }
+      this.destroyer?.();
     }
 
     private checkIndexedDBSupport() {
@@ -146,21 +142,12 @@ export const withDestinyDefinitions = <
 
         this.setState({
           indexedDBNotSupported: true,
-          receivedInitialState: true,
-          isLoading: false,
-          isLoaded: true,
         });
       };
     }
 
     public render() {
-      const {
-        receivedInitialState,
-        isLoaded,
-        isLoading,
-        indexedDBNotSupported,
-        hasError,
-      } = this.state;
+      const { indexedDBNotSupported, hasError, isLoading } = this.state;
 
       if (indexedDBNotSupported) {
         return (
@@ -209,13 +196,10 @@ export const withDestinyDefinitions = <
         );
       }
 
-      const notLoaded = !isLoaded;
-      const loading = isLoading || !receivedInitialState;
-
       // Loading is handled by AppLayout.tsx, which subscribes to DestinyDefinitions and shows a loader if any of them are loading.
       // This is because we don't want to show multiple loaders if more than one component is waiting for definitions
-      if (notLoaded || loading) {
-        return null;
+      if (isLoading) {
+        return <></>;
       }
 
       return (

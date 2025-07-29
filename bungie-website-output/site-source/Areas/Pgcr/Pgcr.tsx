@@ -58,6 +58,7 @@ interface PgcrProps
     | "DestinyDestinationDefinition"
     | "DestinyPlaceDefinition"
     | "DestinyInventoryItemLiteDefinition"
+    | "DestinyActivityDifficultyTierCollectionDefinition"
   > {
   activityId: string;
   singleton?: boolean;
@@ -152,6 +153,9 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
         const newActivityData: PgcrActivityData = initialActivityData;
         const activityDefinition = props.definitions.DestinyActivityDefinition.get(
           newDefinitionHashes.activityDefinitionHash
+        );
+        const difficultyTierCollection = props.definitions.DestinyActivityDifficultyTierCollectionDefinition.get(
+          activityDefinition?.difficultyTierCollectionHash
         );
         const allActivityModes = props.definitions.DestinyActivityModeDefinition.all();
         const activityModeHashes = Object.keys(allActivityModes);
@@ -295,15 +299,42 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
               (entry) => entry?.characterId === props.character
             )
           : pgcr?.entries[0];
+        const difficultyName =
+          difficultyTierCollection?.difficultyTiers[pgcr.activityDifficultyTier]
+            ?.displayProperties.name;
+        const defaultLocation =
+          activityDisplayProperties?.name ||
+          Localizer.destiny.CLASSIFIED_UNAVAILABLE_SOURCE;
+
+        let location = difficultyName
+          ? `${defaultLocation}: ${difficultyName}`
+          : defaultLocation;
+
+        // show the director selected activity name (playlist) for Crucible (PvP) activities
+        if (
+          activityModeDefinition.activityModeCategory ===
+          DestinyActivityModeCategory.PvP
+        ) {
+          const directorActivityDefinition = props.definitions.DestinyActivityDefinition.get(
+            newDefinitionHashes.directorActivityHash
+          );
+          const directorActivityName =
+            directorActivityDefinition?.displayProperties?.name ?? "";
+
+          if (
+            directorActivityName.length > 0 &&
+            !directorActivityName.includes(defaultLocation)
+          ) {
+            location = `${defaultLocation} - ${directorActivityName}`;
+          }
+        }
 
         setBasicActivityData({
           icon: activityModeDisplayProperties?.icon,
           activityName:
             activityModeDisplayProperties?.name ||
             Localizer.destiny.CLASSIFIED_UNAVAILABLE_SOURCE,
-          location:
-            activityDisplayProperties?.name ||
-            Localizer.destiny.CLASSIFIED_UNAVAILABLE_SOURCE,
+          location,
           timestamp: pgcr?.period,
           standing: characterEntry?.values?.standing,
         });
@@ -588,5 +619,6 @@ export default withDestinyDefinitions(Pgcr, {
     "DestinyDestinationDefinition",
     "DestinyPlaceDefinition",
     "DestinyInventoryItemLiteDefinition",
+    "DestinyActivityDifficultyTierCollectionDefinition",
   ],
 });

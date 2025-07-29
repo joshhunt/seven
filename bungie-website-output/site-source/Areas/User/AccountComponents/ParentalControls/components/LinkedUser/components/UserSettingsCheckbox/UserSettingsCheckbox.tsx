@@ -1,21 +1,24 @@
-import React, { FC } from "react";
-import { ChildPermissionEnum } from "@Enum";
-import { FormControlLabel, FormGroup, Divider } from "@mui/material";
-import { Checkbox } from "plxp-web-ui/components/base";
 import { Localizer } from "@bungie/localization";
+import { ChildPermissionEnum, ChildPreferenceEnum } from "@Enum";
+import { Divider, FormControlLabel, FormGroup } from "@mui/material";
 import { EnumUtils } from "@Utilities/EnumUtils";
+import { Checkbox } from "plxp-web-ui/components/base";
+import React, { FC } from "react";
 
 interface UserSettingsCheckboxProps {
   isChild?: boolean;
-  handleOnChange?: (id: ChildPermissionEnum, value: boolean) => void;
+  handleOnChange?: (
+    id: ChildPermissionEnum | ChildPreferenceEnum,
+    value: boolean
+  ) => void;
   variant?: ChildPermissionEnum;
   userPermissionsAndPreferences?: {
     permission: {
-      type: ChildPermissionEnum;
+      id: ChildPermissionEnum;
       value: boolean;
     };
     preference: {
-      type: ChildPermissionEnum;
+      id: ChildPreferenceEnum;
       value: boolean;
     };
   };
@@ -59,7 +62,9 @@ const UserSettingsCheckbox: FC<UserSettingsCheckboxProps> = ({
             defaultChecked={getDefaultChecked()}
             onChange={(value) =>
               handleOnChange(
-                isChild ? preference?.type : permission?.type,
+                isChild
+                  ? EnumUtils.getEnumValue(preference?.id, ChildPreferenceEnum)
+                  : EnumUtils.getEnumValue(permission?.id, ChildPermissionEnum),
                 value?.currentTarget?.checked
               )
             }

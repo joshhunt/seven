@@ -148,7 +148,11 @@ const BrowseFireteams: React.FC<BrowseFireteamsProps> = (props) => {
     let lobbyStateRequested = showingLobbyState;
 
     Object.keys(data)?.forEach((key: string) => {
-      if (data[key] !== "-1" && data[key] !== [] && key !== "lobbyState") {
+      if (
+        data[key] !== "-1" &&
+        data[key]?.length !== 0 &&
+        key !== "lobbyState"
+      ) {
         const optionCategory = browseFilterDefinitionTree[key];
 
         if (

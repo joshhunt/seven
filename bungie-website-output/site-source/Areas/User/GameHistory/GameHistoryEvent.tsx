@@ -11,7 +11,7 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { DestinyActivityModeType } from "@Enum";
+import { DestinyActivityModeCategory, DestinyActivityModeType } from "@Enum";
 import { HistoricalStats } from "@Platform";
 import { Timestamp } from "@UI/Utility/Timestamp";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
@@ -42,9 +42,11 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
   const activityModeHash = _getHashFromModeType(
     props.historyItem?.activityDetails?.mode
   );
-  const activityModeDisplayProperties = props.definitions?.DestinyActivityModeDefinition?.get(
+  const activityModeDefinition = props.definitions?.DestinyActivityModeDefinition?.get(
     activityModeHash
-  )?.displayProperties;
+  );
+  const activityModeDisplayProperties =
+    activityModeDefinition?.displayProperties;
   const activityHash = props.historyItem?.activityDetails?.referenceId;
   const activityDisplayProperties = props.definitions?.DestinyActivityDefinition?.get(
     activityHash
@@ -54,6 +56,29 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
     GameHistoryDestinyMembershipDataStore
   );
   const modalRef = useRef(null);
+
+  let activitySubtitle = activityDisplayProperties?.name ?? "";
+
+  if (
+    activityModeDefinition &&
+    activityModeDefinition.activityModeCategory ==
+      DestinyActivityModeCategory.PvP
+  ) {
+    const directorActivityHash =
+      props.historyItem?.activityDetails?.directorActivityHash;
+    const directorActivityDefinition = props.definitions?.DestinyActivityDefinition?.get(
+      directorActivityHash
+    );
+
+    const cruciblePlaylistName =
+      directorActivityDefinition?.displayProperties?.name ?? "";
+    if (
+      cruciblePlaylistName.length > 0 &&
+      !cruciblePlaylistName.includes(activitySubtitle)
+    ) {
+      activitySubtitle = `${activitySubtitle} - ${cruciblePlaylistName}`;
+    }
+  }
 
   modalRef.current = (
     <Pgcr
@@ -78,9 +103,7 @@ const GameHistoryEvent: React.FC<GameHistoryEventProps> = (props) => {
       <TwoLineItem
         itemTitle={activityModeDisplayProperties?.name}
         itemSubtitle={
-          <span className={styles.subtitle}>
-            {activityDisplayProperties?.name}
-          </span>
+          <span className={styles.subtitle}>{activitySubtitle}</span>
         }
         icon={
           <img

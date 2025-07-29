@@ -11,7 +11,6 @@ import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import * as Globals from "@Enum";
 import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
@@ -44,11 +43,7 @@ export interface IClaimedReward {
 
 interface ISeasonsUtilityPageProps
   extends D2DatabaseComponentProps<
-    | "DestinyClassDefinition"
-    | "DestinySeasonDefinition"
-    | "DestinyProgressionDefinition"
-    | "DestinySeasonPassDefinition"
-    | "DestinyInventoryItemLiteDefinition"
+    "DestinySeasonDefinition" | "DestinySeasonPassDefinition"
   > {
   seasonHash: number;
 }
@@ -297,9 +292,7 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = ({
             characterProgressions={
               charactersLoaded ? forCharacter?.progressions : undefined
             }
-            handleClaimingClick={(itemHash, rewardIndex, canClaim) =>
-              openItemDetailModal(itemHash, rewardIndex, canClaim)
-            }
+            handleClaimingClick={openItemDetailModal}
             claimedReward={itemClaimed}
           />
 
@@ -312,12 +305,8 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = ({
               membershipType={
                 destinyMembership?.selectedMembership?.membershipType
               }
-              handleClick={(itemHash, rewardIndex, canClaim) =>
-                openItemDetailModal(itemHash, rewardIndex, canClaim)
-              }
-              itemClaimed={(itemHash: number, rewardIndex: number) =>
-                markItemClaimed(itemHash, rewardIndex)
-              }
+              handleClick={openItemDetailModal}
+              itemClaimed={markItemClaimed}
               claimedReward={itemClaimed}
             />
           )}
@@ -328,11 +317,5 @@ const SeasonsUtilityPage: React.FC<ISeasonsUtilityPageProps> = ({
 };
 
 export default withDestinyDefinitions(SeasonsUtilityPage, {
-  types: [
-    "DestinyClassDefinition",
-    "DestinySeasonDefinition",
-    "DestinyProgressionDefinition",
-    "DestinySeasonPassDefinition",
-    "DestinyInventoryItemLiteDefinition",
-  ],
+  types: ["DestinySeasonDefinition", "DestinySeasonPassDefinition"],
 });

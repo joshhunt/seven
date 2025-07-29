@@ -270,7 +270,11 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         }
         <div>
           <h3>{name}</h3>
-          {count > 0 && <h4>{`${count} ${fireteamsLoc.Activities}`}</h4>}
+          {count > 0 && (
+            <h4>{`${count} ${
+              count === 1 ? fireteamsLoc.Activity : fireteamsLoc.Activities
+            }`}</h4>
+          )}
         </div>
         {actionItem}
       </div>

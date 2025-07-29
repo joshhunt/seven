@@ -5207,7 +5207,7 @@ export declare namespace World {
 		have in common.  Perform lookups against DestinyActivityModifierDefinition which defines the modifier 
 		being applied to get at the modifier data.
 		
-		Note that, in the DestiyActivityDefinition, you will see many more modifiers than this
+		Note that, in the DestinyActivityDefinition, you will see many more modifiers than this
 		being referred to: those are all *possible* modifiers for the activity, not the active ones.
 		Use only the active ones to match what's really live.
 		*/
@@ -5221,7 +5221,7 @@ export declare namespace World {
 		
 		As a concrete example of this data, the hashes you get for Raids will correspond to the currently active "Challenge Mode".
 		
-		We don't have any human readable information for these, but saavy 3rd party app users could manually associate the key
+		We don't have any human readable information for these, but savvy 3rd party app users could manually associate the key
 		(a hash identifier for the "option" that is enabled/disabled) and the value (whether it's enabled or disabled presently)
 		
 		On our side, we don't necessarily even know what these are used for (the game designers know, but we don't), 
@@ -5234,6 +5234,11 @@ export declare namespace World {
 		indicating the currently active loadout requirements.
 		*/
     loadoutRequirementIndex?: number;
+
+    /**
+		A filtered list of reward mappings with only the currently visible reward items.
+		*/
+    visibleRewards: Definitions.DestinyActivityRewardMapping[];
   }
 
   /**
@@ -8796,6 +8801,18 @@ export declare namespace Definitions {
 		not yet allowed to show it.  Sorry!
 		*/
     redacted: boolean;
+  }
+
+  export interface DestinyActivityRewardMapping {
+    displayBehavior: Globals.DestinyActivityRewardDisplayMode;
+
+    rewardItems: Definitions.DestinyActivityRewardItem[];
+  }
+
+  export interface DestinyActivityRewardItem {
+    itemQuantity: World.DestinyItemQuantity;
+
+    uiStyle: string;
   }
 
   /**
@@ -14155,6 +14172,12 @@ export declare namespace Profiles {
     seasonHashes: number[];
 
     /**
+		A list of season passes aka reward passes that this profile owns.  Unlike versionsOwned, these stay with the profile
+		across Platforms, and thus will be valid.
+		*/
+    seasonPassHashes: number[];
+
+    /**
 		A list of hashes for event cards that a profile owns.
 		Unlike most values in versionsOwned, these stay with the profile across all platforms.
 		*/
@@ -16445,7 +16468,7 @@ export declare namespace Milestones {
 		have in common.  Perform lookups against
 		DestinyActivityModifierDefinition which defines the modifier being applied to get
 		at the modifier data.
-		Note that, in the DestiyActivityDefinition, you will see many more modifiers than this
+		Note that, in the DestinyActivityDefinition, you will see many more modifiers than this
 		being referred to: those are all *possible* modifiers for the activity, not the active ones.
 		Use only the active ones to match what's really live.
 		*/
@@ -16540,7 +16563,7 @@ export declare namespace Milestones {
 		have in common.  Perform lookups against DestinyActivityModifierDefinition which defines the modifier 
 		being applied to get at the modifier data.
 		
-		Note that, in the DestiyActivityDefinition, you will see many more modifiers than this
+		Note that, in the DestinyActivityDefinition, you will see many more modifiers than this
 		being referred to: those are all *possible* modifiers for the activity, not the active ones.
 		Use only the active ones to match what's really live.
 		*/
@@ -16554,7 +16577,7 @@ export declare namespace Milestones {
 		
 		As a concrete example of this data, the hashes you get for Raids will correspond to the currently active "Challenge Mode".
 		
-		We don't have any human readable information for these, but saavy 3rd party app users could manually associate the key
+		We don't have any human readable information for these, but savvy 3rd party app users could manually associate the key
 		(a hash identifier for the "option" that is enabled/disabled) and the value (whether it's enabled or disabled presently)
 		
 		On our side, we don't necessarily even know what these are used for (the game designers know, but we don't), 
@@ -16845,7 +16868,7 @@ export declare namespace Milestones {
 		have in common.  Perform lookups against DestinyActivityModifierDefinition which defines the modifier 
 		being applied to get at the modifier data.
 		
-		Note that, in the DestiyActivityDefinition, you will see many more modifiers than this
+		Note that, in the DestinyActivityDefinition, you will see many more modifiers than this
 		being referred to: those are all *possible* modifiers for the activity, not the active ones.
 		Use only the active ones to match what's really live.
 		*/

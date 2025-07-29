@@ -12,7 +12,7 @@ import { RendererLogLevel } from "@Enum";
 import { BaseLogger } from "@Global/BaseLogger";
 import { Logger } from "@Global/Logger";
 import { Config, Platform } from "@Platform";
-import React from "react";
+
 // @ts-ignore
 import MyWorker from "./DestinyDefinitions.worker";
 
@@ -61,9 +61,6 @@ export interface IDestinyDefinitionsObserverProps<
 export interface ManifestPayload {
   /** If true, we are loading */
   isLoading: boolean;
-
-  /** If true, loading is finished */
-  isLoaded: boolean;
 
   locale: string;
 
@@ -115,7 +112,6 @@ class DestinyDefinitionsInternal extends DataStore<
       // Only say we're done loading if everything that requires definitions has them
       return {
         isLoading: !allRequestedTypesLoaded,
-        isLoaded: allRequestedTypesLoaded,
       };
     },
   });
@@ -129,7 +125,6 @@ class DestinyDefinitionsInternal extends DataStore<
   constructor() {
     super({
       isLoading: false,
-      isLoaded: false,
       locale: Localizer.CurrentCultureName,
     });
 

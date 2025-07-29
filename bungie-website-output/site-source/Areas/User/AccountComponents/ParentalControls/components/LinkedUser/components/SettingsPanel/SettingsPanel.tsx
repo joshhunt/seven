@@ -1,11 +1,16 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { AlertNotification } from "@Areas/User/AccountComponents/ParentalControls/components";
 import { usePlayerContext } from "@Areas/User/AccountComponents/ParentalControls/lib/usePlayerContext";
 import { Localizer } from "@bungie/localization";
-import { AgeCategoriesEnum, ChildPermissionEnum } from "@Enum";
+import {
+  AgeCategoriesEnum,
+  ChildPermissionEnum,
+  ChildPreferenceEnum,
+  ResponseStatusEnum,
+} from "@Enum";
 import { Snackbar } from "@mui/material";
-import { PnP } from "@Platform";
+import { Platform, PnP } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import { Alert } from "plxp-web-ui/components/base";
@@ -15,7 +20,7 @@ import SettingsSection from "./SettingsSection";
 
 interface SettingsPanelProps {
   asContainer?: boolean;
-  assignedAccount: any;
+  assignedAccount: PnP.PlayerContextData;
 }
 
 const SettingsPanel: FC<SettingsPanelProps> = ({
@@ -29,12 +34,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   const showMarathonControls = ConfigUtils.SystemStatus(
     "FeatureMarathonParentalControls"
   );
-  const {
-    playerContext,
-    updatePreferences,
-    updatePermissions,
-    error,
-  } = usePlayerContext();
+  const { playerContext, error } = usePlayerContext();
   const isChild = EnumUtils.looseEquals(
     playerContext?.ageCategory,
     AgeCategoriesEnum.Child,
@@ -43,6 +43,9 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   const resetSnackbarKey = () => {
     setSnackbarKey(undefined);
   };
+  const [localAccountData, setLocalAccountData] = useState<
+    PnP.PlayerContextData
+  >(assignedAccount);
 
   useEffect(() => {
     snackbarKey && setSnackPack((prev) => [...prev, snackbarKey]);
@@ -64,6 +67,110 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   }, [snackPack, open, error]);
 
   const [hasError, setHasError] = useState(null);
+
+  /**
+   * updatePreferences
+   * Bulk updates preferences via API, then updates local state.
+   * @param childId - ID of the child to update preferences for
+   * @param newPreferences - New array of Setting objects
+   */
+  const updatePreferences = useCallback(
+    async (childId: string, newPreferences: PnP.ChildPreference[]) => {
+      try {
+        const result = await Platform.PnpService.BulkUpdatePreferencesForChild(
+          { preferencesToUpdate: newPreferences },
+          childId
+        );
+
+        if (result !== ResponseStatusEnum.Success) {
+          throw new Error(ResponseStatusEnum[result]);
+        }
+
+        // Directly update localAccountData after successful API call
+        setLocalAccountData((prevData) => ({
+          ...prevData,
+          childData: {
+            ...prevData.childData,
+            preferences: prevData.childData.preferences.map((existingPref) =>
+              newPreferences.some(
+                (newPref) => newPref.type === existingPref.type
+              )
+                ? {
+                    ...existingPref,
+                    value: Boolean(
+                      newPreferences.find(
+                        (newPref) => newPref.type === existingPref.type
+                      )?.value
+                    ),
+                  }
+                : existingPref
+            ),
+          },
+        }));
+      } catch (err) {
+        console.error(
+          "Failed to bulk update preferences for child",
+          childId,
+          err
+        );
+      }
+    },
+    [setLocalAccountData]
+  );
+
+  /**
+   * updatePermissions
+   * Bulk updates permissions via API, then updates local state.
+   * @param childId - ID of the child to update permissions for
+   * @param newPermissions - New array of Setting objects
+   */
+  const updatePermissions = useCallback(
+    async (
+      childId: string,
+      newPermissions: PnP.ChildPermission[],
+      setByGuardian: boolean
+    ) => {
+      try {
+        const result = await Platform.PnpService.BulkUpdatePermissionsForChild(
+          { permissionsToUpdate: newPermissions },
+          childId
+        );
+
+        if (result !== ResponseStatusEnum.Success) {
+          throw new Error(ResponseStatusEnum[result]);
+        }
+
+        setLocalAccountData((prevData) => ({
+          ...prevData,
+          childData: {
+            ...prevData.childData,
+            permissions: prevData.childData.permissions.map((existingPerm) =>
+              newPermissions.some(
+                (newPerm) => newPerm.type === existingPerm.type
+              )
+                ? {
+                    ...existingPerm,
+                    value: Boolean(
+                      newPermissions.find(
+                        (newPerm) => newPerm.type === existingPerm.type
+                      )?.value
+                    ),
+                    isSetByParentOrGuardian: setByGuardian,
+                  }
+                : existingPerm
+            ),
+          },
+        }));
+      } catch (err) {
+        console.error(
+          "Failed to bulk update permissions for child",
+          childId,
+          err
+        );
+      }
+    },
+    [setLocalAccountData]
+  );
 
   const onChange = (id: number, value: boolean) => {
     const deploySnacks = () => {
@@ -138,16 +245,26 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   const extractSettingsById = (id: number) => {
     if (assignedAccount.childData) {
       const { childData } = assignedAccount;
-      const permission = childData.permissions.find(
-        (p: PnP.ChildPermission) => p?.type === id
-      ) || { id: id, value: true };
-      const preference = childData.preferences.find(
-        (p: PnP.ChildPreference) => p?.type === id
-      ) || { id: id, value: false };
+      const permissionObj = childData.permissions.find(
+        (p: PnP.ChildPermission) =>
+          EnumUtils.looseEquals(p?.type, id, ChildPermissionEnum)
+      );
+      const preferenceObj = childData.preferences.find(
+        (p: PnP.ChildPreference) =>
+          EnumUtils.looseEquals(p?.type, id, ChildPreferenceEnum)
+      );
+
+      const permission = permissionObj
+        ? { id: permissionObj.type, value: Boolean(permissionObj.value) }
+        : { id: EnumUtils.getEnumValue(id, ChildPermissionEnum), value: true };
+
+      const preference = preferenceObj
+        ? { id: preferenceObj.type, value: Boolean(preferenceObj.value) }
+        : { id: EnumUtils.getEnumValue(id, ChildPreferenceEnum), value: false };
 
       return {
-        permission: permission,
-        preference: preference,
+        permission,
+        preference,
       };
     }
   };

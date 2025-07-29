@@ -1,14 +1,14 @@
 // Created by atseng, 2023
 // Copyright Bungie, Inc.
 
+import React, { ChangeEvent, ReactNode, FC } from "react";
+import classNames from "classnames";
 import {
   BreadcrumbConfiguration,
   FireteamFinderBreadcrumb,
 } from "@Areas/FireteamFinder/Components/Shared/FireteamFinderBreadcrumb";
 import { ButtonConfiguration, HeaderButtons } from "./HeaderButtons";
 import styles from "./Header.module.scss";
-import React, { ChangeEvent, ReactNode, FC } from "react";
-import { Localizer } from "@bungie/localization/Localizer";
 
 interface HeaderProps {
   title?: string;
@@ -18,10 +18,12 @@ interface HeaderProps {
   isLoggedIn?: boolean;
   activityFilterString?: string;
   setActivityFilterString?: (value: string) => void;
+  inlineTitleAndButtons?: boolean;
 }
 
 export const Header: FC<HeaderProps> = (props) => {
   const {
+    inlineTitleAndButtons,
     setActivityFilterString,
     activityFilterString,
     buttonConfiguration,
@@ -43,23 +45,55 @@ export const Header: FC<HeaderProps> = (props) => {
 
   const clearActivityFilter = () => setActivityFilterString("");
 
+  const DisplayWrapper: FC = ({ children }) =>
+    inlineTitleAndButtons ? (
+      <div className={styles.inlineTitleAndButtons}>{children}</div>
+    ) : (
+      <>{children}</>
+    );
+
   return (
-    <div className={styles.header}>
-      <FireteamFinderBreadcrumb breadcrumbConfig={breadcrumbConfiguration} />
-      <div className={styles.titleWrap}>
-        <h3 className={styles.title}>{title}</h3>
-      </div>
-      <div id={"headerSecondLine"} className={styles.secondLine}>
-        <div className={styles.subtitle}>{subtitle}</div>
-        <div className={styles.buttons}>
-          <HeaderButtons
-            buttonConfig={buttonConfiguration}
-            isLoggedIn={isLoggedIn}
-          />
+    <div
+      className={classNames(styles.header, {
+        [styles.columnSpacing]: inlineTitleAndButtons,
+      })}
+    >
+      {breadcrumbConfiguration !== "browse" && (
+        <FireteamFinderBreadcrumb breadcrumbConfig={breadcrumbConfiguration} />
+      )}
+
+      <DisplayWrapper>
+        {title && (
+          <div className={styles.titleWrap}>
+            <h3 className={styles.title}>{title}</h3>
+            {subtitle && inlineTitleAndButtons && (
+              <div className={styles.subtitle}>{subtitle}</div>
+            )}
+          </div>
+        )}
+        <div id={"headerSecondLine"} className={styles.secondLine}>
+          {subtitle && !inlineTitleAndButtons && (
+            <div className={styles.subtitle}>{subtitle}</div>
+          )}
+          <div
+            className={classNames(styles.secondLine, {
+              [styles.inlineButtons]: inlineTitleAndButtons,
+            })}
+          >
+            <HeaderButtons
+              buttonConfig={buttonConfiguration}
+              isLoggedIn={isLoggedIn}
+            />
+          </div>
         </div>
-      </div>
+      </DisplayWrapper>
+
       {isActivitySelectView && (
-        <div className={styles.activityFilterWrapper}>
+        <div
+          className={classNames(styles.activityFilterWrapper, {
+            [styles.activityFilterMarginTop]: !inlineTitleAndButtons,
+          })}
+        >
           <p className={styles.selectActivityLabel}>{activityLabel}</p>
           <div className={styles.activityFilterContainer}>
             {activityFilterString && (

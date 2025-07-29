@@ -3,7 +3,6 @@
 
 import SeasonProgressUtils from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 import { IClaimedReward } from "@Areas/Seasons/SeasonsUtilityPage";
-import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
@@ -19,7 +18,6 @@ import { SeasonCarousel } from "@UI/Destiny/SeasonCarousel";
 import { DestinyTooltip } from "@UI/Destiny/Tooltips/DestinyTooltip";
 import { Tooltip } from "@UI/UIKit/Controls/Tooltip";
 import classNames from "classnames";
-import { DateTime } from "luxon";
 import * as React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
 import {
@@ -45,7 +43,7 @@ interface ISeasonPassRewardProgressionProps
     itemHash: number,
     rewardIndex: number,
     canClaim: boolean
-  ) => {};
+  ) => void;
   claimedReward?: IClaimedReward;
 }
 
@@ -310,47 +308,6 @@ class SeasonPassRewardProgression extends React.Component<
         tooltipHeaderClass: "",
       });
     }
-  }
-
-  private getCurrentSeasonProgressBar(
-    characterSeasonalProgress: World.DestinyProgression,
-    handleDisplay: (
-      characterSeasonalProgress: World.DestinyProgression
-    ) => number
-  ) {
-    if (!characterSeasonalProgress) {
-      return null;
-    }
-
-    const rankLabel = Localizer.Format(
-      Localizer.Seasons.RankCharacterseasonprogressionlevel,
-      {
-        characterSeasonProgressionLevel: handleDisplay(
-          characterSeasonalProgress
-        ),
-      }
-    );
-
-    const progressLabel = `${characterSeasonalProgress.progressToNextLevel.toLocaleString()}/${characterSeasonalProgress.nextLevelAt.toLocaleString()}`;
-
-    const progressPercentage =
-      (characterSeasonalProgress.progressToNextLevel /
-        characterSeasonalProgress.nextLevelAt) *
-      100;
-
-    const cssBar: React.CSSProperties = {
-      width: `${progressPercentage}%`,
-    };
-
-    return (
-      <React.Fragment>
-        <div className={styles.seasonRankBar}>
-          <span className={styles.rank}>{rankLabel}</span>
-          <div className={styles.bar} style={cssBar} />
-          <span className={styles.progress}>{progressLabel}</span>
-        </div>
-      </React.Fragment>
-    );
   }
 
   private getCharacterClass(classHash: number): CharacterClass {

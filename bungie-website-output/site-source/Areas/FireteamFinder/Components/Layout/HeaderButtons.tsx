@@ -34,6 +34,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import modalStyles from "../Dashboard/CharacterSelect/CharacterSelect.module.scss";
 import styles from "./HeaderButtons.module.scss";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 export type ButtonConfiguration =
   | "none"
@@ -69,6 +70,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     setButtonInteractionDisabled,
   ] = React.useState(false);
   const history = useHistory();
+  const fireteamOverhaul = ConfigUtils.SystemStatus("FireteamFinderUIOverhaul");
 
   useEffect(() => {
     if (context?.fireteamListing?.listingId) {
@@ -309,6 +311,8 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     });
   };
 
+  const headerButtonClass = fireteamOverhaul ? "" : styles.headerButton;
+
   const isAutoJoin =
     context?.fireteamLobby?.settings?.listingValues?.find(
       (v) =>
@@ -318,7 +322,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const applyLabel = isAutoJoin ? fireteamsLoc.Join : fireteamsLoc.ApplyToJoin;
   const BrowseButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       icon={<FaSearch />}
       buttonType={"gold"}
       url={RouteHelper.FireteamFinderBrowse()}
@@ -328,7 +332,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CreateListingButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       icon={<FaPlus />}
       buttonType={"white"}
       url={RouteHelper.FireteamFinderCreate()}
@@ -338,7 +342,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CreateFireteamButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       icon={<FaPlus />}
       buttonType={"gold"}
       url={RouteHelper.FireteamFinderCreate()}
@@ -348,7 +352,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const ShareButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"white"}
       onClick={() => copyToClipboard()}
     >
@@ -357,7 +361,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const LeaveButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"red"}
       onClick={() => openLeaveModal()}
     >
@@ -366,7 +370,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CloseButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"red"}
       onClick={() => openCloseModal()}
     >
@@ -375,7 +379,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const ApplyOrJoinButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"gold"}
       disabled={buttonInteractionDisabled}
       onClick={() => openCharacterSelect()}
@@ -385,7 +389,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CancelApplicationButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"gold"}
       onClick={() => cancelApplication()}
     >
@@ -394,7 +398,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const ActivateButton = () => (
     <Button
-      className={styles.headerButton}
+      className={headerButtonClass}
       buttonType={"gold"}
       onClick={() => handleActivateFireteam()}
       disabled={isActive || buttonInteractionDisabled}

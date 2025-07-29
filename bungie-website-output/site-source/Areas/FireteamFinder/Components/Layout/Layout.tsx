@@ -215,6 +215,9 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 title={props.title}
                 subtitle={props.subtitle}
                 isLoggedIn={UserUtils.isAuthenticated(globalState)}
+                inlineTitleAndButtons={ConfigUtils.SystemStatus(
+                  "FireteamFinderUIOverhaul"
+                )}
               />
               {renderChildren()}
             </GridCol>

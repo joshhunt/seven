@@ -30,6 +30,9 @@ declare global {
   }
 }
 
+const codeSectionStart = "<pre";
+const codeSectionEnd = "/pre>";
+
 /**
  * Show the details of the article in question
  */
@@ -54,7 +57,6 @@ const NewsArticle = () => {
         if (!matchingArticle) {
           throw new NotFoundError();
         }
-
         setArticleData(matchingArticle);
       })
       .catch((error: Error) => {
@@ -72,15 +74,14 @@ const NewsArticle = () => {
     title,
     subtitle,
     date,
+    updated_at,
     image,
     banner_image,
     mobile_image,
     html_content,
     author,
+    tags = [],
   } = articleData || {};
-
-  const codeSectionStart = "<pre";
-  const codeSectionEnd = "/pre>";
 
   const separateCodeContentRecursive = (
     content: string,
@@ -133,12 +134,17 @@ const NewsArticle = () => {
     year: luxonDate?.year,
     hours: Math.ceil(timeHours),
   });
-
   return (
     <>
       <TwitterScript />
       <BungieHelmet title={title} description={subtitle} image={image?.url}>
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+        <meta name="article:author" content={author} />
+        <meta name="article:published_time" content={date} />
+        <meta name="article:modified_time" content={updated_at} />
+        {tags.map((tag: string) => (
+          <meta key={tag} name="article:tag" content={tag} />
+        ))}
       </BungieHelmet>
       <ParallaxContainer
         className={styles.header}
@@ -161,69 +167,14 @@ const NewsArticle = () => {
               <span>{`${time} - ${author}`}</span>
             </h3>
             <div className={styles.articleContainer}>
-              {separateCodeContentRecursive(html_content, []) &&
-                separateCodeContentRecursive(html_content, []).map(
-                  (contentString: string, index: number) => {
-                    if (contentString.indexOf(`class="collapsible"`) > -1) {
-                      return (
-                        <div
-                          onClick={(e) => {
-                            const targetElement: HTMLElement = e.target as HTMLElement;
-
-                            if (
-                              targetElement.className.indexOf(
-                                "collapsible-trigger"
-                              ) > -1
-                            ) {
-                              targetElement.classList.toggle("open");
-                            }
-                          }}
-                        >
-                          <div
-                            dangerouslySetInnerHTML={{ __html: contentString }}
-                          />
-                        </div>
-                      );
-                    }
-
-                    if (contentString.indexOf(`<img`) > -1) {
-                      return (
-                        <div
-                          onClick={(e) => {
-                            const targetElement: HTMLImageElement = e.target as HTMLImageElement;
-
-                            if (contentString.indexOf(targetElement.src) > -1) {
-                              Modal.open(<img src={targetElement.src} />, {
-                                isFrameless: true,
-                              });
-                            }
-                          }}
-                        >
-                          <div
-                            dangerouslySetInnerHTML={{ __html: contentString }}
-                          />
-                        </div>
-                      );
-                    }
-
-                    if (contentString.startsWith(codeSectionStart)) {
-                      return (
-                        <CollapsibleCodeBlock
-                          codeContent={contentString}
-                          codeSectionStart={codeSectionStart}
-                          key={index}
-                        />
-                      );
-                    }
-
-                    return (
-                      <div
-                        dangerouslySetInnerHTML={{ __html: contentString }}
-                        key={index}
-                      />
-                    );
-                  }
-                )}
+              {separateCodeContentRecursive(html_content, []).map(
+                (contentString) => (
+                  <ArticleContent
+                    key={contentString}
+                    contentString={contentString}
+                  />
+                )
+              )}
             </div>
           </GridCol>
         )}
@@ -232,14 +183,54 @@ const NewsArticle = () => {
   );
 };
 
+const ArticleContent = ({ contentString }: { contentString: string }) => {
+  if (contentString.indexOf(`class="collapsible"`) > -1) {
+    return (
+      <div
+        onClick={(e) => {
+          const targetElement: HTMLElement = e.target as HTMLElement;
+
+          if (targetElement.className.indexOf("collapsible-trigger") > -1) {
+            targetElement.classList.toggle("open");
+          }
+        }}
+      >
+        <div dangerouslySetInnerHTML={{ __html: contentString }} />
+      </div>
+    );
+  }
+
+  if (contentString.indexOf(`<img`) > -1) {
+    return (
+      <div
+        onClick={(e) => {
+          const targetElement: HTMLImageElement = e.target as HTMLImageElement;
+
+          if (contentString.indexOf(targetElement.src) > -1) {
+            Modal.open(<img src={targetElement.src} />, {
+              isFrameless: true,
+            });
+          }
+        }}
+      >
+        <div dangerouslySetInnerHTML={{ __html: contentString }} />
+      </div>
+    );
+  }
+
+  if (contentString.startsWith(codeSectionStart)) {
+    return <CollapsibleCodeBlock codeContent={contentString} />;
+  }
+
+  return <div dangerouslySetInnerHTML={{ __html: contentString }} />;
+};
+
 interface CollapsibleCodeBlockProps {
   codeContent: string;
-  codeSectionStart: string;
 }
 
 const CollapsibleCodeBlock: React.FC<CollapsibleCodeBlockProps> = ({
   codeContent,
-  codeSectionStart,
 }) => {
   const [open, setOpen] = useState(false);
   const withOpenClass = `${codeContent.slice(

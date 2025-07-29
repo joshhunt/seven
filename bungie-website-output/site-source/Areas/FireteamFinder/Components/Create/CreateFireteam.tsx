@@ -50,6 +50,7 @@ import {
   DestinyFireteamFinderLobbyPrivacyScope,
 } from "@Enum";
 import styles from "./CreateFireteam.module.scss";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 interface CreateFireteamProps
   extends D2DatabaseComponentProps<
@@ -119,6 +120,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   ).createOptionsTree();
 
   const activityMaxSize = activityDef?.matchmaking?.maxParty;
+  const fireteamOverhaul = ConfigUtils.SystemStatus("FireteamFinderUIOverhaul");
 
   const initialValues = {
     membershipType: destinyMembership?.selectedMembership?.membershipType,
@@ -141,7 +143,10 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
         .defaultCreateValue ?? "3212108350",
     isPublic: "1",
     scheduledTime: dateTimeValue,
-    joinSetting: "0",
+    joinSetting: fireteamOverhaul
+      ? fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
+          .defaultCreateValue ?? "0"
+      : "0",
   };
 
   const validationSchema = Yup.object({
@@ -451,6 +456,24 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                     className={styles.localeSelector}
                   />
                 </div>
+
+                {fireteamOverhaul ? (
+                  <div className={styles.section}>
+                    <p>{fireteamsLoc.JoinSettings}</p>
+                    <ReactHookFormSelect
+                      name={"locale"}
+                      options={
+                        fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
+                          .options
+                      }
+                      selectedValue={formMethods.getValues("joinSetting")}
+                      onChange={(value) => {
+                        formMethods.setValue("joinSetting", value);
+                      }}
+                      className={styles.localeSelector}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
             <div className={classNames(styles.character, styles.section)}>

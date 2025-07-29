@@ -213,6 +213,12 @@ export declare namespace DestinyDefinitions {
     AssumedWorstCase = 6,
   }
 
+  enum DestinyActivityRewardDisplayMode {
+    Aggregate = 0,
+    PickFirst = 1,
+    Count = 2,
+  }
+
   enum DestinyItemSubType {
     None = 0,
     Crucible = 1,
@@ -999,6 +1005,8 @@ export declare namespace DestinyDefinitions {
 
     rewardMappingReferences: DestinyRewardMappingGatedReference[];
 
+    rewardMappings: DestinyActivityRewardMapping[];
+
     activityOptions: DestinyActivityOptionSet[];
 
     visibilityUnlocks: DestinyUnlockExpressionDefinition[];
@@ -1108,6 +1116,20 @@ export declare namespace DestinyDefinitions {
     expression: DestinyUnlockExpressionDefinition;
 
     displayString: string;
+  }
+
+  export interface DestinyActivityRewardMapping {
+    displayBehavior: DestinyActivityRewardDisplayMode;
+
+    rewardItems: DestinyActivityRewardItem[];
+  }
+
+  export interface DestinyActivityRewardItem {
+    itemQuantity: DestinyItemQuantity;
+
+    visibilityUnlockExpression: DestinyUnlockExpressionDefinition;
+
+    uiStyle: string;
   }
 
   export interface DestinyActivityOptionSet {

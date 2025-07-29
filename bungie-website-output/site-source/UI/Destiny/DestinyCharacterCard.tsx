@@ -5,8 +5,10 @@ import {
 import { Characters } from "@Platform";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
+import { FaPencilAlt } from "@react-icons/all-files/fa/FaPencilAlt";
 import * as React from "react";
 import styles from "./DestinyCharacterCard.module.scss";
+import { Localizer } from "@bungie/localization";
 
 interface IDestinyCharacterCardProps
   extends React.HTMLProps<HTMLDivElement>,
@@ -17,6 +19,7 @@ interface IDestinyCharacterCardProps
     > {
   character: Characters.DestinyCharacterComponent;
   children?: undefined; // Disallow children
+  compressedView?: boolean;
 }
 
 interface IDestinyCharacterCardState {}
@@ -38,7 +41,13 @@ class DestinyCharacterCard extends React.Component<
   }
 
   public render() {
-    const { character, className, definitions, ...rest } = this.props;
+    const {
+      compressedView,
+      character,
+      className,
+      definitions,
+      ...rest
+    } = this.props;
 
     if (!definitions || !character) {
       return null;
@@ -54,7 +63,7 @@ class DestinyCharacterCard extends React.Component<
 
     const classes = classNames(styles.character, className);
 
-    return (
+    return !compressedView ? (
       <div
         className={classes}
         style={{
@@ -85,6 +94,27 @@ class DestinyCharacterCard extends React.Component<
               {StringUtils.LightIcon} {character.light}
             </div>
           </div>
+        </div>
+      </div>
+    ) : (
+      <div className={styles.compressedView}>
+        <div className={styles.avatar}>
+          <div
+            className={styles.avatarImage}
+            style={{
+              backgroundImage: `url(${emblemDef?.secondaryOverlay ?? ""})`,
+            }}
+          />
+        </div>
+        <div className={styles.text}>
+          <div className={styles.characterClass}>
+            {classDef?.genderedClassNamesByGenderHash[character.genderHash] ??
+              ""}
+          </div>
+          <div className={styles.characterLight}>
+            {StringUtils.LightIcon} {character.light}
+          </div>
+          <FaPencilAlt title={Localizer.Fireteams.Edit} />
         </div>
       </div>
     );

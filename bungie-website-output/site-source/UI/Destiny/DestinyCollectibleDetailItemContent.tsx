@@ -18,7 +18,6 @@ import {
   TierType,
 } from "@Enum";
 import { MembershipPair } from "@Global/DataStore/DestinyMembershipDataStore";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { PresentationNodeDestinyMembershipDataStore } from "@Global/DataStore/PresentationNodeDestinyMembershipStore";
 import { Definitions, Platform, Responses, World } from "@Platform";
 import styles from "@UI/Destiny/DestinyCollectibleDetailItemModal.module.scss";
@@ -32,7 +31,6 @@ import React, { ReactNode, useEffect, useState } from "react";
 
 interface DestinyDetailItemModalProps
   extends D2DatabaseComponentProps<
-    | "DestinyPresentationNodeDefinition"
     | "DestinyDamageTypeDefinition"
     | "DestinyStatDefinition"
     | "DestinyStatGroupDefinition"
@@ -426,7 +424,6 @@ export default withDestinyDefinitions(
   DestinyCollectibleDetailItemModalContent,
   {
     types: [
-      "DestinyPresentationNodeDefinition",
       "DestinyDamageTypeDefinition",
       "DestinyStatDefinition",
       "DestinyStatGroupDefinition",

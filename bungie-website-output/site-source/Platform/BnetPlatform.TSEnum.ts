@@ -2711,6 +2711,12 @@ export enum DestinyJoinClosedReasons {
   Offline = 32768,
 }
 
+export enum DestinyActivityRewardDisplayMode {
+  Aggregate = 0,
+  PickFirst = 1,
+  Count = 2,
+}
+
 /**
 	The reasons why an item cannot be equipped, if any.  Many flags can be set, or "None" if
 	*/

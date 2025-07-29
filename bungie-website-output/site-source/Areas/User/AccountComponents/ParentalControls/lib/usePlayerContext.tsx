@@ -28,15 +28,6 @@ interface PlayerContextValue {
   loading: boolean;
   error: unknown;
   refreshPlayerContext: () => void;
-  updatePreferences: (
-    childId: string,
-    newPreferences: PnP.ChildPreference[]
-  ) => Promise<void>;
-  updatePermissions: (
-    childId: string,
-    newPermissions: PnP.ChildPermission[],
-    setByGuardian: boolean
-  ) => Promise<void>;
   pendingChildId: string;
 }
 
@@ -110,110 +101,6 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
   }, [fetchContext]);
 
   /**
-   * updatePreferences
-   * Bulk updates preferences via API, then updates local state.
-   * @param childId - ID of the child to update preferences for
-   * @param newPreferences - New array of Setting objects
-   */
-  const updatePreferences = useCallback(
-    async (childId: string, newPreferences: PnP.ChildPreference[]) => {
-      try {
-        const result = await Platform.PnpService.BulkUpdatePreferencesForChild(
-          { preferencesToUpdate: newPreferences },
-          childId
-        );
-        if (result !== ResponseStatusEnum.Success) {
-          setError(ResponseStatusEnum[result]);
-          return;
-        }
-        setChildrenById((prev) =>
-          prev
-            ? prev.map((child) =>
-                child.membershipId.toString() === childId
-                  ? {
-                      ...child,
-                      childData: {
-                        ...child.childData,
-                        preferences: newPreferences.map(
-                          (setting): PnP.ChildPreference => ({
-                            type: setting.type as ChildPreferenceEnum,
-                            value: Boolean(setting.value), // Ensure it's a boolean
-                          })
-                        ),
-                      },
-                    }
-                  : child
-              )
-            : prev
-        );
-      } catch (err) {
-        setError(err);
-        console.error(
-          "Failed to bulk update preferences for child",
-          childId,
-          err
-        );
-      }
-    },
-    []
-  );
-
-  /**
-   * updatePermissions
-   * Bulk updates permissions via API, then updates local state.
-   * @param childId - ID of the child to update permissions for
-   * @param newPermissions - New array of Setting objects
-   */
-  const updatePermissions = useCallback(
-    async (
-      childId: string,
-      newPermissions: PnP.ChildPermission[],
-      setByGuardian: boolean
-    ) => {
-      try {
-        const result = await Platform.PnpService.BulkUpdatePermissionsForChild(
-          { permissionsToUpdate: newPermissions },
-          childId
-        );
-
-        if (result !== ResponseStatusEnum.Success) {
-          setError(ResponseStatusEnum[result]);
-          return;
-        }
-        setChildrenById((prev) =>
-          prev
-            ? prev.map((child) =>
-                child.membershipId === childId
-                  ? {
-                      ...child,
-                      childData: {
-                        ...child.childData,
-                        permissions: newPermissions.map(
-                          (setting): PnP.ChildPermission => ({
-                            type: setting.type as ChildPermissionEnum,
-                            value: Boolean(setting.value),
-                            isSetByParentOrGuardian: setByGuardian,
-                          })
-                        ),
-                      },
-                    }
-                  : child
-              )
-            : prev
-        );
-      } catch (err) {
-        setError(err);
-        console.error(
-          "Failed to bulk update permissions for child",
-          childId,
-          err
-        );
-      }
-    },
-    []
-  );
-
-  /**
    * pendingChildId
    * The encoded ID that is being stored in the browser or in a cookie.
    */
@@ -239,8 +126,6 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
     loading,
     error,
     refreshPlayerContext: fetchContext,
-    updatePreferences,
-    updatePermissions,
     pendingChildId: hasPendingChild ? requestingChildId : null,
   };
 }
