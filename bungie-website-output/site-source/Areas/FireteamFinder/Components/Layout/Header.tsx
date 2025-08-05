@@ -18,12 +18,10 @@ interface HeaderProps {
   isLoggedIn?: boolean;
   activityFilterString?: string;
   setActivityFilterString?: (value: string) => void;
-  inlineTitleAndButtons?: boolean;
 }
 
 export const Header: FC<HeaderProps> = (props) => {
   const {
-    inlineTitleAndButtons,
     setActivityFilterString,
     activityFilterString,
     buttonConfiguration,
@@ -45,19 +43,12 @@ export const Header: FC<HeaderProps> = (props) => {
 
   const clearActivityFilter = () => setActivityFilterString("");
 
-  const DisplayWrapper: FC = ({ children }) =>
-    inlineTitleAndButtons ? (
-      <div className={styles.inlineTitleAndButtons}>{children}</div>
-    ) : (
-      <>{children}</>
-    );
+  const DisplayWrapper: FC = ({ children }) => (
+    <div className={styles.inlineTitleAndButtons}>{children}</div>
+  );
 
   return (
-    <div
-      className={classNames(styles.header, {
-        [styles.columnSpacing]: inlineTitleAndButtons,
-      })}
-    >
+    <div className={classNames(styles.header, styles.columnSpacing)}>
       {breadcrumbConfiguration !== "browse" && (
         <FireteamFinderBreadcrumb breadcrumbConfig={breadcrumbConfiguration} />
       )}
@@ -66,20 +57,11 @@ export const Header: FC<HeaderProps> = (props) => {
         {title && (
           <div className={styles.titleWrap}>
             <h3 className={styles.title}>{title}</h3>
-            {subtitle && inlineTitleAndButtons && (
-              <div className={styles.subtitle}>{subtitle}</div>
-            )}
+            {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
           </div>
         )}
         <div id={"headerSecondLine"} className={styles.secondLine}>
-          {subtitle && !inlineTitleAndButtons && (
-            <div className={styles.subtitle}>{subtitle}</div>
-          )}
-          <div
-            className={classNames(styles.secondLine, {
-              [styles.inlineButtons]: inlineTitleAndButtons,
-            })}
-          >
+          <div className={classNames(styles.secondLine, styles.inlineButtons)}>
             <HeaderButtons
               buttonConfig={buttonConfiguration}
               isLoggedIn={isLoggedIn}
@@ -89,11 +71,7 @@ export const Header: FC<HeaderProps> = (props) => {
       </DisplayWrapper>
 
       {isActivitySelectView && (
-        <div
-          className={classNames(styles.activityFilterWrapper, {
-            [styles.activityFilterMarginTop]: !inlineTitleAndButtons,
-          })}
-        >
+        <div className={styles.activityFilterWrapper}>
           <p className={styles.selectActivityLabel}>{activityLabel}</p>
           <div className={styles.activityFilterContainer}>
             {activityFilterString && (

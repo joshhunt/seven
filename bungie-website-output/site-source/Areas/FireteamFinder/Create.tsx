@@ -13,6 +13,7 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import styles from "./Create.module.scss";
 
 interface CreateProps {
   activityHashId?: number;
@@ -52,9 +53,6 @@ export const Create: React.FC<CreateProps> = () => {
     }
   }, [destinyMembership]);
 
-  const bgImage =
-    "/7/ca/destiny/bgs/fireteamfinder/fireteam_finder_create_bg.jpg";
-
   const createLink = (activityGraphIdHash: number, activityIdHash: number) =>
     RouteHelper.FireteamFinderCreate({
       graphId: activityGraphIdHash?.toString(),
@@ -70,7 +68,7 @@ export const Create: React.FC<CreateProps> = () => {
         buttonConfig={"none"}
         title={title(createStep)}
         subtitle={subtitle(createStep)}
-        backgroundImage={bgImage}
+        className={styles.background}
       >
         {graphId && activityId ? (
           <CreateFireteam

@@ -10,7 +10,7 @@ import {
 } from "@UIKit/Forms/DropdownPrettyOptions";
 import { ReactHookFormError } from "@UIKit/Forms/ReactHookFormForms/ReactHookFormError";
 import classNames from "classnames";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useController, UseControllerProps } from "react-hook-form";
 
@@ -67,22 +67,17 @@ export const ReactHookFormSelect = ({
     field?.value ?? options[0].value
   );
 
+  useEffect(() => {
+    const newValue = options.find((o) => o.value === selectedValue);
+    if (newValue?.value) {
+      setCurrentValue(newValue.value);
+    }
+  }, [options, selectedValue]);
+
   const classes = classNames(styles.dropdownItem, props.className, {
     [styles.open]: isOpen,
     [props.isOpenClassName]: isOpen,
   });
-
-  const updateIfNeeded = () => {
-    const value = currentValue ?? props.initialValue;
-
-    if (!selectedValue || !value) {
-      return;
-    }
-
-    if (selectedValue !== currentValue) {
-      setCurrentValue(selectedValue);
-    }
-  };
 
   const selectedOption = () => {
     let sOption = options.find((a) => a.value === currentValue);

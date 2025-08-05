@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FireteamFinder } from "@Platform";
-import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
@@ -17,7 +15,6 @@ import {
   FireteamApiService,
   FireteamFilterManager,
   LobbyStateManager,
-  UrlManager,
 } from "../Helpers";
 import { CustomLobbyState } from "../Helpers/LobbyStateManager";
 import styles from "./CoreBrowsing.module.scss";
@@ -41,7 +38,8 @@ import {
 } from "@Global/Redux/slices/destinyAccountSlice";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { UserUtils } from "@Utilities/UserUtils";
+import { AppliedFilters } from "./Components/AppliedFilters/AppliedFilters";
+import { SearchParams, useFireteamSearchParams } from "../Helpers/Hooks";
 
 interface BrowseFireteamsProps
   extends D2DatabaseComponentProps<
@@ -52,31 +50,23 @@ interface BrowseFireteamsProps
     | "DestinyFireteamFinderOptionDefinition"
   > {}
 
+const lobbyTabs: CustomLobbyState[] = [
+  CustomLobbyState.Active,
+  CustomLobbyState.Inactive,
+  CustomLobbyState.Clan,
+  CustomLobbyState.Mine,
+];
+
 const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   /* URL Management */
-  const getParams = () => UrlManager.getCurrentParams();
+  const { params, setParams } = useFireteamSearchParams();
+  const { activityGraphId } = params;
   const dispatch = useAppDispatch();
-  const updateUrlWithoutRefresh = (key: string, value: string) =>
-    UrlManager.updateUrl(key, value);
-  const [urlUpdateTrigger, setUrlUpdateTrigger] = useState(0);
-
-  useEffect(() => {
-    UrlManager.setChangeCallback(() => {
-      setUrlUpdateTrigger((prev) => prev + 1);
-    });
-
-    // Clean up on unmount
-    return () => {
-      UrlManager.setChangeCallback(null);
-    };
-  }, []);
 
   const account = useAppSelector(selectDestinyAccount);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
 
   /* State */
-  const [tags, setTags] = useState<string[]>([]);
-  const { graphId } = useParams<IFireteamFinderParams>();
   const [resultsList, setResultsList] = useState<
     FireteamFinder.DestinyFireteamFinderListing[]
   >([]);
@@ -91,7 +81,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   ];
 
   const [showingLobbyState, setShowingLobbyState] = useState<CustomLobbyState>(
-    LobbyStateManager.getInitialLobbyState(getParams(), CustomLobbyState.Active)
+    LobbyStateManager.getInitialLobbyState(params, CustomLobbyState.Active)
   );
 
   const browseFilterDefinitionTree = new FireteamOptions(
@@ -103,9 +93,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   );
   const formMethods = useForm({ defaultValues: { ...initialFilters } });
 
-  const loadFireteams: SubmitHandler<FieldValues> = async (
-    data: FieldValues
-  ) => {
+  const loadFireteams = async () => {
     if (!account.selectedMembership || !account.selectedCharacterId) {
       // The useEffect below will load this data.
       return;
@@ -116,10 +104,10 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
     );
 
     const searchInput: SearchFiltersInput = {
-      tags,
-      graphId,
+      tags: params.tags,
+      graphId: activityGraphId,
       lobbyState: destinyLobbyState || DestinyFireteamFinderLobbyState.Active,
-      filterData: data,
+      filterData: params.filters,
       browseFilterDefinitionTree,
     };
 
@@ -137,7 +125,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
           membershipInfo
         )) ?? [];
     } finally {
-      // Set results based on lobby state
+      // This try-finally is here so that even if the request fails the user does not get shown incorrect data.
       if (LobbyStateManager.isActive(showingLobbyState)) {
         setResultsList(listings);
       } else if (LobbyStateManager.isInactive(showingLobbyState)) {
@@ -163,10 +151,8 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   }, [globalState?.loggedInUser]);
 
   useEffect(() => {
-    if (formMethods.getValues()) {
-      loadFireteams(getParams());
-    }
-  }, [tags, showingLobbyState, urlUpdateTrigger, account]);
+    loadFireteams();
+  }, [showingLobbyState, params, account]);
 
   const [activeUserLobbies, inactiveUserLobbies] = useMemo(() => {
     if (
@@ -186,53 +172,77 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
     return [activeUserLobbiesInner, inactiveUserLobbiesInner];
   }, [resultsList, showingLobbyState]);
 
+  const selectedActivity = useMemo(() => {
+    if (!activityGraphId) {
+      return;
+    }
+    return props.definitions?.DestinyFireteamFinderActivityGraphDefinition?.get(
+      activityGraphId
+    )?.displayProperties?.name;
+  }, [activityGraphId]);
+
   return (
     <div className={styles.browseContainer}>
       <GridCol cols={3} tiny={12} mobile={12}>
         <FilterSection
+          selectedActivity={selectedActivity}
+          params={params}
           formMethods={formMethods}
-          handleSubmit={loadFireteams}
+          handleSubmit={() => null}
           tagsProps={{
             definitions: props?.definitions,
-            savedTags: tags,
-            tagHashesUpdated: setTags,
+            savedTags: params.tags,
+            tagHashesUpdated: (tags) =>
+              setParams({
+                ...params,
+                tags,
+              }),
           }}
           optionsProps={{
+            selectedFilterHashes: params.filters,
             browseFilterDefinitionTree,
             selectorFilterTypes,
             formMethods,
-            handleUrlUpdate: updateUrlWithoutRefresh,
+            handleUrlUpdate: (key, value) =>
+              setParams({
+                ...params,
+                filters: {
+                  ...params.filters,
+                  [key]: value,
+                },
+              }),
           }}
         />
       </GridCol>
       <GridCol className={styles.lobbyCards} cols={9} tiny={12} mobile={12}>
         <div className={styles.tabHeader}>
-          <TabAndListings
-            setShowingLobbyState={setShowingLobbyState}
-            handleUrlUpdate={updateUrlWithoutRefresh}
-            activeLobbyState={showingLobbyState}
-            matchingLobbyState={CustomLobbyState.Active}
-          />
-          <TabAndListings
-            setShowingLobbyState={setShowingLobbyState}
-            handleUrlUpdate={updateUrlWithoutRefresh}
-            activeLobbyState={showingLobbyState}
-            matchingLobbyState={CustomLobbyState.Inactive}
-          />
-          <TabAndListings
-            setShowingLobbyState={setShowingLobbyState}
-            handleUrlUpdate={updateUrlWithoutRefresh}
-            activeLobbyState={showingLobbyState}
-            matchingLobbyState={CustomLobbyState.Clan}
-          />
-          <TabAndListings
-            setShowingLobbyState={setShowingLobbyState}
-            handleUrlUpdate={updateUrlWithoutRefresh}
-            activeLobbyState={showingLobbyState}
-            matchingLobbyState={CustomLobbyState.Mine}
-          />
+          {lobbyTabs.map((tab) => (
+            <TabAndListings
+              key={tab}
+              setShowingLobbyState={setShowingLobbyState}
+              handleLobbyStateUpdate={(lobbyState) =>
+                setParams({
+                  ...params,
+                  lobbyState: lobbyState.toString(),
+                })
+              }
+              activeLobbyState={showingLobbyState}
+              matchingLobbyState={tab}
+            />
+          ))}
         </div>
         <div>
+          <AppliedFilters
+            selectedActivity={selectedActivity}
+            lobbyState={showingLobbyState}
+            filterDefinitions={browseFilterDefinitionTree}
+            selectedFilterHashes={params.filters}
+            tagDefinitions={props.definitions.DestinyFireteamFinderLabelDefinition.all()}
+            selectedTagHashes={params.tags}
+            onClear={() => {
+              setParams({});
+            }}
+          />
           {/* Active listings */}
           {LobbyStateManager.isActive(showingLobbyState) &&
             (resultsList.length > 0 ? (

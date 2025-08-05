@@ -17,6 +17,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import styles from "./Detail.module.scss";
 
 interface DetailProps {}
 
@@ -77,8 +78,6 @@ export const Detail: React.FC<DetailProps> = (props) => {
   const [matchingApplication, setMatchingApplication] = useState<
     IMatchingApplication
   >(null);
-  const bgImage =
-    "/7/ca/destiny/bgs/fireteamfinder/fireteam_finder_create_bg.jpg";
 
   const FireteamNotFound = () => (
     <div
@@ -269,7 +268,7 @@ export const Detail: React.FC<DetailProps> = (props) => {
           buttonConfig={getButtonConfig()}
           title={Localizer.Fireteams.FireteamDetails}
           subtitle={Localizer.Fireteams.FindPlayersAndInviteThem}
-          backgroundImage={bgImage}
+          className={styles.background}
         >
           {fireteam ? (
             <FireteamDetail

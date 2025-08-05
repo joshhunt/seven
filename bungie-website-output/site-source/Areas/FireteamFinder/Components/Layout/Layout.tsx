@@ -17,17 +17,20 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, {
+import {
   Children,
   cloneElement,
   isValidElement,
   ReactElement,
+  useEffect,
   useState,
 } from "react";
 import { Header } from "./Header";
 import { ButtonConfiguration } from "./HeaderButtons";
 import styles from "./Layout.module.scss";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
+import React from "react";
+import classNames from "classnames";
 
 export type FireteamFinderErrorViewType =
   | "SignedOut"
@@ -40,7 +43,7 @@ interface LayoutProps {
   breadcrumbConfig: BreadcrumbConfiguration;
   title: string;
   subtitle: string;
-  backgroundImage: string;
+  className?: string;
   activityFilterString?: string;
   setActivityFilterString?: (value: string) => void;
 }
@@ -51,10 +54,10 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   const [errorState, setErrorState] = useState<FireteamFinderErrorViewType>(
     "None"
   );
-  const [profileResponse, setProfileResponse] = React.useState<
+  const [profileResponse, setProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >();
-  const [destinyMemberships, setDestinyMemberships] = React.useState<
+  const [destinyMemberships, setDestinyMemberships] = useState<
     GroupsV2.GroupUserInfoCard[]
   >();
   const loggedIn = UserUtils.isAuthenticated(globalState);
@@ -128,7 +131,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
       });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (loggedIn) {
       if (!destinyMemberships) {
         loadDestinyMembership();
@@ -192,10 +195,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
   };
 
   return (
-    <div
-      className={styles.layout}
-      style={{ backgroundImage: `url(${props.backgroundImage})` }}
-    >
+    <div className={classNames(styles.layout, props.className)}>
       <BungieHelmet
         title={fireteamsLoc.Fireteams}
         description={fireteamsLoc.Fireteams}
@@ -205,7 +205,7 @@ export const Layout: React.FC<LayoutProps> = (props) => {
 
       <SpinnerContainer loading={!destinyDataLoaded}>
         {errorState === "None" ? (
-          <Grid isTextContainer={true}>
+          <Grid>
             <GridCol cols={12} className={styles.content}>
               <Header
                 setActivityFilterString={setActivityFilterString}
@@ -215,9 +215,6 @@ export const Layout: React.FC<LayoutProps> = (props) => {
                 title={props.title}
                 subtitle={props.subtitle}
                 isLoggedIn={UserUtils.isAuthenticated(globalState)}
-                inlineTitleAndButtons={ConfigUtils.SystemStatus(
-                  "FireteamFinderUIOverhaul"
-                )}
               />
               {renderChildren()}
             </GridCol>

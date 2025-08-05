@@ -133,7 +133,6 @@ export const SystemNames = {
   MaximumApiKeysPerApplication: "MaximumApiKeysPerApplication",
   ApplicationsReactUI: "ApplicationsReactUI",
   FireteamFinderWebUI: "FireteamFinderWebUI",
-  FireteamFinderUIOverhaul: "FireteamFinderUIOverhaul",
   ParentalControlUI: "ParentalControlUI",
   FireteamFinderNotification: "FireteamFinderNotification",
   FeatUseFunctionalAuthInternal: "FeatUseFunctionalAuthInternal",

@@ -259,10 +259,7 @@ export class RouteDefs {
       ),
       routes: [
         (area) => new ActionRoute(area, RouteActions.Dashboard),
-        (area) =>
-          new ActionRoute(area, RouteActions.Browse, {
-            path: ":graphId?/:activityId?",
-          }),
+        (area) => new ActionRoute(area, RouteActions.Browse),
         (area) =>
           new ActionRoute(area, RouteActions.Detail, { path: ":lobbyId?" }),
         (area) =>

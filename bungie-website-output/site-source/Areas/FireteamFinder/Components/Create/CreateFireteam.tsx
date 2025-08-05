@@ -120,7 +120,6 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   ).createOptionsTree();
 
   const activityMaxSize = activityDef?.matchmaking?.maxParty;
-  const fireteamOverhaul = ConfigUtils.SystemStatus("FireteamFinderUIOverhaul");
 
   const initialValues = {
     membershipType: destinyMembership?.selectedMembership?.membershipType,
@@ -143,10 +142,9 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
         .defaultCreateValue ?? "3212108350",
     isPublic: "1",
     scheduledTime: dateTimeValue,
-    joinSetting: fireteamOverhaul
-      ? fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
-          .defaultCreateValue ?? "0"
-      : "0",
+    joinSetting:
+      fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
+        .defaultCreateValue ?? "0",
   };
 
   const validationSchema = Yup.object({
@@ -167,7 +165,6 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   const getRelevantActivitySetLabelHashes = (
     activityGraphDefinition: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition
   ) => {
-    const activitySetLabelHashes: number[] = [];
     const activitySetDefinitions = props.definitions.DestinyFireteamFinderActivitySetDefinition.all();
 
     const relevantActivitySets = Object.values(activitySetDefinitions).filter(
@@ -457,23 +454,21 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                   />
                 </div>
 
-                {fireteamOverhaul ? (
-                  <div className={styles.section}>
-                    <p>{fireteamsLoc.JoinSettings}</p>
-                    <ReactHookFormSelect
-                      name={"locale"}
-                      options={
-                        fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
-                          .options
-                      }
-                      selectedValue={formMethods.getValues("joinSetting")}
-                      onChange={(value) => {
-                        formMethods.setValue("joinSetting", value);
-                      }}
-                      className={styles.localeSelector}
-                    />
-                  </div>
-                ) : null}
+                <div className={styles.section}>
+                  <p>{fireteamsLoc.JoinSettings}</p>
+                  <ReactHookFormSelect
+                    name={"locale"}
+                    options={
+                      fireteamOptionTree[FireteamFinderValueTypes.joinSetting]
+                        .options
+                    }
+                    selectedValue={formMethods.getValues("joinSetting")}
+                    onChange={(value) => {
+                      formMethods.setValue("joinSetting", value);
+                    }}
+                    className={styles.localeSelector}
+                  />
+                </div>
               </div>
             </div>
             <div className={classNames(styles.character, styles.section)}>

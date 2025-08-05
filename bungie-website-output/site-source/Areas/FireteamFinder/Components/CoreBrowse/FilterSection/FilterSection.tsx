@@ -7,7 +7,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Button } from "@UIKit/Controls/Button/Button";
-import { RouteHelper } from "@Routes/RouteHelper";
+import { IMultiSiteLink, RouteHelper } from "@Routes/RouteHelper";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
   FilterFireteamOptions,
@@ -21,8 +21,11 @@ import { themes } from "plxp-web-ui/themes/theme";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import styles from "./FilterSection.module.scss";
+import { parseParams, SearchParams } from "../Helpers/Hooks";
 
 interface FilterSectionProps {
+  selectedActivity?: string;
+  params: SearchParams;
   formMethods: UseFormReturn;
   handleSubmit: (data: FieldValues) => void;
   tagsProps: {
@@ -36,6 +39,7 @@ interface FilterSectionProps {
   };
   optionsProps: {
     browseFilterDefinitionTree: any;
+    selectedFilterHashes: Record<string, string>;
     selectorFilterTypes: any;
     formMethods: UseFormReturn;
     handleUrlUpdate: (key: string, value: string) => void;
@@ -43,26 +47,36 @@ interface FilterSectionProps {
 }
 
 const FilterSection: FC<FilterSectionProps> = ({
+  params,
+  selectedActivity,
   formMethods,
   handleSubmit,
   optionsProps,
   tagsProps,
 }) => {
-  const fireteamsLoc = Localizer.Fireteams;
   const isMobile = useDataStore(Responsive)?.mobile;
   const activeThemeName = "destiny-core";
   const theme = themes[activeThemeName];
-
+  // RouteHelper functions do not support arrays in the url query params so the link is made manually here.
+  const link: IMultiSiteLink = {
+    legacy: false,
+    url:
+      RouteHelper.FireteamFinderBrowse().url +
+      "?" +
+      parseParams(params).toString(),
+  };
   const Filters: FC = () => (
     <FormProvider {...formMethods}>
       <form onSubmit={formMethods.handleSubmit(handleSubmit)}>
         <div className={styles.buttonContainer}>
-          <Button buttonType={"white"} url={RouteHelper.FireteamFinderBrowse()}>
-            {Localizer.fireteams.AllActivities}
+          <Button buttonType={"white"} url={link}>
+            {selectedActivity
+              ? Localizer.Fireteams.SelectActivity
+              : Localizer.Fireteams.AllActivities}
           </Button>
         </div>
         <CharacterSelect />
-        <div className={styles.title}>{fireteamsLoc.filters}</div>
+        <div className={styles.title}>{Localizer.Fireteams.filters}</div>
         <FilterFireteamOptions {...optionsProps} />
         <FilterFireteamTags {...tagsProps} />
       </form>

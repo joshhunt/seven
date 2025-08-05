@@ -1,5 +1,4 @@
 import React from "react";
-import { Localizer } from "@bungie/localization/Localizer";
 import classNames from "classnames";
 import styles from "./TabAndListings.module.scss";
 import {
@@ -9,7 +8,7 @@ import {
 
 interface TabAndListingsProps {
   setShowingLobbyState: (lobbyState: CustomLobbyState) => void;
-  handleUrlUpdate: (key: string, value: string) => void;
+  handleLobbyStateUpdate: (lobbyState: CustomLobbyState) => void;
   activeLobbyState: CustomLobbyState;
   matchingLobbyState: CustomLobbyState;
 }
@@ -17,7 +16,7 @@ interface TabAndListingsProps {
 const TabAndListings: React.FC<TabAndListingsProps> = ({
   setShowingLobbyState,
   activeLobbyState,
-  handleUrlUpdate,
+  handleLobbyStateUpdate: handleUrlUpdate,
   matchingLobbyState,
 }) => {
   return (
@@ -27,7 +26,7 @@ const TabAndListings: React.FC<TabAndListingsProps> = ({
       })}
       onClick={() => {
         setShowingLobbyState(matchingLobbyState);
-        handleUrlUpdate("lobbyState", matchingLobbyState.toString());
+        handleUrlUpdate(matchingLobbyState);
       }}
     >
       {LobbyStateManager.getLobbyStateLabel(matchingLobbyState)}

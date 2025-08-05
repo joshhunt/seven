@@ -70,7 +70,6 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     setButtonInteractionDisabled,
   ] = React.useState(false);
   const history = useHistory();
-  const fireteamOverhaul = ConfigUtils.SystemStatus("FireteamFinderUIOverhaul");
 
   useEffect(() => {
     if (context?.fireteamListing?.listingId) {
@@ -311,8 +310,6 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     });
   };
 
-  const headerButtonClass = fireteamOverhaul ? "" : styles.headerButton;
-
   const isAutoJoin =
     context?.fireteamLobby?.settings?.listingValues?.find(
       (v) =>
@@ -322,7 +319,6 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const applyLabel = isAutoJoin ? fireteamsLoc.Join : fireteamsLoc.ApplyToJoin;
   const BrowseButton = () => (
     <Button
-      className={headerButtonClass}
       icon={<FaSearch />}
       buttonType={"gold"}
       url={RouteHelper.FireteamFinderBrowse()}
@@ -332,7 +328,6 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CreateListingButton = () => (
     <Button
-      className={headerButtonClass}
       icon={<FaPlus />}
       buttonType={"white"}
       url={RouteHelper.FireteamFinderCreate()}
@@ -342,7 +337,6 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   );
   const CreateFireteamButton = () => (
     <Button
-      className={headerButtonClass}
       icon={<FaPlus />}
       buttonType={"gold"}
       url={RouteHelper.FireteamFinderCreate()}
@@ -351,35 +345,22 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     </Button>
   );
   const ShareButton = () => (
-    <Button
-      className={headerButtonClass}
-      buttonType={"white"}
-      onClick={() => copyToClipboard()}
-    >
+    <Button buttonType={"white"} onClick={() => copyToClipboard()}>
       {fireteamsLoc.Share}
     </Button>
   );
   const LeaveButton = () => (
-    <Button
-      className={headerButtonClass}
-      buttonType={"red"}
-      onClick={() => openLeaveModal()}
-    >
+    <Button buttonType={"red"} onClick={() => openLeaveModal()}>
       {fireteamsLoc.Leave}
     </Button>
   );
   const CloseButton = () => (
-    <Button
-      className={headerButtonClass}
-      buttonType={"red"}
-      onClick={() => openCloseModal()}
-    >
+    <Button buttonType={"red"} onClick={() => openCloseModal()}>
       {fireteamsLoc.CloseFireteam}
     </Button>
   );
   const ApplyOrJoinButton = () => (
     <Button
-      className={headerButtonClass}
       buttonType={"gold"}
       disabled={buttonInteractionDisabled}
       onClick={() => openCharacterSelect()}
@@ -388,17 +369,12 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     </Button>
   );
   const CancelApplicationButton = () => (
-    <Button
-      className={headerButtonClass}
-      buttonType={"gold"}
-      onClick={() => cancelApplication()}
-    >
+    <Button buttonType={"gold"} onClick={() => cancelApplication()}>
       {fireteamsLoc.CancelApplication}
     </Button>
   );
   const ActivateButton = () => (
     <Button
-      className={headerButtonClass}
       buttonType={"gold"}
       onClick={() => handleActivateFireteam()}
       disabled={isActive || buttonInteractionDisabled}

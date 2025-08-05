@@ -1,6 +1,7 @@
 import { DestinyFireteamFinderLobbyState } from "@Enum";
 import { FireteamFilterManager } from "./FireteamFilterManager";
 import { Localizer } from "@bungie/localization/Localizer";
+import { SearchParams } from "./Hooks";
 
 // Create a custom enum with literal values
 export enum CustomLobbyState {
@@ -63,7 +64,7 @@ export class LobbyStateManager {
    * Gets initial lobby state from URL params
    */
   static getInitialLobbyState(
-    urlParams: Record<string, string>,
+    urlParams: SearchParams,
     defaultState: CustomLobbyState
   ): CustomLobbyState {
     const lobbyStateParam = FireteamFilterManager.parseIntAndValidate(
