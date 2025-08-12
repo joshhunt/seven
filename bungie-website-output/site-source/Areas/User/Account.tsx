@@ -200,9 +200,11 @@ const Account: React.FC = () => {
     </span>
   );
 
-  const parentalControlsTabData = ConfigUtils.SystemStatus(
-    "FeatureParentalControls"
-  )
+  const showParentalControlsUI =
+    ConfigUtils.SystemStatus("FeatureParentalControls") ||
+    globalState?.loggedInUser?.userAcls.includes(AclEnum.BNextGlobalIgnore);
+
+  const parentalControlsTabData = showParentalControlsUI
     ? {
         tabLabel: Localizer.account.ParentalControls,
         contentComponent: <ParentalControls />,

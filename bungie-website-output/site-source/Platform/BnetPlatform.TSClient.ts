@@ -7228,6 +7228,16 @@ export declare namespace Definitions {
     isFeaturedItem: boolean;
 
     /**
+		Whether or not this item is holofoil, which has special icon treatment and in-game appearance.
+		*/
+    isHolofoil: boolean;
+
+    /**
+		Whether or not this item is adept, which has increased stats and/or perks.
+		*/
+    isAdept: boolean;
+
+    /**
 		If we were able to acquire an in-game screenshot for the item, the path to that screenshot
 		will be returned here.  Note that not all items have screenshots: particularly not any non-equippable
 		items.
@@ -20675,6 +20685,27 @@ export declare namespace Friends {
 
 export declare namespace PnP {
   /**
+	Contract representing a request to assign a parent or guardian account to a child account.
+	*/
+  export interface AssignParentOrGuardianToChildRequest {
+    /**
+		This is stringified JSON.
+		It is intentionally left as a string since we need it's unaltered version to verify the signature
+		and de-serializing it might cause the computed signature to be different.
+		*/
+    status: string;
+
+    /**
+		This is stringified JSON.
+		It is intentionally left as a string since we need it's unaltered version to verify the signature
+		and de-serializing it might cause the computed signature to be different.
+		*/
+    externalPayload: string;
+
+    signature: string;
+  }
+
+  /**
 	Contract representing a request to update permissions for a child account under PnP.
 	*/
   export interface BulkUpdatePermissionsForChildRequest {
@@ -31184,6 +31215,26 @@ class PnpServiceInternal {
       "PnP",
       "SetParentOrGuardianAsPendingForChild",
       undefined,
+      clientState
+    );
+
+  /**
+   * Sets a child account from pending to assigned.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static SetParentOrGuardianAsAssignedForChild = (
+    input: PnP.AssignParentOrGuardianToChildRequest,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<Globals.ResponseStatusEnum> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/Assign/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "SetParentOrGuardianAsAssignedForChild",
+      input,
       clientState
     );
 

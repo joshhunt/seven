@@ -93,6 +93,7 @@ class SeasonPassRewardProgression extends React.Component<
     const rewardsDef = definitions.DestinyProgressionDefinition.get(
       seasonPassDef.rewardProgressionHash
     );
+
     const characterSeasonalProgress =
       typeof characterProgressions !== "undefined"
         ? characterProgressions[seasonPassDef.rewardProgressionHash]
@@ -225,14 +226,8 @@ class SeasonPassRewardProgression extends React.Component<
           handleClaimingClick={this.props.handleClaimingClick}
           claimedReward={this.props.claimedReward}
           isCurrentSeason={isCurrentSeason}
-          progressToNextStepScaled={
-            characterSeasonalProgress
-              ? characterSeasonalProgress.progressToNextLevel !== 0 &&
-                characterSeasonalProgress?.progressToNextLevel /
-                  rewardsDef?.progressToNextStepScaling
-              : 0
-          }
-          hasReachedStep={
+          xpProgressToNextStep={characterSeasonalProgress?.progressToNextLevel}
+          hasReachedStep={(i: number) =>
             hasCharacterProgression && characterSeasonalProgress.level > i
           }
           ownsPremium={ownsPremium}

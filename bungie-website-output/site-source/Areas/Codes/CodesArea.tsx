@@ -63,28 +63,16 @@ class CodesArea extends React.Component<CodesAreaProps> {
       },
     ];
 
-    const gameCodesTab = {
-      label: "Game Codes",
-      to: gameCodes.resolve(),
-      current: gameCodes.action === currentAction,
-    };
-
-    const gameCodesRoute = (
-      <Route path={gameCodes.path}>
-        <h2>{"Game Codes"}</h2>
-      </Route>
-    );
-
-    const gameCodesComponentRoute = (
-      <Route path={gameCodes.path} component={GameCodes} />
-    );
-
-    const canSeeGameCodes = AclHelper.hasGameCodesAccess(
-      this.props.globalState?.loggedInUser?.userAcls
-    );
-
-    if (canSeeGameCodes) {
-      links.push(gameCodesTab);
+    if (
+      AclHelper.hasGameCodesAccess(
+        this.props.globalState?.loggedInUser?.userAcls
+      )
+    ) {
+      links.push({
+        label: codeLoc.GameCodes,
+        to: gameCodes.resolve(),
+        current: gameCodes.action === currentAction,
+      });
     }
 
     return (
@@ -108,7 +96,9 @@ class CodesArea extends React.Component<CodesAreaProps> {
                 <Route path={partnerRewards.path}>
                   <h2>{codeLoc.PartnerRewards}</h2>
                 </Route>
-                {canSeeGameCodes && gameCodesRoute}
+                <Route path={gameCodes.path}>
+                  <h2>{codeLoc.GameCodes}</h2>
+                </Route>
               </SwitchWithErrors>
             </GridCol>
           </Grid>
@@ -128,7 +118,7 @@ class CodesArea extends React.Component<CodesAreaProps> {
               <Route path={redemption.path} component={CodesRedemption} />
               <Route path={history.path} component={CodesHistory} />
               <Route path={partnerRewards.path} component={PartnerRewards} />
-              {canSeeGameCodes && gameCodesComponentRoute}
+              <Route path={gameCodes.path} component={GameCodes} />
             </AnimatedRouter>
           </GridCol>
         </Grid>

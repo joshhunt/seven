@@ -4,12 +4,13 @@ import { ReactHookFormSelect } from "@UIKit/Forms/ReactHookFormForms/ReactHookFo
 import { UseFormReturn } from "react-hook-form";
 import styles from "./FilterFireteamOptions.module.scss";
 import { IOptionCategory } from "@Areas/FireteamFinder/Constants/FireteamOptions";
+import { FireteamFilterManager } from "../../../Helpers/FireteamFilterManager";
+import { Dropdown } from "@UI/UIKit/Forms/Dropdown";
 
 interface FilterFireteamOptionsProps {
   browseFilterDefinitionTree: Record<string, IOptionCategory>;
   selectedFilterHashes: Record<string, string>;
   selectorFilterTypes: ValidFireteamFinderValueTypes[];
-  formMethods: UseFormReturn;
   handleUrlUpdate: (key: string, value: string) => void;
 }
 
@@ -17,9 +18,14 @@ const FilterFireteamOptions: FC<FilterFireteamOptionsProps> = ({
   browseFilterDefinitionTree,
   selectedFilterHashes,
   selectorFilterTypes,
-  formMethods,
   handleUrlUpdate,
 }) => {
+  const initialFilters = useMemo(() => {
+    return FireteamFilterManager.createInitialFilters(
+      browseFilterDefinitionTree,
+      selectorFilterTypes
+    );
+  }, [browseFilterDefinitionTree, selectorFilterTypes]);
   const optionKeys = useMemo(() => {
     return Object.keys(browseFilterDefinitionTree).filter((hash) =>
       selectorFilterTypes.includes(hash as ValidFireteamFinderValueTypes)
@@ -33,14 +39,13 @@ const FilterFireteamOptions: FC<FilterFireteamOptionsProps> = ({
 
         return (
           <div key={key} className={styles.labelAndSelector}>
-            <ReactHookFormSelect
+            <Dropdown
               options={optionCategory.options}
               className={styles.filterMenu}
               name={key}
-              selectedValue={selectedFilterHashes[key]}
+              selectedValue={selectedFilterHashes[key] ?? initialFilters[key]}
               onChange={(value) => {
                 handleUrlUpdate(key, value);
-                formMethods.setValue(key, value);
               }}
             />
           </div>

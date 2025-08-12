@@ -48,7 +48,7 @@ export const Header: FC<HeaderProps> = (props) => {
   );
 
   return (
-    <div className={classNames(styles.header, styles.columnSpacing)}>
+    <div className={styles.header}>
       {breadcrumbConfiguration !== "browse" && (
         <FireteamFinderBreadcrumb breadcrumbConfig={breadcrumbConfiguration} />
       )}
@@ -74,11 +74,6 @@ export const Header: FC<HeaderProps> = (props) => {
         <div className={styles.activityFilterWrapper}>
           <p className={styles.selectActivityLabel}>{activityLabel}</p>
           <div className={styles.activityFilterContainer}>
-            {activityFilterString && (
-              <button className={styles.clearBtn} onClick={clearActivityFilter}>
-                {clearResultsLabel}
-              </button>
-            )}
             <div className={styles.inputIconWrapper}>
               <input
                 value={activityFilterString}

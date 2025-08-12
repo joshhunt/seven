@@ -87,11 +87,6 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   const browseFilterDefinitionTree = new FireteamOptions(
     props.definitions.DestinyFireteamFinderOptionDefinition
   ).createOptionsTree();
-  const initialFilters = FireteamFilterManager.createInitialFilters(
-    browseFilterDefinitionTree,
-    selectorFilterTypes
-  );
-  const formMethods = useForm({ defaultValues: { ...initialFilters } });
 
   const loadFireteams = async () => {
     if (!account.selectedMembership || !account.selectedCharacterId) {
@@ -187,7 +182,6 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
         <FilterSection
           selectedActivity={selectedActivity}
           params={params}
-          formMethods={formMethods}
           handleSubmit={() => null}
           tagsProps={{
             definitions: props?.definitions,
@@ -202,7 +196,6 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
             selectedFilterHashes: params.filters,
             browseFilterDefinitionTree,
             selectorFilterTypes,
-            formMethods,
             handleUrlUpdate: (key, value) =>
               setParams({
                 ...params,

@@ -291,12 +291,13 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                 }
                 activityGraphId={props.activityGraphId}
               />
-              <Anchor
+              <Button
+                buttonType={"gold"}
                 className={styles.link}
                 url={RouteHelper.FireteamFinderCreateSelectActivity()}
               >
                 {Localizer.fireteams.Changeactivity}
-              </Anchor>
+              </Button>
             </div>
 
             <div className={classNames(styles.title, styles.section)}>

@@ -26,7 +26,6 @@ import { parseParams, SearchParams } from "../Helpers/Hooks";
 interface FilterSectionProps {
   selectedActivity?: string;
   params: SearchParams;
-  formMethods: UseFormReturn;
   handleSubmit: (data: FieldValues) => void;
   tagsProps: {
     definitions: Pick<
@@ -41,7 +40,6 @@ interface FilterSectionProps {
     browseFilterDefinitionTree: any;
     selectedFilterHashes: Record<string, string>;
     selectorFilterTypes: any;
-    formMethods: UseFormReturn;
     handleUrlUpdate: (key: string, value: string) => void;
   };
 }
@@ -49,7 +47,6 @@ interface FilterSectionProps {
 const FilterSection: FC<FilterSectionProps> = ({
   params,
   selectedActivity,
-  formMethods,
   handleSubmit,
   optionsProps,
   tagsProps,
@@ -66,21 +63,19 @@ const FilterSection: FC<FilterSectionProps> = ({
       parseParams(params).toString(),
   };
   const Filters: FC = () => (
-    <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(handleSubmit)}>
-        <div className={styles.buttonContainer}>
-          <Button buttonType={"white"} url={link}>
-            {selectedActivity
-              ? Localizer.Fireteams.SelectActivity
-              : Localizer.Fireteams.AllActivities}
-          </Button>
-        </div>
-        <CharacterSelect />
-        <div className={styles.title}>{Localizer.Fireteams.filters}</div>
-        <FilterFireteamOptions {...optionsProps} />
-        <FilterFireteamTags {...tagsProps} />
-      </form>
-    </FormProvider>
+    <form onSubmit={handleSubmit}>
+      <div className={styles.buttonContainer}>
+        <Button buttonType={"white"} url={link}>
+          {selectedActivity
+            ? Localizer.Fireteams.SelectActivity
+            : Localizer.Fireteams.AllActivities}
+        </Button>
+      </div>
+      <CharacterSelect />
+      <div className={styles.title}>{Localizer.Fireteams.filters}</div>
+      <FilterFireteamOptions {...optionsProps} />
+      <FilterFireteamTags {...tagsProps} />
+    </form>
   );
 
   return isMobile ? (

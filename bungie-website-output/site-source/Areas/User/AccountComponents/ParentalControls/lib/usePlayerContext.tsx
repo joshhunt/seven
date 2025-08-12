@@ -19,6 +19,7 @@ import {
 } from "@Enum";
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
+import { useLocation } from "react-router-dom";
 
 type Child = PnP.GetPlayerContextResponse["assignedChildren"][number];
 
@@ -65,6 +66,7 @@ export function usePlayerContext() {
  * Called by the Provider, not directly by consumers.
  */
 function useProvidePlayerContext(membershipId: string): PlayerContextValue {
+  const search = useLocation().search;
   const [playerContext, setPlayerContext] = useState<
     PnP.GetPlayerContextResponse["playerContext"] | null
   >(null);
@@ -100,12 +102,34 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
     fetchContext();
   }, [fetchContext]);
 
+  const queryParams = new URLSearchParams(search);
+
+  // The Kids Web Services (KWS) will redirect the user back to the parental controls page with these query params.
+  // If they are present then we must attempt to assign the parent/guardian to the child.
+  const statusFromKws = queryParams.get("status");
+  const payloadFromKws = queryParams.get("externalPayload");
+  const signatureFromKws = queryParams.get("signature");
+  useEffect(() => {
+    const assignChild = async () => {
+      await Platform.PnpService.SetParentOrGuardianAsAssignedForChild({
+        status: statusFromKws,
+        externalPayload: payloadFromKws,
+        signature: signatureFromKws,
+      });
+      await fetchContext();
+    };
+
+    if (!statusFromKws || !payloadFromKws || !signatureFromKws) {
+      return;
+    }
+    assignChild();
+  }, [statusFromKws, payloadFromKws, signatureFromKws]);
+
   /**
    * pendingChildId
    * The encoded ID that is being stored in the browser or in a cookie.
    */
-  const url = new URL(window.location.href);
-  const requestingChildIdfromParam = url.searchParams.get("playerId");
+  const requestingChildIdfromParam = queryParams.get("playerId");
   const childIdCookie = cookie.get("playerId");
   const requestingChildId = childIdCookie ?? requestingChildIdfromParam;
   const hasPendingChild =

@@ -47,7 +47,7 @@ export class FireteamFilterManager {
     selectorFilterTypes: ValidFireteamFinderValueTypes[]
   ): Record<string, string> {
     // Set default values
-    const initialFilters = this.setDefaultFilterValues(
+    const initialFilters = this.getDefaultFilterValues(
       browseFilterDefinitionTree,
       selectorFilterTypes
     );
@@ -60,13 +60,13 @@ export class FireteamFilterManager {
     );
 
     // Apply URL parameters
-    return this.applyUrlParameters(initialFilters);
+    return initialFilters;
   }
 
   /**
    * Sets default filter values from the definition tree
    */
-  private static setDefaultFilterValues(
+  private static getDefaultFilterValues(
     browseFilterDefinitionTree: Record<string, IOptionCategory>,
     selectorFilterTypes: ValidFireteamFinderValueTypes[]
   ): Record<string, string> {
@@ -226,7 +226,7 @@ export class FireteamFilterManager {
     browseFilterDefinitionTree: Record<string, IOptionCategory>,
     selectorFilterTypes: ValidFireteamFinderValueTypes[]
   ): Record<string, string> {
-    const defaultFilters = this.setDefaultFilterValues(
+    const defaultFilters = this.getDefaultFilterValues(
       browseFilterDefinitionTree,
       selectorFilterTypes
     );

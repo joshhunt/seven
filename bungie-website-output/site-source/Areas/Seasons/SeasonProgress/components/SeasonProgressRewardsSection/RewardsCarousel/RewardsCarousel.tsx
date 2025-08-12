@@ -190,9 +190,7 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
   // Handle error states
   if (destinyAccount.status === "failed") {
     return (
-      <div className={styles.errorState}>
-        Error loading Destiny account data: {destinyAccount.error}
-      </div>
+      <div>Error loading Destiny account data: {destinyAccount.error}</div>
     );
   }
 

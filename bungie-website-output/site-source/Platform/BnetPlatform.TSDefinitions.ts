@@ -1649,6 +1649,10 @@ export declare namespace DestinyDefinitions {
 
     isFeaturedItem: boolean;
 
+    isHolofoil: boolean;
+
+    isAdept: boolean;
+
     screenshot: string;
 
     itemTypeName: string;
@@ -4091,6 +4095,10 @@ export declare namespace DestinyDefinitions {
 
     destinyRewardPassRankSealImages: DestinyRewardPassRankSealImages;
 
+    armorArchetypePlugSetHash: number;
+
+    featuredItemsListHash: number;
+
     boundToRelease: string;
 
     hash: number;
@@ -6039,7 +6047,7 @@ export declare namespace DestinyDefinitions {
   }
 
   export interface DestinyItemFilterDefinition {
-    setItems: number[];
+    allowedItems: number[];
 
     boundToRelease: string;
 

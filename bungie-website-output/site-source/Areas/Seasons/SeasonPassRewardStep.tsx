@@ -42,19 +42,19 @@ interface ISeasonPassRewardStepProps {
   claimedReward: IClaimedReward;
   onMouseOver: (title: string, desc: string, className: string) => void;
   onMouseLeave: () => void;
+  characterSeasonalOverrideStates?: CharacterOverrideStateProps;
+  isCurrentSeason: boolean;
+  hasReachedStep: (i: number) => boolean;
+  ownsPremium: boolean;
+  freeCompleteState: CompleteState;
+  premiumCompleteState: CompleteState;
+  rewardStates: DestinyProgressionRewardItemState[];
+  xpProgressToNextStep?: number;
   handleClaimingClick?: (
     itemHash: number,
     rewardIndex: number,
     canClaim: boolean
   ) => void;
-  characterSeasonalOverrideStates?: CharacterOverrideStateProps;
-  isCurrentSeason: boolean;
-  hasReachedStep: boolean;
-  ownsPremium: boolean;
-  progressToNextStepScaled?: number;
-  freeCompleteState: CompleteState;
-  premiumCompleteState: CompleteState;
-  rewardStates: DestinyProgressionRewardItemState[];
 }
 
 interface ISeasonPassRewardStepState {
@@ -100,7 +100,7 @@ export class SeasonPassRewardStep extends React.Component<
       rewardStates,
       characterSeasonalOverrideStates,
       isCurrentSeason,
-      progressToNextStepScaled,
+      xpProgressToNextStep,
       freeCompleteState,
       premiumCompleteState,
       hasReachedStep,
@@ -201,13 +201,17 @@ export class SeasonPassRewardStep extends React.Component<
               <div className={styles.progressionPipContainer}>
                 {Array.from({ length: 5 }, (_, index) => {
                   const pipThreshold = (index + 1) / 5;
-                  const isCompleted = progressToNextStepScaled >= pipThreshold;
-
+                  const stepCompleted = hasReachedStep(stepIndex);
+                  const xpPerStep =
+                    progressionDef?.steps?.[stepIndex]?.progressTotal;
+                  const pipCompleted =
+                    hasReachedStep(stepIndex - 1) &&
+                    xpProgressToNextStep / xpPerStep >= pipThreshold;
                   return (
                     <div
                       key={index}
                       className={classNames(styles.miniProgressionPip, {
-                        [styles.completed]: isCompleted,
+                        [styles.completed]: stepCompleted || pipCompleted,
                       })}
                     />
                   );
