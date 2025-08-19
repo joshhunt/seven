@@ -18433,6 +18433,13 @@ export declare namespace HistoricalStats {
 		Collection of stats for the player in this activity.
 		*/
     values: { [key: string]: HistoricalStats.DestinyHistoricalStatsValue };
+
+    /**
+		Collection of stats from the player scoreboard in this activity.
+		*/
+    scoreboardValues: {
+      [key: string]: HistoricalStats.DestinyHistoricalStatsValue;
+    };
   }
 
   export interface DestinyHistoricalWeaponStats {
@@ -20702,6 +20709,9 @@ export declare namespace PnP {
 		*/
     externalPayload: string;
 
+    /**
+		The unique signature provided by KWS.
+		*/
     signature: string;
   }
 

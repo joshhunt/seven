@@ -4095,6 +4095,8 @@ export declare namespace DestinyDefinitions {
 
     destinyRewardPassRankSealImages: DestinyRewardPassRankSealImages;
 
+    destinySeasonalHubRankIconImages: DestinySeasonalHubRankIconImages;
+
     armorArchetypePlugSetHash: number;
 
     featuredItemsListHash: number;
@@ -4142,6 +4144,14 @@ export declare namespace DestinyDefinitions {
     rewardPassRankSealPrestigeImagePath: string;
 
     rewardPassRankSealPremiumPrestigeImagePath: string;
+  }
+
+  export interface DestinySeasonalHubRankIconImages {
+    seasonalHubRankIconUnearned: string;
+
+    seasonalHubRankIconEarning: string;
+
+    seasonalHubRankIconActive: string;
   }
 
   export interface DateRange {

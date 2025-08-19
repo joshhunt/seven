@@ -1466,7 +1466,7 @@ export enum PhoneValidationStatusEnum {
 
 /**
 	This is the Bungie.net version Bungie.SharedDefinitions.Network.AgeGateFeatures.
-	It should match it exactly.  It exists to make sure we're not exposing SharedDefinition interals to the outside world.
+	It should match it exactly.  It exists to make sure we're not exposing SharedDefinition internals to the outside world.
 	*/
 export enum BungieAgeGateFeatures {
   None = 0,
@@ -1479,6 +1479,13 @@ export enum BungieAgeGateFeatures {
   CharacterSelectOffers = 64,
   TextChatEnabledByDefault = 128,
   VoiceChatEnabledByDefault = 256,
+  CrewVisible = 512,
+  CrewInvitesReceive = 1024,
+  CrewInvitesSend = 2048,
+  FriendRequestsReceive = 4096,
+  FriendRequestsSend = 8192,
+  PlatformNamesVisible = 16384,
+  InviteNotifications = 32768,
 }
 
 export enum GlobalAcknowledgementItem {

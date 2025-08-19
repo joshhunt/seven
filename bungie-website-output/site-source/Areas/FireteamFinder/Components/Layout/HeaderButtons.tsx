@@ -15,7 +15,6 @@ import {
   DestinyFireteamFinderApplicationType,
   DestinyFireteamFinderLobbyState,
 } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { FireteamFinder, Platform } from "@Platform";
 import { FaPlus } from "@react-icons/all-files/fa/FaPlus";
 import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
@@ -32,9 +31,7 @@ import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { Toast } from "@UIKit/Controls/Toast/Toast";
 import React, { useContext, useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
-import modalStyles from "../Dashboard/CharacterSelect/CharacterSelect.module.scss";
 import styles from "./HeaderButtons.module.scss";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 
 export type ButtonConfiguration =
   | "none"
@@ -275,7 +272,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
 
   const CharacterModal: React.FC = () => {
     return (
-      <div className={modalStyles.selectModalWrapper}>
+      <div className={styles.selectModalWrapper}>
         <DestinyAccountWrapper
           membershipDataStore={FireteamsDestinyMembershipDataStore}
           showCrossSaveBanner={false}
@@ -283,9 +280,7 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
           {({ platformSelector, characterCardSelector }: IAccountFeatures) => (
             <div>
               {platformSelector}
-              <div className={modalStyles.cardWrapper}>
-                {characterCardSelector}
-              </div>
+              <div className={styles.cardWrapper}>{characterCardSelector}</div>
             </div>
           )}
         </DestinyAccountWrapper>
