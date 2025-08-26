@@ -37,59 +37,67 @@ const RankSigil: React.FC<RankSigilProps> = ({ seasonUtilArgs }) => {
   const [characterProgressions, setCharacterProgressions] = useState<
     Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
   >();
+  const [
+    profileRecords,
+    setProfileRecords,
+  ] = useState<Components.SingleComponentResponseDestinyProfileRecordsComponent | null>(
+    null
+  );
 
   const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
 
   useEffect(() => {
-    if (!destiny2Disabled && selectedMembership && selectedCharacter) {
-      Platform.Destiny2Service.GetProfile(
-        selectedMembership.membershipType,
-        selectedMembership.membershipId,
-        [DestinyComponentType.CharacterProgressions]
-      )
-        .then((data) => {
-          setCharacterProgressions(data?.characterProgressions);
+    if (!destiny2Disabled && selectedCharacter) {
+      // Use the character's platform information, not the selected membership
+      // This is important when showing all platform characters where the selected character
+      // might be from a different platform than the selected membership
+      const membershipType = selectedCharacter.membershipType;
+      const membershipId = selectedCharacter.characterData.membershipId;
+
+      Promise.all([
+        Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
+          DestinyComponentType.CharacterProgressions,
+        ]),
+        Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
+          DestinyComponentType.Records,
+        ]),
+      ])
+        .then(([progressionsResponse, recordsResponse]) => {
+          setCharacterProgressions(progressionsResponse?.characterProgressions);
+          setProfileRecords(recordsResponse?.profileRecords);
         })
         .catch(ConvertToPlatformError)
         .catch((e: PlatformError) => {
-          // don't do anything, we already pop a lot of modals, they'll know if they see no characters on an account
+          console.error("Error loading profile data:", e);
         });
     }
-  }, [
-    globalState.loggedInUser,
-    selectedMembership,
-    selectedCharacter,
-    destiny2Disabled,
-  ]);
+  }, [selectedCharacter, destiny2Disabled]);
 
   const seasonPassDef = SeasonProgressUtils?.getCurrentSeasonPass(
     seasonUtilArgs
   );
 
   const getProgression = (hash: number) => {
-    if (!selectedCharacter?.id || !characterProgressions?.data) {
+    if (!characterProgressions?.data) {
       return undefined;
     }
-    return characterProgressions.data[selectedCharacter.id]?.progressions?.[
-      hash
-    ];
+
+    // Get progression from the first available character (they should all have the same seasonal progression)
+    const characterIds = Object.keys(characterProgressions.data);
+    if (characterIds.length === 0) {
+      return undefined;
+    }
+
+    // Use the first character's progressions (seasonal progress is account-wide)
+    const firstCharacterId = characterIds[0];
+    return characterProgressions.data[firstCharacterId]?.progressions?.[hash];
   };
 
   const characterSeasonPassRewardProgression = getProgression(
     seasonPassDef?.rewardProgressionHash
   );
-
-  const prestigeProgression =
-    characterSeasonPassRewardProgression?.level > 0
-      ? getProgression(seasonPassDef?.prestigeProgressionHash)
-      : undefined;
-
-  const characterSeasonPassProgression =
-    prestigeProgression?.level > 0
-      ? prestigeProgression
-      : characterSeasonPassRewardProgression;
-
-  const isPrestige = prestigeProgression?.level > 0;
+  // Always show base seasonal progression (current season cap varies), never add prestige levels
+  const currentProgressionLevel = characterSeasonPassRewardProgression?.level;
 
   function parseRankTemplate(template: string, level: number) {
     const beforeLevel = template.split("{characterSeasonProgressionLevel}")[0];
@@ -101,12 +109,16 @@ const RankSigil: React.FC<RankSigilProps> = ({ seasonUtilArgs }) => {
   }
 
   const template = Localizer.Seasons.RankCharacterseasonprogressionlevel;
-  const level = characterSeasonPassProgression?.level;
+  const level = currentProgressionLevel;
   const { word, number } = parseRankTemplate(template, level);
-  const premiumPassOwnershipStatus = SeasonProgressUtils?.getSigilVersion(
-    seasonUtilArgs,
-    characterProgressions
-  );
+  const premiumPassOwnershipStatus = characterProgressions
+    ? SeasonProgressUtils?.getSigilVersion(
+        seasonUtilArgs,
+        characterProgressions,
+        undefined,
+        profileRecords
+      )
+    : "base";
 
   return (
     <>

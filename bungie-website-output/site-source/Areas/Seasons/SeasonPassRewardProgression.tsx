@@ -22,8 +22,8 @@ import * as React from "react";
 import styles from "./SeasonPassRewardProgression.module.scss";
 import {
   CharacterClass,
-  SeasonPassRewardStep,
   CompleteState,
+  SeasonPassRewardStep,
 } from "./SeasonPassRewardStep";
 
 // Required props
@@ -105,30 +105,50 @@ class SeasonPassRewardProgression extends React.Component<
         ? this.getCharacterClass(characterClassHash)
         : CharacterClass.Hunter;
     const slidesPer = globalState.responsive.mobile ? 5 : 10;
-    const maxActRankCount = getActiveActsRankCount(seasonDef.acts);
+    // For current season without acts, show all progression steps
+    const isCurrentSeason =
+      seasonHash ===
+      globalState.coreSettings?.destiny2CoreSettings?.currentSeasonHash;
+    const maxActRankCount = getActiveActsRankCount(
+      seasonDef.acts,
+      isCurrentSeason
+    );
 
     const characterSeasonalOverrideStates =
       characterSeasonalProgress &&
       characterSeasonalProgress.rewardItemSocketOverrideStates;
 
     function getActiveActsRankCount(
-      acts: DestinyDefinitions.DestinySeasonActDefinition[]
+      acts: DestinyDefinitions.DestinySeasonActDefinition[],
+      isCurrentSeason: boolean
     ) {
-      var rankCount = rewardsDef?.steps?.length;
-      const actCount = acts?.length;
-      if (acts && actCount && actCount > 0) {
-        rankCount = 0;
-        var actIndex = 0;
-        const currentDateTime = new Date();
-        do {
-          rankCount += acts[actIndex].rankCount;
-          actIndex += 1;
-        } while (
-          actIndex < actCount &&
-          new Date(acts[actIndex].startTime) <= currentDateTime
-        );
+      const totalSteps = rewardsDef?.steps?.length || 0;
+      const actCount = acts?.length || 0;
+
+      // If no acts exist, return all available progression steps
+      if (actCount === 0) {
+        return totalSteps;
       }
-      return rankCount;
+
+      // For seasons with acts, calculate available ranks based on act timing
+      let rankCount = 0;
+      const currentDateTime = new Date();
+
+      for (let actIndex = 0; actIndex < actCount; actIndex++) {
+        const act = acts[actIndex];
+        const actStartTime = new Date(act.startTime);
+
+        // For current season, include all acts regardless of timing to allow progression
+        // For previous seasons, only include acts that have started
+        if (isCurrentSeason || actStartTime <= currentDateTime) {
+          rankCount += act.rankCount;
+        } else {
+          break;
+        }
+      }
+
+      // Ensure we don't exceed total available steps
+      return Math.min(rankCount, totalSteps);
     }
 
     const adjustedSteps = rewardsDef.steps.filter((value, index) => {
@@ -174,20 +194,20 @@ class SeasonPassRewardProgression extends React.Component<
     };
 
     // ----- PREMIUM PASS OWNERSHIP DETECTION -----
+    // Use the original method of checking premium reward states since ownershipUnlockFlagHash is 0 in client data
     let ownsPremium = false;
     if (hasCharacterProgression && characterSeasonalProgress.level > 0) {
-      // Only check premium at current (earned) level, level-1 for 0-based steps
-      const premiumIdx = getRewardIndex(
+      // Check premium reward at current level to see if user has premium access
+      const currentLevelIndex = Math.min(
         characterSeasonalProgress.level - 1,
-        "premium"
+        adjustedSteps.length - 1
       );
-      const premiumState = getRewardState(premiumIdx);
-      if (
-        (premiumState & DestinyProgressionRewardItemState.ClaimAllowed) !==
-        0
-      ) {
-        ownsPremium = true;
-      }
+      const premiumIndex = getRewardIndex(currentLevelIndex, "premium");
+      const premiumState = getRewardState(premiumIndex);
+      // If premium reward at current level has ClaimAllowed flag, user owns premium
+      ownsPremium =
+        (premiumState & DestinyProgressionRewardItemState.ClaimAllowed) !== 0 ||
+        (premiumState & DestinyProgressionRewardItemState.Claimed) !== 0;
     }
 
     const steps = adjustedSteps.map((step, i) => {
@@ -204,9 +224,6 @@ class SeasonPassRewardProgression extends React.Component<
       const rewardItemStates = hasCharacterProgression
         ? characterSeasonalProgress.rewardItemStates
         : [];
-      const isCurrentSeason =
-        seasonHash ===
-        globalState.coreSettings.destiny2CoreSettings.currentSeasonHash;
 
       return (
         <SeasonPassRewardStep

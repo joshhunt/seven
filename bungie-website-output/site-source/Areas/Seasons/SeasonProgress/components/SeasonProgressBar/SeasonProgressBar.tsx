@@ -9,7 +9,6 @@ import React from "react";
 
 interface SeasonProgressBarProps {
   characterSeasonProgression: World.DestinyProgression;
-  isPrestige: boolean;
   className?: string;
 }
 
@@ -21,9 +20,8 @@ const SeasonProgressBar: React.FC<SeasonProgressBarProps> = (props) => {
   const rankLabel = Localizer.Format(
     Localizer.Seasons.RankCharacterseasonprogressionlevel,
     {
-      characterSeasonProgressionLevel: props.isPrestige
-        ? props.characterSeasonProgression.level + 100
-        : props.characterSeasonProgression.level,
+      // Always show base seasonal progression level (current season cap varies), ignore prestige
+      characterSeasonProgressionLevel: props.characterSeasonProgression.level,
     }
   );
   const progressLabel = `${props.characterSeasonProgression.progressToNextLevel.toLocaleString()}/${props.characterSeasonProgression.nextLevelAt.toLocaleString()}`;

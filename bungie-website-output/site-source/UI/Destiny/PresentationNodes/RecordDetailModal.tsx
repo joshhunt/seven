@@ -223,7 +223,10 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
           const objectiveDef = props.definitions.DestinyObjectiveDefinition.get(
             o.objectiveHash
           );
-
+          const description = PresentationNodeUtils.SanitizeRecordDescription(
+            objectiveDef.progressDescription,
+            profileStringVariables
+          );
           if (
             PresentationNodeUtils.ShowProgressBarForSingleObjective(
               o,
@@ -241,7 +244,7 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
                     (o.progress / objectiveDef.completionValue) * 100
                   }
                   showText={true}
-                  description={objectiveDef.progressDescription}
+                  description={description}
                   customText={""}
                 />
               </div>
@@ -267,6 +270,10 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
             interval.intervalRewards?.[index].intervalRewardItems;
 
           const intervalCompleted = o.progress >= objectiveDef.completionValue;
+          const description = PresentationNodeUtils.SanitizeRecordDescription(
+            objectiveDef.progressDescription,
+            profileStringVariables
+          );
 
           if (
             PresentationNodeUtils.ShowProgressBarForSingleObjective(
@@ -286,7 +293,7 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = (props) => {
                       (o.progress / objectiveDef.completionValue) * 100
                     }
                     showText={true}
-                    description={objectiveDef.progressDescription}
+                    description={description}
                     customText={""}
                   />
                 ) : intervalRewards && intervalRewards?.length ? (

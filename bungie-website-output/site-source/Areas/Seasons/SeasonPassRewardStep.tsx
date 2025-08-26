@@ -6,8 +6,7 @@ import { DefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefi
 import { DestinyDefinitions } from "@Definitions";
 import { DestinyProgressionRewardItemState, ItemState } from "@Enum";
 import DestinyCollectibleDetailItemModalContent from "@UI/Destiny/DestinyCollectibleDetailItemContent";
-import { FaLock } from "react-icons/fa";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { FaLock, FaCheck } from "react-icons/fa";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
@@ -192,7 +191,12 @@ export class SeasonPassRewardStep extends React.Component<
 
     return (
       <React.Fragment>
-        <div className={styles.step} data-testid="season-pass-step">
+        <div
+          className={classNames(styles.step, {
+            [styles.stepCompleted]: hasReachedStep(stepIndex),
+          })}
+          data-testid="season-pass-step"
+        >
           {displayedStepNumber > 100 &&
           displayedStepNumber <= 110 &&
           this.props.isCurrentSeason ? (
@@ -221,7 +225,7 @@ export class SeasonPassRewardStep extends React.Component<
           ) : (
             <div
               className={classNames(styles.progressionPip, {
-                [styles.completed]: hasReachedStep,
+                [styles.completed]: hasReachedStep(stepIndex),
               })}
             >
               {displayedStepNumber}
@@ -270,6 +274,7 @@ export class SeasonPassRewardStep extends React.Component<
     rewardState: DestinyProgressionRewardItemState
   ): boolean {
     return (
+      (rewardState & DestinyProgressionRewardItemState.Earned) !== 0 &&
       (rewardState & DestinyProgressionRewardItemState.ClaimAllowed) !== 0 &&
       (rewardState & DestinyProgressionRewardItemState.Claimed) === 0
     );
@@ -336,12 +341,7 @@ export class SeasonPassRewardStep extends React.Component<
         )}
 
         {isClaimed && (
-          <Icon
-            className={styles.checkIcon}
-            iconType={"fa"}
-            iconName={"check"}
-            data-testid="check-icon"
-          />
+          <FaCheck className={styles.checkIcon} data-testid="check-icon" />
         )}
         {itemDefined && (
           <div
@@ -387,7 +387,10 @@ export class SeasonPassRewardStep extends React.Component<
   private async openItemDetailModal(itemHash: number) {
     Modal.open(
       <>
-        <DestinyCollectibleDetailItemModalContent itemHash={itemHash} />
+        <DestinyCollectibleDetailItemModalContent
+          itemHash={itemHash}
+          key={itemHash}
+        />
       </>,
       {
         className: seasonItemModalStyles.seasonItemModal,

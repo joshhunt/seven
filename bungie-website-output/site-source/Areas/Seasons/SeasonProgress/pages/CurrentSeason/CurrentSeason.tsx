@@ -6,7 +6,6 @@ import { SeasonProgressLayout } from "@Areas/Seasons/SeasonProgress/components/S
 import RewardsCarousel from "@Areas/Seasons/SeasonProgress/components/SeasonProgressRewardsSection/RewardsCarousel/RewardsCarousel";
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonProgress/constants/SeasonsDefinitions";
 import SeasonProgressUtils from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
-import Season from "@Areas/User/ProfileComponents/Season";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
@@ -46,6 +45,8 @@ const CurrentSeason: React.FC<ICurrentSeasonProps> = (
     "loggedInUser",
     "coreSettings",
   ]);
+  const destinyAccount = useAppSelector(selectDestinyAccount);
+  const dispatch = useAppDispatch();
 
   /* Season definitions */
   const seasonHash =
@@ -70,7 +71,7 @@ const CurrentSeason: React.FC<ICurrentSeasonProps> = (
 
       <RewardsCarousel
         seasonHash={seasonHash}
-        seasonPashHash={seasonPassHash}
+        seasonPassHash={seasonPassHash}
       />
     </SeasonProgressLayout>
   );

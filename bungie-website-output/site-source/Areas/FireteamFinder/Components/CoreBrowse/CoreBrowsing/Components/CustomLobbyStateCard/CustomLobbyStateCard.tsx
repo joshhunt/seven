@@ -8,6 +8,7 @@ import {
 import styles from "./CustomLobbyStateCard.module.scss";
 import { DestinyFireteamFinderLobbyState } from "@Enum";
 import FireteamListingCard from "../FireteamListingCard/FireteamListingCard";
+import NoFireteamsFound from "../NoFireteamsFound/NoFireteamsFound";
 
 interface CustomLobbyStateCardProps
   extends D2DatabaseComponentProps<
@@ -28,11 +29,7 @@ const CustomLobbyStateCard: React.FC<CustomLobbyStateCardProps> = ({
       <span className={styles.sectionHeader}>
         {Localizer.Fireteams.PlayingNow}
       </span>
-      {activeFireteams.length === 0 && (
-        <div className={styles.empty}>
-          <p>{Localizer.Fireteams.PlayingNowEmpty}</p>
-        </div>
-      )}
+      {activeFireteams.length === 0 && <NoFireteamsFound small />}
       <div>
         {activeFireteams.map((ft) => (
           <FireteamListingCard
@@ -48,11 +45,7 @@ const CustomLobbyStateCard: React.FC<CustomLobbyStateCardProps> = ({
       <span className={styles.sectionHeader}>
         {Localizer.Fireteams.ScheduledFireteams}
       </span>
-      {scheduledFireteams.length === 0 && (
-        <div className={styles.empty}>
-          <p>{Localizer.Fireteams.ScheduledFireteamsEmpty}</p>
-        </div>
-      )}
+      {scheduledFireteams.length === 0 && <NoFireteamsFound small />}
       <div>
         {scheduledFireteams.map((ft) => (
           <FireteamListingCard

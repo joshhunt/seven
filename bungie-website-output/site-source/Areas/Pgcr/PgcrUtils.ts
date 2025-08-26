@@ -91,7 +91,8 @@ export class PgcrUtils {
     const isValidStat = (statName: string) => {
       return (
         Object.keys(entries[0]?.values).includes(statName) ||
-        Object.keys(entries[0]?.extended?.values).includes(statName)
+        Object.keys(entries[0]?.extended?.values).includes(statName) ||
+        Object.keys(entries[0]?.extended?.scoreboardValues).includes(statName)
       );
     };
 
@@ -134,6 +135,12 @@ export class PgcrUtils {
 
         if (entry?.extended?.values !== null) {
           extendedStatsFilter.push(...Object.keys(entry?.extended.values));
+        }
+
+        if (entry?.extended?.scoreboardValues !== null) {
+          extendedStatsFilter.push(
+            ...Object.keys(entry?.extended.scoreboardValues)
+          );
         }
       });
     }
@@ -207,7 +214,10 @@ export class PgcrUtils {
 
         filteredRelevantExtendedStats.forEach((statName) => {
           const stat: PgcrStat = {
-            value: entry?.extended.values[statName].basic.displayValue,
+            value:
+              entry?.extended?.scoreboardValues?.[statName]?.basic
+                ?.displayValue ??
+              entry?.extended.values[statName].basic.displayValue,
             name: statName,
           };
 

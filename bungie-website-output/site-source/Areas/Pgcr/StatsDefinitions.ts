@@ -31,6 +31,7 @@ class _StatsDefinitions {
   public readonly pvpStatIds = ["opponentsDefeated", "efficiency"];
 
   public readonly pvpExtendedStatIds = [
+    "player_score",
     "controlZonesCaptured",
     //"controlZonesNeutralized",
     //"supremacyCrestsSecured",

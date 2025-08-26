@@ -85,6 +85,7 @@ const CharacterSelect: React.FC<CharacterSelectProps> = (props) => {
   return (
     <div className={styles.characterSelectorWrapper}>
       <button
+        type="button"
         className={styles.buttonWrapper}
         onClick={() => onClickCharacterEdit()}
       >

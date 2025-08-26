@@ -6,6 +6,7 @@ import styles from "./SeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 interface ISeasonCarouselProps {
   children: React.ReactNode[];
@@ -125,7 +126,7 @@ export class SeasonCarousel extends React.Component<
             onClick={() => this.prevSlide()}
             buttonType={position === 0 ? "disabled" : "white"}
           >
-            <Icon iconType={"material"} iconName={"arrow_left"} />
+            <IoChevronBack />
           </Button>
           <Wrapper showProgress={showProgress}>
             <CarouselContainer
@@ -149,7 +150,7 @@ export class SeasonCarousel extends React.Component<
             onClick={() => this.nextSlide()}
             buttonType={position === children.length - 1 ? "disabled" : "white"}
           >
-            <Icon iconType={"material"} iconName={"arrow_right"} />
+            <IoChevronForward />
           </Button>
         </div>
         {bottomLabel && bottomLabel}

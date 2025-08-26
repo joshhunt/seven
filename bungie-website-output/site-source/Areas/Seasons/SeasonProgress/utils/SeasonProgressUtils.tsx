@@ -1,10 +1,7 @@
-import styles from "@Areas/Seasons/SeasonProgress/components/SeasonHeaderLayout/RankSigil/RankSigil.module.scss";
 import { AllDefinitionsFetcherized } from "@Database/DestinyDefinitions/DestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
-import { BungieMembershipType, DestinyProgressionRewardItemState } from "@Enum";
-import { Characters, Components, World } from "@Platform";
-import { DateTime } from "luxon";
-import React from "react";
+import { DestinyProgressionRewardItemState, DestinyRecordState } from "@Enum";
+import { Characters, Components } from "@Platform";
 
 export interface ISeasonUtilArgs {
   seasonHash: number;
@@ -19,72 +16,12 @@ export interface ISeasonUtilArgs {
 }
 
 export default class SeasonProgressUtils {
-  public static getUnclaimedRewards(
-    seasonUtilArgs: ISeasonUtilArgs,
-    characterProgressions: { [key: number]: World.DestinyProgression },
-    characterId: string,
-    membershipType: BungieMembershipType
-  ) {
-    const { seasonHash, definitions } = seasonUtilArgs;
-
-    if (
-      typeof characterProgressions === "undefined" ||
-      typeof characterId === "undefined" ||
-      typeof membershipType === "undefined"
-    ) {
-      return;
-    }
-
-    const seasonPassReference = this.getCurrentSeasonPass(seasonUtilArgs);
-    // this is the season pass definition
-    const seasonPassDef = definitions.DestinySeasonPassDefinition.get(
-      seasonPassReference?.rewardProgressionHash
-    );
-    const progression =
-      characterProgressions[seasonPassDef?.rewardProgressionHash];
-
-    const rewardsDef = definitions.DestinyProgressionDefinition.get(
-      seasonPassDef.rewardProgressionHash
-    );
-    if (!rewardsDef) {
-      return null;
-    }
-    const unclaimedRewards = rewardsDef.rewardItems.filter(
-      (
-        value: DestinyDefinitions.DestinyProgressionRewardItemQuantity,
-        index: number
-      ) => {
-        const rewardItemState = progression.rewardItemStates[index];
-
-        if (
-          rewardItemState & DestinyProgressionRewardItemState.Earned &&
-          rewardItemState & DestinyProgressionRewardItemState.ClaimAllowed &&
-          (rewardItemState & DestinyProgressionRewardItemState.Claimed) === 0 &&
-          (rewardItemState & DestinyProgressionRewardItemState.Invisible) === 0
-        ) {
-          const rewardItemDef = definitions.DestinyInventoryItemLiteDefinition.get(
-            value.itemHash
-          );
-
-          if (rewardItemDef.displayProperties) {
-            return value;
-          }
-        }
-      }
-    ).length;
-
-    if (unclaimedRewards > 0) {
-      return unclaimedRewards;
-    }
-  }
-
   public static getSigilVersion(
     seasonUtilArgs: ISeasonUtilArgs,
     characterProgressions: Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent,
-    characterId?: string
+    characterId?: string,
+    profileRecords?: Components.SingleComponentResponseDestinyProfileRecordsComponent
   ): "premium_over_100" | "premium" | "base_over_100" | "base" {
-    const { seasonHash, definitions } = seasonUtilArgs;
-
     if (typeof characterProgressions === "undefined") {
       return "base";
     }
@@ -104,7 +41,7 @@ export default class SeasonProgressUtils {
 
     const seasonPassDef = this.getCurrentSeasonPass(seasonUtilArgs);
     const progression =
-      targetCharacterProgression.progressions[
+      targetCharacterProgression.progressions?.[
         seasonPassDef?.rewardProgressionHash
       ];
 
@@ -112,25 +49,14 @@ export default class SeasonProgressUtils {
       return "base";
     }
 
-    // Check if user owns premium pass (account-wide) by looking at premium rewards
-    // Since the season pass is shared across characters, we only need to check one character
-    const premiumRewardIndices = [208, 88]; // Check in order of preference
-    let ownsPremium = false;
+    // Check premium pass ownership using the unlock flag
+    const ownsPremium = this.checkPremiumPassOwnership(
+      seasonUtilArgs,
+      profileRecords
+    );
 
-    for (const rewardIndex of premiumRewardIndices) {
-      if (rewardIndex < progression.rewardItemStates.length) {
-        const rewardItemState = progression.rewardItemStates[rewardIndex];
-
-        // If ClaimAllowed is set, they own the premium pass (account-wide)
-        if (rewardItemState & DestinyProgressionRewardItemState.ClaimAllowed) {
-          ownsPremium = true;
-          break;
-        }
-      }
-    }
-
-    // Check if over level 100
-    const isOver100 = progression.level > 100;
+    // Check if at least level 100
+    const isOver100 = progression.level >= 100;
 
     // Determine sigil version based on ownership and level
     if (ownsPremium && isOver100) {
@@ -169,7 +95,10 @@ export default class SeasonProgressUtils {
     Object.entries(characterProgressions.data).forEach(
       (value: [string, Characters.DestinyCharacterProgressionComponent]) => {
         const progression =
-          value[1].progressions[seasonPassDef?.rewardProgressionHash];
+          value[1].progressions?.[seasonPassDef?.rewardProgressionHash];
+        if (!progression) {
+          return;
+        }
         const rewardsDef = definitions.DestinyProgressionDefinition.get(
           seasonPassDef.rewardProgressionHash
         );
@@ -214,6 +143,10 @@ export default class SeasonProgressUtils {
   public static getSeasonDefinition = (seasonUtilArgs: ISeasonUtilArgs) => {
     const { seasonHash, definitions } = seasonUtilArgs;
 
+    if (!definitions) {
+      return null;
+    }
+
     return definitions.DestinySeasonDefinition.get(seasonHash);
   };
 
@@ -233,7 +166,7 @@ export default class SeasonProgressUtils {
 
     const currentDate = new Date();
 
-    seasonDef.seasonPassList.forEach((seasonPass) => {
+    seasonDef?.seasonPassList.forEach((seasonPass) => {
       if (
         isDateInRange(
           currentDate,
@@ -260,6 +193,11 @@ export default class SeasonProgressUtils {
 
   public static getCurrentSeasonPass = (seasonUtilArgs: ISeasonUtilArgs) => {
     const { seasonHash, definitions } = seasonUtilArgs;
+
+    if (!definitions) {
+      return null;
+    }
+
     const seasonDef = this.getSeasonDefinition(seasonUtilArgs);
 
     const seasonPassReference =
@@ -276,6 +214,11 @@ export default class SeasonProgressUtils {
 
   public static getSeasonPassByHash = (seasonUtilArgs: ISeasonUtilArgs) => {
     const { seasonHash, definitions } = seasonUtilArgs;
+
+    if (!definitions) {
+      return null;
+    }
+
     const seasonDef = this.getSeasonDefinition(seasonUtilArgs);
 
     const seasonPassReference =
@@ -295,16 +238,60 @@ export default class SeasonProgressUtils {
     currentPass = true
   ) => {
     const { seasonHash, definitions } = seasonUtilArgs;
-    const seasonDef = this.getSeasonDefinition(seasonUtilArgs);
-    // if it is the current pass
 
+    if (!definitions) {
+      return null;
+    }
+
+    const seasonDef = this.getSeasonDefinition(seasonUtilArgs);
+
+    // Use seasonPassStartDate since seasonPassStartTime/startTimeInSeconds are coming through as 0
+    const currentDate = new Date();
     const seasonPassReference =
-      seasonDef?.seasonPassList?.find(
-        (seasonPass: any) =>
-          seasonPass?.startTimeInSeconds > 0 &&
-          seasonPass?.startTimeInSeconds <= Date.now()
-      ) ?? seasonDef?.seasonPassList[0];
+      seasonDef?.seasonPassList?.find((seasonPass: any) => {
+        if (!seasonPass?.seasonPassStartDate) return false;
+        const startDate = new Date(seasonPass.seasonPassStartDate);
+        const endDate = seasonPass.seasonPassEndDate
+          ? new Date(seasonPass.seasonPassEndDate)
+          : null;
+
+        // Check if current date is within the season pass period
+        const isActive =
+          startDate <= currentDate && (!endDate || currentDate <= endDate);
+        return isActive;
+      }) ?? seasonDef?.seasonPassList[0];
 
     return seasonPassReference?.ownershipUnlockFlagHash;
   };
+
+  /**
+   * Check if user owns premium pass by checking the ownership unlock flag
+   * This is the clean way to check premium ownership instead of checking individual reward states
+   */
+  public static checkPremiumPassOwnership(
+    seasonUtilArgs: ISeasonUtilArgs,
+    profileRecords?: Components.SingleComponentResponseDestinyProfileRecordsComponent
+  ): boolean {
+    const ownershipUnlockFlagHash = this.getPremiumPassOwnershipUnlockFlag(
+      seasonUtilArgs
+    );
+
+    if (!ownershipUnlockFlagHash || !profileRecords?.data) {
+      return false;
+    }
+
+    const recordState = (profileRecords.data as any).records[
+      ownershipUnlockFlagHash
+    ];
+    if (!recordState) {
+      return false;
+    }
+
+    // Check if the record is completed/redeemed (meaning they own the premium pass)
+    // A completed record means they have the unlock flag
+    return (
+      (recordState.state & DestinyRecordState.RecordRedeemed) !== 0 ||
+      recordState.state === 0
+    ); // No flags set means it could be redeemed (they have access)
+  }
 }

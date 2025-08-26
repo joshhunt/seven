@@ -46,6 +46,14 @@ export const PgcrLeaderStatItem: React.FC<PgcrLeaderStatItemProps> = (
       }
     }
 
+    if (!!entry?.extended?.scoreboardValues) {
+      const scoreboardVal = entry.extended.scoreboardValues[props.statId];
+      if (scoreboardVal && scoreboardVal?.basic?.value) {
+        statValNumber = scoreboardVal.basic.value;
+        statValue = scoreboardVal;
+      }
+    }
+
     if (statValNumber > leaderValueNumber) {
       leaderValue = statValue;
       leaderValueNumber = statValNumber;

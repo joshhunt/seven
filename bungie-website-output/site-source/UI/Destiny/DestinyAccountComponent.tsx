@@ -1,4 +1,3 @@
-import { Responsive } from "@Boot/Responsive";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
@@ -11,7 +10,7 @@ import { EnumMap } from "@Global/EnumMap";
 
 import {
   loadUserData,
-  selectCharactersForSelectedPlatform,
+  selectCharacters,
   selectDestinyAccount,
   selectIsCrossSaved,
   selectMembershipData,
@@ -22,6 +21,7 @@ import {
   selectStatus,
   updateCharacter,
   updatePlatform,
+  loadAllPlatformCharacters,
   MembershipCharacter,
   resetMembership,
   MembershipPair,
@@ -44,6 +44,7 @@ import { Alert, Select } from "plxp-web-ui/components/base";
 import React, { ReactNode, useEffect, useState } from "react";
 
 import styles from "./DestinyAccountComponent.module.scss";
+import { Responsive } from "@Boot/Responsive";
 
 // Character selector component with Destiny definitions
 interface CharacterSelectorProps
@@ -289,7 +290,9 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
   const membershipData = useAppSelector(selectMembershipData);
   const memberships = useAppSelector(selectMemberships);
   const selectedMembership = useAppSelector(selectSelectedMembership);
-  const characters = useAppSelector(selectCharactersForSelectedPlatform);
+  const characters = useAppSelector(
+    selectCharacters(showAllPlatformCharacters)
+  );
   const selectedCharacter = useAppSelector(selectSelectedCharacter);
   const selectedCharacterId = useAppSelector(selectSelectedCharacterId);
   const isCrossSaved = useAppSelector(selectIsCrossSaved);
@@ -308,6 +311,17 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
       dispatch(loadUserData({ membershipPair }));
     }
   }, [globalState?.loggedInUser?.user?.membershipId]);
+
+  // Load all platform characters when showAllPlatformCharacters is true and we have membership data
+  useEffect(() => {
+    if (
+      showAllPlatformCharacters &&
+      membershipData &&
+      characters.length === 0
+    ) {
+      dispatch(loadAllPlatformCharacters());
+    }
+  }, [showAllPlatformCharacters, membershipData, characters.length, dispatch]);
 
   // Handle platform change
   const handlePlatformChange = (value: string) => {

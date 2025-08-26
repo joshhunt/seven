@@ -40,12 +40,6 @@ const Season: React.FC<SeasonProps> = (props) => {
   }
 
   const seasonDef = definitions.DestinySeasonDefinition.get(seasonHash);
-  const seasonPassDef = definitions.DestinySeasonPassDefinition.get(
-    seasonDef.seasonPassHash
-  );
-  const seasonOnPage = SeasonsArray.find(
-    (season) => season.seasonNumber === seasonDef.seasonNumber
-  );
 
   const convertToDateFormat = (dateString: string) => {
     return DateTime.fromISO(dateString).toFormat("LLLL d");
@@ -58,21 +52,9 @@ const Season: React.FC<SeasonProps> = (props) => {
   const characterProgression =
     profileResponse.characterProgressions.data[characterComponent.characterId];
 
-  const characterSeasonPassRewardProgression =
-    characterProgression?.progressions?.[seasonDef.seasonPassProgressionHash];
-
-  const seasonProgression =
-    characterProgression?.progressions?.[seasonDef.seasonPassProgressionHash];
-  const prestigeProgression = seasonProgression?.level
-    ? characterProgression.progressions[seasonPassDef.prestigeProgressionHash]
-    : undefined;
-
+  // Always use the base seasonal progression (current season cap varies by season), ignore prestige levels
   const characterSeasonPassProgression =
-    typeof characterSeasonPassRewardProgression !== "undefined"
-      ? prestigeProgression?.level
-        ? prestigeProgression
-        : characterSeasonPassRewardProgression
-      : undefined;
+    characterProgression?.progressions?.[seasonDef.seasonPassProgressionHash];
 
   const seasonsDefinitionsBnet = SeasonsDefinitions.currentSeason;
 
@@ -92,10 +74,6 @@ const Season: React.FC<SeasonProps> = (props) => {
         <SeasonProgressBar
           className={styles.progressBar}
           characterSeasonProgression={characterSeasonPassProgression}
-          isPrestige={
-            typeof prestigeProgression !== "undefined" &&
-            prestigeProgression.level > 0
-          }
         />
       </div>
       <div className={styles.seasonalRanksContainer}>

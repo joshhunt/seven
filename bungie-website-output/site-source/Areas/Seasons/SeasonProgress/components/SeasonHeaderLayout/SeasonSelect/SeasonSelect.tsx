@@ -60,7 +60,7 @@ const SeasonSelect: React.FC<ISeasonSelectProps> = (props) => {
         label:
           SeasonsDefinitions?.previousSeason?.label ||
           SeasonsDefinitions?.previousSeason.title,
-        icon: <CurrentSeasonIcon width={"2rem"} height={"2rem"} />,
+        icon: <CurrentSeasonIcon width={"100%"} height={"100%"} />,
       },
       {
         value: "current",

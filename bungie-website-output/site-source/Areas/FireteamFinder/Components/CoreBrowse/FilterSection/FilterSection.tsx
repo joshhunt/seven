@@ -22,6 +22,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import styles from "./FilterSection.module.scss";
 import { parseParams, SearchParams } from "../Helpers/Hooks";
+import classNames from "classnames";
+import { CustomLobbyState } from "../Helpers/LobbyStateManager";
+import { EnumUtils } from "@Utilities/EnumUtils";
 
 interface FilterSectionProps {
   selectedActivity?: string;
@@ -43,7 +46,6 @@ interface FilterSectionProps {
     handleUrlUpdate: (key: string, value: string) => void;
   };
 }
-
 const FilterSection: FC<FilterSectionProps> = ({
   params,
   selectedActivity,
@@ -62,6 +64,14 @@ const FilterSection: FC<FilterSectionProps> = ({
       "?" +
       parseParams(params).toString(),
   };
+  const lobbyState = EnumUtils.getEnumValue(
+    params.lobbyState,
+    CustomLobbyState
+  );
+  // Filters are not supported when the user is viewing their clan or owned lobbies.
+  const disabled =
+    lobbyState === CustomLobbyState.Clan ||
+    lobbyState === CustomLobbyState.Mine;
   const Filters: FC = () => (
     <form onSubmit={handleSubmit}>
       <div className={styles.buttonContainer}>
@@ -73,8 +83,10 @@ const FilterSection: FC<FilterSectionProps> = ({
       </div>
       <CharacterSelect />
       <div className={styles.title}>{Localizer.Fireteams.filters}</div>
-      <FilterFireteamOptions {...optionsProps} />
-      <FilterFireteamTags {...tagsProps} />
+      <div className={classNames({ [styles.disabledWrapper]: disabled })}>
+        <FilterFireteamOptions {...optionsProps} />
+        <FilterFireteamTags {...tagsProps} />
+      </div>
     </form>
   );
 

@@ -28,6 +28,7 @@ export interface DestinyMembershipState {
   membershipData: User.UserMembershipData | null;
   selectedMembership: GroupsV2.GroupUserInfoCard | null;
   membershipCharacters: MembershipAndCharacters;
+  allPlatformCharacters: MembershipCharacter[];
   selectedPlatformId: string | undefined;
   selectedCharacterId: string | undefined;
   isCrossSaved: boolean;
@@ -343,6 +344,7 @@ const initialState: DestinyMembershipState = {
   membershipData: null,
   selectedMembership: null,
   membershipCharacters: { membershipId: "", characterList: [] },
+  allPlatformCharacters: [],
   selectedPlatformId: undefined,
   selectedCharacterId: undefined,
   isCrossSaved: false,
@@ -355,18 +357,31 @@ const destinyAccountSlice = createSlice({
   initialState,
   reducers: {
     updateCharacter: (state, action: PayloadAction<string>) => {
-      if (!state.membershipCharacters?.characterList || !action.payload) {
+      if (!action.payload) {
         return;
       }
-      const character = state.membershipCharacters.characterList.find(
+
+      // Look for the character in both single platform characters and all platform characters
+      const characterInSinglePlatform = state.membershipCharacters?.characterList?.find(
         (char) => char?.id === action.payload
       );
-      if (character) {
+
+      const characterInAllPlatforms = state.allPlatformCharacters?.find(
+        (char) => char?.id === action.payload
+      );
+
+      if (characterInSinglePlatform || characterInAllPlatforms) {
         state.selectedCharacterId = action.payload;
       }
     },
     resetMembership: () => {
       return initialState;
+    },
+    setAllPlatformCharacters: (
+      state,
+      action: PayloadAction<MembershipCharacter[]>
+    ) => {
+      state.allPlatformCharacters = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -431,11 +446,30 @@ const destinyAccountSlice = createSlice({
       .addCase(updatePlatform.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
+      })
+
+      .addCase(loadAllPlatformCharacters.fulfilled, (state, action) => {
+        state.allPlatformCharacters = action.payload;
+
+        // If no character is currently selected and we have characters from all platforms, select the first one
+        if (!state.selectedCharacterId && action.payload.length > 0) {
+          state.selectedCharacterId = action.payload[0].id;
+        }
+      })
+      .addCase(loadAllPlatformCharacters.rejected, (state, action) => {
+        console.error(
+          "Failed to load all platform characters:",
+          action.payload
+        );
       });
   },
 });
 
-export const { updateCharacter, resetMembership } = destinyAccountSlice.actions;
+export const {
+  updateCharacter,
+  resetMembership,
+  setAllPlatformCharacters,
+} = destinyAccountSlice.actions;
 
 // --- Selectors ---
 
@@ -487,23 +521,56 @@ export const selectCharactersForSelectedPlatform = (state: {
 };
 
 /**
+ * Selector that returns all characters from all platforms
+ */
+export const selectAllPlatformCharacters = (state: {
+  destinyAccount?: DestinyMembershipState;
+}): MembershipCharacter[] => {
+  return safeDestinyAccount(state).allPlatformCharacters || [];
+};
+
+/**
+ * Selector that returns characters based on showAllPlatformCharacters flag
+ * This is the main selector that components should use for character lists
+ */
+export const selectCharacters = (
+  showAllPlatformCharacters: boolean = false
+) => (state: {
+  destinyAccount?: DestinyMembershipState;
+}): MembershipCharacter[] => {
+  if (showAllPlatformCharacters) {
+    return safeDestinyAccount(state).allPlatformCharacters || [];
+  } else {
+    return safeDestinyAccount(state).membershipCharacters?.characterList || [];
+  }
+};
+
+/**
  * Selector that returns the currently selected character object
  */
 export const selectSelectedCharacter = (state: {
   destinyAccount?: DestinyMembershipState;
 }): MembershipCharacter | null => {
   const selectedId = safeDestinyAccount(state).selectedCharacterId;
-  if (
-    !selectedId ||
-    !safeDestinyAccount(state).membershipCharacters?.characterList
-  )
-    return null;
+  if (!selectedId) return null;
 
-  return (
-    safeDestinyAccount(state).membershipCharacters.characterList.find(
-      (char) => char?.id === selectedId
-    ) || null
+  const account = safeDestinyAccount(state);
+
+  // First try to find in single platform characters
+  const characterInSinglePlatform = account.membershipCharacters?.characterList?.find(
+    (char) => char?.id === selectedId
   );
+
+  if (characterInSinglePlatform) {
+    return characterInSinglePlatform;
+  }
+
+  // If not found, try in all platform characters
+  const characterInAllPlatforms = account.allPlatformCharacters?.find(
+    (char) => char?.id === selectedId
+  );
+
+  return characterInAllPlatforms || null;
 };
 
 /**
@@ -564,5 +631,57 @@ export const selectCurrentPlatformType = (state: {
 }): BungieMembershipType | null => {
   return safeDestinyAccount(state).selectedMembership?.membershipType || null;
 };
+
+/**
+ * Async action to load characters from all platforms
+ */
+export const loadAllPlatformCharacters = createAsyncThunk<
+  MembershipCharacter[],
+  void,
+  { state: { destinyAccount: DestinyMembershipState } }
+>(
+  "destinyAccount/loadAllPlatformCharacters",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+      const currentState = state?.destinyAccount;
+
+      if (!currentState?.membershipData?.destinyMemberships) {
+        return rejectWithValue("No memberships available");
+      }
+
+      const allCharacters: MembershipCharacter[] = [];
+
+      // Load characters from all platforms in parallel
+      const characterPromises = currentState.membershipData.destinyMemberships.map(
+        async (membership) => {
+          try {
+            const membershipAndCharacters = await initializeProfileData(
+              membership.membershipType,
+              membership.membershipId
+            );
+            return membershipAndCharacters?.characterList || [];
+          } catch (error) {
+            console.warn(
+              `Failed to load characters for platform ${membership.membershipType}:`,
+              error
+            );
+            return [];
+          }
+        }
+      );
+
+      const characterResults = await Promise.all(characterPromises);
+
+      // Flatten all character arrays into a single array
+      return characterResults.flat();
+    } catch (error) {
+      console.error("Error loading all platform characters:", error);
+      return rejectWithValue(
+        error?.toString() || "Unknown error loading all platform characters"
+      );
+    }
+  }
+);
 
 export default destinyAccountSlice.reducer;

@@ -64,6 +64,10 @@ const PgcrStatBar: React.FC<PgcrStatBarProps> = (props) => {
         statValue = entry.extended.values?.[statId]?.basic?.value;
       }
 
+      if (!statValue && entry.extended?.scoreboardValues) {
+        statValue = entry.extended.scoreboardValues?.[statId]?.basic?.value;
+      }
+
       if (matchesFocusedTeam && statValue) {
         focusedTeamTotal = focusedTeamTotal + statValue;
         overallTotal = focusedTeamTotal + otherTeamTotal;

@@ -59,8 +59,6 @@ var SvgSeasonicon27 = function SvgSeasonicon27(_ref) {
     "svg",
     _extends(
       {
-        width: 80,
-        height: 80,
         viewBox: "0 0 80 80",
         fill: "none",
         ref: svgRef,
@@ -116,5 +114,5 @@ var ForwardRef = /*#__PURE__*/ React.forwardRef(function (props, ref) {
     )
   );
 });
-export default "data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' fill='none' xmlns='http://www.w3.org/2000/svg'%3E %3Cg clip-path='url(%23clip0_167_6)'%3E %3Cpath d='M39.5044 60.2618L32.0947 67.6353L39.5044 75.0087L46.9141 67.6353L39.5044 60.2618Z' fill='white'/%3E %3Cpath d='M65.9995 16.9416H44.1479L55.1433 6H23.8359L34.8213 16.9416H12.9697L31.1661 36.9269L12.9995 56.8728H36.3509V23.0894H42.6481V56.8827H65.9995L47.823 36.9269L65.9995 16.9416Z' fill='white'/%3E %3C/g%3E %3Cdefs%3E %3CclipPath id='clip0_167_6'%3E %3Crect width='53' height='69' fill='white' transform='translate(13 6)'/%3E %3C/clipPath%3E %3C/defs%3E %3C/svg%3E";
+export default "data:image/svg+xml,%3Csvg viewBox='0 0 80 80' fill='none' xmlns='http://www.w3.org/2000/svg'%3E %3Cg clip-path='url(%23clip0_167_6)'%3E %3Cpath d='M39.5044 60.2618L32.0947 67.6353L39.5044 75.0087L46.9141 67.6353L39.5044 60.2618Z' fill='white'/%3E %3Cpath d='M65.9995 16.9416H44.1479L55.1433 6H23.8359L34.8213 16.9416H12.9697L31.1661 36.9269L12.9995 56.8728H36.3509V23.0894H42.6481V56.8827H65.9995L47.823 36.9269L65.9995 16.9416Z' fill='white'/%3E %3C/g%3E %3Cdefs%3E %3CclipPath id='clip0_167_6'%3E %3Crect width='53' height='69' fill='white' transform='translate(13 6)'/%3E %3C/clipPath%3E %3C/defs%3E %3C/svg%3E";
 export { ForwardRef as ReactComponent };

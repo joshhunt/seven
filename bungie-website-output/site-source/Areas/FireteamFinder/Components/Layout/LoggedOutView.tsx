@@ -28,7 +28,6 @@ export const LoggedOutView: React.FC<LoggedOutViewProps> = (props) => {
 
   const errorCopy: Record<FireteamFinderErrorViewType, string> = {
     NoCharacter: "",
-    None: "",
     NotHighEnoughRank: "",
     SignedOut: "",
   };

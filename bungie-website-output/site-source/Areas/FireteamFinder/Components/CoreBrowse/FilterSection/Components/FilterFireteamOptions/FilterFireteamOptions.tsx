@@ -1,7 +1,5 @@
 import React, { FC, useMemo } from "react";
 import { ValidFireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { ReactHookFormSelect } from "@UIKit/Forms/ReactHookFormForms/ReactHookFormSelect";
-import { UseFormReturn } from "react-hook-form";
 import styles from "./FilterFireteamOptions.module.scss";
 import { IOptionCategory } from "@Areas/FireteamFinder/Constants/FireteamOptions";
 import { FireteamFilterManager } from "../../../Helpers/FireteamFilterManager";
