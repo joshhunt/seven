@@ -172,7 +172,7 @@ export abstract class DestinyMembershipDataStore extends DataStore<
         // rare instance of bnet users without destiny membership, show the anonymous view
         return {
           membershipData,
-          memberships,
+          memberships: [],
           characters: {},
           selectedCharacter: null,
           selectedMembership: null,

@@ -11,12 +11,12 @@ import { RouteDefs } from "@Routes/RouteDefs";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { FireteamsDestinyMembershipDataStore } from "./DataStores/FireteamsDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { Platform } from "@Platform";
 import { DestinyComponentType } from "@Enum";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { UserUtils } from "@Utilities/UserUtils";
+import { useMultipleProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 /**
  * This component is in charge of loading the datastore with user data so all the components beneath it have that data when they mount.
@@ -33,52 +33,45 @@ const FireteamEligibleCharacterProvider = ({
     "MinimumLifetimeGuardianRank",
     3
   );
-
-  const [isLoading, setIsLoading] = useState(true);
+  const profiles = useMultipleProfileData(
+    destinyData.memberships?.map((m) => ({
+      membershipType: m.membershipType,
+      membershipId: m.membershipId,
+      components: [DestinyComponentType.Profiles],
+    })) ?? []
+  );
   useEffect(() => {
     if (!loggedIn) {
       FireteamsDestinyMembershipDataStore.actions.resetMembership();
-      // Nothing to load. The user is not logged in.
-      setIsLoading(false);
     } else if (!destinyData.loaded) {
       FireteamsDestinyMembershipDataStore.actions.loadUserData();
     }
   }, [destinyData.loaded, loggedIn]);
+
   useEffect(() => {
     if (!destinyData.loaded) {
       return;
     }
-    const checkDestinyMemberships = async () => {
-      for (const membership of destinyData.memberships) {
-        const profileResponse = await Platform.Destiny2Service.GetProfile(
-          membership.membershipType,
-          membership.membershipId,
-          [DestinyComponentType.Profiles]
+    for (let i = 0; i < profiles.length; i++) {
+      const profile = profiles[i];
+      const membership = destinyData.memberships[i];
+      if (
+        profile.profile?.profile?.data?.lifetimeHighestGuardianRank >=
+        minimumLifetimeGuardianRank
+      ) {
+        FireteamsDestinyMembershipDataStore.actions.updatePlatform(
+          membership.membershipType.toString()
         );
-        if (
-          profileResponse?.profile?.data?.lifetimeHighestGuardianRank >=
-          minimumLifetimeGuardianRank
-        ) {
-          FireteamsDestinyMembershipDataStore.actions.updatePlatform(
-            membership.membershipType.toString()
-          );
-        }
+        break;
       }
-    };
-    checkDestinyMemberships()
-      .catch((e) => {
-        // If it's an unknown error then let the error boundary take care of it.
-        setIsLoading(() => {
-          throw e;
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, [destinyData.memberships]);
+    }
+  }, [destinyData.loaded, destinyData.memberships, profiles]);
 
   return (
-    <SpinnerContainer loading={isLoading} delayRenderUntilLoaded>
+    <SpinnerContainer
+      loading={!destinyData.loaded || profiles.some((p) => p.isLoading)}
+      delayRenderUntilLoaded
+    >
       {children}
     </SpinnerContainer>
   );

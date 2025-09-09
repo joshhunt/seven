@@ -8,26 +8,20 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import { PlatformError } from "@CustomErrors";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import {
-  selectDestinyAccount,
-  selectSelectedMembership,
-  selectSelectedCharacter,
-  selectCharactersForSelectedPlatform,
-  selectIsDataLoaded,
-  selectHasCharacters,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppSelector } from "@Global/Redux/store";
 import { SystemNames } from "@Global/SystemNames";
-import { Actions, Components, Platform } from "@Platform";
+import { Actions, Platform } from "@Platform";
 import DestinyCollectibleDetailItemContent from "@UI/Destiny/DestinyCollectibleDetailItemContent";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer, SpinnerDisplayMode } from "@UIKit/Controls/Spinner";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { UserUtils } from "@Utilities/UserUtils";
-import React, { ReactNode, useState, useCallback } from "react";
+import React, { ReactNode, useState, useCallback, useMemo } from "react";
 import seasonItemModalStyles from "../../../../SeasonItemModal.module.scss";
 import styles from "../../../../SeasonsUtilityPage.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
+import { DestinyComponentType } from "@Enum";
 
 export interface IClaimedReward {
   rewardIndex: number;
@@ -54,19 +48,18 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
     "coreSettings",
   ]);
 
-  // Use the Redux selectors
-  const destinyAccount = useAppSelector(selectDestinyAccount);
-  const selectedMembership = useAppSelector(selectSelectedMembership);
-  const selectedCharacter = useAppSelector(selectSelectedCharacter);
-  const charactersForSelectedPlatform = useAppSelector(
-    selectCharactersForSelectedPlatform
-  );
-  const isDataLoaded = useAppSelector(selectIsDataLoaded);
-  const hasCharacters = useAppSelector(selectHasCharacters);
+  const { destinyData, isLoading, error: destinyDataError } = useGameData();
+  const { profile } = useProfileData({
+    membershipId: destinyData.selectedMembership?.membershipId,
+    membershipType: destinyData.selectedMembership?.membershipType,
+    components: [
+      DestinyComponentType.CharacterProgressions,
+      DestinyComponentType.Characters,
+    ],
+  });
 
   const [itemDetailCanClaim, setItemDetailCanClaim] = useState(false);
   const [itemDetailModalOpen, setItemDetailModalOpen] = useState(false);
-  const [itemDetailLoading, setItemDetailLoading] = useState(false);
   const [itemDetailElement, setItemDetailElement] = useState<ReactNode>(null);
   const [itemDetailRewardIndex, setItemDetailRewardIndex] = useState(0);
   const [itemDetailHash, setItemDetailHash] = useState(0);
@@ -76,29 +69,33 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
     rewardIndex: 0,
   });
 
+  const selectedCharacter = useMemo(() => {
+    if (!profile || !destinyData.selectedCharacterId) {
+      return;
+    }
+    return profile.characters?.data?.[destinyData.selectedCharacterId];
+  }, [profile, destinyData.selectedCharacterId]);
+
   const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
   const accountServicesEnabled = ConfigUtils.SystemStatus(
     SystemNames.AccountServices
   );
   const isAnonymous = !UserUtils.isAuthenticated(globalState);
+  const selectedMembership = destinyData.selectedMembership;
 
   // Check if we have the data we need
-  const charactersLoaded =
-    !isAnonymous &&
-    destinyAccount.status === "succeeded" &&
-    isDataLoaded &&
-    hasCharacters;
-
+  const charactersLoaded = !isAnonymous && !isLoading && profile;
   const isCurrentSeason =
     seasonHash ===
     globalState.coreSettings?.destiny2CoreSettings?.currentSeasonHash;
 
   // Calculate character class hash from selected character
-  const characterClassHash = selectedCharacter?.characterData?.classHash || 0;
+  const characterClassHash = selectedCharacter?.classHash || 0;
 
   // Extract the selected character's progressions for SeasonPassRewardProgression
-  const selectedCharacterProgressions =
-    selectedCharacter?.characterProgressions?.progressions;
+  const progressions =
+    profile?.characterProgressions?.data?.[selectedCharacter?.characterId]
+      ?.progressions;
 
   const openItemDetailModal = (
     itemHash: number,
@@ -107,7 +104,6 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
   ) => {
     if (!selectedMembership) {
       console.error("No selected membership available");
-
       return {};
     }
 
@@ -115,7 +111,6 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
     setItemDetailModalOpen(true);
     setItemDetailRewardIndex(rewardIndex);
     setItemDetailCanClaim(canClaim);
-    setItemDetailLoading(false);
 
     setItemDetailElement(
       <DestinyCollectibleDetailItemContent
@@ -129,14 +124,18 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
   };
 
   const claimFromModal = async () => {
-    if (itemDetailClaiming || !selectedCharacterId || !selectedMembership) {
+    if (
+      itemDetailClaiming ||
+      !destinyData.selectedCharacterId ||
+      !selectedMembership
+    ) {
       return;
     }
 
     setItemDetailClaiming(true);
 
     const input: Actions.DestinyClaimSeasonPassRewardActionRequest = {
-      characterId: selectedCharacterId,
+      characterId: destinyData.selectedCharacterId,
       membershipType: selectedMembership.membershipType,
       rewardIndex: itemDetailRewardIndex,
       seasonHash: seasonHash,
@@ -183,20 +182,15 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
   }, []);
 
   // Show spinner while loading
-  if (
-    !destiny2Disabled &&
-    accountServicesEnabled &&
-    !isAnonymous &&
-    destinyAccount.status === "loading"
-  ) {
+  if (!destiny2Disabled && accountServicesEnabled && isLoading) {
     return (
       <SpinnerContainer loading={true} mode={SpinnerDisplayMode.fullPage} />
     );
   }
 
   // Handle error states
-  if (destinyAccount.status === "failed" && !isAnonymous) {
-    return <div>Error loading Destiny account data</div>;
+  if (destinyDataError) {
+    return <div>Error loading Destiny account data: {destinyDataError}</div>;
   }
 
   return (
@@ -229,7 +223,7 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
       <SeasonPassRewardProgression
         seasonHash={seasonHash}
         characterClassHash={characterClassHash}
-        characterProgressions={selectedCharacterProgressions}
+        characterProgressions={progressions}
         handleClaimingClick={openItemDetailModal}
         claimedReward={itemClaimed}
       />
@@ -239,10 +233,10 @@ const RewardsCarousel: React.FC<IRewardsCarouselProps> = ({
         selectedCharacter &&
         selectedMembership && (
           <RedeemSeasonRewards
-            characterId={selectedCharacter.id}
+            characterId={selectedCharacter.characterId}
             seasonHash={seasonHash}
-            platformProgressions={selectedCharacter.characterProgressions}
-            characterProgressions={selectedCharacterProgressions}
+            platformProgressions={profile?.characterProgressions}
+            characterProgressions={progressions}
             membershipType={selectedMembership.membershipType}
             handleClick={openItemDetailModal}
             itemClaimed={markItemClaimed}

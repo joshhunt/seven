@@ -1,27 +1,16 @@
 // Created by larobinson 2025
 // Copyright Bungie, Inc.
 
-import { ConvertToPlatformError } from "@ApiIntermediary";
 import SeasonProgressUtils, {
   ISeasonUtilArgs,
 } from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { PlatformError } from "@CustomErrors";
 import { DestinyComponentType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import {
-  selectSelectedCharacter,
-  selectSelectedMembership,
-  selectDestinyAccount,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppSelector } from "@Global/Redux/store";
-import { SystemNames } from "@Global/SystemNames";
-import { Components, Platform } from "@Platform";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styles from "./RankSigil.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 interface RankSigilProps {
   seasonUtilArgs: ISeasonUtilArgs;
@@ -29,49 +18,18 @@ interface RankSigilProps {
 }
 
 const RankSigil: React.FC<RankSigilProps> = ({ seasonUtilArgs }) => {
-  const destinyAccount = useAppSelector(selectDestinyAccount);
-  const selectedMembership = useAppSelector(selectSelectedMembership);
-  const selectedCharacter = useAppSelector(selectSelectedCharacter);
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const { destinyData } = useGameData();
+  const { profile } = useProfileData({
+    membershipId: destinyData?.selectedMembership?.membershipId,
+    membershipType: destinyData?.selectedMembership?.membershipType,
+    components: [
+      DestinyComponentType.CharacterProgressions,
+      DestinyComponentType.Records,
+    ],
+  });
 
-  const [characterProgressions, setCharacterProgressions] = useState<
-    Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
-  >();
-  const [
-    profileRecords,
-    setProfileRecords,
-  ] = useState<Components.SingleComponentResponseDestinyProfileRecordsComponent | null>(
-    null
-  );
-
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
-
-  useEffect(() => {
-    if (!destiny2Disabled && selectedCharacter) {
-      // Use the character's platform information, not the selected membership
-      // This is important when showing all platform characters where the selected character
-      // might be from a different platform than the selected membership
-      const membershipType = selectedCharacter.membershipType;
-      const membershipId = selectedCharacter.characterData.membershipId;
-
-      Promise.all([
-        Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
-          DestinyComponentType.CharacterProgressions,
-        ]),
-        Platform.Destiny2Service.GetProfile(membershipType, membershipId, [
-          DestinyComponentType.Records,
-        ]),
-      ])
-        .then(([progressionsResponse, recordsResponse]) => {
-          setCharacterProgressions(progressionsResponse?.characterProgressions);
-          setProfileRecords(recordsResponse?.profileRecords);
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          console.error("Error loading profile data:", e);
-        });
-    }
-  }, [selectedCharacter, destiny2Disabled]);
+  const characterProgressions = profile?.characterProgressions;
+  const profileRecords = profile?.profileRecords;
 
   const seasonPassDef = SeasonProgressUtils?.getCurrentSeasonPass(
     seasonUtilArgs

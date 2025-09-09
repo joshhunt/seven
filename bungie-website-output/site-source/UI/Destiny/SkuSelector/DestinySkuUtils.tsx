@@ -1,6 +1,7 @@
 import {
   IDestinyProductDefinition,
   IDestinyProductFamilyDefinition,
+  SkuTagKeyValuePair,
 } from "./DestinyProductDefinitions";
 import { Content, Platform } from "@Platform";
 import {
@@ -129,12 +130,6 @@ export class DestinySkuUtils {
 
     const allProducts = DestinySkuUtils.getAllProducts(skuConfig);
     const product = allProducts.find((p) => p.key === skuTag);
-    if (!product) {
-      throw new DetailedError(
-        "Product Invalid",
-        `Product with key ${skuTag} does not exist in configuration.`
-      );
-    }
 
     return product;
   }
@@ -305,43 +300,24 @@ export class DestinySkuUtils {
       return null;
     }
 
-    const cachedSkuMapping: {
-      [key: string]: IDestinyProductDefinition;
-    } = {};
+    const skuDict = skuItems.reduce((acc, curr) => {
+      acc[curr.skuTag] = curr;
+      return acc;
+    }, {} as Record<string, IDestinyProductDefinition>);
 
-    const tryCache = (skuTag: string) => {
-      if (cachedSkuMapping[skuTag]) {
-        return cachedSkuMapping[skuTag];
-      } else {
-        const sku = skuItems.find((si) => si.skuTag === skuTag);
-        cachedSkuMapping[skuTag] = sku;
-
-        return sku;
-      }
-    };
+    const mapList = (list?: SkuTagKeyValuePair[]) =>
+      Array.isArray(list)
+        ? list.map((kv) => skuDict[kv["SkuTag"]]).filter((s) => !!s)
+        : [];
 
     /* Get skus for the edition selector */
-    const editionSelectorSkus: IDestinyProductDefinition[] = Array.isArray(
-      productFamily.editionSelectorSkus
-    )
-      ? productFamily.editionSelectorSkus
-          .map((x) => x.SkuTag)
-          .map((st) => tryCache(st))
-      : [];
+    const editionSelectorSkus = mapList(productFamily.editionSelectorSkus);
 
     /* Create an array that only includes the skus we want to compare on this page in the order the product family has them */
-    const comparisonSkus: IDestinyProductDefinition[] = Array.isArray(
-      productFamily.comparisonSection
-    )
-      ? productFamily.comparisonSection
-          .map((x) => x.SkuTag)
-          .map((st) => tryCache(st))
-      : [];
+    const comparisonSkus = mapList(productFamily.comparisonSection);
 
     /* See if this product family has a collector's edition to show */
-    const collectorsEdition: IDestinyProductDefinition = skuItems.find(
-      (sku) => sku.skuTag === productFamily.collectorsEditionSkuTag
-    );
+    const collectorsEdition = skuDict[productFamily.collectorsEditionSkuTag];
 
     return {
       editionSelectorSkus,

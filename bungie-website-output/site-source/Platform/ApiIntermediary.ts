@@ -48,7 +48,7 @@ interface IPlatformSuccessErrorData {
 
 export interface PlatformResponse {
   Response: any;
-  ErrorCode: Globals.PlatformErrorCodes;
+  ErrorCode: Globals.PlatformErrorCodes | -1; // -1 is for when the frontend parses an error that doesn't fit with the other codes;
   ThrottleSeconds: number;
   ErrorStatus: string;
   Message: string;

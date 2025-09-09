@@ -7,21 +7,13 @@ import RewardsCarousel from "@Areas/Seasons/SeasonProgress/components/SeasonProg
 import { SeasonsDefinitions } from "@Areas/Seasons/SeasonProgress/constants/SeasonsDefinitions";
 import SeasonProgressUtils from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { selectDestinyAccount } from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppDispatch, useAppSelector } from "@Global/Redux/store";
-import { SystemNames } from "@Global/SystemNames";
-import { RouteHelper } from "@Routes/RouteHelper";
-import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UserUtils } from "@Utilities/UserUtils";
-import React, { ReactNode, useState } from "react";
 import styles from "./CurrentSeason.module.scss";
+import React from "react";
 
 interface ICurrentSeasonProps
   extends D2DatabaseComponentProps<
@@ -45,8 +37,6 @@ const CurrentSeason: React.FC<ICurrentSeasonProps> = (
     "loggedInUser",
     "coreSettings",
   ]);
-  const destinyAccount = useAppSelector(selectDestinyAccount);
-  const dispatch = useAppDispatch();
 
   /* Season definitions */
   const seasonHash =

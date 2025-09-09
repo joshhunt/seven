@@ -221,7 +221,7 @@ const Home = () => {
             <ClipPathWrapper
               clipPathOff={index === 0}
               backgroundImage={setBgImage(section?.background_images)}
-              key={section?.logo_image?.url}
+              key={section.section_title}
             >
               <CalloutSection
                 sectionTitle={section.section_title}

@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
 import { FireteamFinder } from "@Platform";
 import {
   D2DatabaseComponentProps,
@@ -11,11 +10,7 @@ import {
   FireteamFinderValueTypes,
   ValidFireteamFinderValueTypes,
 } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import {
-  FireteamApiService,
-  FireteamFilterManager,
-  LobbyStateManager,
-} from "../Helpers";
+import { FireteamApiService, LobbyStateManager } from "../Helpers";
 import { CustomLobbyState } from "../Helpers/LobbyStateManager";
 import styles from "./CoreBrowsing.module.scss";
 import FilterSection from "@Areas/FireteamFinder/Components/CoreBrowse/FilterSection/FilterSection";
@@ -28,18 +23,12 @@ import {
   MembershipInfo,
   SearchFiltersInput,
 } from "@Areas/FireteamFinder/Components/CoreBrowse/Helpers/FireteamApiService";
-import { BungieMembershipType, DestinyFireteamFinderLobbyState } from "@Enum";
+import { DestinyFireteamFinderLobbyState } from "@Enum";
 import CustomLobbyStateCard from "./Components/CustomLobbyStateCard/CustomLobbyStateCard";
-import { useAppDispatch, useAppSelector } from "@Global/Redux/store";
-import {
-  loadUserData,
-  resetMembership,
-  selectDestinyAccount,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { AppliedFilters } from "./Components/AppliedFilters/AppliedFilters";
-import { SearchParams, useFireteamSearchParams } from "../Helpers/Hooks";
+import { useFireteamSearchParams } from "../Helpers/Hooks";
+import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
+import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 
 interface BrowseFireteamsProps
   extends D2DatabaseComponentProps<
@@ -61,10 +50,8 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   /* URL Management */
   const { params, setParams } = useFireteamSearchParams();
   const { activityGraphId } = params;
-  const dispatch = useAppDispatch();
 
-  const account = useAppSelector(selectDestinyAccount);
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
 
   /* State */
   const [resultsList, setResultsList] = useState<
@@ -89,8 +76,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   ).createOptionsTree();
 
   const loadFireteams = async () => {
-    if (!account.selectedMembership || !account.selectedCharacterId) {
-      // The useEffect below will load this data.
+    if (!destinyData.selectedMembership || !destinyData.selectedCharacter) {
       return;
     }
 
@@ -107,9 +93,9 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
     };
 
     const membershipInfo: MembershipInfo = {
-      membershipId: account.selectedMembership.membershipId,
-      membershipType: account.selectedMembership.membershipType,
-      characterId: account.selectedCharacterId,
+      membershipId: destinyData.selectedMembership.membershipId,
+      membershipType: destinyData.selectedMembership.membershipType,
+      characterId: destinyData.selectedCharacter.characterId,
     };
     let listings: FireteamFinder.DestinyFireteamFinderListing[] = [];
     try {
@@ -134,20 +120,8 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!globalState.loggedInUser) {
-      dispatch(resetMembership());
-    } else {
-      let membershipPair = {
-        membershipId: globalState?.loggedInUser?.user?.membershipId,
-        membershipType: BungieMembershipType.BungieNext,
-      };
-      dispatch(loadUserData({ membershipPair }));
-    }
-  }, [globalState?.loggedInUser]);
-
-  useEffect(() => {
     loadFireteams();
-  }, [showingLobbyState, params, account]);
+  }, [showingLobbyState, params, destinyData]);
 
   const [activeUserLobbies, inactiveUserLobbies] = useMemo(() => {
     if (

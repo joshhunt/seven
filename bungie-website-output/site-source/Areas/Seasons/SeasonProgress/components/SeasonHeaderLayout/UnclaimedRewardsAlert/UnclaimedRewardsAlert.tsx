@@ -1,25 +1,16 @@
-import { ConvertToPlatformError } from "@ApiIntermediary";
 import SeasonProgressUtils, {
   ISeasonUtilArgs,
 } from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 
-import { PlatformError } from "@CustomErrors";
-import { DestinyComponentType, PlatformErrorCodes } from "@Enum";
-import {
-  loadUserData,
-  resetMembership,
-  selectSelectedMembership,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppSelector } from "@Global/Redux/store";
-import { SystemNames } from "@Global/SystemNames";
+import { DestinyComponentType } from "@Enum";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React, { useEffect, useState } from "react";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Components, Platform } from "@Platform";
 import { Alert } from "plxp-web-ui/components/base";
 import { Localizer } from "@bungie/localization/Localizer";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 // Required props
 interface IUnclaimedRewardsAlertProps {
@@ -29,11 +20,13 @@ interface IUnclaimedRewardsAlertProps {
 const UnclaimedRewardsAlert: React.FC<IUnclaimedRewardsAlertProps> = ({
   seasonUtilArgs,
 }) => {
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
-  const selectedMembership = useAppSelector(selectSelectedMembership);
-  const [characterProgressions, setCharacterProgressions] = useState<
-    Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
-  >(null);
+  const selectedMembership = useGameData().destinyData?.selectedMembership;
+  const { profile, error } = useProfileData({
+    membershipId: selectedMembership?.membershipId,
+    membershipType: selectedMembership?.membershipType,
+    components: [DestinyComponentType.CharacterProgressions],
+  });
+  const characterProgressions = profile?.characterProgressions;
   const [unclaimedRewards, setUnclaimedRewardsAlert] = useState<number>(0);
 
   const globalState = useDataStore(GlobalStateDataStore, [
@@ -64,25 +57,10 @@ const UnclaimedRewardsAlert: React.FC<IUnclaimedRewardsAlertProps> = ({
   }, [characterProgressions]);
 
   useEffect(() => {
-    if (!destiny2Disabled && selectedMembership && globalState?.loggedInUser) {
-      Platform.Destiny2Service.GetProfile(
-        selectedMembership?.membershipType,
-        selectedMembership?.membershipId,
-        [DestinyComponentType.CharacterProgressions]
-      )
-        .then((data) => {
-          setCharacterProgressions(data?.characterProgressions);
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          if (e.errorCode === PlatformErrorCodes.DestinyAccountNotFound) {
-            // don't do anything, we already pop a lot of modals, they'll know if they see no characters on an accounts
-          } else {
-            Modal.error(e);
-          }
-        });
+    if (error) {
+      Modal.error(error);
     }
-  }, [selectedMembership, globalState?.loggedInUser]);
+  }, [error]);
 
   return (
     <div style={{ marginTop: "1rem" }}>

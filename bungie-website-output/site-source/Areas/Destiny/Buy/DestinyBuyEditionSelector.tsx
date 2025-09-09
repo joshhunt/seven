@@ -38,21 +38,35 @@ interface IDestinyBuyEditionSelectorProps {
 export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps> = (
   props
 ) => {
-  const subs: DestroyCallback[] = [];
-  const [selectedSkuTag, setSelectedSkuTag] = React.useState(
-    props.skus[DestinyBuyDataStore.state.selectedSkuIndex || 0].skuTag
+  const initialIndex = DestinyBuyDataStore.state.selectedSkuIndex ?? 0;
+  const initialSkuTag = props.skus[initialIndex]?.skuTag ?? "";
+  const [selectedSkuTag, setSelectedSkuTag] = React.useState<string>(
+    initialSkuTag
   );
   const [skuConfig, setSkuConfig] = React.useState(null);
+  const selectedSku = React.useMemo(
+    () => props.skus.find((s) => s.skuTag === selectedSkuTag),
+    [props.skus, selectedSkuTag]
+  );
+  const buttonLabelForSku = selectedSku?.buttonLabel ?? props.buttonLabel;
+  const hasSkus = props.skus.length > 0;
+
   const wqCollectorsEditionSelected =
     props.collectorsEdition?.skuTag === selectedSkuTag;
   const wqCollectorsUrl =
     wqCollectorsEditionSelected && props.collectorsEdition?.relatedPage;
 
   React.useEffect(() => {
+    const subs: DestroyCallback[] = [];
+
     subs.push(
       DestinyBuyDataStore.observe(
         (data) => {
-          data && setSelectedSkuTag(props.skus[data.selectedSkuIndex].skuTag);
+          const idx = data?.selectedSkuIndex ?? 0;
+          const newTag = props.skus[idx]?.skuTag;
+          if (newTag) {
+            setSelectedSkuTag(newTag);
+          }
         },
         null,
         true
@@ -66,7 +80,7 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
     );
 
     return () => DataStore.destroyAll(...subs);
-  });
+  }, [props.skus]);
 
   return (
     <div className={styles.container}>
@@ -84,45 +98,41 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
           </div>
         </div>
         {props.skus.length > 1
-          ? props.skus
-              // Temporarily omit "lightfallcollectors" without breaking the page
-              .filter((sku) => sku?.skuTag !== "lightfallcollectors")
-              .map((sku, i) => {
-                const productIsOnSale =
-                  skuConfig &&
-                  DestinySkuUtils.isProductOnSale(sku.skuTag, skuConfig);
+          ? props.skus.map((sku, i) => {
+              const productIsOnSale =
+                skuConfig &&
+                DestinySkuUtils.isProductOnSale(sku.skuTag, skuConfig);
 
-                return (
-                  <div
-                    key={i}
-                    className={classNames(styles.expansionLine, {
-                      [styles.selected]: sku.skuTag === selectedSkuTag,
-                    })}
-                    role="button"
-                    onClick={() => {
-                      setSelectedSkuTag(sku.skuTag);
-                      DestinyBuyDataStore.actions.setSelectedSkuIndex(i);
-                    }}
-                  >
-                    <img src={sku.imagePath} alt="" role="presentation" />
-                    <div className={styles.expansionLineContent}>
-                      {productIsOnSale && (
-                        <div
-                          className={classNames(styles.saleTag, {
-                            [styles.selectedSale]:
-                              sku.skuTag === selectedSkuTag,
-                          })}
-                        >
-                          {Localizer.Sales[sku.skuTag]}
-                        </div>
-                      )}
-                      <div className={styles.subtitle}>
-                        {sku.edition || sku.subtitle}
+              return (
+                <div
+                  key={i}
+                  className={classNames(styles.expansionLine, {
+                    [styles.selected]: sku.skuTag === selectedSkuTag,
+                  })}
+                  role="button"
+                  onClick={() => {
+                    setSelectedSkuTag(sku.skuTag);
+                    DestinyBuyDataStore.actions.setSelectedSkuIndex(i);
+                  }}
+                >
+                  <img src={sku.imagePath} alt="" role="presentation" />
+                  <div className={styles.expansionLineContent}>
+                    {productIsOnSale && (
+                      <div
+                        className={classNames(styles.saleTag, {
+                          [styles.selectedSale]: sku.skuTag === selectedSkuTag,
+                        })}
+                      >
+                        {Localizer.Sales[sku.skuTag]}
                       </div>
+                    )}
+                    <div className={styles.subtitle}>
+                      {sku.edition || sku.subtitle}
                     </div>
                   </div>
-                );
-              })
+                </div>
+              );
+            })
           : props.skus.length === 1 && (
               <>
                 <div className={styles.underline} />
@@ -148,12 +158,14 @@ export const DestinyBuyEditionSelector: React.FC<IDestinyBuyEditionSelectorProps
           size={BasicSize.Medium}
           url={wqCollectorsEditionSelected ? wqCollectorsUrl : undefined}
           onClick={() =>
+            hasSkus &&
             !wqCollectorsEditionSelected &&
             DestinySkuUtils.showStoreModal(selectedSkuTag)
           }
+          disabled={!hasSkus}
           analyticsId={selectedSkuTag}
         >
-          {props.buttonLabel}
+          {buttonLabelForSku}
         </Button>
       </div>
 

@@ -21,6 +21,7 @@ import styles from "./Layout.module.scss";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
 import classNames from "classnames";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 export type FireteamFinderErrorViewType =
   | "SignedOut"
@@ -52,6 +53,11 @@ export const Layout = ({
   const [errorState, setErrorState] = useState<FireteamFinderErrorViewType>();
   const loggedIn = UserUtils.isAuthenticated(globalState);
   const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { profile, isLoading: profileIsLoading } = useProfileData({
+    membershipId: destinyData.selectedMembership?.membershipId,
+    membershipType: destinyData.selectedMembership?.membershipType,
+    components: [DestinyComponentType.Profiles],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const minimumLifetimeGuardianRank = ConfigUtils.GetParameter(
     "FireteamFinderCreationGuardianRankRequirement",
@@ -66,14 +72,9 @@ export const Layout = ({
     const checkDestinyMembership = async (): Promise<
       FireteamFinderErrorViewType | undefined
     > => {
-      if (destinyData.selectedMembership) {
-        const profileResponse = await Platform.Destiny2Service.GetProfile(
-          destinyData.selectedMembership.membershipType,
-          destinyData.selectedMembership.membershipId,
-          [DestinyComponentType.Profiles]
-        );
+      if (destinyData.selectedMembership && profile) {
         if (
-          profileResponse?.profile?.data?.lifetimeHighestGuardianRank <
+          profile.profile?.data?.lifetimeHighestGuardianRank <
           minimumLifetimeGuardianRank
         ) {
           return "NotHighEnoughRank";
@@ -95,7 +96,7 @@ export const Layout = ({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [loggedIn, destinyData.selectedMembership]);
+  }, [loggedIn, destinyData.selectedMembership, profile]);
 
   return (
     <div className={classNames(styles.layout, className)}>
@@ -106,7 +107,7 @@ export const Layout = ({
         <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
       </BungieHelmet>
 
-      <SpinnerContainer loading={isLoading}>
+      <SpinnerContainer loading={isLoading || profileIsLoading}>
         {!errorState ? (
           <Grid>
             <GridCol cols={12} className={styles.content}>
