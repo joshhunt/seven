@@ -267,11 +267,11 @@ export class RouteHelper {
     url: "/Destiny2NextChapter",
     legacy: true,
   };
-  public static SeasonProgress = BasicReactPath(
+  public static CurrentPass = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")
   );
-  public static PreviousSeason = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("PreviousSeason")
+  public static PreviousPass = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("PreviousPass")
   );
   public static BeyondLightMedia = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Media")
@@ -345,7 +345,7 @@ export class RouteHelper {
     RouteDefs.Areas.Seasons.getAction("Progress")
   );
   public static SeasonsPreviousSeason = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("PreviousSeason")
+    RouteDefs.Areas.Seasons.getAction("PreviousPass")
   );
   //Codes & Partner Rewards
   public static CodeRedemption = BasicReactPath(
@@ -505,9 +505,24 @@ export class RouteHelper {
     return messages + (iframeMode ? "?iframe=1" : "");
   };
 
-  public static MarathonAlphaCodePickup = BasicReactPath(
-    RouteDefs.Areas.Codes.getAction(RouteActions.GameCodes)
+  public static MarathonPlaytests = BasicReactPath(
+    RouteDefs.Areas.Marathon.getAction(RouteActions.Playtests)
   );
+  public static MarathonPlaytestsSurvey() {
+    const base = this.MarathonPlaytests();
+    if (!base?.url) {
+      return "";
+    }
+    return { url: `${base.url}/survey` };
+  }
+
+  public static MarathonPlaytestsStatus() {
+    const base = this.MarathonPlaytests();
+    if (!base?.url) {
+      return "";
+    }
+    return { url: `${base.url}/status` };
+  }
 
   public static GetAccountLink = (
     cr: BungieCredentialType,

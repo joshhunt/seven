@@ -1,5 +1,4 @@
 export enum RouteActions {
-  Alpha = "Alpha",
   Index = "Index",
   Create = "Create",
   Detail = "Detail",
@@ -49,6 +48,8 @@ export enum RouteActions {
   DestinyShowcase = "DestinyShowcase",
   Anniversary = "Anniversary",
   Dashboard = "Dashboard",
+  MarathonPlaytests = "MarathonPlaytests",
+  Playtests = "Playtests",
   Browse = "Browse",
   Search = "Search",
   Fireteam = "Fireteam",
@@ -69,7 +70,7 @@ export enum RouteActions {
   SeasonOfTheWitch = "SeasonOfTheWitch",
   SeasonOfTheWish = "SeasonOfTheWish",
   Progress = "Progress",
-  PreviousSeason = "PreviousSeason",
+  PreviousPass = "PreviousPass",
   Events = "Events",
   News = "News",
   Rewards = "Rewards",

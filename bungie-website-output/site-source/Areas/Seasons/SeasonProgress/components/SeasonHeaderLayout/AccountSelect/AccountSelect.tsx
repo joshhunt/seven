@@ -1,25 +1,16 @@
-import { SeasonSelect } from "@Areas/Seasons/SeasonProgress/components/SeasonHeaderLayout/SeasonSelect";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { DestinyAccountComponent } from "@UI/Destiny/DestinyAccountComponent";
-import { UserUtils } from "@Utilities/UserUtils";
 import React from "react";
 import styles from "../SeasonHeaderLayout.module.scss";
+import { PassToggle } from "../PassToggle";
 
 interface AccountSelectProps {
-  isCurrentSeason: boolean;
+  isCurrent: boolean;
 }
 
-const AccountSelect: React.FC<AccountSelectProps> = ({ isCurrentSeason }) => {
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-
-  if (!UserUtils.isAuthenticated(globalState)) {
-    return <SeasonSelect isCurrentSeason={isCurrentSeason} />;
-  }
-
+const AccountSelect: React.FC<AccountSelectProps> = ({ isCurrent }) => {
   return (
     <div className={styles.selects}>
-      <SeasonSelect isCurrentSeason={isCurrentSeason} />
+      <PassToggle isCurrent={!!isCurrent} />
       <DestinyAccountComponent
         showCrossSaveBanner={true}
         showAllPlatformCharacters={true}

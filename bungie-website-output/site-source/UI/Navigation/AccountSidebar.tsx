@@ -160,7 +160,7 @@ export class AccountSidebar extends React.Component<
           </Anchor>
         )}
         {/* Rewards Pass Progress */}
-        <Anchor url={RouteHelper.SeasonProgress()}>
+        <Anchor url={RouteHelper.SeasonsProgress()}>
           <OneLineItem
             size={BasicSize.Small}
             icon={

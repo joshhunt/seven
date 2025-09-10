@@ -8,7 +8,7 @@ import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { CrossSave } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { IoCheckmarkCircle, IoAddCircleOutline } from "react-icons/io5";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
@@ -101,7 +101,7 @@ export const CrossSaveAccountLinkItem: React.FC<ICrossSaveAccountLinkItemProps> 
   };
 
   const platformName = () => {
-    return LocalizerUtils.getPlatformNameFromMembershipType(
+    return LocalizerUtils.getPlatformNameFromDestinyMembershipType(
       props.membershipType
     );
   };
@@ -152,7 +152,7 @@ export const CrossSaveAccountLinkItem: React.FC<ICrossSaveAccountLinkItemProps> 
     const modalSubtitle = Localizer.Format(
       Localizer.Crosssave.ErrorModalSubtitle,
       {
-        platformName: LocalizerUtils.getPlatformNameFromMembershipType(
+        platformName: LocalizerUtils.getPlatformNameFromDestinyMembershipType(
           props.membershipType
         ),
       }
@@ -229,13 +229,7 @@ const GoodToGo = (props: { platformName: string }) => {
     }
   );
 
-  const icon = (
-    <Icon
-      className={styles.successIcon}
-      iconType={"fa"}
-      iconName={"check-circle"}
-    />
-  );
+  const icon = <IoCheckmarkCircle className={styles.successIcon} />;
 
   return (
     <Button
@@ -260,9 +254,7 @@ const NeedsAuth = (props: {
         credentialLabel: props.platformName,
       });
 
-  const icon = !props.isLinked && (
-    <Icon iconType={"material"} iconName={"add_circle_outline"} />
-  );
+  const icon = !props.isLinked && <IoAddCircleOutline />;
 
   return (
     <Button

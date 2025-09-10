@@ -4,7 +4,7 @@
 import { SmsDataStore } from "@Areas/Sms/SmsDataStore";
 import { Localizer } from "@bungie/localization";
 import { Platform } from "@Platform";
-import { Icon } from "@UI/UIKit/Controls/Icon";
+import { IoCheckmarkCircle } from "react-icons/io5";
 import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -47,11 +47,7 @@ export const SmsVerifiedState: React.FC<SmsVerifiedStateProps> = (props) => {
     <>
       <div>{Localizer.Sms.AccountVerified}</div>
       <div className={styles.verifiedState}>
-        <Icon
-          iconType={"fa"}
-          iconName={"check-circle"}
-          className={styles.successIcon}
-        />
+        <IoCheckmarkCircle className={styles.successIcon} />
         <div className={styles.phoneTemplate}>
           {Localizer.Sms.settingsverifiedmessage}
         </div>

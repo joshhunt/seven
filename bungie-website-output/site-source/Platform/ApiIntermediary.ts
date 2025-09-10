@@ -418,6 +418,32 @@ export class ApiIntermediary {
   }
 }
 
+export function ConvertToPlatformErrorSync(error: unknown): PlatformError {
+  if (error instanceof PlatformError) {
+    return error;
+  } else {
+    if (error instanceof Object && "ErrorCode" in error) {
+      return new PlatformError(error as PlatformResponse);
+    } else {
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "string"
+          ? error
+          : JSON.stringify(error);
+      let platformError: PlatformResponse = {
+        ErrorCode: -1,
+        ErrorStatus: "None",
+        Message: message,
+        MessageData: null,
+        Response: null,
+        ThrottleSeconds: 0,
+      };
+      return new PlatformError(platformError);
+    }
+  }
+}
+
 export const ConvertToPlatformError: (
   error: Error
 ) => Promise<PlatformError> = (error: Error) => {

@@ -13,25 +13,30 @@ import styles from "./SeasonHeaderLayout.module.scss";
 interface ISeasonHeaderProps {
   isCurrentSeason?: boolean;
   seasonUtilArgs: ISeasonUtilArgs;
+  selectedSeasonPassHash: number;
+  ownsPremium?: boolean;
+  page?: "current" | "previous";
 }
 
 const SeasonHeaderLayout: React.FC<ISeasonHeaderProps> = ({
   seasonUtilArgs,
+  selectedSeasonPassHash,
+  page,
   isCurrentSeason,
+  ownsPremium,
 }) => {
   const [timeRemaining, setTimeRemaining] = useState(null);
 
   useEffect(() => {
     updateTimeRemaining();
-  });
+  }, [seasonUtilArgs, page, selectedSeasonPassHash]);
   const updateTimeRemaining = () => {
-    const {
-      startDate,
-      endDate,
-    } = SeasonProgressUtils?.getCurrentSeasonPassStartAndEnd(seasonUtilArgs);
+    const seasonPassStartAndEnd = SeasonProgressUtils?.getCurrentSeasonPassStartAndEnd(
+      seasonUtilArgs
+    );
 
-    if (endDate) {
-      const timeDisplay = DateTime.fromJSDate(endDate);
+    if (seasonPassStartAndEnd?.endDate) {
+      const timeDisplay = DateTime.fromJSDate(seasonPassStartAndEnd?.endDate);
       const diff = timeDisplay.diffNow(["months", "days", "hours"]);
 
       let timeString = "";
@@ -63,12 +68,12 @@ const SeasonHeaderLayout: React.FC<ISeasonHeaderProps> = ({
             })
           : Localizer.Seasons.SeasonComplete
       );
-    } else if (startDate) {
+    } else if (seasonPassStartAndEnd?.startDate) {
       setTimeRemaining(
         Localizer.Format(Localizer.Time.CompactMonthDayYear, {
-          month: startDate.getMonth() + 1,
-          day: startDate.getDate(),
-          year: startDate.getFullYear(),
+          month: seasonPassStartAndEnd?.startDate.getMonth() + 1,
+          day: seasonPassStartAndEnd?.startDate.getDate(),
+          year: seasonPassStartAndEnd?.startDate.getFullYear(),
         })
       );
     } else {
@@ -78,9 +83,14 @@ const SeasonHeaderLayout: React.FC<ISeasonHeaderProps> = ({
 
   return (
     <div className={styles.sigilHeaderContainer}>
-      <RankSigil seasonUtilArgs={seasonUtilArgs} />
-      <SeasonTitleSection
+      <RankSigil
+        ownsPremium={ownsPremium}
         seasonUtilArgs={seasonUtilArgs}
+        selectedSeasonPassHash={selectedSeasonPassHash}
+        page={page}
+      />
+      <SeasonTitleSection
+        page={isCurrentSeason ? "current" : "previous"}
         timeRemaining={timeRemaining}
       />
       <UnclaimedRewardsAlert seasonUtilArgs={seasonUtilArgs} />

@@ -1,39 +1,30 @@
 import { AccountSelect } from "@Areas/Seasons/SeasonProgress/components/SeasonHeaderLayout/AccountSelect";
-import {
-  SeasonsArray,
-  SeasonsDefinitions,
-} from "@Areas/Seasons/SeasonProgress/constants/SeasonsDefinitions";
-import SeasonProgressUtils, {
-  ISeasonUtilArgs,
-} from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 import * as React from "react";
 import styles from ".././SeasonHeaderLayout.module.scss";
+import { BnetRewardsPassConfig } from "@Areas/Seasons/SeasonProgress/constants/BnetRewardsPassConfig";
+import { Localizer } from "@bungie/localization/Localizer";
 
 interface SeasonTitleSectionProps {
   timeRemaining: string;
-  seasonUtilArgs: ISeasonUtilArgs;
+  page: "current" | "previous";
 }
 
 const SeasonTitleSection: React.FC<SeasonTitleSectionProps> = ({
-  seasonUtilArgs,
   timeRemaining,
+  page,
 }) => {
-  const seasonOnPage = SeasonsArray.find(
-    (season) =>
-      season?.seasonNumber ===
-      SeasonProgressUtils?.getSeasonDefinition(seasonUtilArgs)?.seasonNumber
-  );
-  const isCurrent =
-    SeasonsArray?.findIndex(
-      (season) =>
-        season?.seasonNumber === SeasonsDefinitions?.currentSeason?.seasonNumber
-    ) !== -1;
-
+  const isCurrent = page === "current";
+  const title = isCurrent
+    ? BnetRewardsPassConfig.currentPass.title
+    : BnetRewardsPassConfig.previousPass.title;
+  const timeString = isCurrent
+    ? timeRemaining
+    : Localizer.seasons.rewardpassended;
   return (
     <div className={styles.seasonHeader}>
-      <h1>{seasonOnPage?.title?.toUpperCase()}</h1>
-      <h5>{timeRemaining}</h5>
-      <AccountSelect isCurrentSeason={isCurrent} />
+      <h1>{title.toUpperCase()}</h1>
+      <h5>{timeString}</h5>
+      <AccountSelect isCurrent={isCurrent} />
     </div>
   );
 };

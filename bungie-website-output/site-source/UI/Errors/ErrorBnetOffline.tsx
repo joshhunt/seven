@@ -13,7 +13,14 @@ export const ErrorBnetOffline: React.FC<ErrorBnetOfflineProps> = (props) => {
   return (
     <div>
       <header>
-        <Anchor className={styles.logo} url={RouteHelper.Home} />
+        <Anchor
+          className={styles.logo}
+          url={RouteHelper.Home}
+          style={{
+            backgroundImage:
+              'url("/img/theme/bungienet/bungie_logo_with_shield.svg")',
+          }}
+        />
       </header>
       <div className={styles.container}>
         <h1>Temporarily Offline for Maintenance</h1>

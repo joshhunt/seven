@@ -3,9 +3,10 @@
 
 import { SeasonProgressBar } from "@Areas/Seasons/SeasonProgress/components/SeasonProgressBar";
 import {
-  SeasonsArray,
-  SeasonsDefinitions,
-} from "@Areas/Seasons/SeasonProgress/constants/SeasonsDefinitions";
+  RewardsPassArray,
+  RewardsPassDefinition,
+  BnetRewardsPassConfig,
+} from "@Areas/Seasons/SeasonProgress/constants/BnetRewardsPassConfig";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
@@ -56,11 +57,11 @@ const Season: React.FC<SeasonProps> = (props) => {
   const characterSeasonPassProgression =
     characterProgression?.progressions?.[seasonDef.seasonPassProgressionHash];
 
-  const seasonsDefinitionsBnet = SeasonsDefinitions.currentSeason;
+  const currentPassDefinitionBnet = BnetRewardsPassConfig.currentPass;
 
-  const backgroundImagePath = seasonsDefinitionsBnet.progressPageImage;
-  const seasonIconPath = seasonsDefinitionsBnet.smallIcon;
-  const seasonName = seasonsDefinitionsBnet.title;
+  const backgroundImagePath = currentPassDefinitionBnet.progressPageImage;
+  const seasonIconPath = currentPassDefinitionBnet.smallIcon;
+  const seasonName = currentPassDefinitionBnet.title;
 
   return (
     <div className={styles.seasonContainer}>

@@ -47,6 +47,38 @@ export class LocalizerUtils {
   }
 
   /**
+   * Returns the string name of a membership type -- does it look similar to the one above it? YES, it's a duplicate but I'm done fighting with perforce on this one.
+   * @param membershipType
+   */
+  public static getPlatformNameFromDestinyMembershipType(
+    membershipType: BungieMembershipType
+  ): string {
+    switch (membershipType) {
+      case BungieMembershipType.TigerPsn:
+        return Localizer.Registration.networksigninoptionplaystation;
+      case BungieMembershipType.TigerXbox:
+        return Localizer.Registration.networksigninoptionxbox;
+      case BungieMembershipType.TigerBlizzard:
+        return Localizer.Registration.networksigninoptionblizzard;
+      case BungieMembershipType.TigerSteam:
+        return Localizer.Registration.NetworkSignInOptionSteam;
+      case BungieMembershipType.TigerStadia:
+        return Localizer.Registration.NetworkSignInOptionStadia;
+      case BungieMembershipType.TigerEgs:
+        return Localizer.Registration.NetworkSignInOptionEgs;
+      case BungieMembershipType.BungieNext:
+        return "Bungie.net";
+      case BungieMembershipType.TigerDemon:
+        return "Demonware";
+      default:
+        throw new DetailedError(
+          "Localizer",
+          `The membershipType '${BungieMembershipType[membershipType]}' is not a valid Destiny platform.`
+        );
+    }
+  }
+
+  /**
    * Gets the abbreviated name of a platform
    * @param membershipType
    */

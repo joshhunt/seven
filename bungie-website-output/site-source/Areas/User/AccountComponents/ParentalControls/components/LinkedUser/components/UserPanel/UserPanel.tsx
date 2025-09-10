@@ -1,7 +1,10 @@
 import VerifyEmailModal from "@Areas/User/AccountComponents/ParentalControls/components/KwsModals/VerifyEmailModal";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import React, { FC, useState } from "react";
-import { ConvertToPlatformError } from "@ApiIntermediary";
+import {
+  ConvertToPlatformError,
+  ConvertToPlatformErrorSync,
+} from "@ApiIntermediary";
 import { Localizer } from "@bungie/localization";
 import {
   AgeCategoriesEnum,
@@ -21,10 +24,12 @@ import { useHistory, useLocation } from "react-router-dom";
 import KwsAcceptModal from "../../../KwsModals/KwsAcceptModal";
 import KwsConfirmModal from "../../../KwsModals/KwsConfirmModal";
 import styles from "./UserPanel.module.scss";
+import { Dialog } from "plxp-web-ui/components/base";
+import { Spinner } from "@UI/UIKit/Controls/Spinner";
 
 interface UserPanelProps {
-  asContainer?: boolean;
   assignedAccount?: PnP.GetPlayerContextResponse["playerContext"];
+  asContainer?: boolean;
 }
 
 interface InternalButtonProps extends ButtonProps {
@@ -48,7 +53,9 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   /* Accept */
   const [openKws, setKwsOpen] = useState(false);
   const [openConfirm, setConfirmOpen] = useState(false);
+  const [kwsLoading, setKwsLoading] = useState(false);
   const [openValidateEmail, setOpenValidateEmail] = useState(false);
+  const [unlinkConfirmationOpen, setUnlinkConfirmationOpen] = useState(false);
 
   const {
     playerContext,
@@ -63,53 +70,44 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     history.replace(location.pathname);
   };
 
-  const setChildAsPending = () => {
-    Platform.PnpService.SetParentOrGuardianAsPendingForChild(
-      pendingChildId,
-      playerContext?.membershipId
-    )
-      .then((r) => {
-        if (r !== ResponseStatusEnum.Success) {
-          Modal.error({
-            name: ResponseStatusEnum[r],
-            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
-          });
-        }
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e) => {
-        console.log(e);
-      })
-      .finally(() => {
-        clearParams();
-        removePendingChildCookie();
-        refreshPlayerContext();
-      });
-  };
-
   /* Controls what happens when a user clicks "Accept" in the KWS Acceptance Modal*/
   const onKWSAccept = async () => {
-    setKwsOpen(false);
-
     /* On accept, send KWS email - then set them as "pending", remove cookie - then refresh playerContext */
-    await Platform.PnpService.SendVerificationEmail(
-      playerContext?.membershipId,
-      pendingChildId
-    )
-      .then((r) => {
-        if (r !== ResponseStatusEnum.Success) {
-          Modal.error({
-            name: ResponseStatusEnum[r],
-            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
-          });
-        } else {
-          /* Open confirmation modal */
-          setConfirmOpen(true);
-        }
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    try {
+      setKwsLoading(true);
+      const emailResponse = await Platform.PnpService.SendVerificationEmail(
+        playerContext?.membershipId,
+        pendingChildId
+      );
+      if (emailResponse !== ResponseStatusEnum.Success) {
+        Modal.error({
+          name: ResponseStatusEnum[emailResponse],
+          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[emailResponse]}`,
+        });
+        return;
+      }
+      const setPendingResponse = await Platform.PnpService.SetParentOrGuardianAsPendingForChild(
+        pendingChildId,
+        playerContext?.membershipId
+      );
+      if (setPendingResponse !== ResponseStatusEnum.Success) {
+        Modal.error({
+          name: ResponseStatusEnum[setPendingResponse],
+          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[setPendingResponse]}`,
+        });
+        return;
+      }
+      setConfirmOpen(true);
+    } catch (e) {
+      const platformResponse = ConvertToPlatformErrorSync(e);
+      Modal.error(platformResponse);
+    } finally {
+      setKwsLoading(false);
+      setKwsOpen(false);
+      clearParams();
+      removePendingChildCookie();
+      refreshPlayerContext();
+    }
   };
 
   const isChild = EnumUtils.looseEquals(
@@ -132,24 +130,21 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   const panelUserLabel = hasNoAssignment ? requestsToJoin : displayName;
 
   const unlinkParent = async () => {
-    await Platform.PnpService.UnassignParentOrGuardianFromChild(
-      assignedAccount?.membershipId
-    )
-      .then((r) => {
-        if (r !== ResponseStatusEnum.Success) {
-          Modal.error({
-            name: ResponseStatusEnum[r],
-            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
-          });
-        }
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e) => {
-        Modal.error(e);
-      })
-      .finally(() => {
-        refreshPlayerContext();
-      });
+    try {
+      const r = await Platform.PnpService.UnassignParentOrGuardianFromChild(
+        assignedAccount?.membershipId
+      );
+      if (r !== ResponseStatusEnum.Success) {
+        Modal.error({
+          name: ResponseStatusEnum[r],
+          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[r]}`,
+        });
+      }
+    } catch (e) {
+      Modal.error(ConvertToPlatformErrorSync(e));
+    } finally {
+      refreshPlayerContext();
+    }
   };
 
   const handleClick = () => {
@@ -181,7 +176,10 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     },
     [ParentOrGuardianAssignmentStatusEnum.Assigned]: {
       // Shows for assigned child
-      onClick: () => unlinkParent(),
+      onClick: (e) => {
+        e.stopPropagation();
+        setUnlinkConfirmationOpen(true);
+      },
       label: ParentalControlsLoc.UnlinkLabel,
       disabled: false as boolean,
       variant: "outlined",
@@ -204,10 +202,11 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
     </Button>
   );
 
-  return asContainer ? (
+  return (
     <div
-      className={classNames(styles.container, {
-        [styles.backgroundBase]: !hasNoAssignment,
+      className={classNames(styles.wrapper, {
+        [styles.container]: asContainer,
+        [styles.backgroundBase]: !hasNoAssignment && asContainer,
         [styles.backgroundAccept]: hasNoAssignment,
       })}
     >
@@ -217,8 +216,48 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
           {panelUserLabel}
         </p>
       </div>
+      <Dialog
+        dialogWrapperProps={{
+          open: unlinkConfirmationOpen,
+          onClose: (_reason) => setUnlinkConfirmationOpen(false),
+        }}
+        dialogTitleArea={{
+          dialogTitleNode: Localizer.format(
+            ParentalControlsLoc.ParentUnlinkConfirmationHeading,
+            {
+              user: displayName,
+            }
+          ),
+        }}
+        dialogActionsArea={{
+          dialogActionsNode: (
+            <div className={styles.buttonContainer}>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUnlinkConfirmationOpen(false);
+                }}
+                variant={"outlined"}
+              >
+                {ParentalControlsLoc.Cancel}
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  unlinkParent();
+                  setUnlinkConfirmationOpen(false);
+                }}
+                variant={"contained"}
+              >
+                {ParentalControlsLoc.ParentUnlinkConfirmationButton}
+              </Button>
+            </div>
+          ),
+        }}
+      />
       <PanelButton />
       <KwsAcceptModal
+        isLoading={kwsLoading}
         open={openKws}
         onAccept={() => onKWSAccept()}
         onDecline={() => setKwsOpen(false)}
@@ -228,18 +267,12 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
         onAccept={() => {
           /* Close modal and set child as pending */
           setConfirmOpen(false);
-          setChildAsPending();
         }}
       />
       <VerifyEmailModal
         open={openValidateEmail}
         onDismiss={() => setOpenValidateEmail(false)}
       />
-    </div>
-  ) : (
-    <div className={styles.userContainer}>
-      <Avatar src={assignedAccount?.profilePicturePath} />
-      <p className={styles.userLabel}>{assignedAccount.displayName}</p>
     </div>
   );
 };

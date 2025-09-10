@@ -142,4 +142,5 @@ export const SystemNames = {
   FeatureAccountLinkingUpdate: "FeatureAccountLinkingUpdate",
   MarathonAlpha: "MarathonAlpha",
   MarathonAlphaFriendCodes: "MarathonAlphaFriendCodes",
+  MarathonTechTest: "MarathonTechTest",
 } as const;

@@ -18,7 +18,7 @@ import { Korean } from "flatpickr/dist/l10n/ko.js";
 import { Mandarin } from "flatpickr/dist/l10n/zh.js";
 import { MandarinTraditional } from "flatpickr/dist/l10n/zh-tw.js";
 import Flatpickr from "react-flatpickr";
-import { Icon } from "@UIKit/Controls/Icon";
+import { IoCalendar } from "react-icons/io5";
 
 interface FireteamSchedulerProps {
   dateTimeValue: string;
@@ -60,11 +60,7 @@ export const FireteamScheduler: React.FC<FireteamSchedulerProps> = (props) => {
   return (
     <div className={classNames(styles.calendar)}>
       <div className={classNames(styles.schedulerWrapper, styles.inputBox)}>
-        <Icon
-          iconType={"fa"}
-          iconName={"calendar"}
-          className={classNames(styles.flexIcon)}
-        />
+        <IoCalendar className={classNames(styles.flexIcon)} />
         <Flatpickr
           className={classNames(styles.flatpickrInput)}
           data-enable-time

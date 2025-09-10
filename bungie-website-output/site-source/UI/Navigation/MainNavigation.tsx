@@ -15,7 +15,6 @@ import classNames from "classnames";
 import React, {
   PropsWithChildren,
   useEffect,
-  useMemo,
   useRef,
   useState,
   Suspense,
@@ -28,6 +27,38 @@ import styles from "./MainNavigation.module.scss";
 import { NotificationSidebar } from "./NotificationSidebar";
 
 declare var NavigationConfig: INavigationConfig;
+
+// Cached navigation config to avoid recreating on every component mount
+const getNavigationConfig = (() => {
+  let cachedConfig: INavigationConfig | null = null;
+  let cachedEnabledLinks: IMenuParentItem[] | null = null;
+
+  return (): {
+    navConfig: INavigationConfig;
+    enabledLinks: IMenuParentItem[];
+  } => {
+    // Return cached result if available
+    if (cachedConfig !== null && cachedEnabledLinks !== null) {
+      return { navConfig: cachedConfig, enabledLinks: cachedEnabledLinks };
+    }
+
+    // Initialize cache if NavigationConfig is available
+    if (
+      typeof NavigationConfig !== "undefined" &&
+      NavigationConfig.length > 0
+    ) {
+      cachedConfig = NavigationConfig;
+      cachedEnabledLinks = NavigationConfig.filter(
+        (linkItem) => linkItem.Enabled
+      );
+    } else {
+      cachedConfig = [];
+      cachedEnabledLinks = [];
+    }
+
+    return { navConfig: cachedConfig, enabledLinks: cachedEnabledLinks };
+  };
+})();
 
 export enum NavigationConfigRequirements {
   None = 0,
@@ -100,21 +131,8 @@ export const MainNavigation: React.FC<PropsWithChildren<
   ]);
   const history = useHistory();
   const navWrapperRef = useRef(null);
-  const navConfig = useMemo(() => NavigationConfig, NavigationConfig);
-
-  const linksToShow = useMemo(() => {
-    const linksList: IMenuParentItem[] = [];
-
-    if (navConfig) {
-      navConfig.forEach((linkItem) => {
-        if (linkItem.Enabled) {
-          linksList.push(linkItem);
-        }
-      });
-    }
-
-    return linksList;
-  }, [navConfig]);
+  const { navConfig, enabledLinks } = getNavigationConfig();
+  const isLoaded = navConfig.length > 0;
 
   if (
     document.getElementById("main-content")?.getBoundingClientRect()?.top < 0
@@ -216,7 +234,7 @@ export const MainNavigation: React.FC<PropsWithChildren<
   const MenuItems = () => {
     return (
       <>
-        {linksToShow.map((link: any, i: number) => (
+        {enabledLinks.map((link: any, i: number) => (
           <MenuItem
             link={link}
             key={i}
@@ -232,11 +250,7 @@ export const MainNavigation: React.FC<PropsWithChildren<
     );
   };
 
-  const buyButtonSize: BasicSize = globalState.responsive.medium
-    ? BasicSize.Medium
-    : BasicSize.Small;
-
-  if (!mountDelayFinished) {
+  if (!mountDelayFinished || !isLoaded) {
     return null;
   }
 
@@ -248,11 +262,18 @@ export const MainNavigation: React.FC<PropsWithChildren<
     >
       <div className={styles.headerContents}>
         <Respond at={ResponsiveSize.medium} responsive={responsive}>
-          <Anchor id={styles.topLogo} url={RouteHelper.Home} />
+          <Anchor
+            id={styles.topLogo}
+            url={RouteHelper.Home}
+            style={{
+              backgroundImage: 'url("/img/theme/bungienet/bnetlogo.png")',
+            }}
+          />
         </Respond>
 
         <div
           className={styles.smallMenu}
+          style={{ backgroundImage: 'url("/img/theme/bungienet/menu.png")' }}
           onClick={(e) => {
             e.preventDefault();
             setMenuExpanded(!menuExpanded);
@@ -260,7 +281,13 @@ export const MainNavigation: React.FC<PropsWithChildren<
         />
 
         <div className={styles.mainNavigationLinks}>
-          <Anchor id={styles.logo} url={RouteHelper.Home} />
+          <Anchor
+            id={styles.logo}
+            url={RouteHelper.Home}
+            style={{
+              backgroundImage: 'url("/img/theme/bungienet/bnetlogo.png")',
+            }}
+          />
           <Respond at={ResponsiveSize.medium} responsive={responsive}>
             {!loggedInUser && <LoggedOutUserButtons />}
           </Respond>

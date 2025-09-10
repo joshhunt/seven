@@ -30,6 +30,7 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Anchor } from "./Anchor";
 import LocaleSwitcher from "./LocaleSwitcher";
 import styles from "./UserMenu.module.scss";
+import { MdSearch, MdNotificationsNone } from "react-icons/md";
 
 interface ISignInOutProps
   extends GlobalStateComponentProps<"loggedInUser" | "loggedInUserClans"> {
@@ -111,7 +112,7 @@ class UserMenuInternal extends React.Component<
           url={RouteHelper.Search()}
           className={classNames(styles.trigger, styles.searchTrigger)}
         >
-          <Icon iconName={"search"} iconType={"material"} />
+          <MdSearch />
         </Anchor>
 
         <LocaleSwitcher
@@ -129,8 +130,7 @@ class UserMenuInternal extends React.Component<
             className={notificationTriggerClasses}
             onClick={(e) => this.onToggleNotifications(e)}
           >
-            <Icon iconName={notificationsIconName} iconType={"material"} />
-
+            <MdNotificationsNone />
             {this.totalCounts > 0 && (
               <span className={styles.countPip}>{this.totalCounts}</span>
             )}

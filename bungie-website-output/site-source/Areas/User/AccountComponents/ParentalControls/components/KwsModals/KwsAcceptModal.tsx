@@ -9,11 +9,13 @@ import MailIcon from "@mui/icons-material/Mail";
 import styles from "./ModalStyles.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Responsive } from "@Boot/Responsive";
+import { Spinner } from "@UI/UIKit/Controls/Spinner";
 
 interface DialogProps {
   open: boolean;
   onAccept: () => void;
   onDecline: () => void;
+  isLoading: boolean;
 }
 
 interface ActionsProps {
@@ -49,7 +51,12 @@ const DialogActions: FC<ActionsProps> = ({ declineButton, acceptButton }) => (
 
 /* TODO: Update Web UI lib for Dialog presentation */
 
-const KwsAcceptModal: FC<DialogProps> = ({ open, onAccept, onDecline }) => {
+const KwsAcceptModal: FC<DialogProps> = ({
+  open,
+  onAccept,
+  onDecline,
+  isLoading,
+}) => {
   const [data, setData] = useState(null);
   const ParentalControlsLoc = Localizer.parentalcontrols;
   const cancelLabel = ParentalControlsLoc.Cancel;
@@ -94,19 +101,20 @@ const KwsAcceptModal: FC<DialogProps> = ({ open, onAccept, onDecline }) => {
             },
           },
         },
-        dialogActionsNode:
-          (
-            <DialogActions
-              acceptButton={{
-                label: data?.confirm_button_label,
-                onClick: onAccept,
-              }}
-              declineButton={{
-                label: cancelLabel,
-                onClick: onDecline,
-              }}
-            />
-          ) ?? null,
+        dialogActionsNode: isLoading ? (
+          <Spinner inline />
+        ) : (
+          <DialogActions
+            acceptButton={{
+              label: data?.confirm_button_label,
+              onClick: onAccept,
+            }}
+            declineButton={{
+              label: cancelLabel,
+              onClick: onDecline,
+            }}
+          />
+        ),
       }}
     />
   );

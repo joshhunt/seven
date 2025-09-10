@@ -37,12 +37,11 @@ const KwsConfirm: FC<DialogProps> = ({ open, onAccept }) => {
         dialogContentTextProps: { sx: { color: "#fff" } },
       }}
       dialogActionsArea={{
-        dialogActionsNode:
-          (
-            <DialogActions
-              acceptButton={{ label: buttonLabel, onClick: onAccept }}
-            />
-          ) ?? null,
+        dialogActionsNode: (
+          <DialogActions
+            acceptButton={{ label: buttonLabel, onClick: onAccept }}
+          />
+        ),
       }}
     />
   );

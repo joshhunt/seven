@@ -164,6 +164,18 @@ export class DestinyPlatformSelector extends React.Component<
 
     return !!crossSavePlatform && this.props.showCrossSaveBanner ? (
       <div className={styles.crossSaveBanner}>
+        <span
+          style={{
+            backgroundImage:
+              'url("/img/theme/bungienet/icons/icon_cross_save_dark.png")',
+            display: "inline-block",
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            width: "1rem",
+            height: "1rem",
+            marginRight: "0.25rem",
+          }}
+        />
         {Localizer.Profile.Crosssave}
       </div>
     ) : (

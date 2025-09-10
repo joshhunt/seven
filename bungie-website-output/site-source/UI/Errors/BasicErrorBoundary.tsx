@@ -87,7 +87,13 @@ class BasicErrorBoundaryInner extends React.Component<
     }
 
     return (
-      <div className={styles.errorWrapper}>
+      <div
+        className={styles.errorWrapper}
+        style={{
+          backgroundImage:
+            'url("/img/theme/bungienet/bgs/bg_error_sweeperbot.jpg")',
+        }}
+      >
         <BungieHelmet
           title={Localizer.Errors.Error}
           image={BungieHelmet.DefaultBoringMetaImage}

@@ -224,7 +224,6 @@ export class RouteDefs {
             path: "BeyondLight/Story",
             isOverride: true,
           }),
-        (area) => new ActionRoute(area, RouteActions.Reveal),
         (area) =>
           new ActionRoute(area, RouteActions.Info, { path: ":eventTag" }),
         (area) => new ActionRoute(area, RouteActions.WitchQueen),
@@ -249,7 +248,6 @@ export class RouteDefs {
         (area) => new ActionRoute(area, RouteActions.Rewards),
         (area) => new ActionRoute(area, RouteActions.DestinyShowcase),
         (area) => new ActionRoute(area, RouteActions.Anniversary),
-        (area) => new ActionRoute(area, RouteActions.Reveal),
       ],
     }),
     FireteamFinder: new Area({
@@ -291,14 +289,37 @@ export class RouteDefs {
     }),
     Marathon: new Area({
       name: AreaNames.Marathon,
+      webmasterSystem: SystemNames.MarathonTechTest,
       lazyComponent: createAsyncComponent(
         () =>
           import(
             "@Areas/Marathon/MarathonArea" /* webpackChunkName: "Marathon" */
           )
       ),
-      routes: [(area) => new ActionRoute(area, RouteActions.Alpha)],
-      webmasterSystem: SystemNames.MarathonAlpha,
+      routes: [
+        (area) => new ActionRoute(area, RouteActions.Playtests),
+        // Allow deep routes under Playtests for survey and status (support both cases)
+        (area) =>
+          new ActionRoute(area, RouteActions.Playtests, {
+            path: "playtests/survey",
+            isOverride: true,
+          }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Playtests, {
+            path: "playtests/status",
+            isOverride: true,
+          }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Playtests, {
+            path: "Playtests/survey",
+            isOverride: true,
+          }),
+        (area) =>
+          new ActionRoute(area, RouteActions.Playtests, {
+            path: "Playtests/status",
+            isOverride: true,
+          }),
+      ],
     }),
     News: new Area({
       name: AreaNames.News,
@@ -416,7 +437,7 @@ export class RouteDefs {
         (area) => new ActionRoute(area, RouteActions.SeasonOfTheWitch),
         (area) => new ActionRoute(area, RouteActions.SeasonOfTheWish),
         (area) => new ActionRoute(area, RouteActions.Progress),
-        (area) => new ActionRoute(area, RouteActions.PreviousSeason),
+        (area) => new ActionRoute(area, RouteActions.PreviousPass),
         (area) => new ActionRoute(area, RouteActions.Events),
         (area) => new ActionRoute(area, RouteActions.News, { path: ":slug" }),
       ],

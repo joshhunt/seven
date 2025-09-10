@@ -19,14 +19,14 @@ import {
   BnetStackLink,
 } from "../../Generated/contentstack-types";
 import { ContentStackClient } from "../../Platform/ContentStack/ContentStackClient";
-import { CalloutSection, SlimFooter, ClipPathWrapper } from "./Components";
+import { CalloutSection, ClipPathWrapper, SlimFooter } from "./Components";
 import {
-  LinkedInIcon,
-  InstagramIcon,
-  YouTubeIcon,
-  TwitterIcon,
-  TwitchIcon,
   FacebookIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  TwitchIcon,
+  TwitterIcon,
+  YouTubeIcon,
 } from "./Components/SocialIcons";
 
 import styles from "./Home.module.scss";
@@ -66,7 +66,7 @@ const Home = () => {
     mobile_image: BnetStackFile;
   }): string => {
     if (backgroundImages?.desktop_image || backgroundImages?.mobile_image) {
-      const bgImage = UrlUtils.addQueryParam(
+      return UrlUtils.addQueryParam(
         mobile
           ? backgroundImages?.mobile_image?.url ??
               backgroundImages?.desktop_image?.url
@@ -74,8 +74,6 @@ const Home = () => {
         "format",
         "webp"
       );
-
-      return bgImage;
     }
 
     return null;
@@ -221,7 +219,7 @@ const Home = () => {
             <ClipPathWrapper
               clipPathOff={index === 0}
               backgroundImage={setBgImage(section?.background_images)}
-              key={section.section_title}
+              key={section?.logo_image?.url}
             >
               <CalloutSection
                 sectionTitle={section.section_title}

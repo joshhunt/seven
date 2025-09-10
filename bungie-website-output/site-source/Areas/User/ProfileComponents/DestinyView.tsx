@@ -72,7 +72,7 @@ export const DestinyView: React.FC<DestinyViewProps> = (props) => {
       <DestinyCommendations />
       <ProfileErrorBoundary message={profileLoc.SeasonLoadingError}>
         <Season
-          seasonHash={coreSettings.destiny2CoreSettings.currentSeasonHash}
+          seasonHash={coreSettings?.destiny2CoreSettings?.currentSeasonHash}
           profileResponse={destinyProfileResponse}
           characterComponent={
             destinyMembership?.selectedCharacter ??

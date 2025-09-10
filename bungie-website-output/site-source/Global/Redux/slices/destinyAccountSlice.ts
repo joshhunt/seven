@@ -131,7 +131,7 @@ export const loadUserData = createAsyncThunk<
     try {
       const {
         membershipPair,
-        showAllMembershipsWhenCrossaved = false,
+        showAllMembershipsWhenCrossaved = true, // Changed default to true to show all linked accounts
       } = params;
 
       const state = getState() as { destinyAccount: DestinyMembershipState };
@@ -340,7 +340,7 @@ export const updatePlatform = createAsyncThunk<
   }
 );
 
-const initialState: DestinyMembershipState = {
+const initialState: any = {
   membershipData: null,
   selectedMembership: null,
   membershipCharacters: { membershipId: "", characterList: [] },
@@ -363,15 +363,29 @@ const destinyAccountSlice = createSlice({
 
       // Look for the character in both single platform characters and all platform characters
       const characterInSinglePlatform = state.membershipCharacters?.characterList?.find(
-        (char) => char?.id === action.payload
+        (char: { id: string }) => char?.id === action.payload
       );
 
       const characterInAllPlatforms = state.allPlatformCharacters?.find(
-        (char) => char?.id === action.payload
+        (char: { id: string }) => char?.id === action.payload
       );
 
-      if (characterInSinglePlatform || characterInAllPlatforms) {
+      const selectedCharacter =
+        characterInSinglePlatform || characterInAllPlatforms;
+
+      if (selectedCharacter) {
         state.selectedCharacterId = action.payload;
+
+        // Also update selectedMembership to match the character's platform
+        const matchingMembership = state.membershipData?.destinyMemberships?.find(
+          (membership) =>
+            membership.membershipType === selectedCharacter.membershipType
+        );
+
+        if (matchingMembership) {
+          state.selectedMembership = matchingMembership;
+          state.selectedPlatformId = matchingMembership.membershipId;
+        }
       }
     },
     resetMembership: () => {
@@ -469,6 +483,7 @@ export const {
   updateCharacter,
   resetMembership,
   setAllPlatformCharacters,
+  clearProfile,
 } = destinyAccountSlice.actions;
 
 // --- Selectors ---
@@ -558,7 +573,7 @@ export const selectSelectedCharacter = (state: {
 
   // First try to find in single platform characters
   const characterInSinglePlatform = account.membershipCharacters?.characterList?.find(
-    (char) => char?.id === selectedId
+    (char: { id: any }) => char?.id === selectedId
   );
 
   if (characterInSinglePlatform) {
@@ -567,7 +582,7 @@ export const selectSelectedCharacter = (state: {
 
   // If not found, try in all platform characters
   const characterInAllPlatforms = account.allPlatformCharacters?.find(
-    (char) => char?.id === selectedId
+    (char: { id: any }) => char?.id === selectedId
   );
 
   return characterInAllPlatforms || null;
