@@ -59,17 +59,12 @@ export function useMultipleProfileData(
   const [results, setResults] = useState<UseProfileDataResponse[]>(
     profileRequests.map(() => ({
       isLoading: true,
-      error: undefined,
-      profile: undefined,
     }))
   );
 
   useEffect(() => {
     if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
       throw new Error("Destiny 2 system is not available");
-    }
-    if (profileRequests.length === 0) {
-      return;
     }
     const getData = async () => {
       const cachedData: ProfileDataContextType = {};
@@ -98,8 +93,6 @@ export function useMultipleProfileData(
       setResults(
         profileRequests.map(() => ({
           isLoading: true,
-          error: undefined,
-          profile: undefined,
         }))
       );
       const promises = missingData.map(async (r) => {
@@ -111,14 +104,12 @@ export function useMultipleProfileData(
           );
           return {
             isLoading: false,
-            error: undefined,
             profile,
           };
         } catch (e) {
           return {
             isLoading: false,
             error: e,
-            profile: undefined,
           };
         }
       });

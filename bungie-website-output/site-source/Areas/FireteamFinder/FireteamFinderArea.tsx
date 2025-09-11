@@ -69,7 +69,9 @@ const FireteamEligibleCharacterProvider = ({
 
   return (
     <SpinnerContainer
-      loading={!destinyData.loaded || profiles.some((p) => p.isLoading)}
+      loading={
+        (loggedIn && !destinyData.loaded) || profiles.some((p) => p.isLoading)
+      }
       delayRenderUntilLoaded
     >
       {children}

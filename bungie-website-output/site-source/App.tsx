@@ -18,9 +18,8 @@ import React, { useEffect } from "react";
 import Helmet from "react-helmet";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { PersistGate } from "redux-persist/integration/react";
-import store, { persistor } from "./Global/Redux/store";
-import { GlobalUserProvider } from "@Global/GlobalUserProvider";
+import store from "./Global/Redux/store";
+import { GlobalProviders } from "@Global/GlobalProviders";
 
 /**
  * The wrapper component for the rest of the application
@@ -39,41 +38,34 @@ export const App: React.FC = () => {
     <React.StrictMode>
       <Router basename={AppBaseUrl}>
         <BasicErrorBoundary>
-          <Provider store={store}>
-            <GlobalUserProvider>
-              <PersistGate persistor={persistor}>
+          {coreSettings && (
+            <Provider store={store}>
+              <GlobalProviders>
                 <AppLayout>
                   <Helmet
                     titleTemplate="%s | Bungie.net"
                     defaultTitle={"Bungie.net"}
                   />
-                  {coreSettings && (
-                    <React.Fragment>
-                      <FullPageLoadingBar />
-                      <SwitchWithErrors>
-                        <Route exact={true} path="/">
-                          <Home />
-                        </Route>
-                        <Route exact={true} path="/version">
-                          {
-                            /* tslint:disable-next-line: jsx-use-translation-function */
-                            <span>Build Version: {BuildVersion}</span>
-                          }
-                        </Route>
-                        {RouteDefs.AllAreaRoutes}
-                        <Route path={"/:locale/:slug?"}>
-                          <React.Suspense fallback={<LoadingFallback />}>
-                            <ProceduralMarketingPageFallback />
-                          </React.Suspense>
-                        </Route>
-                      </SwitchWithErrors>
-                    </React.Fragment>
-                  )}
+                  <FullPageLoadingBar />
+                  <SwitchWithErrors>
+                    <Route exact={true} path="/">
+                      <Home />
+                    </Route>
+                    <Route exact={true} path="/version">
+                      <span>Build Version: {BuildVersion}</span>
+                    </Route>
+                    {RouteDefs.AllAreaRoutes}
+                    <Route path={"/:locale/:slug?"}>
+                      <React.Suspense fallback={<LoadingFallback />}>
+                        <ProceduralMarketingPageFallback />
+                      </React.Suspense>
+                    </Route>
+                  </SwitchWithErrors>
                 </AppLayout>
                 <GlobalElements />
-              </PersistGate>
-            </GlobalUserProvider>
-          </Provider>
+              </GlobalProviders>
+            </Provider>
+          )}
         </BasicErrorBoundary>
       </Router>
     </React.StrictMode>
