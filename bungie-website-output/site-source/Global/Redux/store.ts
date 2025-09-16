@@ -1,30 +1,14 @@
 import authenticationSlice from "@Global/Redux/slices/authenticationSlice";
 import exampleSlice from "@Global/Redux/slices/exampleSlice";
 import destinyAccountSlice from "@Global/Redux/slices/destinyAccountSlice";
-import registrationSlice from "@Global/Redux/slices/registrationSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { persistReducer, persistStore } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-
-// Persist only certain fields from registration slice
-const registrationPersistConfig = {
-  key: "registration",
-  storage,
-  whitelist: ["someField", "anotherField"],
-};
-
-// Create persisted reducers
-const persistedRegistrationReducer = persistReducer(
-  registrationPersistConfig,
-  registrationSlice
-);
+import { persistStore } from "redux-persist";
 
 // Create and configure store
 const store = configureStore({
   reducer: {
     example: exampleSlice,
-    registration: persistedRegistrationReducer,
     authentication: authenticationSlice,
     destinyAccount: destinyAccountSlice, // <- Don't forget this!
   },

@@ -156,11 +156,10 @@ const DestinyGuardianRanks: React.FC<DestinyGuardianRanksProps> = (props) => {
                 props.destinyProfileResponse
               );
 
-              const isComplete =
-                data?.completionValue > 0 &&
-                data?.progressValue >= data?.completionValue;
+              const isComplete = index <= currentRankIndex;
               const isActive = currentRankIndex === index;
-              const isHighest = !isActive && highestRankIndex === index;
+              const isHighest =
+                !isComplete && !isActive && index <= highestRankIndex;
 
               return (
                 <div

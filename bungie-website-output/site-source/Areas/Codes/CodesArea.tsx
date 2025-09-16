@@ -24,7 +24,7 @@ import { PartnerRewards } from "./PartnerRewards/PartnerRewards";
 import { GameCodes } from "@Areas/Codes/GameCodes/GameCodesSection";
 import styles from "./Codes.module.scss";
 import { UrlUtils } from "@Utilities/UrlUtils";
-import { AclHelper } from "@Areas/Marathon/Alpha/Helpers/AclHelper";
+import { AclHelper } from "@Areas/Marathon/Helpers/AclHelper";
 
 interface CodesAreaProps
   extends GlobalStateComponentProps<"loggedInUser">,

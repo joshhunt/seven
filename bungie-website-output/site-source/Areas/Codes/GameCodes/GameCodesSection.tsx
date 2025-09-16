@@ -1,7 +1,7 @@
 // Created by larobinson, 2025
 // Copyright Bungie, Inc.
 
-import { AclHelper } from "@Areas/Marathon/Alpha/Helpers/AclHelper";
+import { AclHelper } from "@Areas/Marathon/Helpers/AclHelper";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { ClientDeviceType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";

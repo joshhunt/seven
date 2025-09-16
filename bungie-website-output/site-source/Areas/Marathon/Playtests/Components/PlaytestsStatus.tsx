@@ -15,7 +15,7 @@ import {
 } from "../Helpers/PlaytestsHelper";
 import { Platform } from "@Platform";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { AclHelper } from "@Areas/Marathon/Alpha/Helpers/AclHelper";
+import { AclHelper } from "@Areas/Marathon/Helpers/AclHelper";
 
 interface PlaytestsStatusProps {
   status: "received" | "granted" | "not-selected";
