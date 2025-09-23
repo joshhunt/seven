@@ -1,14 +1,10 @@
 import * as React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { WithRouteData } from "@UI/Navigation/WithRouteData";
-import { Localizer } from "@bungie/localization";
-import { PlaytestsApplication } from "./Components/PlaytestsApplication";
-import { PlaytestsStatusLoader } from "./Components/PlaytestsStatus";
-import { PlaytestsSurveyLoader } from "./Components/PlaytestsSurvey";
+import { PlaytestsGate } from "./Components/PlaytestsGate";
+import pageStyles from "./PlaytestsPage.module.scss";
 
 interface IPlaytestsAreaProps {
   // Add any props if needed
@@ -16,47 +12,20 @@ interface IPlaytestsAreaProps {
 
 export class PlaytestsArea extends React.Component<IPlaytestsAreaProps> {
   public render() {
-    const playtestsTitle = Localizer.Playtests.Title;
-
-    const statusPath = RouteHelper.MarathonPlaytestsStatus().url;
-    const surveyPath = RouteHelper.MarathonPlaytestsSurvey().url;
+    const playtestsTitle = "Marathon Technical Test";
 
     return (
       <React.Fragment>
         <BungieHelmet
           title={playtestsTitle}
-          description={Localizer.Playtests.Description}
+          description={"Playtest hub page for Bungie's Marathon Playtests"}
         ></BungieHelmet>
 
-        <div
-          className="playtests-area"
-          style={{ display: "flex", justifyContent: "center", width: "100%" }}
-        >
+        <div className={pageStyles.page}>
           <SwitchWithErrors>
             <Route
               path={RouteHelper.MarathonPlaytests().url}
-              render={(props) => (
-                <PlaytestsApplication
-                  {...props}
-                  onContinue={() => {
-                    props.history.push(surveyPath);
-                  }}
-                />
-              )}
-              exact
-            />
-
-            {/* Survey route */}
-            <Route
-              path={surveyPath}
-              render={(props) => <PlaytestsSurveyLoader {...props} />}
-              exact
-            />
-
-            {/* Status route */}
-            <Route
-              path={statusPath}
-              render={(props) => <PlaytestsStatusLoader {...props} />}
+              component={PlaytestsGate}
               exact
             />
           </SwitchWithErrors>

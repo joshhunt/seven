@@ -64,7 +64,7 @@ export function useMultipleProfileData(
 
   useEffect(() => {
     if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
-      throw new Error("Destiny 2 system is not available");
+      return;
     }
     const getData = async () => {
       const cachedData: ProfileDataContextType = {};
@@ -162,7 +162,7 @@ export function useProfileData({
 
   useEffect(() => {
     if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
-      throw new Error("Destiny 2 system is not available");
+      return;
     }
     if (!membershipType || !membershipId) {
       return;

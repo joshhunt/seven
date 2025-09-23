@@ -5,17 +5,18 @@ import { AclEnum } from "@Enum";
 import { EnumUtils } from "@Utilities/EnumUtils";
 
 export class AclHelper {
-  static getAclAsString = (acl: AclEnum): string => {
+  static getAclAsString(acl: AclEnum): string {
     return EnumUtils.getStringValue(acl, AclEnum);
-  };
+  }
 
   static hasGameCodesAccess(userAcls: AclEnum[]): boolean {
     if (!userAcls) {
-      return null;
+      return false;
     }
-
-    return userAcls.some((role: AclEnum) =>
-      this.getAclAsString(role)?.startsWith("Marathon_")
+    return userAcls.some(
+      (role: AclEnum) =>
+        AclHelper.getAclAsString(role)?.toLowerCase().startsWith("marathon") ||
+        AclHelper.getAclAsString(role)?.toLowerCase().includes("marathon")
     );
   }
 
@@ -25,7 +26,7 @@ export class AclHelper {
     }
 
     return userAcls.find((role) =>
-      this.getAclAsString(role)?.startsWith("Marathon_")
+      AclHelper.getAclAsString(role)?.startsWith("Marathon_")
     );
   }
 
@@ -36,6 +37,6 @@ export class AclHelper {
 
     const acl = this.getMarathonAcl(userAcls);
 
-    return this.getAclAsString(acl);
+    return AclHelper.getAclAsString(acl);
   }
 }

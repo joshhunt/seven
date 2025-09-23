@@ -50,6 +50,7 @@ export enum RouteActions {
   Dashboard = "Dashboard",
   MarathonPlaytests = "MarathonPlaytests",
   Playtests = "Playtests",
+  MarathonCredits = "Credits",
   Browse = "Browse",
   Search = "Search",
   Fireteam = "Fireteam",

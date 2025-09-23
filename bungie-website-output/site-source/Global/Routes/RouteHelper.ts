@@ -508,18 +508,11 @@ export class RouteHelper {
   public static MarathonPlaytests = BasicReactPath(
     RouteDefs.Areas.Marathon.getAction(RouteActions.Playtests)
   );
-  public static MarathonPlaytestsSurvey() {
-    const base = this.MarathonPlaytests();
-    if (!base?.url) {
-      return "";
-    }
-    return { url: `${base.url}/survey` };
-  }
 
   public static MarathonPlaytestsStatus() {
     const base = this.MarathonPlaytests();
     if (!base?.url) {
-      return "";
+      return { url: `${base.url}` };
     }
     return { url: `${base.url}/status` };
   }
@@ -611,7 +604,10 @@ export class RouteHelper {
     LegacyPath(`/ExternalRelay/${relayName}?${UrlUtils.ObjectToQuery(params)}`);
 
   public static ExternalRelayBuyD2 = (version = "All", store?: string) =>
-    RouteHelper.ExternalRelay("BuyD2", { version, store });
+    RouteHelper.ExternalRelay("BuyD2", {
+      version,
+      store,
+    });
 
   public static DestinyItemDefinition = (itemHash: string) =>
     LegacyPath(`/Explore/Detail/DestinyInventoryItemDefinition/${itemHash}`);

@@ -289,7 +289,6 @@ export class RouteDefs {
     }),
     Marathon: new Area({
       name: AreaNames.Marathon,
-      webmasterSystem: SystemNames.MarathonTechTest,
       lazyComponent: createAsyncComponent(
         () =>
           import(
@@ -297,28 +296,8 @@ export class RouteDefs {
           )
       ),
       routes: [
+        (area) => new ActionRoute(area, RouteActions.MarathonCredits),
         (area) => new ActionRoute(area, RouteActions.Playtests),
-        // Allow deep routes under Playtests for survey and status (support both cases)
-        (area) =>
-          new ActionRoute(area, RouteActions.Playtests, {
-            path: "playtests/survey",
-            isOverride: true,
-          }),
-        (area) =>
-          new ActionRoute(area, RouteActions.Playtests, {
-            path: "playtests/status",
-            isOverride: true,
-          }),
-        (area) =>
-          new ActionRoute(area, RouteActions.Playtests, {
-            path: "Playtests/survey",
-            isOverride: true,
-          }),
-        (area) =>
-          new ActionRoute(area, RouteActions.Playtests, {
-            path: "Playtests/status",
-            isOverride: true,
-          }),
       ],
     }),
     News: new Area({

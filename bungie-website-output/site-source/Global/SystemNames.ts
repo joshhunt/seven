@@ -143,4 +143,5 @@ export const SystemNames = {
   MarathonAlpha: "MarathonAlpha",
   MarathonAlphaFriendCodes: "MarathonAlphaFriendCodes",
   MarathonTechTest: "MarathonTechTest",
+  MarathonLaunch: "MarathonLaunch",
 } as const;

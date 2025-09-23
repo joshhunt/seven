@@ -9,17 +9,16 @@ import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
-import { BungieMembershipType, OptInFlags } from "@Enum";
+import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { ShowAuthModal } from "@UI/User/Auth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import { EmailValidationState, UserUtils } from "@Utilities/UserUtils";
+import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
 import React, { useRef } from "react";
 import { useHistory } from "react-router";
@@ -37,10 +36,10 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
   const history = useHistory();
   const membershipType =
     destinyMembership?.selectedMembership?.membershipType ||
-    destinyMembership?.membershipData?.destinyMemberships[0]?.membershipType ||
+    destinyMembership?.membershipData?.destinyMemberships?.[0]
+      ?.membershipType ||
     BungieMembershipType.None;
   const rewardLoc = Localizer.Bungierewards;
-  const settingsModalRef = React.createRef<Modal>();
 
   const emailCode = (
     rewardId: string,
@@ -50,7 +49,7 @@ export const RewardButtons: React.FC<RewardButtonsProps> = (props) => {
     if (isDigital) {
       const platform = destinyMembership?.isCrossSaved
         ? globalState?.crossSavePairingStatus?.primaryMembershipType
-        : destinyMembership?.selectedMembership.membershipType ??
+        : destinyMembership?.selectedMembership?.membershipType ??
           BungieMembershipType.None;
 
       gotoRewardItemPage(rewardId, platform);

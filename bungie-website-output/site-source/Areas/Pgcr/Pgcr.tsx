@@ -197,7 +197,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
           newActivityData.isScoredPvE = true;
         }
 
-        if (activityModeDefinition?.parentHashes === null) {
+        if (!activityModeDefinition?.parentHashes) {
           PgcrDataStore.actions.updatePgcrActivityData(newActivityData);
 
           throw new Error("Can't find parentHashes of this activity mode");
@@ -254,10 +254,7 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
             );
           } else {
             const firstTeam = pgcr.teams?.[0];
-            if (
-              newActivityData.focusedTeamId === -1 &&
-              firstTeam?.teamId !== null
-            ) {
+            if (newActivityData.focusedTeamId === -1 && firstTeam?.teamId) {
               newActivityData.focusedTeamId = firstTeam.teamId;
               newActivityData.focusedTeamStanding =
                 firstTeam.standing?.basic?.value;
@@ -267,10 +264,10 @@ const Pgcr: React.FC<PgcrProps> = (props) => {
 
         {
           if (pgcr.teams?.length > 1) {
-            const opponentTeam = pgcr.teams?.filter(
+            const opponentTeam = pgcr.teams?.find(
               (a) => a.teamId !== newActivityData.focusedTeamId
-            )[0];
-            if (opponentTeam !== undefined && opponentTeam !== null) {
+            );
+            if (opponentTeam) {
               newActivityData.opponentTeamId = opponentTeam.teamId;
               newActivityData.focusedTeamStanding =
                 opponentTeam.standing?.basic?.value;

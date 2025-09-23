@@ -217,7 +217,10 @@ export class Dropdown extends React.Component<IDropdownProps, IDropdownState> {
       (a) => a.value === this.state.currentValue
     );
     if (!selectedOption) {
-      selectedOption = this.props.options[0];
+      selectedOption = this.props.options[0] ?? {
+        label: this.props.placeholderValue ?? "",
+        value: "",
+      };
     }
 
     return selectedOption;
