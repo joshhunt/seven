@@ -1,17 +1,10 @@
-/**
- * @param {any} obj The object to inspect.
- * @returns {boolean} True if the argument appears to be a plain object.
- */
-export default function isPlainObject(obj: unknown) {
-  if (typeof obj !== "object" || obj === null) return false;
+import isObject from "./isObject";
 
-  const proto = Object.getPrototypeOf(obj);
-  if (proto === null) return true;
+export default (tempObject: object) => {
+  const prototypeCopy =
+    tempObject.constructor && tempObject.constructor.prototype;
 
-  let baseProto = proto;
-  while (Object.getPrototypeOf(baseProto) !== null) {
-    baseProto = Object.getPrototypeOf(baseProto);
-  }
-
-  return proto === baseProto;
-}
+  return (
+    isObject(prototypeCopy) && prototypeCopy.hasOwnProperty("isPrototypeOf")
+  );
+};
