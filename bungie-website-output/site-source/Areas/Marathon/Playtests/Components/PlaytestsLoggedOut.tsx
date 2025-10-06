@@ -3,6 +3,8 @@ import { BungieCredentialType } from "@Enum";
 import { BrowserUtils } from "@Utilities/BrowserUtils";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import styles from "./PlaytestsLoggedOut.module.scss";
+import sharedStyles from "./PlaytestSharedStyles.module.scss";
+import { Img } from "@Helpers";
 
 export const PlaytestsLoggedOut: React.FC = () => {
   const handlePlatformClick = (
@@ -21,11 +23,18 @@ export const PlaytestsLoggedOut: React.FC = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Marathon Playtests</h1>
-      <p className={styles.subtitle}>
-        Sign in using a supported platform to continue.
-      </p>
+    <div className={sharedStyles.container}>
+      <img
+        className={sharedStyles.img}
+        src={Img("/marathon/icons/marathon.svg")}
+        alt="Marathon Closed Technical Test"
+      />
+      <h1 className={sharedStyles.title}>Marathon Closed Technical Test</h1>
+      <span className={sharedStyles.subtitle}>
+        We’re testing the latest changes to Marathon from October 22 – 28. If
+        you’d like to be considered for participation, please sign in with your
+        game platform account below.
+      </span>
 
       <div className={styles.buttons}>
         <button
@@ -35,11 +44,8 @@ export const PlaytestsLoggedOut: React.FC = () => {
         >
           <img
             className={styles.platformImage}
-            src="/7/assets/platforms/presskit/playstation-signin.png"
+            src={Img("bungie/icons/logos/playstation/ps_square.png")}
             alt="Sign in with PlayStation"
-            onError={(ev) => {
-              (ev.currentTarget as HTMLImageElement).style.display = "none";
-            }}
           />
           <span className={styles.buttonText}>PlayStation</span>
         </button>
@@ -51,11 +57,8 @@ export const PlaytestsLoggedOut: React.FC = () => {
         >
           <img
             className={styles.platformImage}
-            src="/7/assets/platforms/presskit/xbox-signin.png"
+            src={Img("bungie/icons/logos/xbox/xbox_square.png")}
             alt="Sign in with Xbox"
-            onError={(ev) => {
-              (ev.currentTarget as HTMLImageElement).style.display = "none";
-            }}
           />
           <span className={styles.buttonText}>Xbox</span>
         </button>
@@ -67,11 +70,8 @@ export const PlaytestsLoggedOut: React.FC = () => {
         >
           <img
             className={styles.platformImage}
-            src="/7/assets/platforms/presskit/steam-signin.png"
+            src={Img("bungie/icons/logos/steam/steam_square.png")}
             alt="Sign in with Steam"
-            onError={(ev) => {
-              (ev.currentTarget as HTMLImageElement).style.display = "none";
-            }}
           />
           <span className={styles.buttonText}>Steam</span>
         </button>

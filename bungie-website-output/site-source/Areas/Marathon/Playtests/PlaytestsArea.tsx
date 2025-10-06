@@ -5,6 +5,7 @@ import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { PlaytestsGate } from "./Components/PlaytestsGate";
 import pageStyles from "./PlaytestsPage.module.scss";
+import { Img } from "@Helpers";
 
 interface IPlaytestsAreaProps {
   // Add any props if needed
@@ -19,8 +20,12 @@ export class PlaytestsArea extends React.Component<IPlaytestsAreaProps> {
         <BungieHelmet
           title={playtestsTitle}
           description={"Playtest hub page for Bungie's Marathon Playtests"}
-        ></BungieHelmet>
-
+        >
+          <body className={pageStyles.body} />
+        </BungieHelmet>
+        <div className={pageStyles.header}>
+          <img src={Img("/marathon/logos/marathon_logo_splash_reversed.jpg")} />
+        </div>
         <div className={pageStyles.page}>
           <SwitchWithErrors>
             <Route

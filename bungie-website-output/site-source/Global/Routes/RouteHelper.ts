@@ -604,10 +604,7 @@ export class RouteHelper {
     LegacyPath(`/ExternalRelay/${relayName}?${UrlUtils.ObjectToQuery(params)}`);
 
   public static ExternalRelayBuyD2 = (version = "All", store?: string) =>
-    RouteHelper.ExternalRelay("BuyD2", {
-      version,
-      store,
-    });
+    RouteHelper.ExternalRelay("BuyD2", { version, store });
 
   public static DestinyItemDefinition = (itemHash: string) =>
     LegacyPath(`/Explore/Detail/DestinyInventoryItemDefinition/${itemHash}`);

@@ -1,28 +1,27 @@
+import { SystemNames } from "@Global/SystemNames";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { AclHelper } from "../Helpers/AclHelper";
+import { is18OrOlder } from "../Helpers/PlaytestsHelper";
 import { ResolveInput, PlaytestState } from "./types";
-import { AclEnum } from "@Enum";
 
-export async function resolvePlaytestState(
-  input: ResolveInput,
-  deps: {
-    fetchSurveyCompleted: (membershipId: string) => Promise<boolean>;
-    hasCodesAccess: (acls?: AclEnum[]) => boolean;
-    is18OrOlder: (birthDate?: string) => boolean;
-  }
-): Promise<PlaytestState> {
+export function resolvePlaytestState(input: ResolveInput): PlaytestState {
   try {
     const { membershipId, acls, birthDate } = input;
 
     if (!membershipId) return "notLoggedIn";
-    if (!deps.is18OrOlder(birthDate)) return "underage";
+    if (!is18OrOlder(birthDate)) return "underage";
 
-    const [surveyDone, approved] = await Promise.all([
-      deps.fetchSurveyCompleted(membershipId),
-      Promise.resolve(deps.hasCodesAccess(acls)),
-    ]);
+    if (AclHelper.hasOldAclOnly(acls)) {
+      // Alpha users will see the pending page until we are ready to 'flip the switch' and show them game codes.
+      return ConfigUtils.SystemStatus(SystemNames.PlaytestAccessRefreshed)
+        ? "approved"
+        : "pending";
+    }
+    if (AclHelper.hasGameCodesAccess(acls)) {
+      return "approved";
+    }
 
-    if (approved) return "approved";
-    if (!surveyDone) return "surveyIncomplete";
-    return "pending";
+    return "surveyIncomplete";
   } catch (e) {
     return "error";
   }

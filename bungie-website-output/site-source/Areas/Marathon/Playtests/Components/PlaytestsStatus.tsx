@@ -1,13 +1,14 @@
 import React, { FC } from "react";
 import { ClientDeviceType } from "@Enum";
 import { EnumUtils } from "@Utilities/EnumUtils";
-import styles from "@Areas/Codes/GameCodes/GameCodesSection.module.scss";
+import styles from "./PlaytestsStatus.module.scss";
+import sharedStyles from "./PlaytestSharedStyles.module.scss";
 import { CodeRow } from "@Areas/Codes/GameCodes/CodeRowItem";
-import { useMarketplaceCodes } from "@Areas/Marathon/Playtests/Hooks/useMarketplaceCodes";
+import { useMarketplaceCodes } from "@Areas/Marathon/Playtests/utils/useMarketplaceCodes";
+import { Img } from "@Helpers";
 
 export const PlaytestsStatus: FC = () => {
   const { codes, loading, error } = useMarketplaceCodes();
-
   const NoCodesMessage = () => (
     <div className={styles.noCodesMessage}>
       You don't have any game codes available.
@@ -15,10 +16,13 @@ export const PlaytestsStatus: FC = () => {
   );
 
   return (
-    <>
-      <h1 className={styles.loadingContainer}>
-        Welcome to the Marathon Technical Playtest
-      </h1>
+    <div className={sharedStyles.container}>
+      <img
+        className={sharedStyles.img}
+        src={Img("/marathon/icons/code.svg")}
+        alt="You’ve Been Selected"
+      />
+      <h1 className={sharedStyles.title}>You’ve Been Selected</h1>
       {loading && (
         <div className={styles.loadingContainer}>Loading game codes...</div>
       )}
@@ -27,21 +31,30 @@ export const PlaytestsStatus: FC = () => {
       )}
       {!loading &&
         !error &&
-        (codes?.length === 0 ? (
+        (codes.length === 0 ? (
           <NoCodesMessage />
         ) : (
-          codes?.map((code, index) => (
-            <CodeRow
-              key={index}
-              title={code.OfferDisplayName}
-              platform={EnumUtils.getStringValue(
-                code.deviceType,
-                ClientDeviceType
-              )}
-              code={code.platformCode}
-            />
-          ))
+          <>
+            <span className={sharedStyles.subtitle}>
+              Redeem your code on the platform shown below. If you previously
+              played during Public Alpha, you can just update or re-download the
+              game from your library.
+            </span>
+            <div className={styles.codeSection}>
+              {codes.map((code) => (
+                <CodeRow
+                  key={code.platformCode}
+                  title={code.OfferDisplayName}
+                  platform={EnumUtils.getStringValue(
+                    code.deviceType,
+                    ClientDeviceType
+                  )}
+                  code={code.platformCode}
+                />
+              ))}
+            </div>
+          </>
         ))}
-    </>
+    </div>
   );
 };

@@ -426,6 +426,11 @@ export enum AclEnum {
   Marathon_Playtest_Bungie = 48,
   Marathon_Playtest_1 = 49,
   Marathon_Playtest_2 = 50,
+  Marathon_TechTest_General = 51,
+  Marathon_TechTest_Bungie = 52,
+  Marathon_TechTest_Sony = 53,
+  Marathon_TechTest_VIP = 54,
+  Marathon_TechTest_DiaryStudy = 55,
 }
 
 /**

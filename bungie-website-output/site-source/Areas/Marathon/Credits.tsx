@@ -2,10 +2,11 @@ import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory
 import { Localizer } from "@bungie/localization";
 import { ContentStackClient } from "Platform/ContentStack/ContentStackClient";
 import React, { useEffect, useState } from "react";
-import { jsonToHtml } from "@contentstack/json-rte-serializer";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import sharedStyles from "./SharedStyles.module.scss";
 import classNames from "classnames";
+import { ContentStackStyler } from "@UI/Content/ContentStackStyler";
+import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 
 const defaultCredits = {
   title: "",
@@ -38,10 +39,9 @@ export function Credits() {
           sharedStyles.centeredContainer
         )}
       >
-        {/* Setting the HTML here should be safe since it is parsed from a JSON format that does not allow scripting. */}
-        <div
-          dangerouslySetInnerHTML={{ __html: jsonToHtml(credits.content) }}
-        />
+        <ContentStackStyler>
+          <SafelySetInnerHTML html={credits.content} />
+        </ContentStackStyler>
       </div>
     </>
   );

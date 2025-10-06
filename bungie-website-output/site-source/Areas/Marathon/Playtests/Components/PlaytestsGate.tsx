@@ -1,91 +1,84 @@
 import * as React from "react";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import styles from "./PlaytestsSurvey.module.scss";
 import { resolvePlaytestState } from "@Areas/Marathon/Playtests/state";
 import { PlaytestState } from "@Areas/Marathon/Playtests/types";
-import {
-  getSurveyCompletedForUser,
-  is18OrOlder,
-} from "@Areas/Marathon/Helpers/PlaytestsHelper";
-import { AclHelper } from "@Areas/Marathon/Helpers/AclHelper";
 import { PlaytestsSurvey } from "./PlaytestsSurvey";
 import { PlaytestsLoggedOut } from "./PlaytestsLoggedOut";
 import { PlaytestsStatus } from "./PlaytestsStatus";
 import { PlaytestsPending } from "./PlaytestsPending";
+import { useEffect, useState } from "react";
+import { ContentStackClient } from "Platform/ContentStack/ContentStackClient";
+import { BungieNetLocaleMap } from "@bungie/contentstack/RelayEnvironmentFactory/presets/BungieNet/BungieNetLocaleMap";
+import { Localizer } from "@bungie/localization";
+import { BnetStackFrequentlyAskedQuestions } from "Generated/contentstack-types";
+import FrequentlyAskedQuestions from "@UI/Content/FrequentlyAskedQuestions";
+import { PlaytestsChild } from "./PlaytestsChild";
+import { AclEnum } from "@Enum";
+import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { SystemNames } from "@Global/SystemNames";
 
-export const PlaytestsGate: React.FC<any> = (props) => {
+export const PlaytestsGate: React.FC = (props) => {
   const gs = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const detail: any = gs?.loggedInUser;
+  const detail = gs?.loggedInUser;
   const membershipId = detail?.user?.membershipId;
   const birthDate = detail?.birthDate;
+  const acls = detail?.userAcls ?? [];
 
-  const rawAcls = Array.isArray(detail?.userAcls)
-    ? detail.userAcls
-    : Array.isArray(detail?.AclEnums)
-    ? detail.AclEnums
-    : [];
-  const acls: any[] = rawAcls ?? [];
+  const [state, setState] = useState<PlaytestState>("loading");
+  const [faqData, setFaqData] = React.useState<
+    BnetStackFrequentlyAskedQuestions
+  >();
 
-  const [state, setState] = React.useState<PlaytestState>("loading");
-  const [refreshKey, setRefreshKey] = React.useState(0);
+  useEffect(() => {
+    try {
+      const s = resolvePlaytestState({ membershipId, acls, birthDate });
+      setState(s);
+    } catch {
+      setState("error");
+    }
+  }, [membershipId, acls, birthDate]);
 
-  React.useEffect(() => {
-    let mounted = true;
-    resolvePlaytestState(
-      { membershipId, acls, birthDate },
-      {
-        fetchSurveyCompleted: getSurveyCompletedForUser,
-        hasCodesAccess: AclHelper.hasGameCodesAccess,
-        is18OrOlder,
-      }
-    )
-      .then((s) => {
-        if (mounted) {
-          setState(s);
-        }
-      })
-      .catch(() => {
-        if (mounted) {
-          setState("error");
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-  }, [membershipId, acls, birthDate, refreshKey]);
+  useEffect(() => {
+    ContentStackClient()
+      .ContentType("frequently_asked_questions")
+      .Entry("blt7006f46784f4e557")
+      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .toJSON()
+      .fetch()
+      .then(setFaqData);
+  }, [Localizer.CurrentCultureName]);
 
-  if (state === "loading") return null;
-
-  if (state === "notLoggedIn") {
-    return <PlaytestsLoggedOut />;
+  function getStateComponent() {
+    switch (state) {
+      case "loading":
+        return null;
+      case "notLoggedIn":
+        return <PlaytestsLoggedOut />;
+      case "underage":
+        return <PlaytestsChild />;
+      case "approved":
+        return <PlaytestsStatus />;
+      case "pending":
+        return <PlaytestsPending />;
+      case "error":
+        return <p>An error occurred. Please try again later.</p>;
+      case "surveyIncomplete":
+        return <PlaytestsSurvey />;
+      default:
+        return null;
+    }
   }
-
-  if (state === "underage") {
-    return <p className={styles.childMessage}>This feature isn’t available.</p>;
-  }
-
-  if (state === "approved") {
-    return <PlaytestsStatus />;
-  }
-
-  if (state === "pending") {
-    return <PlaytestsPending />;
-  }
-
-  if (state === "error") {
-    return (
-      <p className={styles.childMessage}>
-        An error occurred. Please try again later.
-      </p>
-    );
-  }
-
-  // surveyIncomplete, pending, notEligible -> show survey iframe, with a manual completion button for e2e test
   return (
-    <PlaytestsSurvey
-      {...props}
-      onSurveyCompleted={() => setRefreshKey((k) => k + 1)}
-    />
+    <div>
+      {getStateComponent()}
+      {state !== "surveyIncomplete" && (
+        <FrequentlyAskedQuestions
+          sectionTitle={faqData?.section_title}
+          questions={faqData?.questions?.question_block}
+          buttonData={faqData?.link}
+        />
+      )}
+    </div>
   );
 };

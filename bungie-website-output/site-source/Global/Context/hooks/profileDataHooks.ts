@@ -63,9 +63,6 @@ export function useMultipleProfileData(
   );
 
   useEffect(() => {
-    if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
-      return;
-    }
     const getData = async () => {
       const cachedData: ProfileDataContextType = {};
       const missingData: UseProfileDataRequest[] = [];
@@ -139,7 +136,7 @@ export function useMultipleProfileData(
       setResults(results);
     };
     getData();
-  }, [ConfigUtils.SystemStatus(SystemNames.Destiny2), memoizedProfileRequests]);
+  }, [memoizedProfileRequests]);
 
   return results;
 }

@@ -49,6 +49,10 @@ export const CodeRow: React.FC<CodeRowProps> = ({ title, platform, code }) => {
   };
 
   const handleCopy = () => {
+    if (!navigator.clipboard) {
+      // This is undefined on non-https sites
+      return;
+    }
     navigator.clipboard.writeText(code).then(() => setCopied(true));
     setTimeout(() => setCopied(false), 2000);
   };
