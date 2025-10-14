@@ -13,7 +13,7 @@ interface IPlaytestsAreaProps {
 
 export class PlaytestsArea extends React.Component<IPlaytestsAreaProps> {
   public render() {
-    const playtestsTitle = "Marathon Technical Test";
+    const playtestsTitle = "Marathon Closed Technical Test";
 
     return (
       <React.Fragment>

@@ -1,7 +1,7 @@
 // Created by atseng, 2021
 // Copyright Bungie, Inc.
 
-import styles from "@Areas/Seasons/SeasonPassRewardProgression.module.scss";
+import styles from "./SeasonPassRewardProgression.module.scss";
 import { Localizer } from "@bungie/localization";
 import { World } from "@Platform";
 import classNames from "classnames";

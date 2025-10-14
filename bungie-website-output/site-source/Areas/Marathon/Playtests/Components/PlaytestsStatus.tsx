@@ -19,7 +19,7 @@ export const PlaytestsStatus: FC = () => {
     <div className={sharedStyles.container}>
       <img
         className={sharedStyles.img}
-        src={Img("/marathon/icons/code.svg")}
+        src={Img("/marathon/icons/check.svg")}
         alt="You’ve Been Selected"
       />
       <h1 className={sharedStyles.title}>You’ve Been Selected</h1>
