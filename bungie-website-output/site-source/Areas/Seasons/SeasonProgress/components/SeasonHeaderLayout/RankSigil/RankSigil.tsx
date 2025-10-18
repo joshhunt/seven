@@ -1,28 +1,18 @@
-// Created by larobinson 2025
-// Copyright Bungie, Inc.
-
-import { ConvertToPlatformError } from "@ApiIntermediary";
 import SeasonProgressUtils, {
   ISeasonUtilArgs,
 } from "@Areas/Seasons/SeasonProgress/utils/SeasonProgressUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { PlatformError } from "@CustomErrors";
 import { DestinyComponentType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import {
-  selectSelectedCharacter,
-  selectSelectedMembership,
-  selectDestinyAccount,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppSelector } from "@Global/Redux/store";
 import { SystemNames } from "@Global/SystemNames";
-import { Components, Platform } from "@Platform";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import styles from "./RankSigil.module.scss";
 import { UserUtils } from "@Utilities/UserUtils";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 interface RankSigilProps {
   seasonUtilArgs: ISeasonUtilArgs;
@@ -37,46 +27,14 @@ const RankSigil: React.FC<RankSigilProps> = ({
   page,
   ownsPremium,
 }) => {
-  const destinyAccount = useAppSelector(selectDestinyAccount);
-  const selectedMembership = useAppSelector(selectSelectedMembership);
-  const selectedCharacter = useAppSelector(selectSelectedCharacter);
+  const { destinyData } = useGameData();
+  const { profile } = useProfileData({
+    membershipType: destinyData.selectedMembership?.membershipType,
+    membershipId: destinyData.selectedMembership?.membershipId,
+    components: [DestinyComponentType.CharacterProgressions],
+  });
+
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-
-  const [characterProgressions, setCharacterProgressions] = useState<
-    Components.DictionaryComponentResponseInt64DestinyCharacterProgressionComponent
-  >();
-  const [isLoading, setIsLoading] = useState(false);
-  const [previousLevel, setPreviousLevel] = useState<number | undefined>();
-  const [previousPage, setPreviousPage] = useState<string | undefined>();
-
-  const destiny2Disabled = !ConfigUtils.SystemStatus(SystemNames.Destiny2);
-
-  useEffect(() => {
-    if (!destiny2Disabled && selectedMembership && selectedCharacter) {
-      setIsLoading(true);
-      Platform.Destiny2Service.GetProfile(
-        selectedMembership.membershipType,
-        selectedMembership.membershipId,
-        [DestinyComponentType.CharacterProgressions]
-      )
-        .then((data) => {
-          setCharacterProgressions(data?.characterProgressions);
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e: PlatformError) => {
-          // don't do anything, we already pop a lot of modals, they'll know if they see no characters on an account
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [
-    globalState.loggedInUser,
-    selectedMembership,
-    selectedCharacter,
-    destiny2Disabled,
-    page,
-  ]);
 
   // Use the selected pass hash if provided, otherwise fall back to current pass
   const seasonPassDef = selectedSeasonPassHash
@@ -86,13 +44,14 @@ const RankSigil: React.FC<RankSigilProps> = ({
     : SeasonProgressUtils?.getCurrentSeasonPass(seasonUtilArgs);
 
   const getProgression = (hash: number) => {
-    if (!selectedCharacter?.id || !characterProgressions?.data) {
+    if (
+      !destinyData.selectedCharacterId ||
+      !profile?.characterProgressions?.data
+    ) {
       return undefined;
     }
-
-    return characterProgressions.data[selectedCharacter.id]?.progressions?.[
-      hash
-    ];
+    return profile.characterProgressions.data[destinyData.selectedCharacterId]
+      ?.progressions?.[hash];
   };
 
   const characterSeasonPassRewardProgression = getProgression(
@@ -116,39 +75,13 @@ const RankSigil: React.FC<RankSigilProps> = ({
     ownsPremium
   );
 
-  // Track page changes to show loading during mode transitions
-  useEffect(() => {
-    if (page !== previousPage) {
-      setPreviousPage(page);
-      if (previousPage !== undefined) {
-        // Page changed, show loading briefly for smooth transition
-        setIsLoading(true);
-        // Clear loading after a short delay to allow smooth visual transition
-        const timeout = setTimeout(() => {
-          setIsLoading(false);
-        }, 300);
-        return () => clearTimeout(timeout);
-      }
-    }
-  }, [page, previousPage]);
-
-  // Track level changes to show loading during transitions
-  useEffect(() => {
-    if (level !== undefined && level > 0) {
-      setPreviousLevel(level);
-    }
-  }, [level]);
-
-  // Check if user is authenticated
-  const isAuthenticated = UserUtils.isAuthenticated(globalState);
-
   // If user is not authenticated, don't render anything
-  if (!isAuthenticated) {
+  if (!UserUtils.isAuthenticated(globalState)) {
     return null;
   }
 
-  // Show loading if we're actively loading, transitioning, or don't have valid level data yet
-  const shouldShowLoading = isLoading || !level || level === 0;
+  // Show loading if we don't have valid level data yet
+  const shouldShowLoading = !level || level === 0;
 
   return (
     <div className={styles.sigilContainer}>

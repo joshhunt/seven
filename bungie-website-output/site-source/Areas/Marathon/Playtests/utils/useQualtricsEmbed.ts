@@ -6,6 +6,8 @@ import { useLocation } from "react-router-dom";
 
 const QUALTRICS_BASE_URL =
   "https://playstationresearch.qualtrics.com/jfe/form/SV_3xj8jPsImpkI6Ka";
+const QUALTRICS_SECONDARY_URL =
+  "https://playstationresearch.qualtrics.com/jfe/form/SV_2aBqZ9TDrxP3tMW";
 
 export function useQualtricsEmbed(globalState: any) {
   const [src, setSrc] = useState<string>(QUALTRICS_BASE_URL);
@@ -34,6 +36,7 @@ export function useQualtricsEmbed(globalState: any) {
 
     const sp = new URLSearchParams(search);
     const cohort = sp.get("cohort") ?? sp.get("cohort_id") ?? "";
+
     const discordId = sp.get("discordId") ?? sp.get("discord_id") ?? "";
     const discordName = sp.get("discordName");
 
@@ -56,14 +59,19 @@ export function useQualtricsEmbed(globalState: any) {
   }, [globalState?.loggedInUser, globalState?.credentialTypes, search]);
 
   useEffect(() => {
+    const cohort = (embed.cohort ?? "").trim();
+    const useSecondary = cohort.endsWith("77");
+    const adjustedCohort = useSecondary ? cohort.slice(0, -2) : cohort;
+    const payload = { ...embed, cohort: adjustedCohort };
+
+    const baseUrl = useSecondary ? QUALTRICS_SECONDARY_URL : QUALTRICS_BASE_URL;
+
     try {
-      const eed = ObjectUtils.jsonToBase64Url(embed);
-      const withParam = `${QUALTRICS_BASE_URL}?Q_EED=${encodeURIComponent(
-        eed
-      )}`;
+      const eed = ObjectUtils.jsonToBase64Url(payload);
+      const withParam = `${baseUrl}?Q_EED=${encodeURIComponent(eed)}`;
       setSrc(withParam);
     } catch {
-      setSrc(QUALTRICS_BASE_URL);
+      setSrc(baseUrl);
     }
   }, [embed]);
 

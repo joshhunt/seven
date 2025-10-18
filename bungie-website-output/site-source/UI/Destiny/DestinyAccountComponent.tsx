@@ -1,34 +1,11 @@
 import { Responsive } from "@Boot/Responsive";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { BungieMembershipType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
+import { BungieMembershipType, DestinyComponentType } from "@Enum";
 import { EnumMap } from "@Global/EnumMap";
-
-import {
-  loadUserData,
-  selectCharactersForSelectedPlatform,
-  selectAllPlatformCharacters,
-  selectDestinyAccount,
-  selectIsCrossSaved,
-  selectMembershipData,
-  selectMemberships,
-  selectSelectedCharacter,
-  selectSelectedCharacterId,
-  selectSelectedMembership,
-  selectStatus,
-  updateCharacter,
-  updatePlatform,
-  MembershipCharacter,
-  resetMembership,
-  MembershipPair,
-} from "@Global/Redux/slices/destinyAccountSlice";
-import { useAppDispatch, useAppSelector } from "@Global/Redux/store";
-import { SelectChangeEvent } from "@mui/material";
 import { FaPlaystation } from "@react-icons/all-files/fa/FaPlaystation";
 import { FaSteam } from "@react-icons/all-files/fa/FaSteam";
 import { FaXbox } from "@react-icons/all-files/fa/FaXbox";
@@ -40,26 +17,26 @@ import { Spinner } from "@UIKit/Controls/Spinner";
 import { SelectIcon } from "@UIKit/Forms/SelectIconFromSvg";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import { Alert, Select } from "plxp-web-ui/components/base";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useMemo } from "react";
 
 import styles from "./DestinyAccountComponent.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { Characters, GroupsV2 } from "@Platform";
+import { useMultipleProfileData } from "@Global/Context/hooks/profileDataHooks";
 
 // Character selector component with Destiny definitions
 interface CharacterSelectorProps
   extends D2DatabaseComponentProps<"DestinyClassDefinition"> {
-  characters: MembershipCharacter[];
-  selectedCharacterId?: string;
+  characters: Characters.DestinyCharacterComponent[];
+  selectedCharacter?: Characters.DestinyCharacterComponent;
   onChange: (value: string) => void;
-  showAllPlatformCharacters: boolean;
 }
 function CharacterSelector({
   characters,
-  selectedCharacterId,
+  selectedCharacter,
   onChange,
   definitions,
-  showAllPlatformCharacters,
 }: CharacterSelectorProps): JSX.Element {
   const RegistrationLoc = Localizer?.Registration;
 
@@ -85,29 +62,19 @@ function CharacterSelector({
   const MEM_CONTENT_MAP = new EnumMap(BungieMembershipType, membershipDataMap);
 
   const characterOptions = characters.map((character) => {
-    const characterLight = `✧ ${character.characterData.light}`;
+    const characterLight = `✧ ${character.light}`;
     const className = definitions.DestinyClassDefinition?.get(
-      character.characterData.classHash
+      character.classHash
     ).displayProperties.name;
     const platform = MEM_CONTENT_MAP?.get(character.membershipType)?.label;
 
     return {
-      value: character.id,
+      value: character.characterId,
       label: Responsive?.state?.mobile
         ? `${className} ${characterLight}`
         : `${platform}: ${className} ${characterLight}`,
     };
   });
-
-  // Find selected character for emblem
-  const selectedCharacter = characters.find(
-    (char) => char.id === selectedCharacterId
-  );
-
-  const handleChange = (e: SelectChangeEvent<unknown>) => {
-    const value = e.target.value as string;
-    onChange(value);
-  };
 
   return (
     <Select
@@ -116,12 +83,12 @@ function CharacterSelector({
       }}
       selectProps={{
         displayEmpty: true,
-        value: selectedCharacterId || "",
-        onChange: handleChange,
+        value: selectedCharacter?.characterId || "",
+        onChange: (e) => onChange(e.target.value as string),
         required: true,
       }}
       menuOptions={characterOptions}
-      prependIcon={<SelectIcon iconUrl={selectedCharacter?.emblem} />}
+      prependIcon={<SelectIcon iconUrl={selectedCharacter?.emblemPath} />}
     />
   );
 }
@@ -135,12 +102,12 @@ export const CharacterSelectorWithDefinitions = withDestinyDefinitions(
 );
 
 interface PlatformSelectorProps {
-  memberships: any[];
+  memberships: GroupsV2.GroupUserInfoCard[];
   selectedMembershipType?: BungieMembershipType;
   onChange: (value: string) => void;
   isCrossSaved: boolean;
+  primaryMembershipId?: string;
   showCrossSaveBanner?: boolean;
-  isViewingOthers?: boolean;
   showAllPlatformCharacters?: boolean;
   showAllCrossSavedPlatforms?: boolean;
 }
@@ -150,8 +117,8 @@ export function PlatformSelector({
   selectedMembershipType,
   onChange,
   isCrossSaved,
+  primaryMembershipId,
   showCrossSaveBanner = false,
-  isViewingOthers = false,
   showAllCrossSavedPlatforms = false,
 }: PlatformSelectorProps): JSX.Element {
   if (isCrossSaved && showCrossSaveBanner) {
@@ -163,7 +130,7 @@ export function PlatformSelector({
   }
 
   const crossSavePlatform = memberships.find(
-    (membership) => membership.membershipId === membership.primaryMembershipId
+    (membership) => membership.membershipId === primaryMembershipId
   );
 
   const RegistrationLoc = Localizer.Registration;
@@ -205,23 +172,13 @@ export function PlatformSelector({
       : memberships
           .filter((m) => m.membershipType !== BungieMembershipType.TigerStadia)
           .map((membership) => {
-            const bMembershipTypeString = EnumUtils.getStringValue(
-              membership.membershipType,
-              BungieMembershipType
-            );
-
             return {
               label: `${membership.displayName} : ${
                 MEM_CONTENT_MAP.get(membership?.membershipType)?.label
               }`,
-              value: bMembershipTypeString,
+              value: membership.membershipId,
             };
           });
-
-  const handleChange = (e: SelectChangeEvent<unknown>) => {
-    const value = e.target.value as string;
-    onChange(value);
-  };
 
   return (
     <Select
@@ -236,7 +193,7 @@ export function PlatformSelector({
               BungieMembershipType
             )
           : "",
-        onChange: handleChange,
+        onChange: (e) => onChange(e.target.value as string),
         required: true,
       }}
       menuOptions={platformOptions}
@@ -255,8 +212,6 @@ export interface IAccountFeatures {
 // Component props
 interface DestinyAccountComponentProps {
   bnetProfileSubtitle?: string;
-  onPlatformChange?: (value: string) => void;
-  onCharacterChange?: (value: string) => void;
   showCrossSaveBanner?: boolean;
   showAllPlatformCharacters?: boolean;
   children?: (accountFeatures: IAccountFeatures) => ReactNode;
@@ -279,61 +234,97 @@ interface DestinyAccountComponentProps {
 export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = ({
   children,
   bnetProfileSubtitle,
-  onPlatformChange,
-  onCharacterChange,
   showAllPlatformCharacters = false,
   showCrossSaveBanner = false,
 }) => {
-  const dispatch = useAppDispatch();
-
-  // Get state from Redux
-  const destinyAccount = useAppSelector(selectDestinyAccount);
-  const membershipData = useAppSelector(selectMembershipData);
-  const memberships = useAppSelector(selectMemberships);
-  const selectedMembership = useAppSelector(selectSelectedMembership);
-  const characters = useAppSelector(
-    showAllPlatformCharacters
-      ? selectAllPlatformCharacters
-      : selectCharactersForSelectedPlatform
+  const {
+    destinyData,
+    selectMembership,
+    selectCharacter,
+    isLoading,
+  } = useGameData();
+  const membershipData = destinyData.membershipData;
+  const memberships = (membershipData?.destinyMemberships ?? []).filter(
+    (m) =>
+      !membershipData?.primaryMembershipId ||
+      m.membershipId === membershipData.primaryMembershipId
   );
-  const selectedCharacter = useAppSelector(selectSelectedCharacter);
-  const selectedCharacterId = useAppSelector(selectSelectedCharacterId);
-  const isCrossSaved = useAppSelector(selectIsCrossSaved);
-  const status = useAppSelector(selectStatus);
+  const selectedMembership = destinyData.selectedMembership;
+  const selectedCharacterId = destinyData.selectedCharacterId;
 
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const profiles = useMultipleProfileData(
+    memberships.map((m) => ({
+      membershipType: m.membershipType,
+      membershipId: m.membershipId,
+      components: [DestinyComponentType.Characters],
+    }))
+  );
+
+  const characters = useMemo(() => {
+    let charactersInner: Characters.DestinyCharacterComponent[] = [];
+    for (const p of profiles) {
+      if (!p.profile) {
+        continue;
+      }
+      if (
+        !showAllPlatformCharacters &&
+        p.membershipId !== selectedMembership?.membershipId
+      ) {
+        continue;
+      }
+      charactersInner = charactersInner.concat(
+        Object.values(p.profile.characters?.data ?? {})
+      );
+    }
+    return charactersInner;
+  }, [showAllPlatformCharacters, profiles]);
+
+  const selectedCharacter = useMemo(() => {
+    return profiles.find(
+      (p) => p.profile?.characters?.data[selectedCharacterId]
+    )?.profile.characters.data[selectedCharacterId];
+  }, [profiles, selectedCharacterId]);
 
   useEffect(() => {
-    if (!UserUtils.isAuthenticated(globalState)) {
-      dispatch(resetMembership());
-    } else {
-      let membershipPair: MembershipPair = {
-        membershipId: globalState?.loggedInUser?.user?.membershipId,
-        membershipType: BungieMembershipType.BungieNext,
-      };
-      dispatch(loadUserData({ membershipPair }));
+    // Selects a character if there aren't any selected.
+    if (
+      !selectedCharacterId &&
+      profiles.length > 0 &&
+      profiles.every((p) => !p.isLoading)
+    ) {
+      // First attempt to select the first character in the selected membership
+      const selectedMembershipProfiles = profiles.find(
+        (p) => p.membershipId === destinyData.selectedMembership?.membershipId
+      );
+      const charactersForProfile = Object.values(
+        selectedMembershipProfiles?.profile?.characters?.data ?? {}
+      );
+      if (charactersForProfile.length > 0) {
+        handleSelectCharacter(charactersForProfile[0].characterId);
+      } else if (characters.length > 0) {
+        // If there aren't any characters in the selected membership, select the first character in any membership
+        handleSelectCharacter(characters[0].characterId);
+      }
     }
-  }, [globalState?.loggedInUser?.user?.membershipId]);
+  }, [profiles, selectedCharacterId]);
 
-  // Handle platform change
-  const handlePlatformChange = (value: string) => {
-    dispatch(updatePlatform(value));
-    onPlatformChange?.(value);
+  const noCharacters = !characters || characters.length < 1;
+
+  const handleSelectCharacter = (characterId: string) => {
+    const newMembershipId = profiles.find(
+      (p) => p.profile?.characters?.data?.[characterId]
+    )?.membershipId;
+    if (!newMembershipId) {
+      throw new Error("This is an invalid character ID");
+    }
+    if (newMembershipId !== selectedMembership?.membershipId) {
+      selectMembership(newMembershipId);
+    }
+    selectCharacter(characterId);
   };
-
-  // Handle character change
-  const handleCharacterChange = (value: string) => {
-    dispatch(updateCharacter(value));
-    onCharacterChange?.(value);
-  };
-
-  // Error conditions
-  const errorFetchingMembership = !selectedMembership?.membershipType;
-  const noCharacters =
-    !errorFetchingMembership && (!characters || characters.length < 1);
 
   // Loading state
-  if (status === "loading" && !membershipData) {
+  if (isLoading && !membershipData) {
     return <Spinner />;
   }
 
@@ -341,10 +332,6 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
   if (!membershipData) {
     return null;
   }
-
-  const isViewingOthers =
-    destinyAccount?.membershipData?.bungieNetUser?.membershipId !==
-    globalState?.loggedInUser?.user?.membershipId;
 
   return (
     <SystemDisabledHandler systems={["Destiny2"]}>
@@ -377,31 +364,25 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
             <PlatformSelector
               memberships={memberships}
               selectedMembershipType={selectedMembership?.membershipType}
-              onChange={handlePlatformChange}
-              isCrossSaved={isCrossSaved}
+              onChange={selectMembership}
+              isCrossSaved={!!membershipData?.primaryMembershipId}
               showCrossSaveBanner={showCrossSaveBanner}
-              isViewingOthers={isViewingOthers}
               showAllPlatformCharacters={showAllPlatformCharacters}
               showAllCrossSavedPlatforms={false}
             />
           ),
           characterSelector: (
             <>
-              {selectedCharacter ? (
+              {characters.length > 0 ? (
                 <CharacterSelectorWithDefinitions
                   characters={characters}
-                  selectedCharacterId={selectedCharacterId}
-                  onChange={handleCharacterChange}
-                  showAllPlatformCharacters={showAllPlatformCharacters}
+                  selectedCharacter={selectedCharacter}
+                  onChange={handleSelectCharacter}
                 />
               ) : (
                 <Alert
                   severity="error"
-                  title={
-                    errorFetchingMembership
-                      ? Localizer.Account.AccountError
-                      : ""
-                  }
+                  title={Localizer.Account.AccountError}
                   message={
                     noCharacters
                       ? Localizer.Format(Localizer.Crosssave.NoCharacters, {

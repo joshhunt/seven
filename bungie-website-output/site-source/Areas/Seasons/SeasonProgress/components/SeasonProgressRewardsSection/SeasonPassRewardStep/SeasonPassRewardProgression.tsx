@@ -19,9 +19,7 @@ import {
 interface SeasonPassRewardProgressionProps {
   definitions: any;
   globalState: any;
-  seasonHash: number;
   ownsPremium: boolean;
-  seasonPassHash?: number;
   rewardProgressionHash?: number;
   characterProgressions?: { [key: number]: World.DestinyProgression };
   characterClassHash?: number;
@@ -31,27 +29,28 @@ interface SeasonPassRewardProgressionProps {
     canClaim: boolean
   ) => void;
   claimedReward?: any;
-  isPassActive?: boolean;
   claimedOverrides?: number[];
 }
 
 type Props = SeasonPassRewardProgressionProps;
 
-const SeasonPassRewardProgression: React.FC<Props> = (props) => {
-  const {
-    definitions,
-    seasonHash,
-    characterProgressions,
-    characterClassHash,
-    globalState,
-  } = props;
-
+const SeasonPassRewardProgression: React.FC<Props> = ({
+  definitions,
+  globalState,
+  ownsPremium,
+  rewardProgressionHash,
+  characterProgressions,
+  characterClassHash,
+  handleClaimingClick,
+  claimedReward,
+  claimedOverrides,
+}) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipTitle, setTooltipTitle] = useState("");
   const [tooltipDesc, setTooltipDesc] = useState("");
   const [tooltipHeaderClass, setTooltipHeaderClass] = useState("");
 
-  const effRewardHash = props.rewardProgressionHash as number | undefined;
+  const effRewardHash = rewardProgressionHash;
   const rewardsDef = effRewardHash
     ? definitions.DestinyProgressionDefinition.get(effRewardHash)
     : undefined;
@@ -116,7 +115,7 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
       characterSeasonalProgress?.rewardItemStates?.[index] !== undefined
         ? characterSeasonalProgress!.rewardItemStates[index]
         : 0;
-    if (props.claimedOverrides && props.claimedOverrides.includes(index)) {
+    if (claimedOverrides && claimedOverrides.includes(index)) {
       return (base | DestinyProgressionRewardItemState.Claimed) as number;
     }
     return base;
@@ -132,8 +131,8 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
     return "None";
   };
 
-  let ownsPremium = Boolean(props.ownsPremium);
-  if (!ownsPremium && hasCharacterProgression) {
+  let ownsPremiumInner = Boolean(ownsPremium);
+  if (!ownsPremiumInner && hasCharacterProgression) {
     const states = characterSeasonalProgress!.rewardItemStates || [];
     const items = allSeasonRewardItems;
     for (let idx = 0; idx < states.length && idx < items.length; idx++) {
@@ -144,13 +143,13 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
         (st & DestinyProgressionRewardItemState.ClaimAllowed) !== 0 ||
         (st & DestinyProgressionRewardItemState.Claimed) !== 0
       ) {
-        ownsPremium = true;
+        ownsPremiumInner = true;
         break;
       }
     }
   }
 
-  const steps = adjustedSteps.map((_, i: number) => {
+  const steps = adjustedSteps.map((_a: unknown, i: number) => {
     const freeIndex = getRewardIndex(i, "free");
     const premiumIndex = getRewardIndex(i, "premium");
 
@@ -160,17 +159,16 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
     let freeCompleteState = getCompleteState(freeRewardState);
     let premiumCompleteState = getCompleteState(premiumRewardState);
 
-    if (props.claimedOverrides?.includes(freeIndex))
-      freeCompleteState = "Complete";
-    if (props.claimedOverrides?.includes(premiumIndex))
+    if (claimedOverrides?.includes(freeIndex)) freeCompleteState = "Complete";
+    if (claimedOverrides?.includes(premiumIndex))
       premiumCompleteState = "Complete";
 
     // Start from API states and overlay claimed overrides so the child sees them as claimed
     const rewardItemStates = hasCharacterProgression
       ? [...(characterSeasonalProgress!.rewardItemStates || [])]
       : ([] as number[]);
-    if (props.claimedOverrides && rewardItemStates.length) {
-      for (const idx of props.claimedOverrides) {
+    if (claimedOverrides && rewardItemStates.length) {
+      for (const idx of claimedOverrides) {
         if (idx >= 0 && idx < rewardItemStates.length) {
           rewardItemStates[idx] = (rewardItemStates[idx] |
             DestinyProgressionRewardItemState.Claimed) as number;
@@ -191,7 +189,7 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
       const track: "free" | "premium" =
         match?.uiDisplayStyle === "premium" ? "premium" : "free";
       const resolvedIndex = getRewardIndex(i, track);
-      props.handleClaimingClick?.(itemHash, resolvedIndex, canClaim);
+      handleClaimingClick?.(itemHash, resolvedIndex, canClaim);
     };
 
     return (
@@ -225,13 +223,13 @@ const SeasonPassRewardProgression: React.FC<Props> = (props) => {
           characterSeasonalProgress.rewardItemSocketOverrideStates
         }
         handleClaimingClick={handleClickForStep}
-        claimedReward={props.claimedReward}
+        claimedReward={claimedReward}
         isCurrentSeason={true}
         xpProgressToNextStep={characterSeasonalProgress?.progressToNextLevel}
         hasReachedStep={(idx: number) =>
           hasCharacterProgression && characterSeasonalProgress!.level > idx
         }
-        ownsPremium={ownsPremium}
+        ownsPremium={ownsPremiumInner}
       />
     );
   });

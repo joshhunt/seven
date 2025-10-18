@@ -35,6 +35,13 @@ export type UseProfileDataRequest = {
   cacheMinutes?: number;
 };
 
+type UseMultipleProfileDataResponse = {
+  isLoading: boolean;
+  error?: unknown;
+  profile?: Responses.DestinyProfileResponse;
+  membershipId?: string;
+};
+
 type UseProfileDataResponse = {
   isLoading: boolean;
   error?: unknown;
@@ -51,12 +58,12 @@ export function useMultipleProfileData(
   const profileData = useContext(ProfileCacheContext);
   const profileDataDispatch = useContext(ProfileCacheContextDispatch);
 
-  // This is memoized in case the consumer of this hook does not memoize the `profileRequests` and cause the useEffect to run on every render.
+  // This is memoized in case the consumer of this hook does not memoize the `profileRequests` and causes the useEffect to run on every render.
   const memoizedProfileRequests = useMemo(() => {
     return profileRequests.flat().join();
   }, [profileRequests]);
 
-  const [results, setResults] = useState<UseProfileDataResponse[]>(
+  const [results, setResults] = useState<UseMultipleProfileDataResponse[]>(
     profileRequests.map(() => ({
       isLoading: true,
     }))
@@ -102,6 +109,7 @@ export function useMultipleProfileData(
           return {
             isLoading: false,
             profile,
+            membershipId: r.membershipId,
           };
         } catch (e) {
           return {
@@ -133,7 +141,15 @@ export function useMultipleProfileData(
         ...cachedData,
         ...retrievedData,
       }));
-      setResults(results);
+      setResults(
+        results.concat(
+          Object.values(cachedData).map((cd) => ({
+            isLoading: false,
+            profile: cd.data,
+            membershipId: cd.membershipId,
+          }))
+        )
+      );
     };
     getData();
   }, [memoizedProfileRequests]);
