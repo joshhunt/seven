@@ -19,6 +19,7 @@ export class AclHelper {
     AclEnum.MarathonAlpha_FriendsAndFamily,
     AclEnum.MarathonAlpha_PublicFriends,
     AclEnum.MarathonAlpha_General,
+    AclEnum.MarathonAlpha_Community,
     AclEnum.Marathon_TechTest_General,
     AclEnum.Marathon_TechTest_Bungie,
     AclEnum.Marathon_TechTest_Sony,
