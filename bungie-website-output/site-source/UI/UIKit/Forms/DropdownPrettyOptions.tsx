@@ -108,7 +108,7 @@ export const DropdownPrettyOptionItem: React.FC<IDropdownPrettyOption> = ({
       role={"option"}
     >
       {iconRendered}
-      <div>{option.label}</div>
+      <div className="dropdown-pretty-option-label">{option.label}</div>
     </div>
   );
 };

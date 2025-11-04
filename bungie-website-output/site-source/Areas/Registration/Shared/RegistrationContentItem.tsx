@@ -1,4 +1,4 @@
-import styles from "@Areas/Registration/Apps.module.scss";
+import styles from "@Areas/Registration/Destiny2Apps.module.scss";
 import { Content } from "@Platform";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React from "react";

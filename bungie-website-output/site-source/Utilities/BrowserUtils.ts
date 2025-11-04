@@ -41,6 +41,7 @@ export class BrowserUtils {
   ) {
     const features = `height=${height}, width=${width}, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no`;
     const child = window.open(href, windowName, features);
+    child.focus();
 
     const interval = setInterval(() => {
       try {

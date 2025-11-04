@@ -1,31 +1,16 @@
-// Created by atseng, 2020
-// Copyright Bungie, Inc.
-
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { PlatformError } from "@CustomErrors";
 import { BungieCredentialType } from "@Enum";
 import {
   GlobalStateComponentProps,
   withGlobalState,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
-import { Content, Platform } from "@Platform";
+import { Content } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
-import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
-import { JoinUpButton } from "@UI/User/JoinUpButton";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UrlUtils } from "@Utilities/UrlUtils";
 import { AuthChangeStatus, UserUtils } from "@Utilities/UserUtils";
 import * as React from "react";
 import { RouteComponentProps } from "react-router";
 import { Redirect } from "react-router-dom";
-import styles from "./RegistrationPage.module.scss";
-import { RegistrationContentItem } from "./Shared/RegistrationContentItem";
 
 // Required props
 interface IRegistrationPageProps

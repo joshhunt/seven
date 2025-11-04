@@ -1,7 +1,7 @@
 // Created by atseng, 2020
 // Copyright Bungie, Inc.
 
-import { Apps } from "@Areas/Registration/Apps";
+import { Destiny2Apps } from "@Areas/Registration/Destiny2Apps";
 import * as React from "react";
 import { RouteComponentProps, Route } from "react-router-dom";
 import { RouteDefs } from "@Routes/RouteDefs";
@@ -43,7 +43,7 @@ class RegistrationArea extends React.Component<IRegistrationAreaProps> {
 
     return (
       <SwitchWithErrors>
-        <Route path={appsPath} component={Apps} />
+        <Route path={appsPath} component={Destiny2Apps} />
         <Route path={benefitsPath} component={Benefits} />
         <Route path={indexPath} component={RegistrationPage} />
       </SwitchWithErrors>
