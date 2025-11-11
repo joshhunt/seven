@@ -1,14 +1,13 @@
 import { NoResultsBanner } from "@Areas/FireteamFinder/Components/Shared/NoResultsBanner";
 import styles from "@Areas/FireteamFinder/Components/Shared/SelectActivity.module.scss";
 import { FireteamFinderColors } from "@Areas/FireteamFinder/Constants/FireteamFinderColors";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
 import { DestinyDefinitions } from "@Definitions";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { FireteamFinder, Platform } from "@Platform";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -63,54 +62,43 @@ export interface ActivityItemProps {
   defaultIcon?: string;
 }
 
-const SelectActivity: React.FC<SelectActivityProps> = (props) => {
+const SelectActivity: React.FC<SelectActivityProps> = ({
+  definitions,
+  activityFilterString,
+  setActivityFilterString,
+  activityType,
+  linkClick,
+}) => {
   /* CTPLXP-2176: TODO - Definition for DestinyActivityTreeType is not behaving as expected. This must be resolved, hardcoding value for immediate resolution */
   const FIRETEAM_ACTIVITY_TREE_TYPE = 0;
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
-  const allFireteamSets = props.definitions?.DestinyFireteamFinderActivitySetDefinition?.all();
-  const allFireteamActivityGraphDefs = props.definitions?.DestinyFireteamFinderActivityGraphDefinition?.all();
+  const { destinyData } = useGameData();
+  const allFireteamSets = definitions?.DestinyFireteamFinderActivitySetDefinition?.all();
+  const allFireteamActivityGraphDefs = definitions?.DestinyFireteamFinderActivityGraphDefinition?.all();
   const [allNodes, setAllNodes] = useState<
     Record<number, FireteamGraphExplorerNode>
   >({});
   const [rootNodes, setRootNodes] = useState<FireteamGraphExplorerNode[]>([]);
   const [activeActivityAccess, setActiveActivityAccess] = useState<
     FireteamFinder.DestinyFireteamFinderGetCharacterActivityAccessResponse
-  >(null);
-  const { activityFilterString, setActivityFilterString } = props;
+  >();
 
   useEffect(() => {
-    if (destinyMembership && !destinyMembership.selectedMembership) {
-      FireteamsDestinyMembershipDataStore.actions.loadUserData();
-    } else {
-      if (destinyMembership?.selectedCharacter?.characterId) {
-        fetchCharacterAccess();
-      }
+    if (!destinyData.selectedCharacterId || !destinyData.selectedMembership) {
+      return;
     }
-  }, [destinyMembership]);
+    Platform.FireteamfinderService.GetCharacterActivityAccess(
+      destinyData.selectedMembership.membershipType,
+      destinyData.selectedMembership.membershipId,
+      destinyData.selectedCharacterId
+    ).then((response) => {
+      setActiveActivityAccess(response);
+    });
+  }, [destinyData.selectedCharacterId, destinyData.selectedMembership]);
 
   useEffect(() => {
-    if (props.definitions) {
-      fetchActivities();
+    if (!definitions) {
+      return;
     }
-  }, [props.definitions]);
-
-  const fireteamsLoc = Localizer.Fireteams;
-
-  const fetchCharacterAccess = () => {
-    if (destinyMembership?.selectedCharacter?.characterId) {
-      Platform.FireteamfinderService.GetCharacterActivityAccess(
-        destinyMembership?.selectedMembership?.membershipType,
-        destinyMembership?.selectedMembership?.membershipId,
-        destinyMembership?.selectedCharacter?.characterId
-      ).then((response) => {
-        setActiveActivityAccess(response);
-      });
-    }
-  };
-
-  const leafMapToActivitySet: any = {};
-
-  const fetchActivities = () => {
     const updatedNodes: Record<number, FireteamGraphExplorerNode> = {};
 
     Object.values(allFireteamSets || {}).forEach((set) => {
@@ -142,7 +130,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       updatedNodes[def.hash] = pointerNode;
     });
 
-    let rootNodeHashes = props?.definitions?.DestinyFireteamFinderConstantsDefinition?.all()?.[
+    let rootNodeHashes = definitions.DestinyFireteamFinderConstantsDefinition?.all()?.[
       "1"
     ]?.fireteamFinderActivityGraphRootCategoryHashes;
 
@@ -160,7 +148,11 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
 
     setAllNodes(updatedNodes);
     setRootNodes(updatedRootNodes);
-  };
+  }, [definitions]);
+
+  const fireteamsLoc = Localizer.Fireteams;
+
+  const leafMapToActivitySet: any = {};
 
   const classNameActivityItemTemplate = (itemTemplate: ItemTemplateEnum) => {
     switch (itemTemplate) {
@@ -201,7 +193,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
       (child) => child?.graphDefinition?.isPlayerElectedDifficultyNode
     );
     const isRootNode = !node?.graphDefinition?.parentHash;
-    const isBrowseView = props?.activityType === SelectActivityType.BROWSE;
+    const isBrowseView = activityType === SelectActivityType.BROWSE;
     const firstValidLeafActivity =
       node?.applicableSets
         ?.filter((set) => set?.activityHashes?.length !== 0)
@@ -219,7 +211,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
         <div className={styles.flex}>
           <Button
             size={BasicSize.Small}
-            url={props.linkClick(
+            url={linkClick(
               node?.graphDefinition?.hash,
               firstValidRootActivity?.activityHashes?.[0]
             )}
@@ -239,7 +231,7 @@ const SelectActivity: React.FC<SelectActivityProps> = (props) => {
           foundActivity && (
             <Button
               size={BasicSize.Small}
-              url={props.linkClick(
+              url={linkClick(
                 node?.graphDefinition?.hash,
                 firstValidLeafActivity?.activityHashes?.[0]
               )}

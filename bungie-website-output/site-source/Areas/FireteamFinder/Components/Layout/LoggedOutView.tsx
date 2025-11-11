@@ -1,6 +1,5 @@
 import { FireteamFinderErrorViewType } from "@Areas/FireteamFinder/Components/Layout/Layout";
 import { FireteamHelpButton } from "@Areas/FireteamFinder/Components/Shared/FireteamHelpButton";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { Localizer } from "@bungie/localization/Localizer";
 import { FaRegCalendar } from "@react-icons/all-files/fa/FaRegCalendar";
 import { IoPeople } from "@react-icons/all-files/io5/IoPeople";
@@ -12,6 +11,8 @@ import { ConfigUtils } from "@Utilities/ConfigUtils";
 import React from "react";
 
 import styles from "./LoggedOutView.module.scss";
+import { BungieHelmet } from "@UI/Routing/BungieHelmet";
+import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
 
 interface LoggedOutViewProps {
   errorType: FireteamFinderErrorViewType;
@@ -43,7 +44,6 @@ export const LoggedOutView: React.FC<LoggedOutViewProps> = (props) => {
   const signIn = Localizer.Registration.SignIn;
   const signInClick = () => {
     const signInModal = Modal.signIn(() => {
-      FireteamsDestinyMembershipDataStore.actions.loadUserData();
       signInModal.current.close();
     });
   };
@@ -69,6 +69,13 @@ export const LoggedOutView: React.FC<LoggedOutViewProps> = (props) => {
 
   return (
     <div className={classNames(styles.layout, props.className)}>
+      <BungieHelmet
+        title={fireteamsLoc.Fireteams}
+        description={fireteamsLoc.Fireteams}
+      >
+        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
+      </BungieHelmet>
+      <div className={styles.overlay}></div>
       <p className={styles.label}>{errorCopy[props.errorType]}</p>
       <div className={styles.buttonContainer}>
         {props.errorType === "SignedOut" ? (

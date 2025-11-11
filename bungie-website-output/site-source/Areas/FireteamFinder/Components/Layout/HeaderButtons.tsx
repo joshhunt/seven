@@ -4,12 +4,10 @@
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { FireteamHelpButton } from "@Areas/FireteamFinder/Components/Shared/FireteamHelpButton";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import {
   PlayerFireteamContext,
   PlayerFireteamDispatchContext,
 } from "@Areas/FireteamFinder/Detail";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import {
   DestinyFireteamFinderApplicationType,
@@ -21,10 +19,6 @@ import { FaSearch } from "@react-icons/all-files/fa/FaSearch";
 import { RouteDefs } from "@Routes/RouteDefs";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
-import {
-  DestinyAccountWrapper,
-  IAccountFeatures,
-} from "@UI/Destiny/DestinyAccountWrapper";
 import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -32,6 +26,8 @@ import { Toast } from "@UIKit/Controls/Toast/Toast";
 import React, { useContext, useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import styles from "./HeaderButtons.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { DestinyAccountComponent } from "@UI/Destiny/DestinyAccountComponent";
 
 export type ButtonConfiguration =
   | "none"
@@ -51,14 +47,13 @@ interface HeaderButtonsProps {
 
 export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const fireteamsLoc = Localizer.Fireteams;
-  const fireteamDestinyData = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
   const context = useContext(PlayerFireteamContext);
   const contextDispatch = useContext(PlayerFireteamDispatchContext);
   const isActive =
     context &&
     context?.fireteamLobby?.state === DestinyFireteamFinderLobbyState.Active;
   const { lobbyId } = useParams<IFireteamFinderParams>();
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const [pendingApplications, setPendingApplications] = useState<
     FireteamFinder.DestinyFireteamFinderApplication[]
   >();
@@ -72,9 +67,9 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     if (context?.fireteamListing?.listingId) {
       Platform.FireteamfinderService.GetListingApplications(
         context?.fireteamListing?.listingId,
-        destinyMembership?.selectedMembership?.membershipType,
-        destinyMembership?.selectedMembership?.membershipId,
-        destinyMembership?.selectedCharacter?.characterId,
+        destinyData.selectedMembership?.membershipType,
+        destinyData.selectedMembership?.membershipId,
+        destinyData.selectedCharacterId,
         100,
         "",
         "0"
@@ -107,9 +102,9 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
       setButtonInteractionDisabled(true);
       Platform.FireteamfinderService.GetLobby(
         lobbyId,
-        fireteamDestinyData?.selectedMembership?.membershipType,
-        fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId
+        destinyData.selectedMembership?.membershipType,
+        destinyData.selectedMembership?.membershipId,
+        destinyData.selectedCharacterId
       ).then((lobby) => {
         // I don't know why I wrote this, I think it should still apply even if it is active, but I must have had a reason so I am leaving it here for a second to rollback if I am wrong
         // if (lobby?.state === DestinyFireteamFinderLobbyState.Active)
@@ -121,9 +116,9 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
         Platform.FireteamfinderService.ApplyToListing(
           lobby?.listingId,
           DestinyFireteamFinderApplicationType.Search,
-          fireteamDestinyData?.selectedMembership?.membershipType,
-          fireteamDestinyData?.selectedMembership?.membershipId,
-          fireteamDestinyData?.selectedCharacter?.characterId
+          destinyData.selectedMembership?.membershipType,
+          destinyData.selectedMembership?.membershipId,
+          destinyData.selectedCharacterId
         )
           .then(() => {
             //reload the page
@@ -148,9 +143,9 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
     if (context?.fireteamListing?.lobbyId) {
       Platform.FireteamfinderService.LeaveApplication(
         context?.matchingApplication?.applicationId,
-        fireteamDestinyData?.selectedMembership?.membershipType,
-        fireteamDestinyData?.selectedMembership?.membershipId,
-        fireteamDestinyData?.selectedCharacter?.characterId
+        destinyData.selectedMembership?.membershipType,
+        destinyData.selectedMembership?.membershipId,
+        destinyData.selectedCharacterId
       )
         .then(() => {
           contextDispatch.updateMatchingApplication(null);
@@ -165,9 +160,9 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const closeFireteam = (closingType: CloseFireteamType) => {
     Platform.FireteamfinderService.LeaveLobby(
       context?.fireteamLobby?.lobbyId,
-      fireteamDestinyData?.selectedMembership?.membershipType,
-      fireteamDestinyData?.selectedMembership?.membershipId,
-      fireteamDestinyData?.selectedCharacter?.characterId
+      destinyData.selectedMembership?.membershipType,
+      destinyData.selectedMembership?.membershipId,
+      destinyData.selectedCharacterId
     )
       .then(() => {
         closingType === "close"
@@ -215,18 +210,18 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
 
     Platform.FireteamfinderService.ActivateLobby(
       context?.fireteamLobby?.lobbyId,
-      fireteamDestinyData?.selectedMembership?.membershipType,
-      fireteamDestinyData?.selectedMembership?.membershipId,
-      fireteamDestinyData?.selectedCharacter?.characterId,
+      destinyData.selectedMembership?.membershipType,
+      destinyData.selectedMembership?.membershipId,
+      destinyData.selectedCharacterId,
       true
     )
       .then(() => {
         // get new lobby so we can update the listing value
         Platform.FireteamfinderService.GetLobby(
           context?.fireteamLobby?.lobbyId,
-          fireteamDestinyData?.selectedMembership?.membershipType,
-          fireteamDestinyData?.selectedMembership?.membershipId,
-          fireteamDestinyData?.selectedCharacter?.characterId
+          destinyData.selectedMembership?.membershipType,
+          destinyData.selectedMembership?.membershipId,
+          destinyData.selectedCharacterId
         ).then((result) => {
           Platform.FireteamfinderService.GetListing(result?.listingId)
             .then((listing) => {
@@ -273,17 +268,14 @@ export const HeaderButtons: React.FC<HeaderButtonsProps> = (props) => {
   const CharacterModal: React.FC = () => {
     return (
       <div className={styles.selectModalWrapper}>
-        <DestinyAccountWrapper
-          membershipDataStore={FireteamsDestinyMembershipDataStore}
-          showCrossSaveBanner={false}
-        >
-          {({ platformSelector, characterCardSelector }: IAccountFeatures) => (
+        <DestinyAccountComponent showCrossSaveBanner={false}>
+          {({ platformSelector, characterSelectorCard }) => (
             <div>
               {platformSelector}
-              <div className={styles.cardWrapper}>{characterCardSelector}</div>
+              <div className={styles.cardWrapper}>{characterSelectorCard}</div>
             </div>
           )}
-        </DestinyAccountWrapper>
+        </DestinyAccountComponent>
       </div>
     );
   };

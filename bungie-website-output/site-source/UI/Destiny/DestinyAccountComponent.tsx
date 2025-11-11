@@ -21,9 +21,133 @@ import { Alert, Select } from "plxp-web-ui/components/base";
 import React, { ReactNode, useEffect, useMemo } from "react";
 
 import styles from "./DestinyAccountComponent.module.scss";
+import cardStyles from "./DestinyCharacterCardSelector.module.scss";
 import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { Characters, GroupsV2 } from "@Platform";
 import { useMultipleProfileData } from "@Global/Context/hooks/profileDataHooks";
+import { Anchor } from "@UI/Navigation/Anchor";
+import { RouteHelper } from "@Routes/RouteHelper";
+import classNames from "classnames";
+import { Dropdown } from "@UI/UIKit/Forms/Dropdown";
+
+interface DestinyCharacterCardSelector
+  extends D2DatabaseComponentProps<
+    | "DestinyClassDefinition"
+    | "DestinyRaceDefinition"
+    | "DestinyInventoryItemLiteDefinition"
+  > {
+  characters: Characters.DestinyCharacterComponent[];
+  selectedCharacter?: Characters.DestinyCharacterComponent;
+  onChange: (characterId: string) => void;
+  membershipId: string;
+  membershipType: BungieMembershipType;
+  showEmptyStates: boolean;
+  linkToGear: boolean;
+}
+const DestinyCharacterCardSelector: React.FC<DestinyCharacterCardSelector> = ({
+  definitions,
+  characters,
+  selectedCharacter,
+  onChange,
+  linkToGear,
+  membershipId,
+  membershipType,
+  showEmptyStates,
+}) => {
+  const charactersList = useMemo(() => {
+    return characters.map((c) => {
+      const def = definitions.DestinyInventoryItemLiteDefinition.get(
+        c.emblemHash
+      );
+      return {
+        iconPath: def.secondaryOverlay,
+        backgroundPath: def.secondarySpecial,
+        light: (
+          <React.Fragment>
+            <span className={cardStyles.light}>
+              <span>✧</span>
+              {c.light}
+            </span>
+          </React.Fragment>
+        ),
+        class: definitions.DestinyClassDefinition?.get(c?.classHash)
+          .genderedClassNamesByGenderHash[c.genderHash],
+        id: c.characterId,
+        race: definitions.DestinyRaceDefinition.get(c?.raceHash)
+          .displayProperties.name,
+      };
+    });
+  }, [characters]);
+
+  const characterItem = (characterProps: typeof charactersList[number]) => {
+    return (
+      <Anchor
+        url={
+          linkToGear &&
+          RouteHelper.Gear(membershipId, membershipType, characterProps.id)
+        }
+        onClick={(e) => {
+          !linkToGear && e.preventDefault();
+          onChange(characterProps.id);
+        }}
+        key={characterProps.id}
+        className={classNames(cardStyles.character, {
+          [cardStyles.selected]:
+            characterProps.id === selectedCharacter?.characterId,
+        })}
+        style={{
+          backgroundImage: `url(${characterProps?.backgroundPath})`,
+        }}
+      >
+        <div
+          className={cardStyles.icon}
+          style={{
+            backgroundImage: `url(${characterProps.iconPath})`,
+          }}
+        />
+        <div className={cardStyles.text}>
+          <h4>{characterProps.class}</h4>
+          <h5>{characterProps.race}</h5>
+        </div>
+        <div className={cardStyles.light}>{characterProps.light}</div>
+      </Anchor>
+    );
+  };
+
+  const renderEmptyCharacterItems = (numCharacters: number) => {
+    return new Array(3 - numCharacters).fill(0).map((_, i) => (
+      <div
+        key={i}
+        className={classNames(cardStyles.character, cardStyles.emptyCharacter)}
+      >
+        {Localizer.Format(Localizer.Profile.CharacterSlotNumber, {
+          number: (i + 1).toString(),
+        })}
+      </div>
+    ));
+  };
+
+  return (
+    <div className={cardStyles.characterList}>
+      {charactersList.length > 0 &&
+        charactersList.map((value) => {
+          return characterItem(value);
+        })}
+      {showEmptyStates && renderEmptyCharacterItems(charactersList.length)}
+    </div>
+  );
+};
+
+const DestinyCharacterCardSelectorWithDefinitions = withDestinyDefinitions(
+  DestinyCharacterCardSelector,
+  {
+    types: [
+      "DestinyClassDefinition",
+      "DestinyRaceDefinition",
+      "DestinyInventoryItemLiteDefinition",
+    ],
+  }
+);
 
 // Character selector component with Destiny definitions
 interface CharacterSelectorProps
@@ -160,6 +284,7 @@ export function PlatformSelector({
     crossSavePlatform && !showAllCrossSavedPlatforms
       ? [
           {
+            iconPath: crossSavePlatform.iconPath,
             label: `${crossSavePlatform.displayName}: ${
               MEM_CONTENT_MAP.get(crossSavePlatform?.membershipType)?.label
             }`,
@@ -173,31 +298,39 @@ export function PlatformSelector({
           .filter((m) => m.membershipType !== BungieMembershipType.TigerStadia)
           .map((membership) => {
             return {
+              iconPath: membership.iconPath,
               label: `${membership.displayName} : ${
                 MEM_CONTENT_MAP.get(membership?.membershipType)?.label
               }`,
-              value: membership.membershipId,
+              value: EnumUtils.getStringValue(
+                membership.membershipType,
+                BungieMembershipType
+              ),
             };
           });
-
   return (
-    <Select
-      labelArea={{
-        labelString: null,
+    <Dropdown
+      className={styles.platformDropdown}
+      onChange={(value) => {
+        const membership = memberships.find(
+          (m) =>
+            m.membershipType ===
+            EnumUtils.getEnumValue(value, BungieMembershipType)
+        );
+        if (membership) {
+          onChange(membership.membershipId);
+        }
       }}
-      selectProps={{
-        displayEmpty: true,
-        value: selectedMembershipType
+      options={platformOptions}
+      selectedValue={
+        selectedMembershipType
           ? EnumUtils.getStringValue(
               selectedMembershipType,
               BungieMembershipType
             )
-          : "",
-        onChange: (e) => onChange(e.target.value as string),
-        required: true,
-      }}
-      menuOptions={platformOptions}
-      prependIcon={MEM_CONTENT_MAP.get(selectedMembershipType)?.logo}
+          : ""
+      }
+      iconOnly={false}
     />
   );
 }
@@ -207,6 +340,7 @@ export interface IAccountFeatures {
   bnetProfile: ReactNode;
   platformSelector: ReactNode;
   characterSelector: ReactNode;
+  characterSelectorCard: ReactNode;
 }
 
 // Component props
@@ -404,6 +538,17 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
                 </Alert>
               )}
             </>
+          ),
+          characterSelectorCard: (
+            <DestinyCharacterCardSelectorWithDefinitions
+              characters={characters}
+              selectedCharacter={selectedCharacter}
+              onChange={handleSelectCharacter}
+              membershipId={selectedMembership?.membershipId}
+              membershipType={selectedMembership?.membershipType}
+              showEmptyStates={false}
+              linkToGear={false}
+            />
           ),
         })
       ) : (

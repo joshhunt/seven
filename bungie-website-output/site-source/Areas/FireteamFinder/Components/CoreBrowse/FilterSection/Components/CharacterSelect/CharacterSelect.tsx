@@ -1,20 +1,17 @@
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
   withDestinyDefinitions,
 } from "@Database/DestinyDefinitions/WithDestinyDefinitions";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import {
-  DestinyAccountWrapper,
-  IAccountFeatures,
-} from "@UI/Destiny/DestinyAccountWrapper";
 import DestinyCharacterCard from "@UI/Destiny/DestinyCharacterCard";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { UserUtils } from "@Utilities/UserUtils";
 import React, { RefObject, useEffect, useState } from "react";
 import styles from "./CharacterSelect.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { useProfileData } from "@Global/Context/hooks/profileDataHooks";
+import { DestinyComponentType } from "@Enum";
+import { DestinyAccountComponent } from "@UI/Destiny/DestinyAccountComponent";
 
 interface CharacterSelectProps
   extends D2DatabaseComponentProps<
@@ -35,31 +32,32 @@ interface CharacterModalProps {
   onClose: () => void;
 }
 const CharacterSelect: React.FC<CharacterSelectProps> = (props) => {
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const destinyData = useGameData().destinyData;
+  const { profile } = useProfileData({
+    membershipId: destinyData.selectedMembership?.membershipId,
+    membershipType: destinyData.selectedMembership?.membershipType,
+    components: [DestinyComponentType.Characters],
+  });
   const fireteamsLoc = Localizer.Fireteams;
   const selectCharacter = fireteamsLoc.SelectCharacterAndPlatform;
   const autoSave = fireteamsLoc.changesAutoSave;
-  const currentChararacter = fireteamsLoc.currentCharacter;
-  const edit = `(${fireteamsLoc.Edit})`;
   const [modalRef, setModalRef] = useState<RefObject<Modal>>(null);
   const ModalView: React.FC = () => {
     return (
       <div className={styles.selectModalWrapper}>
         <h2 className={styles.modalHeading}>{selectCharacter}</h2>
         <p className={styles.modalSubheading}>{autoSave}</p>
-
-        <DestinyAccountWrapper
-          membershipDataStore={FireteamsDestinyMembershipDataStore}
+        <DestinyAccountComponent
           showCrossSaveBanner={false}
+          showAllPlatformCharacters={false}
         >
-          {({ platformSelector, characterCardSelector }: IAccountFeatures) => (
+          {({ platformSelector, characterSelectorCard }) => (
             <div>
               {platformSelector}
-              <div className={styles.cardWrapper}>{characterCardSelector}</div>
+              <div className={styles.cardWrapper}>{characterSelectorCard}</div>
             </div>
           )}
-        </DestinyAccountWrapper>
+        </DestinyAccountComponent>
       </div>
     );
   };
@@ -69,19 +67,13 @@ const CharacterSelect: React.FC<CharacterSelectProps> = (props) => {
   };
 
   useEffect(() => {
-    if (!destinyMembership?.selectedMembership) {
-      FireteamsDestinyMembershipDataStore.actions.loadUserData();
+    if (destinyData.selectedCharacterId) {
+      modalRef?.current.close();
     }
-  }, [UserUtils.isAuthenticated(globalState)]);
+  }, [destinyData.selectedCharacterId]);
 
-  useEffect(() => {
-    modalRef?.current.close();
-  }, [destinyMembership?.selectedCharacter]);
-
-  if (destinyMembership?.selectedMembership && !destinyMembership?.characters) {
-    return <p>{Localizer.Clans.adestiny2characterisrequired}</p>;
-  }
-
+  const selectedCharacter =
+    profile?.characters?.data[destinyData.selectedCharacterId];
   return (
     <div className={styles.characterSelectorWrapper}>
       <button
@@ -91,7 +83,7 @@ const CharacterSelect: React.FC<CharacterSelectProps> = (props) => {
       >
         <DestinyCharacterCard
           className={styles.characterCard}
-          character={destinyMembership?.selectedCharacter}
+          character={selectedCharacter}
           compressedView
         />
       </button>

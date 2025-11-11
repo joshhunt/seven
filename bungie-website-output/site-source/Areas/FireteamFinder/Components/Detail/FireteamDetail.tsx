@@ -8,11 +8,11 @@ import userStyles from "@Areas/FireteamFinder/Components/Detail/UserCards/Firete
 import { FireteamUser } from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamUser";
 import FireteamListingCard from "@Areas/FireteamFinder/Components/Shared/FireteamListingCard";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { PlayerFireteamContext } from "@Areas/FireteamFinder/Detail";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType, DestinyFireteamFinderLobbyState } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { FireteamFinder, Platform } from "@Platform";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -30,7 +30,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
   fireteam,
   lobby,
 }) => {
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const [pendingApplications, setPendingApplications] = useState<
     FireteamFinder.DestinyFireteamFinderApplication[]
@@ -44,7 +44,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
         FireteamFinderValueTypes.applicationRequirement
     )?.values?.[0] === 1;
   const viewerIsHost =
-    destinyMembership?.memberships?.findIndex(
+    destinyData.membershipData?.destinyMemberships?.findIndex(
       (membership) => membership?.membershipId === lobby?.owner?.membershipId
     ) !== -1;
   const { matchingApplication } = useContext(PlayerFireteamContext);
@@ -56,7 +56,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
       const cards = [];
 
       for (const application of pendingApplications) {
-        const isSelf = !!destinyMembership.memberships?.find(
+        const isSelf = !!destinyData.membershipData?.destinyMemberships?.find(
           (dm) => dm.membershipId === application?.submitterId.membershipId
         );
         const response = await Platform.UserService.GetMembershipDataById(
@@ -99,7 +99,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     pendingApplications.length,
     lobby,
     viewerIsHost,
-    destinyMembership,
+    destinyData.membershipData?.destinyMemberships,
     pendingApplications,
     isActive,
   ]);
@@ -109,7 +109,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
       const cards = [];
 
       for (const player of lobby?.players) {
-        const isSelf = !!destinyMembership.memberships?.find(
+        const isSelf = !!destinyData.membershipData?.destinyMemberships?.find(
           (dm) => dm.membershipId === player?.playerId?.membershipId
         );
         const thisPlayerIsHost =
@@ -118,7 +118,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
 
         if (thisPlayerIsHost && viewerIsHost) {
           correctMembershipType =
-            destinyMembership?.selectedMembership?.membershipType;
+            destinyData?.selectedMembership?.membershipType;
         } else {
           const response = await Platform.UserService.GetMembershipDataById(
             player?.playerId?.membershipId,
@@ -151,7 +151,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
     }
 
     fetchMemberData();
-  }, [lobby, viewerIsHost, destinyMembership, isActive]);
+  }, [lobby, viewerIsHost, destinyData, isActive]);
   const availableSlots = (availableNumSlots: number) => {
     const slots = [];
 
@@ -181,16 +181,12 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
   };
 
   useEffect(() => {
-    FireteamsDestinyMembershipDataStore.actions.loadUserData();
-  }, [loggedInStatus]);
-
-  useEffect(() => {
     if (fireteam?.listingId) {
       Platform.FireteamfinderService.GetListingApplications(
         fireteam?.listingId,
-        destinyMembership?.selectedMembership?.membershipType,
-        destinyMembership?.selectedMembership?.membershipId,
-        destinyMembership?.selectedCharacter?.characterId,
+        destinyData?.selectedMembership?.membershipType,
+        destinyData?.selectedMembership?.membershipId,
+        destinyData?.selectedCharacterId,
         100,
         "",
         "0"
@@ -203,7 +199,7 @@ export const FireteamDetail: React.FC<FireteamDetailProps> = ({
         // should add button to get next page of applications
       });
     }
-  }, [fireteam, destinyMembership]);
+  }, [fireteam, destinyData]);
 
   return (
     <div className={styles.container}>

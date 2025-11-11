@@ -39,9 +39,13 @@ export class BrowserUtils {
     width = 790,
     height = 760
   ) {
-    const features = `height=${height}, width=${width}, left=550, top=150, menubar=no, location=no, resizable=no, scrollbars=yes, status=no, toolbar=no`;
+    const features = `height=${height}, width=${width}, popup=true`;
     const child = window.open(href, windowName, features);
-    child.focus();
+    // This timeout is a workaround in iOS Safari so that if the window is already open focus is moved to the popup.
+    // It does not work without the timeout.
+    setTimeout(() => {
+      child.focus();
+    }, 100);
 
     const interval = setInterval(() => {
       try {

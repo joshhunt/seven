@@ -5,7 +5,6 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import { FireteamDetail } from "@Areas/FireteamFinder/Components/Detail/FireteamDetail";
 import { Layout } from "@Areas/FireteamFinder/Components/Layout/Layout";
 import { FireteamFinderRealTimeEventsDataStore } from "@Areas/FireteamFinder/DataStores/FireteamFinderRealTimeEventsDataStore";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { RealTimeEventType } from "@Enum";
@@ -18,6 +17,7 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import styles from "./Detail.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 
 interface DetailProps {}
 
@@ -63,7 +63,7 @@ interface PlayerFireteamDispatch {
 
 export const Detail: React.FC<DetailProps> = (props) => {
   const { lobbyId } = useParams<IFireteamFinderParams>();
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
   const fireteamFinderUpdate = useDataStore(
     FireteamFinderRealTimeEventsDataStore
   );
@@ -99,53 +99,44 @@ export const Detail: React.FC<DetailProps> = (props) => {
 
   useEffect(() => {
     if (fireteamFinderUpdate?.eventData?.events) {
-      if (
-        !destinyMembership?.selectedMembership?.membershipId ||
-        !destinyMembership?.selectedMembership?.membershipType
-      ) {
-        FireteamsDestinyMembershipDataStore.actions.loadUserData();
-      } else {
-        // We only need to know if any of the real time events are for this lobby since we will be fetching the lobby data which will update anything that changed
-        const foundUpdateForCurrentLobby = fireteamFinderUpdate.eventData.events.find(
-          (e: Notifications.RealTimeEventData) =>
-            e.eventType === RealTimeEventType.FireteamFinderUpdate &&
-            e.fireteamFinderLobbyId === lobbyId
-        );
+      const foundUpdateForCurrentLobby = fireteamFinderUpdate.eventData.events.find(
+        (e: Notifications.RealTimeEventData) =>
+          e.eventType === RealTimeEventType.FireteamFinderUpdate &&
+          e.fireteamFinderLobbyId === lobbyId
+      );
+      if (foundUpdateForCurrentLobby) {
+        Platform.FireteamfinderService.GetLobby(
+          lobbyId,
+          destinyData.selectedMembership?.membershipType,
+          destinyData.selectedMembership?.membershipId,
+          destinyData.selectedCharacterId
+        )
+          .then((response) => {
+            setLobby(response);
+            const owner = !!destinyData.membershipData?.destinyMemberships?.find(
+              (membership) =>
+                membership.membershipId === response.owner.membershipId
+            );
+            setIsOwner(owner);
 
-        if (foundUpdateForCurrentLobby) {
-          Platform.FireteamfinderService.GetLobby(
-            lobbyId,
-            destinyMembership?.selectedMembership?.membershipType,
-            destinyMembership?.selectedMembership?.membershipId,
-            destinyMembership?.selectedCharacter?.membershipId
-          )
-            .then((response) => {
-              setLobby(response);
-              const owner = !!destinyMembership?.memberships?.find(
-                (membership) =>
-                  membership.membershipId === response.owner.membershipId
-              );
-              setIsOwner(owner);
-
-              Platform.FireteamfinderService.GetListing(
-                response?.listingId
-              ).then((listing) => setFireteam(listing));
-            })
-            .finally(() => {
-              FireteamFinderRealTimeEventsDataStore.actions.clearEventData();
-            });
-        }
+            Platform.FireteamfinderService.GetListing(
+              response?.listingId
+            ).then((listing) => setFireteam(listing));
+          })
+          .finally(() => {
+            FireteamFinderRealTimeEventsDataStore.actions.clearEventData();
+          });
       }
     }
-  }, [destinyMembership, fireteamFinderUpdate, lobbyId]);
+  }, [destinyData, fireteamFinderUpdate, lobbyId]);
 
   useEffect(() => {
     if (lobbyId) {
       const checkAllPlayerApplicationsForMatch = () => {
         Platform.FireteamfinderService.GetPlayerApplications(
-          destinyMembership?.selectedMembership?.membershipType,
-          destinyMembership?.selectedMembership?.membershipId,
-          destinyMembership?.selectedCharacter?.characterId,
+          destinyData.selectedMembership?.membershipType,
+          destinyData.selectedMembership?.membershipId,
+          destinyData.selectedCharacterId,
           500,
           ""
         )
@@ -156,7 +147,7 @@ export const Detail: React.FC<DetailProps> = (props) => {
                   app.applicantSet?.applicants?.findIndex(
                     (applicant) =>
                       applicant.playerId.membershipId ===
-                      destinyMembership?.selectedMembership?.membershipId
+                      destinyData.selectedMembership?.membershipId
                   ) !== -1
                 );
               });
@@ -179,9 +170,9 @@ export const Detail: React.FC<DetailProps> = (props) => {
 
       const checkAllPlayerLobbiesForMatch = () => {
         Platform.FireteamfinderService.GetPlayerLobbies(
-          destinyMembership?.selectedMembership?.membershipType,
-          destinyMembership?.selectedMembership?.membershipId,
-          destinyMembership?.selectedCharacter?.characterId,
+          destinyData.selectedMembership?.membershipType,
+          destinyData.selectedMembership?.membershipId,
+          destinyData.selectedCharacterId,
           500,
           ""
         )
@@ -204,34 +195,27 @@ export const Detail: React.FC<DetailProps> = (props) => {
           });
       };
 
-      if (
-        !destinyMembership?.selectedMembership?.membershipId ||
-        !destinyMembership?.selectedMembership?.membershipType
-      ) {
-        FireteamsDestinyMembershipDataStore.actions.loadUserData();
-      } else {
-        checkAllPlayerApplicationsForMatch();
-        checkAllPlayerLobbiesForMatch();
-        Platform.FireteamfinderService.GetLobby(
-          lobbyId,
-          destinyMembership.selectedMembership.membershipType,
-          destinyMembership.selectedMembership.membershipId,
-          destinyMembership?.selectedCharacter?.membershipId
-        ).then((response) => {
-          setLobby(response);
-          const owner = !!destinyMembership?.memberships?.find(
-            (membership) =>
-              membership.membershipId === response.owner.membershipId
-          );
-          setIsOwner(owner);
+      checkAllPlayerApplicationsForMatch();
+      checkAllPlayerLobbiesForMatch();
+      Platform.FireteamfinderService.GetLobby(
+        lobbyId,
+        destinyData.selectedMembership?.membershipType,
+        destinyData.selectedMembership?.membershipId,
+        destinyData.selectedCharacterId
+      ).then((response) => {
+        setLobby(response);
+        const owner = !!destinyData.membershipData?.destinyMemberships?.find(
+          (membership) =>
+            membership.membershipId === response.owner.membershipId
+        );
+        setIsOwner(owner);
 
-          Platform.FireteamfinderService.GetListing(
-            response?.listingId
-          ).then((listing) => setFireteam(listing));
-        });
-      }
+        Platform.FireteamfinderService.GetListing(
+          response?.listingId
+        ).then((listing) => setFireteam(listing));
+      });
     }
-  }, [lobbyId, destinyMembership]);
+  }, [lobbyId, destinyData]);
 
   const getButtonConfig = () => {
     if (!fireteam) {

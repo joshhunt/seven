@@ -1,5 +1,5 @@
-import { BungieMembershipType, DestinyComponentType } from "@Enum";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { BungieMembershipType } from "@Enum";
+import { useCallback, useContext, useState } from "react";
 import {
   DestinyDataContext,
   DestinyDataContextType,
@@ -9,7 +9,6 @@ import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { UserUtils } from "@Utilities/UserUtils";
 import { Platform } from "@Platform";
-import { useProfileData } from "./profileDataHooks";
 
 type MemberShipPair = {
   membershipId: string;
@@ -38,13 +37,6 @@ export type UseGameDataResponse = {
 export function useGameData(): UseGameDataResponse {
   const destinyData = useContext(DestinyDataContext);
   const destinyDataDispatch = useContext(DestinyDataDispatchContext);
-
-  // This will be used to select a character when the selected membership changes.
-  const { profile } = useProfileData({
-    membershipType: destinyData.selectedMembership?.membershipType,
-    membershipId: destinyData.selectedMembership?.membershipId,
-    components: [DestinyComponentType.Characters],
-  });
 
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
 
@@ -130,14 +122,6 @@ export function useGameData(): UseGameDataResponse {
   const resetMembershipData = useCallback(() => {
     destinyDataDispatch(() => ({}));
   }, []);
-
-  useEffect(() => {
-    const ids = Object.keys(profile?.characters?.data ?? {});
-    if (ids.length === 0) {
-      return;
-    }
-    selectCharacter(ids[0]);
-  }, [profile?.characters?.data]);
 
   return {
     destinyData,

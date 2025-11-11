@@ -1,6 +1,3 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { CrossSaveActiveBadge } from "@Areas/CrossSave/Activate/Components/CrossSaveActiveBadge";
 import { CreateTitleInput } from "@Areas/FireteamFinder/Components/Create/CreateTitleInput";
@@ -13,7 +10,6 @@ import {
 } from "@Areas/FireteamFinder/Components/Shared/RadioButtons";
 import { FireteamOptions } from "@Areas/FireteamFinder/Constants/FireteamOptions";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { FireteamUtils } from "@Areas/FireteamFinder/Scripts/FireteamUtils";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
@@ -27,12 +23,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Platform } from "@Platform";
 import { IoIosAlert } from "@react-icons/all-files/io/IoIosAlert";
 import { RouteHelper } from "@Routes/RouteHelper";
-import {
-  DestinyAccountWrapper,
-  IAccountFeatures,
-} from "@UI/Destiny/DestinyAccountWrapper";
-import { DestinyPlatformSelector } from "@UI/Destiny/DestinyPlatformSelector";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { IDropdownOption } from "@UIKit/Forms/Dropdown";
@@ -41,7 +31,7 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import classNames from "classnames";
 import "flatpickr/dist/themes/airbnb.css";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import * as Yup from "yup";
@@ -50,7 +40,8 @@ import {
   DestinyFireteamFinderLobbyPrivacyScope,
 } from "@Enum";
 import styles from "./CreateFireteam.module.scss";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
+import { DestinyAccountComponent } from "@UI/Destiny/DestinyAccountComponent";
 
 interface CreateFireteamProps
   extends D2DatabaseComponentProps<
@@ -91,7 +82,8 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     "loggedInUser",
     "loggedInUserClans",
   ]);
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
+
   const fireteamsLoc = Localizer.Fireteams;
   const history = useHistory();
   const activityHashId = props.activityId;
@@ -122,8 +114,8 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   const activityMaxSize = activityDef?.matchmaking?.maxParty;
 
   const initialValues = {
-    membershipType: destinyMembership?.selectedMembership?.membershipType,
-    characterId: destinyMembership?.selectedCharacter?.characterId,
+    membershipType: destinyData?.selectedMembership?.membershipType,
+    characterId: destinyData?.selectedCharacterId,
     fireteamActivity: activityDef.hash,
     platform:
       fireteamOptionTree[FireteamFinderValueTypes.platform].defaultCreateValue,
@@ -156,12 +148,6 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
     defaultValues: { ...(initialValues as any) },
   });
 
-  useEffect(() => {
-    if (!destinyMembership?.selectedCharacter) {
-      FireteamsDestinyMembershipDataStore.actions.loadUserData();
-    }
-  }, [destinyMembership?.characters]);
-
   const getRelevantActivitySetLabelHashes = (
     activityGraphDefinition: DestinyDefinitions.DestinyFireteamFinderActivityGraphDefinition
   ) => {
@@ -181,10 +167,9 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
   };
 
   const onSubmit = (data: FieldValues) => {
-    const membershipId = destinyMembership?.selectedMembership?.membershipId;
-    const membershipType =
-      destinyMembership?.selectedMembership?.membershipType;
-    const characterId = destinyMembership?.selectedCharacter?.characterId;
+    const membershipId = destinyData?.selectedMembership?.membershipId;
+    const membershipType = destinyData?.selectedMembership?.membershipType;
+    const characterId = destinyData?.selectedCharacterId;
 
     if (
       !membershipId ||
@@ -251,10 +236,7 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
       });
   };
 
-  if (
-    destinyMembership?.characters === null ||
-    Object.keys(destinyMembership.characters).length === 0
-  ) {
+  if (!destinyData?.selectedCharacterId) {
     return <p>{Localizer.Clans.adestiny2characterisrequired}</p>;
   }
 
@@ -483,44 +465,26 @@ const CreateFireteam: React.FC<CreateFireteamProps> = (props) => {
                   type={"hidden"}
                   {...formMethods.register("characterId")}
                 />
-                <DestinyAccountWrapper
-                  membershipDataStore={FireteamsDestinyMembershipDataStore}
+                <DestinyAccountComponent
                   showCrossSaveBanner={false}
+                  showAllPlatformCharacters={false}
                 >
-                  {({
-                    platformSelector,
-                    characterCardSelector,
-                  }: IAccountFeatures) => (
+                  {({ platformSelector, characterSelectorCard }) => (
                     <div>
-                      {destinyMembership?.isCrossSaved && (
+                      {destinyData.membershipData?.primaryMembershipId && (
                         <CrossSaveActiveBadge
                           className={styles.crosssaveBadge}
                         />
                       )}
                       <div className={styles.userSelector}>
                         <div className={styles.extraPlatformSelector}>
-                          <DestinyPlatformSelector
-                            userMembershipData={
-                              destinyMembership.membershipData
-                            }
-                            onChange={(value) =>
-                              FireteamsDestinyMembershipDataStore.actions.updatePlatform(
-                                value as any
-                              )
-                            }
-                            defaultValue={
-                              destinyMembership.selectedMembership
-                                .membershipType
-                            }
-                            showAllCrossSavedPlatforms={true}
-                            currentOptionClassName={styles.currentOption}
-                          />
+                          {platformSelector}
                         </div>
-                        {characterCardSelector}
                       </div>
+                      {characterSelectorCard}
                     </div>
                   )}
-                </DestinyAccountWrapper>
+                </DestinyAccountComponent>
               </div>
             </div>
             <div className={styles.submitButtonWrapper}>

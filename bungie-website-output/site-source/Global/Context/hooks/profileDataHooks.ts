@@ -60,7 +60,12 @@ export function useMultipleProfileData(
 
   // This is memoized in case the consumer of this hook does not memoize the `profileRequests` and causes the useEffect to run on every render.
   const memoizedProfileRequests = useMemo(() => {
-    return profileRequests.flat().join();
+    return profileRequests
+      .sort((a, b) => (a.membershipId < b.membershipId ? 1 : 0))
+      .map(
+        (r) => `${r.membershipType}-${r.membershipId}-${r.components.join()}`
+      )
+      .join();
   }, [profileRequests]);
 
   const [results, setResults] = useState<UseMultipleProfileDataResponse[]>(
@@ -92,13 +97,16 @@ export function useMultipleProfileData(
             continue;
           }
         }
-        missingData.push(request);
+        // Some data is missing from the cache. Create a new request that will update the cache with the new components.
+        missingData.push({
+          ...request,
+          components: [
+            ...new Set(
+              request.components.concat(cachedData[cacheKey]?.components ?? [])
+            ),
+          ], // remove duplicate entries
+        });
       }
-      setResults(
-        profileRequests.map(() => ({
-          isLoading: true,
-        }))
-      );
       const promises = missingData.map(async (r) => {
         try {
           const profile = await Platform.Destiny2Service.GetProfile(
@@ -118,6 +126,13 @@ export function useMultipleProfileData(
           };
         }
       });
+      if (promises.length > 0) {
+        setResults(
+          profileRequests.map(() => ({
+            isLoading: true,
+          }))
+        );
+      }
       const results = await Promise.all(promises);
       const retrievedData = missingData.reduce((acc, r, i) => {
         if (results[i].profile) {
@@ -135,12 +150,13 @@ export function useMultipleProfileData(
         }
         return acc;
       }, {} as ProfileDataContextType);
-      // Update the cache so we don't have to fetch this every time.
-      profileDataDispatch((curr) => ({
-        ...curr,
-        ...cachedData,
-        ...retrievedData,
-      }));
+      if (Object.keys(retrievedData).length > 0) {
+        // Update the cache so we don't have to fetch this every time.
+        profileDataDispatch((curr) => ({
+          ...curr,
+          ...retrievedData,
+        }));
+      }
       setResults(
         results.concat(
           Object.values(cachedData).map((cd) => ({
@@ -195,13 +211,15 @@ export function useProfileData({
     }
     const getProfile = async () => {
       setIsLoading(true);
+      const newComponents = [
+        ...new Set(components.concat(cachedEntry?.components ?? [])),
+      ]; // remove duplicate entries
       try {
         const response = await Platform.Destiny2Service.GetProfile(
           membershipType,
           membershipId,
-          components
+          newComponents
         );
-        const cacheKey = generateProfileCacheKey(membershipType, membershipId);
         // Update the global component so we don't have to fetch this every time.
         profileDataDispatch((curr) => ({
           ...curr,
@@ -209,7 +227,7 @@ export function useProfileData({
             data: response,
             membershipId,
             membershipType,
-            components,
+            components: newComponents,
             loadedTimestamp: DateTime.now(),
           },
         }));

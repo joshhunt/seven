@@ -8,7 +8,6 @@ import {
 } from "@Enum";
 import { FireteamFilterManager } from "./FireteamFilterManager";
 import { FireteamFinderValueTypes } from "@Areas/FireteamFinder/Constants/FireteamValueTypes";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
 import { CustomLobbyState, LobbyStateManager } from "./LobbyStateManager";
 
 export interface SearchFiltersInput {

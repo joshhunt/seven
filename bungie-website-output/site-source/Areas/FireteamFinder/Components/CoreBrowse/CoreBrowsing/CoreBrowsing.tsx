@@ -27,8 +27,7 @@ import { DestinyFireteamFinderLobbyState } from "@Enum";
 import CustomLobbyStateCard from "./Components/CustomLobbyStateCard/CustomLobbyStateCard";
 import { AppliedFilters } from "./Components/AppliedFilters/AppliedFilters";
 import { useFireteamSearchParams } from "../Helpers/Hooks";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 
 interface BrowseFireteamsProps
   extends D2DatabaseComponentProps<
@@ -51,7 +50,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   const { params, setParams } = useFireteamSearchParams();
   const { activityGraphId } = params;
 
-  const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
+  const destinyData = useGameData().destinyData;
 
   /* State */
   const [resultsList, setResultsList] = useState<
@@ -76,7 +75,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
   ).createOptionsTree();
 
   const loadFireteams = async () => {
-    if (!destinyData.selectedMembership || !destinyData.selectedCharacter) {
+    if (!destinyData.selectedMembership || !destinyData.selectedCharacterId) {
       return;
     }
 
@@ -95,7 +94,7 @@ const CoreBrowsing: FC<BrowseFireteamsProps> = (props) => {
     const membershipInfo: MembershipInfo = {
       membershipId: destinyData.selectedMembership.membershipId,
       membershipType: destinyData.selectedMembership.membershipType,
-      characterId: destinyData.selectedCharacter.characterId,
+      characterId: destinyData.selectedCharacterId,
     };
     let listings: FireteamFinder.DestinyFireteamFinderListing[] = [];
     try {

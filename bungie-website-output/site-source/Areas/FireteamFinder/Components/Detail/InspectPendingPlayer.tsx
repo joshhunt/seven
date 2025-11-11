@@ -2,19 +2,14 @@
 // Copyright Bungie, Inc.
 
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { FireteamUser } from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamUser";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { BlockButton } from "@Areas/User/ProfileComponents/BlockButton";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { FireteamFinder, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { IBungieName } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import styles from "./InspectPendingPlayer.module.scss";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 
 interface InspectPendingPlayerProps {
   memberCard: React.ReactNode;
@@ -40,7 +35,7 @@ export const InspectPendingPlayer: React.FC<InspectPendingPlayerProps> = (
   const [fireteamLobby, setFireteamLobby] = useState<
     FireteamFinder.DestinyFireteamFinderLobbyResponse
   >(null);
-  const destinyData = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
 
   useEffect(() => {
     // Refresh the fireteam
@@ -49,9 +44,9 @@ export const InspectPendingPlayer: React.FC<InspectPendingPlayerProps> = (
 
       Platform.FireteamfinderService.GetLobby(
         props.lobbyId,
-        destinyData?.selectedMembership?.membershipType,
-        destinyData?.selectedMembership?.membershipId,
-        destinyData?.selectedCharacter?.characterId
+        destinyData.selectedMembership?.membershipType,
+        destinyData.selectedMembership?.membershipId,
+        destinyData.selectedCharacterId
       )
         .then((lobby) => {
           setFireteamLobby(lobby);
@@ -69,7 +64,7 @@ export const InspectPendingPlayer: React.FC<InspectPendingPlayerProps> = (
       props.applicationId,
       destinyData?.selectedMembership?.membershipType,
       destinyData?.selectedMembership?.membershipId,
-      destinyData?.selectedCharacter?.characterId
+      destinyData?.selectedCharacterId
     )
       .then(() => {
         window.location.reload();

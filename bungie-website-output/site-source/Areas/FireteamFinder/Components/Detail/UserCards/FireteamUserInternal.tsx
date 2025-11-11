@@ -5,8 +5,6 @@ import { PlayerInteractionModal } from "@Areas/FireteamFinder/Components/Detail/
 import FireteamCharacterTag from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamCharacterTag";
 import styles from "@Areas/FireteamFinder/Components/Detail/UserCards/Fireteams.module.scss";
 import { FireteamUserStatTags } from "@Areas/FireteamFinder/Components/Detail/UserCards/FireteamUserStatTags";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
 import {
   D2DatabaseComponentProps,
@@ -17,6 +15,7 @@ import {
   DestinyComponentType,
   DestinyItemType,
 } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { FireteamFinder, Platform, Responses } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -47,7 +46,7 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
   const [profileResponse, setProfileResponse] = useState<
     Responses.DestinyProfileResponse
   >();
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
+  const { destinyData } = useGameData();
 
   const character =
     profileResponse?.characters?.data &&
@@ -102,9 +101,9 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
       input,
       props.fireteam?.lobbyId,
       props.member?.membershipId,
-      destinyMembership?.selectedMembership?.membershipType,
-      destinyMembership?.selectedMembership?.membershipId,
-      destinyMembership?.selectedCharacter?.characterId
+      destinyData?.selectedMembership?.membershipType,
+      destinyData?.selectedMembership?.membershipId,
+      destinyData?.selectedCharacterId
     ).then((result) => {
       window.location.reload();
     });
@@ -181,7 +180,8 @@ const FireteamUserInternal: React.FC<FireteamUserInternalProps> = (props) => {
       <PlayerInteractionModal
         userNameProps={{
           playerHash: bungieName.bungieGlobalCodeWithHashtag,
-          avatarURL: destinyMembership.memberships[0]?.iconPath,
+          avatarURL:
+            destinyData.membershipData?.destinyMemberships?.[0]?.iconPath,
           platform:
             Localizer.Platforms[
               EnumUtils.getStringValue(

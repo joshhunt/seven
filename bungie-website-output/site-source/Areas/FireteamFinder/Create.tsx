@@ -6,12 +6,10 @@ import { Layout } from "@Areas/FireteamFinder/Components/Layout/Layout";
 import SelectActivity, {
   SelectActivityType,
 } from "@Areas/FireteamFinder/Components/Shared/SelectActivity";
-import { FireteamsDestinyMembershipDataStore } from "@Areas/FireteamFinder/DataStores/FireteamsDestinyMembershipDataStore";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { IFireteamFinderParams } from "@Routes/Definitions/RouteParams";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router";
 import styles from "./Create.module.scss";
 
@@ -21,7 +19,6 @@ interface CreateProps {
 
 export const Create: React.FC<CreateProps> = () => {
   const { graphId, activityId } = useParams<IFireteamFinderParams>();
-  const destinyMembership = useDataStore(FireteamsDestinyMembershipDataStore);
   const [createStep, setCreateStep] = React.useState(
     graphId && activityId ? 1 : 0
   );
@@ -45,13 +42,6 @@ export const Create: React.FC<CreateProps> = () => {
         return Localizer.Fireteams.CreateListing;
     }
   };
-
-  /* Get user's active listings. Setting current and inactive player lobbies */
-  useEffect(() => {
-    if (destinyMembership && !destinyMembership?.selectedCharacter) {
-      FireteamsDestinyMembershipDataStore.actions.loadUserData();
-    }
-  }, [destinyMembership]);
 
   const createLink = (activityGraphIdHash: number, activityIdHash: number) =>
     RouteHelper.FireteamFinderCreate({
