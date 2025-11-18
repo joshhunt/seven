@@ -1,13 +1,4 @@
-// Created by larobinson, 2025
-// Copyright Bungie, Inc.
-
-import {
-  AclEnum,
-  BungieCredentialType,
-  ClientDeviceType,
-  ApplicationScopes,
-} from "@Enum";
-import { EnumUtils } from "@Utilities/EnumUtils";
+import { BungieCredentialType } from "@Enum";
 import { Platform } from "@Platform";
 import { Contract, User } from "@Platform";
 import { AclHelper } from "@Areas/Marathon/Helpers/AclHelper";

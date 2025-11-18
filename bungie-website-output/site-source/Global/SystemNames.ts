@@ -39,6 +39,7 @@ export const SystemNames = {
   Messages: "Messages",
   Notifications: "Notifications",
   PartnerOfferClaims: "PartnerOfferClaims",
+  TwitchDropEngineEnabled: "TwitchDropEngineEnabled",
   PlayTestsSetting: "PlayTestsSetting",
   SeasonUndyingVideo: "SeasonUndyingVideo",
   PSNAuth: "PSNAuth",

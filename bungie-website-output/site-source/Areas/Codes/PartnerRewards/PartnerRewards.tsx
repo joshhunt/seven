@@ -63,6 +63,20 @@ export const PartnerRewards: React.FC = () => {
         0
       )
     ),
+    Number(
+      ConfigUtils.GetParameter(
+        SystemNames.PartnerOfferClaims,
+        "TiltifyAppId",
+        0
+      )
+    ),
+    Number(
+      ConfigUtils.GetParameter(
+        SystemNames.PartnerOfferClaims,
+        "BungieTwitchDropsAppId",
+        0
+      )
+    ),
   ].filter((a) => a !== 0);
 
   const [rewardItems, setRewardItems] = useState<
@@ -227,27 +241,29 @@ export const PartnerRewards: React.FC = () => {
         >
           <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
         </BungieHelmet>
-        <div className={styles.missingDropsButton}>
-          <GridCol cols={12} className={styles.dropsContainer}>
-            <FaTwitch />
-            <div className={styles.dropsContentContainer}>
-              <p className={styles.dropsTitle}>
-                {Localizer.CodeRedemption.MissingTwitchRewards}
-              </p>
-              <p className={styles.dropsDescription}>
-                {Localizer.CodeRedemption.MissingTwitchRewardsYou}
-              </p>
-            </div>
-            <Button
-              size={BasicSize.Small}
-              buttonType={"gold"}
-              className={styles.btnRefresh}
-              onClick={() => forceDropsRepair()}
-            >
-              {Localizer.CodeRedemption.IDonTSeeMyTwitchDrops}
-            </Button>
-          </GridCol>
-        </div>
+        {ConfigUtils.SystemStatus(SystemNames.TwitchDropEngineEnabled) && (
+          <div className={styles.missingDropsButton}>
+            <GridCol cols={12} className={styles.dropsContainer}>
+              <FaTwitch />
+              <div className={styles.dropsContentContainer}>
+                <p className={styles.dropsTitle}>
+                  {Localizer.CodeRedemption.MissingTwitchRewards}
+                </p>
+                <p className={styles.dropsDescription}>
+                  {Localizer.CodeRedemption.MissingTwitchRewardsYou}
+                </p>
+              </div>
+              <Button
+                size={BasicSize.Small}
+                buttonType={"gold"}
+                className={styles.btnRefresh}
+                onClick={() => forceDropsRepair()}
+              >
+                {Localizer.CodeRedemption.IDonTSeeMyTwitchDrops}
+              </Button>
+            </GridCol>
+          </div>
+        )}
         {loggedInUserCanReadHistory && (
           <div>
             {rewardItems?.map((r, index) => {

@@ -9,16 +9,13 @@ export function resolvePlaytestState(input: ResolveInput): PlaytestState {
     const { membershipId, acls, birthDate } = input;
 
     if (!membershipId) return "notLoggedIn";
+
     if (!is18OrOlder(birthDate)) return "underage";
 
-    if (AclHelper.hasOldAclOnly(acls)) {
-      // Alpha users will see the pending page until we are ready to 'flip the switch' and show them game codes.
+    if (AclHelper.hasGameCodesAccess(acls)) {
       return ConfigUtils.SystemStatus(SystemNames.PlaytestAccessRefreshed)
         ? "approved"
         : "pending";
-    }
-    if (AclHelper.hasGameCodesAccess(acls)) {
-      return "approved";
     }
 
     return "surveyIncomplete";

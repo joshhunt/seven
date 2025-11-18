@@ -14,9 +14,6 @@ import { Localizer } from "@bungie/localization";
 import { BnetStackFrequentlyAskedQuestions } from "Generated/contentstack-types";
 import FrequentlyAskedQuestions from "@UI/Content/FrequentlyAskedQuestions";
 import { PlaytestsChild } from "./PlaytestsChild";
-import { AclEnum } from "@Enum";
-import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { SystemNames } from "@Global/SystemNames";
 
 export const PlaytestsGate: React.FC = (props) => {
   const gs = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
@@ -24,7 +21,6 @@ export const PlaytestsGate: React.FC = (props) => {
   const membershipId = detail?.user?.membershipId;
   const birthDate = detail?.birthDate;
   const acls = detail?.userAcls ?? [];
-
   const [state, setState] = useState<PlaytestState>("loading");
   const [faqData, setFaqData] = React.useState<
     BnetStackFrequentlyAskedQuestions
@@ -40,10 +36,12 @@ export const PlaytestsGate: React.FC = (props) => {
   }, [membershipId, acls, birthDate]);
 
   useEffect(() => {
+    const currentCultureName = Localizer.CurrentCultureName;
+
     ContentStackClient()
       .ContentType("frequently_asked_questions")
       .Entry("blt7006f46784f4e557")
-      .language(BungieNetLocaleMap(Localizer.CurrentCultureName))
+      .language(BungieNetLocaleMap(Localizer.currentCultureName))
       .toJSON()
       .fetch()
       .then(setFaqData);

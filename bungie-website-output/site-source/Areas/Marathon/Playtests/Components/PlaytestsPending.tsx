@@ -14,11 +14,16 @@ export const PlaytestsPending = () => {
       <h1 className={styles.title}>Application Received</h1>
       <span className={styles.subtitle}>
         Your application to past Marathon playtests has been renewed for the
-        Closed Technical Test. No further action is needed! If you opted in to
-        email communications, you'll receive an email if you're selected.
-        Otherwise, bookmark this page to check the status of your application
-        starting October 20. (Note: Participation in previous tests doesn't
-        guarantee acceptance into the Closed Technical Test.)
+        December Community Playtest. <br />
+        <b>No further action is needed!</b> <br />
+        <br />
+        If you opted in to email communications, you'll receive an email if
+        you're selected. <br />
+        Otherwise, bookmark this page to check the status of your application.{" "}
+        <br />
+        <br />
+        (Note: Participation in previous tests doesn't guarantee acceptance into
+        the December Community Playtest.)
       </span>
     </div>
   );

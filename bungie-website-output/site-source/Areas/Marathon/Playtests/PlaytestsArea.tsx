@@ -13,7 +13,7 @@ interface IPlaytestsAreaProps {
 
 export class PlaytestsArea extends React.Component<IPlaytestsAreaProps> {
   public render() {
-    const playtestsTitle = "Marathon Closed Technical Test";
+    const playtestsTitle = "Marathon December Community Playtest";
 
     return (
       <React.Fragment>
@@ -24,7 +24,10 @@ export class PlaytestsArea extends React.Component<IPlaytestsAreaProps> {
           <body className={pageStyles.body} />
         </BungieHelmet>
         <div className={pageStyles.header}>
-          <img src={Img("/marathon/logos/marathon_logo_splash_reversed.jpg")} />
+          <img
+            src={Img("/marathon/logos/marathon_logo_splash_reversed.jpg")}
+            alt="Marathon Logo"
+          />
         </div>
         <div className={pageStyles.page}>
           <SwitchWithErrors>

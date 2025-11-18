@@ -13,13 +13,7 @@ export function useMarketplaceCodes() {
     setError(null);
     try {
       const res = await Platform.TokensService.MarketplacePlatformCodeOfferHistory();
-      setCodes(
-        res.filter(
-          (r) =>
-            r.offerKey === "goliath_alpha_access" ||
-            r.offerKey === "goliath_techtest_access"
-        )
-      );
+      setCodes(res.filter((r) => r.offerKey === "goliath_june_playtest"));
     } catch (e) {
       setError(e as Error);
     } finally {

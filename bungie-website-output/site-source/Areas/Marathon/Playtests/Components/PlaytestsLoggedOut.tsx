@@ -27,13 +27,16 @@ export const PlaytestsLoggedOut: React.FC = () => {
       <img
         className={sharedStyles.img}
         src={Img("/marathon/icons/marathon.svg")}
-        alt="Marathon Closed Technical Test"
+        alt="Marathon December Community Playtest"
       />
-      <h1 className={sharedStyles.title}>Marathon Closed Technical Test</h1>
+      <h1 className={sharedStyles.title}>
+        Marathon December Community Playtest
+      </h1>
       <span className={sharedStyles.subtitle}>
-        We’re testing the latest changes to Marathon from October 22 – 28. If
-        you’d like to be considered for participation, please sign in with your
-        game platform account below.
+        We’re testing the latest changes to Marathon from December 12 - 16.{" "}
+        <br />
+        If you’d like to be considered for participation, please sign in with
+        your game platform account below.
       </span>
 
       <div className={styles.buttons}>

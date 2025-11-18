@@ -37,8 +37,8 @@ export const PlaytestsStatus: FC = () => {
           <>
             <span className={sharedStyles.subtitle}>
               Redeem your code on the platform shown below. If you previously
-              played during Public Alpha, you can just update or re-download the
-              game from your library.
+              played during Community Playtests, you can just update or
+              re-download the game from your library.
             </span>
             <div className={styles.codeSection}>
               {codes.map((code) => (
