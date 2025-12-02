@@ -190,10 +190,12 @@ export function useProfileData({
   const [profile, setProfile] = useState<Responses.DestinyProfileResponse>();
 
   useEffect(() => {
-    if (!ConfigUtils.SystemStatus(SystemNames.Destiny2)) {
-      return;
-    }
-    if (!membershipType || !membershipId) {
+    if (
+      !ConfigUtils.SystemStatus(SystemNames.Destiny2) ||
+      !membershipType ||
+      !membershipId
+    ) {
+      setProfile(undefined);
       return;
     }
     const cacheKey = generateProfileCacheKey(membershipType, membershipId);

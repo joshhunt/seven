@@ -20,7 +20,7 @@ export type UseGameDataResponse = {
   /** Loads the membership data of the current user or of the membership passed into the function. */
   loadMembershipData: (pair?: MemberShipPair) => Promise<void>;
   /** Sets the users selected membership. This will un-set the selected character because the new membership will have different characters. */
-  selectMembership: (membershipId: string) => Promise<void>;
+  selectMembership: (membershipId: string) => void;
   /** Sets the user's selected character. This will update destinyData.selectedCharacterId */
   selectCharacter: (characterId: string) => void;
   /** Un-sets all membership, like if the user logs out  */
@@ -89,19 +89,12 @@ export function useGameData(): UseGameDataResponse {
   );
 
   const selectMembership = useCallback(
-    async (membershipId: string) => {
-      if (
-        !destinyData.membershipData?.destinyMemberships ||
-        destinyData.membershipData.destinyMemberships.length === 0
-      ) {
-        throw new Error("No memberships available");
-      }
-
-      const membershipToUse = destinyData.membershipData.destinyMemberships.find(
+    (membershipId: string) => {
+      const membershipToUse = destinyData.membershipData?.destinyMemberships?.find(
         (m) => m.membershipId === membershipId
       );
       if (!membershipToUse) {
-        throw new Error("Membership not found in available memberships");
+        return;
       }
       destinyDataDispatch((curr) => ({
         ...curr,
@@ -112,7 +105,7 @@ export function useGameData(): UseGameDataResponse {
     [destinyData.membershipData?.destinyMemberships]
   );
 
-  const selectCharacter = useCallback(async (characterId: string) => {
+  const selectCharacter = useCallback((characterId: string) => {
     destinyDataDispatch((curr) => ({
       ...curr,
       selectedCharacterId: characterId,

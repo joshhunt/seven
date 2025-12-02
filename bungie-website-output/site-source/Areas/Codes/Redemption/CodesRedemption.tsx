@@ -1,23 +1,13 @@
-// Created by a-larobinson, 2019
-// Copyright Bungie, Inc.
-
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { usePrevious } from "@Utilities/ReactUtils";
 import React, { useEffect } from "react";
-import styles from "./CodesRedemption.module.scss";
-import { Localizer } from "@bungie/localization";
 import {
-  withGlobalState,
   GlobalStateComponentProps,
   GlobalStateDataStore,
 } from "@Global/DataStore/GlobalStateDataStore";
-import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import CodesRedemptionForm from "./CodesRedemptionForm";
-import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
 import { UserUtils } from "@Utilities/UserUtils";
-import { SpecialBodyClasses, BodyClasses } from "@UI/HelmetUtils";
 import { CodesDataStore } from "../CodesDataStore";
 
 interface ICodesRedemptionProps
@@ -57,20 +47,8 @@ export const CodesRedemption: React.FC<ICodesRedemptionProps> = (props) => {
   }, [globalState]);
 
   return (
-    <React.Fragment>
-      <BungieHelmet
-        title={Localizer.CodeRedemption.CodeRedemption}
-        image={"/7/ca/bungie/bgs/pcregister/engram.jpg"}
-      >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-      </BungieHelmet>
-      <Grid isTextContainer={true}>
-        <GridCol cols={12}>
-          <RequiresAuth>
-            <CodesRedemptionForm />
-          </RequiresAuth>
-        </GridCol>
-      </Grid>
-    </React.Fragment>
+    <RequiresAuth>
+      <CodesRedemptionForm />
+    </RequiresAuth>
   );
 };

@@ -1,6 +1,3 @@
-// Created by atseng, 2022
-// Copyright Bungie, Inc.
-
 import CollectionSet from "@Areas/Collections/Shared/CollectionSet";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
@@ -26,7 +23,7 @@ interface CollectibleItemsProps
   extends D2DatabaseComponentProps<
     | "DestinyPresentationNodeDefinition"
     | "DestinyCollectibleDefinition"
-    | "DestinyInventoryItemLiteDefinition"
+    | "DestinyInventoryItemDefinition"
   > {
   rootHash: number;
   parentHash: number;
@@ -166,11 +163,13 @@ const CollectibleItems: React.FC<CollectibleItemsProps> = (props) => {
           EnumUtils.hasFlag(data?.state, DestinyCollectibleState.Obscured);
         const redacted = collectibleDef?.redacted;
 
-        const itemDef = props.definitions.DestinyInventoryItemLiteDefinition.get(
+        const itemDef = props.definitions.DestinyInventoryItemDefinition.get(
           collectibleDef.itemHash
         );
 
-        const watermark = itemDef?.iconWatermark;
+        let watermark = itemDef?.isFeaturedItem
+          ? itemDef.iconWatermarkFeatured ?? itemDef.iconWatermark
+          : itemDef?.iconWatermark;
         let icon = itemDef?.displayProperties?.icon;
         let name = collectibleDef.displayProperties.name;
         let description = collectibleDef.displayProperties.description;
@@ -187,7 +186,7 @@ const CollectibleItems: React.FC<CollectibleItemsProps> = (props) => {
               collectibleDef.stateInfo.obscuredOverrideItemHash
             );
             if (obscuredCollectibleDef) {
-              const obscuredInventoryItemDef = props.definitions.DestinyInventoryItemLiteDefinition.get(
+              const obscuredInventoryItemDef = props.definitions.DestinyInventoryItemDefinition.get(
                 collectibleDef.stateInfo.obscuredOverrideItemHash
               );
               name = obscuredCollectibleDef.displayProperties.name;
@@ -196,6 +195,10 @@ const CollectibleItems: React.FC<CollectibleItemsProps> = (props) => {
               icon =
                 obscuredInventoryItemDef?.displayProperties?.icon ??
                 obscuredCollectibleDef.displayProperties.icon;
+              watermark = obscuredInventoryItemDef?.isFeaturedItem
+                ? obscuredInventoryItemDef.iconWatermarkFeatured ??
+                  obscuredInventoryItemDef.iconWatermark
+                : obscuredInventoryItemDef?.iconWatermark;
             }
           }
         }
@@ -241,10 +244,14 @@ const CollectibleItems: React.FC<CollectibleItemsProps> = (props) => {
   );
 };
 
-export default withDestinyDefinitions(CollectibleItems, {
-  types: [
-    "DestinyPresentationNodeDefinition",
-    "DestinyCollectibleDefinition",
-    "DestinyInventoryItemLiteDefinition",
-  ],
-});
+export default withDestinyDefinitions(
+  CollectibleItems,
+  {
+    types: [
+      "DestinyPresentationNodeDefinition",
+      "DestinyCollectibleDefinition",
+      "DestinyInventoryItemDefinition",
+    ],
+  },
+  true
+);

@@ -17,25 +17,23 @@ import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { PermissionsGate } from "@UI/User/PermissionGate";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
-import { Button } from "@UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
+import { Button } from "plxp-web-ui/components/base";
 
 interface CodesHistoryFormProps {
   membershipId?: string;
 }
 
 export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
-  const initialOffers: Contracts.OfferHistoryResponse[] = null;
-
   const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
     false
   );
-  const [offers, setOffers] = useState(initialOffers);
+  const [offers, setOffers] = useState([]);
   const codesDataStorePayload = useDataStore(CodesDataStore);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
 
@@ -63,13 +61,9 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
 
       hasPrivateDataReadPermissions && props.membershipId
         ? Platform.TokensService.GetUserOfferHistory(props.membershipId)
-            .then((response) => {
-              setOffers(
-                response.filter((o) => o.OfferKey !== "goliath_alpha_access")
-              );
-            })
+            .then(setOffers)
             .catch(ConvertToPlatformError)
-            .catch((e: PlatformError) => Modal.error(e))
+            .catch(Modal.error)
         : Platform.TokensService.GetCurrentUserOfferHistory()
             .then((response) => {
               setOffers(
@@ -180,82 +174,71 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
           },
         });
   };
+  const getFlair = (o: Contracts.OfferHistoryResponse) => {
+    switch (_offerOrRedeem(o)) {
+      case "date":
+        return (
+          <div className={styles.date}>
+            {_makeDateString(o.OfferPurchaseDate)}
+          </div>
+        );
+      case "pending":
+        return Localizer.Coderedemption.pending;
+      case "redeem":
+        return (
+          <Button
+            size="medium"
+            variant="contained"
+            onClick={() => _showRedeemModal(o)}
+          >
+            {Localizer.Coderedemption.ClickRedeem}
+          </Button>
+        );
+      default:
+        return (
+          <div className={styles.date}>
+            {_makeDateString(o.OfferPurchaseDate)}
+          </div>
+        );
+    }
+  };
 
   return (
     <SystemDisabledHandler systems={["BungieTokens"]}>
-      {loggedInUserCanReadHistory ? (
-        <>
-          {
-            // For each offer, decide whether to show the date, a "redeem" button or "pending" as the flair
-            offers?.length > 0 ? (
-              offers.map((o, i) => {
-                let flair = null;
-
-                switch (_offerOrRedeem(o)) {
-                  case "date":
-                    flair = (
-                      <div className={styles.date}>
-                        {_makeDateString(o.OfferPurchaseDate)}
-                      </div>
-                    );
-                    break;
-                  case "pending":
-                    flair = Localizer.Coderedemption.pending;
-                    break;
-                  case "redeem":
-                    flair = (
-                      <Button
-                        size={BasicSize.Small}
-                        onClick={() => _showRedeemModal(o)}
-                      >
-                        {Localizer.Coderedemption.ClickRedeem}
-                      </Button>
-                    );
-                    break;
-                  default:
-                    flair = (
-                      <div className={styles.date}>
-                        {_makeDateString(o.OfferPurchaseDate)}
-                      </div>
-                    );
-                }
-
-                return (
-                  <div key={i}>
-                    <TwoLineItem
-                      normalWhiteSpace
-                      itemTitle={
-                        <SafelySetInnerHTML html={o.OfferDisplayName} />
-                      }
-                      itemSubtitle={
-                        <SafelySetInnerHTML html={o.OfferDisplayDetail} />
-                      }
-                      icon={
-                        <img
-                          src={o.OfferImagePath}
-                          className={styles.offerIcon}
-                        />
-                      }
-                      flair={flair}
-                    />
-
-                    <PermissionsGate
-                      permissions={[AclEnum.BNextPrivateUserDataReader]}
-                    >
-                      <div className={styles.adminCode}>{o.Code}</div>
-                    </PermissionsGate>
+      <div className={styles.container}>
+        <div className={styles.messages}>
+          {!loggedInUserCanReadHistory && (
+            <p>{Localizer.Coderedemption.NotYourAccount}</p>
+          )}
+          {offers.length === 0 && loggedInUserCanReadHistory && (
+            <p>{Localizer.Coderedemption.NoResults}</p>
+          )}
+        </div>
+        {offers.map((o) => (
+          <>
+            <div
+              className={styles.offerContainer}
+              key={`${o.OfferKey}-${o.Code}`}
+            >
+              <img src={o.OfferImagePath} className={styles.offerIcon} />
+              <div className={styles.mobileLineBreak}>
+                <div className={styles.offer}>
+                  <div className={styles.offerName}>
+                    <SafelySetInnerHTML html={o.OfferDisplayName} />
                   </div>
-                );
-              })
-            ) : (
-              <p>{Localizer.Coderedemption.NoResults}</p>
-            )
-          }
-        </>
-      ) : (
-        // if this isn't your membershipId in the url or you're not an admin, you don't get to see the history!
-        <p>{Localizer.Coderedemption.NotYourAccount}</p>
-      )}
+                  <div className={styles.offerDetail}>
+                    <SafelySetInnerHTML html={o.OfferDisplayDetail} />
+                  </div>
+                  <div className={styles.code}>{o.Code}</div>
+                </div>
+                <div className={styles.flair}>{getFlair(o)}</div>
+              </div>
+            </div>
+
+            <div className={styles.divider} />
+          </>
+        ))}
+      </div>
     </SystemDisabledHandler>
   );
 };

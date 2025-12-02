@@ -3,9 +3,6 @@
 
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
-import { Localizer } from "@bungie/localization";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { usePrevious } from "@Utilities/ReactUtils";
 import { UserUtils } from "@Utilities/UserUtils";
@@ -54,17 +51,8 @@ export const CodesHistory: React.FC = () => {
   }, [globalState]);
 
   return (
-    <React.Fragment>
-      <BungieHelmet
-        title={Localizer.CodeRedemption.CodeRedemption}
-        image={"/7/ca/bungie/bgs/pcregister/engram.jpg"}
-      >
-        <body className={SpecialBodyClasses(BodyClasses.NoSpacer)} />
-      </BungieHelmet>
-
-      <RequiresAuth>
-        <CodesHistoryForm membershipId={params?.membershipId} />
-      </RequiresAuth>
-    </React.Fragment>
+    <RequiresAuth>
+      <CodesHistoryForm membershipId={params?.membershipId} />
+    </RequiresAuth>
   );
 };

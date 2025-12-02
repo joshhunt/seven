@@ -1,6 +1,3 @@
-// Created by a-larobinson, 2019
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType, OfferRedeemMode } from "@Enum";
@@ -20,18 +17,17 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { AuthTrigger } from "@UI/Navigation/AuthTrigger";
-import { Button, ButtonTypes } from "@UI/UIKit/Controls/Button/Button";
 import ConfirmationModal from "@UI/UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import React, { SyntheticEvent } from "react";
+import React from "react";
 import { CodesDataStore, ICodesState } from "../CodesDataStore";
 import styles from "./CodesRedemptionForm.module.scss";
+import { Button } from "plxp-web-ui/components/base";
 
 interface ICodesRedemptionFormProps
   extends GlobalStateComponentProps<
@@ -253,10 +249,6 @@ class CodesRedemptionForm extends React.Component<
     const platformSelected =
       this.state.codesDataStorePayload.selectedMembership !==
       BungieMembershipType.None;
-    const codeRedeemed = this.state.redeemedOffer !== null;
-    const redeemedOfferIsConsumable =
-      codeRedeemed &&
-      this.state.redeemedOffer.RedeemType === OfferRedeemMode.Consumable;
     const codeValid = this.codeValidate.test(
       this._removeDashes(this.state.inputValue)
     );
@@ -318,8 +310,6 @@ class CodesRedemptionForm extends React.Component<
         ),
       });
 
-    const buttonColor: ButtonTypes = codeValid ? "gold" : "white";
-
     const lineColor = codeValid ? styles.gold_line : styles.white_line;
 
     const loggedInUser = this.props.globalState?.loggedInUser;
@@ -329,26 +319,31 @@ class CodesRedemptionForm extends React.Component<
         <form onSubmit={(e) => this.handleSubmit(e, codeValid)}>
           <SpinnerContainer loading={!this.state.loaded}>
             <div className={styles.container}>
-              <p>{Localizer.Coderedemption.SignedInAs}</p>
+              <p className={styles.signedInAs}>
+                {Localizer.Coderedemption.SignedInAs}
+              </p>
               <div className={styles.box}>
-                <p className={styles.id}>
-                  {
-                    UserUtils.getBungieNameFromBnetGeneralUser(
-                      loggedInUser?.user
-                    )?.bungieGlobalName
-                  }
-                </p>
+                <img src={loggedInUser?.user.profilePicturePath} />
+                <div className={styles.name}>
+                  <p className={styles.id}>
+                    {
+                      UserUtils.getBungieNameFromBnetGeneralUser(
+                        loggedInUser?.user
+                      )?.bungieGlobalName
+                    }
+                  </p>
+                  <span>{Localizer.Coderedemption.BungieAccount}</span>
+                </div>
               </div>
 
               <AuthTrigger isSignOut={true} className={styles.signout}>
                 <p>{Localizer.Coderedemption.NotYou}</p>
               </AuthTrigger>
 
-              {!codeRedeemed ? (
+              {!this.state.redeemedOffer ? (
                 // if we are in the initial state, show code input box
                 <>
-                  <p>{Localizer.Coderedemption.RedeemCode}</p>
-                  <div className={classNames(styles.input_box, lineColor)}>
+                  <div className={classNames(styles.inputBox, lineColor)}>
                     <input
                       ref={this.inputRef}
                       placeholder={Localizer.Coderedemption.Placeholder}
@@ -362,9 +357,9 @@ class CodesRedemptionForm extends React.Component<
                     />
                   </div>
                   <Button
-                    buttonType={buttonColor}
+                    variant="contained"
                     className={styles.button}
-                    size={BasicSize.Medium}
+                    size="medium"
                     onClick={(e) => this.handleSubmit(e, codeValid)}
                     disabled={!codeValid}
                   >
@@ -374,30 +369,31 @@ class CodesRedemptionForm extends React.Component<
               ) : (
                 // if user has just redeemed a code, show success message
                 <>
-                  <div className={classNames(styles.box, styles.mbottom2)}>
-                    <p>
-                      <span className={styles.success}>
-                        {Localizer.Coderedemption.Success}
-                      </span>
+                  <div className={classNames(styles.box, styles.successBox)}>
+                    <span className={styles.success}>
+                      {Localizer.Coderedemption.Success}
+                    </span>
+                    <span>
                       {
                         <SafelySetInnerHTML
                           html={this.state.redeemedOffer.OfferDisplayName}
                         />
                       }
-                    </p>
-                    <p>
+                    </span>
+                    <span>
                       {
                         <SafelySetInnerHTML
                           html={this.state.redeemedOffer.OfferDisplayDetail}
                         />
                       }
-                    </p>
+                    </span>
                   </div>
 
                   {
                     /* if it is a consumable, show the platform selector (with error message if no destiny account found)*/
 
-                    redeemedOfferIsConsumable ? (
+                    this.state.redeemedOffer?.RedeemType ===
+                    OfferRedeemMode.Consumable ? (
                       <div className={styles.platformSection}>
                         {hasDestinyAccount ? (
                           <div>
@@ -427,9 +423,8 @@ class CodesRedemptionForm extends React.Component<
                               {platformPickupMessage}
                             </h3>
                             <Button
-                              buttonType={buttonColor}
                               className={styles.button}
-                              size={BasicSize.Medium}
+                              size="medium"
                               onClick={this.handleApply}
                               disabled={!platformSelected}
                             >
@@ -457,9 +452,8 @@ class CodesRedemptionForm extends React.Component<
                     ) : (
                       /*  if it's not a consumable, show "redeem another" button */
                       <Button
-                        buttonType={"gold"}
                         className={styles.button}
-                        size={BasicSize.Medium}
+                        size="medium"
                         onClick={this.reset}
                       >
                         {Localizer.Coderedemption.RedeemAnother}

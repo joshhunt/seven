@@ -48,12 +48,21 @@ class RewardsPassAshIron extends RewardsPassDefinition {
   public passIndex = 0;
 }
 
-export class BnetRewardsPassConfig {
-  public static previousPass = RewardsPassReclamation.instance;
-  public static currentPass = RewardsPassAshIron.instance;
+class RewardsPassLawless extends RewardsPassDefinition {
+  public static instance = new RewardsPassLawless();
+  public get title(): string {
+    return Localizer.Seasons.SeasonLawless;
+  }
+
+  public image = "";
+  public progressPageImage =
+    "/7/ca/destiny/bgs/season28/seasonbackground_28.jpg";
+  public smallIcon = "/7/ca/destiny/bgs/season28/seasonicon_28.svg";
+  public seasonNumber = 28;
+  public passIndex = 0;
 }
 
-export const RewardsPassArray = [
-  RewardsPassReclamation.instance,
-  RewardsPassAshIron.instance,
-];
+export class BnetRewardsPassConfig {
+  public static previousPass = RewardsPassAshIron.instance;
+  public static currentPass = RewardsPassLawless.instance;
+}

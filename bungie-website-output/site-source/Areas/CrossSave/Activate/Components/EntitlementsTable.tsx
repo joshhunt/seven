@@ -1,6 +1,3 @@
-// Created by atseng, 2021
-// Copyright Bungie, Inc.
-
 import { EntitlementsTableHeader } from "@Areas/CrossSave/Activate/Components/EntitlementsTableHeader";
 import { ICrossSaveFlowState } from "@Areas/CrossSave/Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "@Areas/CrossSave/Shared/CrossSaveUtils";
@@ -119,21 +116,19 @@ export const EntitlementsTable: React.FC<EntitlementsTableProps> = (props) => {
     const platformStatusClassName = styles[platformStatus];
 
     return (
-      <>
-        <td
-          className={classNames(styles.mscell, platformStatusClassName)}
-          key={key}
-        >
-          {stateOfEntitlement(BungieMembershipType.TigerXbox, gameVersion)}
-          {crosssaveLoc.Xbox}
-          {stateOfEntitlement(
-            BungieMembershipType.TigerXbox,
-            gameVersion,
-            BungieMarketplaceType.PC_MicrosoftStore
-          )}
-          {crosssaveLoc.Pc}
-        </td>
-      </>
+      <td
+        className={classNames(styles.mscell, platformStatusClassName)}
+        key={key}
+      >
+        {stateOfEntitlement(BungieMembershipType.TigerXbox, gameVersion)}
+        {crosssaveLoc.Xbox}
+        {stateOfEntitlement(
+          BungieMembershipType.TigerXbox,
+          gameVersion,
+          BungieMarketplaceType.PC_MicrosoftStore
+        )}
+        {crosssaveLoc.Pc}
+      </td>
     );
   };
 

@@ -507,7 +507,9 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
           ),
           characterSelector: (
             <>
-              {characters.length > 0 ? (
+              {profiles.some((p) => p.isLoading) ? (
+                <Spinner />
+              ) : characters.length > 0 || profiles.some((p) => p.isLoading) ? (
                 <CharacterSelectorWithDefinitions
                   characters={characters}
                   selectedCharacter={selectedCharacter}
@@ -527,15 +529,7 @@ export const DestinyAccountComponent: React.FC<DestinyAccountComponentProps> = (
                       : ""
                   }
                   icon={<GoAlert />}
-                >
-                  {noCharacters
-                    ? Localizer.Format(Localizer.Crosssave.NoCharacters, {
-                        platform: LocalizerUtils.getPlatformAbbrForMembershipType(
-                          selectedMembership?.membershipType
-                        ),
-                      })
-                    : ""}
-                </Alert>
+                />
               )}
             </>
           ),

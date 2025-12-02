@@ -1,22 +1,15 @@
-// Created by jlauer, 2019
-// Copyright Bungie, Inc.
-
 import { EntitlementsTable } from "@Areas/CrossSave/Activate/Components/EntitlementsTable";
 import SeasonsTable from "@Areas/CrossSave/Activate/Components/SeasonsTable";
-import { ConfirmPlatformLinkingModal } from "@Areas/User/AccountComponents/Internal/ConfirmPlatformLinkingModal";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization";
-import { BungieMembershipType, DestinyGameVersions } from "@Enum";
+import { BungieMembershipType } from "@Enum";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { RouteDefs } from "@Routes/RouteDefs";
-import { RouteHelper } from "@Routes/RouteHelper";
 import { DestinyHeader } from "@UI/Destiny/DestinyHeader";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Icon } from "@UI/UIKit/Controls/Icon";
 import { SpinnerContainer } from "@UI/UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UI/UIKit/Layout/Grid/Grid";
-import { BasicSize } from "@UI/UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UrlUtils } from "@Utilities/UrlUtils";
@@ -28,10 +21,7 @@ import { CrossSaveSilverBalance } from "./Activate/Components/CrossSaveSilverBal
 import styles from "./CrossSaveRecap.module.scss";
 import { CrossSaveCardHeader } from "./Shared/CrossSaveCardHeader";
 import { CrossSaveClanCard } from "./Shared/CrossSaveClanCard";
-import {
-  CrossSaveFlowStateDataStore,
-  CrossSaveValidGameVersions,
-} from "./Shared/CrossSaveFlowStateDataStore";
+import { CrossSaveFlowStateDataStore } from "./Shared/CrossSaveFlowStateDataStore";
 import { CrossSaveUtils } from "./Shared/CrossSaveUtils";
 
 interface ICrossSaveRecapProps {}
@@ -54,46 +44,6 @@ const CrossSaveRecap: React.FC<
   useEffect(() => {
     CrossSaveFlowStateDataStore.loadUserData();
   }, []);
-
-  const entitlementOwned = (
-    membershipType: BungieMembershipType,
-    gameVersion: DestinyGameVersions
-  ) => {
-    const memberShipTypeString = BungieMembershipType[
-      membershipType
-    ] as EnumStrings<typeof BungieMembershipType>;
-    const entitlements =
-      flowState.entitlements.platformEntitlements[memberShipTypeString];
-
-    return (
-      entitlements && EnumUtils.hasFlag(gameVersion, entitlements.gameVersions)
-    );
-  };
-
-  const createBuyOrDownloadLink = (gameVersion: DestinyGameVersions) => {
-    switch (gameVersion) {
-      case DestinyGameVersions.Destiny2:
-        return RouteHelper.NewLight();
-      case DestinyGameVersions.Forsaken:
-        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "forsaken" });
-      case DestinyGameVersions.Shadowkeep:
-        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "shadowkeep" });
-      case DestinyGameVersions.BeyondLight:
-        return RouteHelper.DestinyBuyDetail({
-          productFamilyTag: "beyondlight",
-        });
-      case DestinyGameVersions.TheWitchQueen:
-        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "witchqueen" });
-      case DestinyGameVersions.Anniversary30th:
-        return RouteHelper.DestinyBuyDetail({
-          productFamilyTag: "anniversary",
-        });
-      case DestinyGameVersions.Lightfall:
-        return RouteHelper.DestinyBuyDetail({ productFamilyTag: "lightfall" });
-      default:
-        return RouteHelper.DestinyBuy();
-    }
-  };
 
   const indexPath = RouteDefs.Areas.CrossSave.resolve("Index");
   const isLoggedIn = UserUtils.isAuthenticated(globalState);

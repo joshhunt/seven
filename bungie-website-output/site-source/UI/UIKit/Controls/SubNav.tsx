@@ -31,9 +31,9 @@ interface ISubNavProps extends React.HTMLProps<HTMLDivElement> {
 }
 
 export interface ISubNavClasses {
-  span: string;
-  clickableLink: string;
-  current: string;
+  span?: string;
+  clickableLink?: string;
+  current?: string;
 }
 
 export interface ISubNavLink {
@@ -101,7 +101,7 @@ export class SubNav extends React.Component<ISubNavProps, ISubNavState> {
     };
 
     return (
-      <div className={styles.subNav}>
+      <div className={classNames(styles.subNav, this.props.className)}>
         {breakpoint === "none" ? (
           <LinkList />
         ) : (

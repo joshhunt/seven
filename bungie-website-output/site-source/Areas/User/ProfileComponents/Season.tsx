@@ -3,7 +3,6 @@
 
 import { SeasonProgressBar } from "@Areas/Seasons/SeasonProgress/components/SeasonProgressBar";
 import {
-  RewardsPassArray,
   RewardsPassDefinition,
   BnetRewardsPassConfig,
 } from "@Areas/Seasons/SeasonProgress/constants/BnetRewardsPassConfig";
