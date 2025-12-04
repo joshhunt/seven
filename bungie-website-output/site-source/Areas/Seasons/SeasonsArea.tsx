@@ -91,13 +91,13 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
     const { globalState, definitions, location } = this.props;
     const currentSeasonHash = globalState?.coreSettings?.destiny2CoreSettings
       ?.currentSeasonHash as number | undefined;
-    const currentSeasonDef: any = currentSeasonHash
+    const currentSeasonDef = currentSeasonHash
       ? definitions?.DestinySeasonDefinition?.get(currentSeasonHash)
       : undefined;
     const pastSeasonHashes: number[] =
       globalState?.coreSettings?.destiny2CoreSettings?.pastSeasonHashes ?? [];
     const previousSeasonHash = pastSeasonHashes[pastSeasonHashes.length - 1];
-    const previousSeasonDef: any = previousSeasonHash
+    const previousSeasonDef = previousSeasonHash
       ? definitions?.DestinySeasonDefinition?.get(previousSeasonHash)
       : undefined;
 
@@ -118,7 +118,7 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
 
     // Compute current and previous pass refs (previous falls back to previous season if current active is first)
     const now = SeasonProgressUtils.getEffectiveNow?.() ?? new Date();
-    const currRefs: any[] = currentSeasonDef?.seasonPassList ?? [];
+    const currRefs = currentSeasonDef?.seasonPassList ?? [];
     const activeIdx = currRefs.findIndex((sp) => {
       if (!sp?.seasonPassStartDate) return false;
       const s = new Date(sp.seasonPassStartDate);
@@ -129,7 +129,7 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
     });
     const currentRef =
       (activeIdx >= 0 ? currRefs[activeIdx] : undefined) ?? currRefs[0];
-    const prevRefs: any[] = previousSeasonDef?.seasonPassList ?? [];
+    const prevRefs = previousSeasonDef?.seasonPassList ?? [];
     const previousRef =
       activeIdx > 0 ? currRefs[activeIdx - 1] : prevRefs[prevRefs.length - 1];
 
@@ -233,14 +233,10 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
 
     // Clamp selected index properly
     const currentSelectedIdx = passes.findIndex(
-      (p) =>
-        p.seasonPassHash ===
-        (selectedCurrentPassHash ?? currentModel.seasonPassHash)
+      (p) => p.seasonPassHash === currentModel.seasonPassHash
     );
     const previousSelectedIdx = passes.findIndex(
-      (p) =>
-        p.seasonPassHash ===
-        (selectedPreviousPassHash ?? previousModel.seasonPassHash)
+      (p) => p.seasonPassHash === previousModel.seasonPassHash
     );
     const selectedIndex =
       page === "current"
@@ -250,19 +246,6 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
         : previousSelectedIdx >= 0
         ? previousSelectedIdx
         : 1;
-
-    const selectByIndex = (i: number) => {
-      const hash = passes?.[i]?.seasonPassHash as number | undefined;
-      if (typeof hash === "number") {
-        if (page === "current")
-          this.setState({ selectedCurrentPassHash: hash });
-        else this.setState({ selectedPreviousPassHash: hash });
-      }
-    };
-    const selectByHash = (hash?: number) => {
-      if (page === "current") this.setState({ selectedCurrentPassHash: hash });
-      else this.setState({ selectedPreviousPassHash: hash });
-    };
 
     const currentShared = {
       definitions,
@@ -274,9 +257,7 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
       previousIndex,
       selectedIndex,
       selectedPass: passes.find(
-        (p) =>
-          p.seasonPassHash ===
-          (selectedCurrentPassHash ?? currentModel.seasonPassHash)
+        (p) => p.seasonPassHash === currentModel.seasonPassHash
       ),
       currentPass: currentModel,
       previousPass: previousModel,
@@ -284,8 +265,6 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
       currentStrings: BnetRewardsPassConfig.currentPass,
       previousStrings: BnetRewardsPassConfig.previousPass,
       now,
-      selectByIndex,
-      selectByHash,
     } as const;
 
     const previousShared = {
@@ -298,9 +277,7 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
       previousIndex,
       selectedIndex,
       selectedPass: passes.find(
-        (p) =>
-          p.seasonPassHash ===
-          (selectedPreviousPassHash ?? previousModel.seasonPassHash)
+        (p) => p.seasonPassHash === previousModel.seasonPassHash
       ),
       currentPass: currentModel,
       previousPass: previousModel,
@@ -308,8 +285,6 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
       currentStrings: BnetRewardsPassConfig.currentPass,
       previousStrings: BnetRewardsPassConfig.previousPass,
       now,
-      selectByIndex,
-      selectByHash,
     } as const;
 
     const defaultCurrentHash = currentModel.seasonPassHash;
@@ -326,16 +301,14 @@ class SeasonsArea extends React.Component<SeasonsAreaProps, SeasonsAreaState> {
       page === "previous"
         ? {
             ...previousShared,
-            selectedPassHash: selectedPreviousPassHash ?? defaultPreviousHash,
-            onSelectPass: (h: number) =>
-              this.setState({ selectedPreviousPassHash: h }),
+            selectedPassHash: defaultPreviousHash,
+            onSelectPass: (h: number) => 0,
             ownsPremium: ownsPremiumPrevious,
           }
         : {
             ...currentShared,
-            selectedPassHash: selectedCurrentPassHash ?? defaultCurrentHash,
-            onSelectPass: (h: number) =>
-              this.setState({ selectedCurrentPassHash: h }),
+            selectedPassHash: defaultCurrentHash,
+            onSelectPass: (h: number) => 0,
             ownsPremium: ownsPremiumCurrent,
           };
 
