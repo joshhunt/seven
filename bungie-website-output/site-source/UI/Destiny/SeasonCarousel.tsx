@@ -1,10 +1,6 @@
-// Created by a-larobinson, 2019
-// Copyright Bungie, Inc.
-
 import * as React from "react";
 import styles from "./SeasonCarousel.module.scss";
 import { Button } from "@UI/UIKit/Controls/Button/Button";
-import { Icon } from "@UI/UIKit/Controls/Icon";
 import classNames from "classnames";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
@@ -19,15 +15,8 @@ interface ISeasonCarouselProps {
 
 interface ISeasonCarouselState {
   position: number;
-  sliding: boolean;
   direction: "next" | "prev";
 }
-
-interface DefaultProps {
-  className: "";
-}
-
-type Props = ISeasonCarouselProps & DefaultProps;
 
 /**
  * Carousel - Reusable carousel component to show images or divs
@@ -43,12 +32,7 @@ export class SeasonCarousel extends React.Component<
     super(props);
 
     this.state = {
-      position:
-        typeof this.props.startAtPosition !== "undefined" &&
-        this.props.startAtPosition !== 0
-          ? this.props.startAtPosition
-          : 0,
-      sliding: false,
+      position: this.props.startAtPosition ?? 0,
       direction: null,
     };
   }
@@ -60,17 +44,6 @@ export class SeasonCarousel extends React.Component<
       });
     }
   }
-
-  private readonly getOrder = (itemIndex: number) => {
-    const { position } = this.state;
-    const { children } = this.props;
-    const numItems = children.length || 1;
-    if (itemIndex - position < 0) {
-      return numItems - Math.abs(itemIndex - position);
-    }
-
-    return itemIndex - position;
-  };
 
   private readonly nextSlide = () => {
     const { position } = this.state;
@@ -91,15 +64,9 @@ export class SeasonCarousel extends React.Component<
     position: number
   ) => {
     this.setState({
-      sliding: true,
       direction,
       position,
     });
-    setTimeout(() => {
-      this.setState({
-        sliding: false,
-      });
-    }, 50);
   };
 
   public render() {
@@ -111,7 +78,7 @@ export class SeasonCarousel extends React.Component<
       className,
     } = this.props;
 
-    const { sliding, direction, position } = this.state;
+    const { position } = this.state;
 
     return (
       <React.Fragment>
@@ -129,19 +96,17 @@ export class SeasonCarousel extends React.Component<
             <IoChevronBack />
           </Button>
           <Wrapper showProgress={showProgress}>
-            <CarouselContainer
-              sliding={sliding}
-              direction={direction}
-              length={children.length}
-            >
+            <CarouselContainer position={position}>
               {children.map((child, index) => (
-                <CarouselSlot
+                <div
                   key={index}
-                  order={this.getOrder(index)}
-                  length={children.length}
+                  style={{
+                    width: `${100 / children.length}%`,
+                    margin: "0 0.5rem",
+                  }}
                 >
                   {child}
-                </CarouselSlot>
+                </div>
               ))}
             </CarouselContainer>
           </Wrapper>
@@ -161,32 +126,24 @@ export class SeasonCarousel extends React.Component<
 }
 
 interface ICarouselContainerProps {
-  children: React.ReactNode;
-  sliding: boolean;
-  direction: "next" | "prev";
-  length: number;
+  children: React.ReactNode[];
+  position: number;
 }
 
-const CarouselContainer = (props: ICarouselContainerProps) => {
-  const transition = props.sliding ? "none" : "transform .5s ease";
-  let transform = "";
-
-  const slideNext = (-100 / props.length).toString() + "%";
-  const slidePrev = (-200 / props.length).toString() + "%";
-
-  if (!props.sliding) {
-    transform = `translateX(${slideNext})`;
-  } else if (props.direction === "prev") {
-    transform = `translateX(${slidePrev})`;
-  } else {
-    transform = "translateX(0%)";
-  }
-
-  const width = `calc(${props.length * 100}% - ${props.length / 2}rem)`;
+const CarouselContainer = ({ children, position }: ICarouselContainerProps) => {
+  const transform = `translateX(${(position * -100) / children.length}%)`;
+  const width = `calc(${children.length * 100}% - ${children.length / 2}rem)`;
 
   return (
-    <div style={{ display: "flex", transition, transform, width }}>
-      {props.children}
+    <div
+      style={{
+        display: "flex",
+        transition: "transform .5s ease",
+        transform,
+        width,
+      }}
+    >
+      {children}
     </div>
   );
 };
@@ -201,29 +158,6 @@ const Wrapper = (props: IWrapperProps) => {
     <div
       className={classNames({ [styles.withProgress]: props.showProgress })}
       style={{ width: "calc(100% - 6rem)", overflow: "hidden" }}
-    >
-      {props.children}
-    </div>
-  );
-};
-
-interface ICarouselSlotProps {
-  children: React.ReactNode;
-  order: number;
-  length: number;
-}
-
-const CarouselSlot = (props: ICarouselSlotProps) => {
-  const adjustedOrder = (props.order + 1) % props.length;
-
-  return (
-    <div
-      style={{
-        order: adjustedOrder,
-        width: `calc(100% / ${props.length})`,
-        margin: "0 0.5rem",
-      }}
-      className={styles.carouselSlot}
     >
       {props.children}
     </div>

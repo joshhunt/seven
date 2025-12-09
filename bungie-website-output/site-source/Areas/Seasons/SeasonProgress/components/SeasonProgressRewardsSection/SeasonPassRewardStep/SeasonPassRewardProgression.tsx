@@ -81,7 +81,7 @@ const SeasonPassRewardProgression: React.FC<Props> = ({
       : CharacterClass.Hunter;
   const slidesPer = globalState?.responsive?.mobile ? 5 : 10;
 
-  const adjustedSteps = rewardsDef?.steps ?? [];
+  const adjustedSteps: unknown[] = rewardsDef?.steps ?? [];
 
   const allSeasonRewardItems = rewardsDef?.rewardItems ?? [];
 
@@ -234,18 +234,11 @@ const SeasonPassRewardProgression: React.FC<Props> = ({
     );
   });
 
-  const chunk = <T>(arr: T[], size: number) =>
-    arr.reduce<T[][]>(
-      (acc, _val, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]),
-      []
-    );
-  const chunked = chunk(steps, slidesPer);
-
-  const slides = chunked.map((a: React.ReactNode[], i: number) => (
-    <div key={i} className={styles.rewardSlide}>
-      {a}
-    </div>
-  ));
+  const chunked = steps.reduce<JSX.Element[][]>(
+    (acc, _val, i) =>
+      i % slidesPer ? acc : [...acc, steps.slice(i, i + slidesPer)],
+    []
+  );
 
   return (
     <div className={styles.stepWrapper}>
@@ -253,16 +246,20 @@ const SeasonPassRewardProgression: React.FC<Props> = ({
         className={styles.seasonCarousel}
         showProgress={true}
         startAtPosition={
-          typeof characterSeasonalProgress !== "undefined"
+          characterSeasonalProgress
             ? Math.ceil(
-                characterSeasonalProgress!.level /
+                characterSeasonalProgress.level /
                   (globalState?.responsive?.mobile ? 5 : 10)
               ) - 1
             : 0
         }
         topLabel={null}
       >
-        {slides}
+        {chunked.map((c, i) => (
+          <div key={i} className={styles.rewardSlide}>
+            {c}
+          </div>
+        ))}
       </SeasonCarousel>
       <Tooltip visible={showTooltip} position={"tr"} distance={10}>
         <DestinyTooltip

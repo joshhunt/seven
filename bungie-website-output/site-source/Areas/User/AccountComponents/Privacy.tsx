@@ -302,23 +302,16 @@ export const Privacy: React.FC<PrivacyProps> = (props) => {
 
                 <SaveButtonBar
                   saveButton={
-                    <button
-                      type="submit"
-                      className={styles.textOnly}
+                    <Button
+                      submit
+                      buttonType={"gold"}
+                      loading={formikProps.isSubmitting}
                       disabled={
                         !formikProps.isValid || formikProps.isSubmitting
                       }
                     >
-                      <Button
-                        buttonType={"gold"}
-                        loading={formikProps.isSubmitting}
-                        disabled={
-                          !formikProps.isValid || formikProps.isSubmitting
-                        }
-                      >
-                        {Localizer.userPages.savesettings}
-                      </Button>
-                    </button>
+                      {Localizer.userPages.savesettings}
+                    </Button>
                   }
                   showing={
                     showSaveBar || (formikProps.dirty && formikProps.isValid)

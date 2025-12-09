@@ -221,9 +221,8 @@ class CodesRedemptionForm extends React.Component<
       this.state.codesDataStorePayload.selectedMembership,
       this.state.redeemedOffer.OfferKey
     )
-      .then(
-        (data) =>
-          data.OfferDisplayName &&
+      .then((data) => {
+        if (data.OfferDisplayName) {
           Modal.open(
             <div className={classNames(styles.box, styles.mbottom2)}>
               <p className={styles.success}>
@@ -231,9 +230,10 @@ class CodesRedemptionForm extends React.Component<
               </p>
               <p>{Localizer.Coderedemption.PlatformSelectSuccess}</p>
             </div>
-          ) &&
-          this.reset()
-      )
+          );
+          this.reset();
+        }
+      })
       .catch(ConvertToPlatformError)
       .catch((e: PlatformError) => {
         Modal.error(e);

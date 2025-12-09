@@ -148,6 +148,10 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     }
   }
 
+  public componentWillUnmount() {
+    BrowserUtils.unlockScroll(this.scrollableRef);
+  }
+
   public shouldComponentUpdate(nextProps: ModalProps) {
     if (nextProps.open && !this.props.open && !this.state.open) {
       this.delayedOpen();
@@ -169,8 +173,10 @@ export class Modal extends React.Component<ModalProps, IModalState> {
     children: React.ReactNode,
     props?: ModalProps,
     existingRef?: React.RefObject<Modal>
-  ) {
-    return showModalInternal(children, props, existingRef);
+  ): React.RefObject<Modal> {
+    throw new Error(
+      "Reassigned by a react component. If you're seeing this then the component has been removed."
+    );
   }
 
   /**
@@ -186,17 +192,11 @@ export class Modal extends React.Component<ModalProps, IModalState> {
   ) {
     const { isFrameless, ...rest } = props ?? {};
 
-    return showModalInternal(
-      <Auth onSignIn={onSignIn} autoOpenModal={false} />,
-      {
-        ...rest,
-        className: classNames(
-          (props && props.className) || "",
-          styles.authModal
-        ),
-        isFrameless: true,
-      }
-    );
+    return Modal.open(<Auth onSignIn={onSignIn} autoOpenModal={false} />, {
+      ...rest,
+      className: classNames((props && props.className) || "", styles.authModal),
+      isFrameless: true,
+    });
   }
 
   public static error(error: Error, props?: ModalProps) {

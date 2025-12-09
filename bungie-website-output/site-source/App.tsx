@@ -10,9 +10,6 @@ import { RouteDefs } from "@Routes/RouteDefs";
 import { BasicErrorBoundary } from "@UI/Errors/BasicErrorBoundary";
 import { SwitchWithErrors } from "@UI/Navigation/SwitchWithErrors";
 import { FullPageLoadingBar } from "@UI/UIKit/Controls/FullPageLoadingBar";
-import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
-import { ToastContent } from "@UI/UIKit/Controls/Toast/Toast";
-import { ToastContainer } from "@UI/UIKit/Controls/Toast/ToastContainer";
 import { UrlUtils } from "@Utilities/UrlUtils";
 import React, { useEffect } from "react";
 import Helmet from "react-helmet";
@@ -20,6 +17,8 @@ import { Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import store from "./Global/Redux/store";
 import { GlobalProviders } from "@Global/GlobalProviders";
+import { ToastProvider } from "@Global/Context/ToastProvider";
+import { ModalContainer } from "@UI/UIKit/Controls/Modal/ModalContainer";
 
 /**
  * The wrapper component for the rest of the application
@@ -62,32 +61,14 @@ export const App: React.FC = () => {
                     </Route>
                   </SwitchWithErrors>
                 </AppLayout>
-                <GlobalElements />
+                <ToastProvider />
+                <ModalContainer />
+                <div id={"dropdown-options-container"} />
               </GlobalProviders>
             </Provider>
           )}
         </BasicErrorBoundary>
       </Router>
     </React.StrictMode>
-  );
-};
-
-const GlobalElements = () => {
-  const globalElements = useDataStore(GlobalElementDataStore);
-
-  // Gather the globalElements that are modals
-  const modals = globalElements.elements.filter((a) => a.el.type === Modal);
-
-  // Gather the globalElements that are toasts, because these are dealt with differently in ToastContainer
-  const toasts = globalElements.elements.filter(
-    (a) => a.el.type === ToastContent
-  );
-
-  return (
-    <>
-      {modals.map((m) => m.el)}
-      <ToastContainer toasts={toasts} />
-      <div id={"dropdown-options-container"} />
-    </>
   );
 };

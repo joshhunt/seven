@@ -198,7 +198,8 @@ export class SeasonPassRewardStep extends React.Component<
           })}
           data-testid="season-pass-step"
         >
-          {displayedStepNumber > 100 && displayedStepNumber <= 110 ? (
+          {/* Rewards pass steps over level 100 take more steps so extra progression pips are used to show progress */}
+          {displayedStepNumber > 100 ? (
             <div className={styles.progressAndRewardLevel}>
               <span className={styles.stepNumber}>{displayedStepNumber}</span>
               <div className={styles.progressionPipContainer}>
@@ -314,12 +315,7 @@ export class SeasonPassRewardStep extends React.Component<
     isAvailable: boolean,
     isHighlightedObjective?: boolean
   ): React.ReactElement {
-    const itemDef =
-      typeof item !== "undefined" &&
-      this.props.itemDefinitions.get(item.itemHash);
-    const itemDefined =
-      typeof itemDef !== "undefined" &&
-      typeof itemDef.displayProperties !== "undefined";
+    const itemDef = item && this.props.itemDefinitions.get(item.itemHash);
 
     // Derive effective state using rewardStates[index] and ownsPremium; preserve earned/claimed bits
     const rawState =
@@ -340,7 +336,7 @@ export class SeasonPassRewardStep extends React.Component<
         className={classNames(isPremium ? styles.premium : styles.free, {
           [styles.locked]: isLocked,
           [styles.claimed]: isClaimed,
-          [styles.availableReward]: itemDefined && isAvailable,
+          [styles.availableReward]: itemDef?.displayProperties && isAvailable,
           [styles.completed]: completeState === "Complete",
         })}
         style={{ position: "relative" }}
@@ -360,24 +356,24 @@ export class SeasonPassRewardStep extends React.Component<
             data-testid={isPremium ? "premium-check-icon" : "free-check-icon"}
           />
         )}
-        {itemDefined && (
-          <div
-            className={styles.iconWrapper}
-            onClick={() => {
-              if (
-                this.props.character === undefined ||
-                !this.props.handleClaimingClick
-              ) {
-                this.openItemDetailModal(item.itemHash);
-              } else {
-                this.props.handleClaimingClick(
-                  item.itemHash,
-                  rewardIndex,
-                  canClaim
-                );
-              }
-            }}
-          >
+        <div
+          className={styles.iconWrapper}
+          onClick={() => {
+            if (!item) {
+              return;
+            }
+            if (!this.props.character || !this.props.handleClaimingClick) {
+              this.openItemDetailModal(item.itemHash);
+            } else {
+              this.props.handleClaimingClick(
+                item.itemHash,
+                rewardIndex,
+                canClaim
+              );
+            }
+          }}
+        >
+          {itemDef && (
             <div
               className={classNames(styles.icon, {
                 [styles.highlightObjBorder]: isHighlightedObjective,
@@ -385,18 +381,18 @@ export class SeasonPassRewardStep extends React.Component<
               })}
               style={{
                 backgroundImage: `${
-                  itemDef?.iconWatermark?.length > 0
+                  itemDef.iconWatermark?.length > 0
                     ? `url(${itemDef.iconWatermark}), `
                     : ``
-                }url(${itemDef.displayProperties.icon})`,
+                }url(${itemDef.displayProperties?.icon})`,
               }}
               onMouseEnter={() => this.onMouseOver(itemDef)}
               onMouseLeave={this.onMouseLeave}
             >
               {item.quantity > 1 && <span>{item.quantity}</span>}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     );
   }

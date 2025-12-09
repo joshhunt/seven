@@ -1,6 +1,3 @@
-// Created by larobinson, 2020
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
 import { CodesDataStore } from "@Areas/Codes/CodesDataStore";
 import styles from "@Areas/Codes/History/CodesHistoryForm.module.scss";
@@ -15,29 +12,48 @@ import { RouteHelper } from "@Routes/RouteHelper";
 import { SafelySetInnerHTML } from "@UI/Content/SafelySetInnerHTML";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
-import { PermissionsGate } from "@UI/User/PermissionGate";
 import { TwoLineItem } from "@UIKit/Companion/TwoLineItem";
 import ConfirmationModal from "@UIKit/Controls/Modal/ConfirmationModal";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { BasicSize } from "@UIKit/UIKitUtils";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { DateTime } from "luxon";
-import React, { useEffect, useState } from "react";
-import { Button } from "plxp-web-ui/components/base";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { Button, Typography } from "plxp-web-ui/components/base";
+import { mockOfferHistory } from "./CodesHistoryMockData";
 
 interface CodesHistoryFormProps {
   membershipId?: string;
 }
 
+const MOCK_CODES_HISTORY_QUERY_PARAM = "mockCodesHistory";
+
 export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
   const [loggedInUserCanReadHistory, setLoggedInUserCanReadHistory] = useState(
     false
   );
-  const [offers, setOffers] = useState([]);
+  const [offers, setOffers] = useState<Contracts.OfferHistoryResponse[]>([]);
+  const search = useLocation().search;
+  const usingMockRewards = useMemo(() => {
+    const params = new URLSearchParams(search);
+
+    return params.has(MOCK_CODES_HISTORY_QUERY_PARAM);
+  }, [search]);
   const codesDataStorePayload = useDataStore(CodesDataStore);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
+  const loggedInUser = globalState.loggedInUser;
+  const loggedInUserMembershipId = loggedInUser?.user.membershipId;
+  const loggedInUserAcls = loggedInUser?.userAcls ?? [];
+  const loggedInUserAclKey = loggedInUserAcls.join("|");
 
   useEffect(() => {
+    if (usingMockRewards) {
+      setLoggedInUserCanReadHistory(true);
+      setOffers(mockOfferHistory);
+
+      return;
+    }
+
     // If there is a membership id at the end of the url, it will get passed down through props
 
     /* There are four situations we need to handle before we make this platform call:
@@ -47,12 +63,9 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
      * user looking at another person's history - membershipId and !canViewHistory
      */
     const canViewHistory =
-      (props.membershipId &&
-        props.membershipId === globalState.loggedInUser?.user.membershipId) ||
-      globalState.loggedInUser?.userAcls.includes(
-        AclEnum.BNextPrivateUserDataReader
-      );
-    const hasPrivateDataReadPermissions = globalState.loggedInUser?.userAcls.includes(
+      (props.membershipId && props.membershipId === loggedInUserMembershipId) ||
+      loggedInUserAcls.includes(AclEnum.BNextPrivateUserDataReader);
+    const hasPrivateDataReadPermissions = loggedInUserAcls.includes(
       AclEnum.BNextPrivateUserDataReader
     );
 
@@ -73,7 +86,12 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
             .catch(ConvertToPlatformError)
             .catch((e: PlatformError) => Modal.error(e));
     }
-  }, []);
+  }, [
+    loggedInUserAclKey,
+    loggedInUserMembershipId,
+    props.membershipId,
+    usingMockRewards,
+  ]);
 
   const _showRedeemModal = (offer: Contracts.OfferHistoryResponse) => {
     const hasDestinyAccount =
@@ -214,30 +232,54 @@ export const CodesHistoryForm: React.FC<CodesHistoryFormProps> = (props) => {
             <p>{Localizer.Coderedemption.NoResults}</p>
           )}
         </div>
-        {offers.map((o) => (
-          <>
-            <div
-              className={styles.offerContainer}
-              key={`${o.OfferKey}-${o.Code}`}
-            >
-              <img src={o.OfferImagePath} className={styles.offerIcon} />
-              <div className={styles.mobileLineBreak}>
-                <div className={styles.offer}>
-                  <div className={styles.offerName}>
-                    <SafelySetInnerHTML html={o.OfferDisplayName} />
+        <div className={styles.offerListContainer}>
+          {offers.map((o) => (
+            <>
+              <div
+                className={styles.offerContainer}
+                key={`${o.OfferKey}-${o.Code}`}
+              >
+                <img src={o.OfferImagePath} className={styles.offerIcon} />
+                <div className={styles.mobileLineBreak}>
+                  <div className={styles.offer}>
+                    <div className={styles.offerText}>
+                      <Typography
+                        className={styles.offerName}
+                        color="textPrimary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body1"
+                      >
+                        <SafelySetInnerHTML html={o.OfferDisplayName} />
+                      </Typography>
+                      <Typography
+                        className={styles.offerDetail}
+                        color="textSecondary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body2"
+                      >
+                        <SafelySetInnerHTML html={o.OfferDisplayDetail} />
+                      </Typography>
+                    </div>
+                    <Typography
+                      className={styles.code}
+                      color="Primary"
+                      component="p"
+                      themeVariant="bungie-core"
+                      variant="body2"
+                    >
+                      {o.Code}
+                    </Typography>
                   </div>
-                  <div className={styles.offerDetail}>
-                    <SafelySetInnerHTML html={o.OfferDisplayDetail} />
-                  </div>
-                  <div className={styles.code}>{o.Code}</div>
+                  <div className={styles.flair}>{getFlair(o)}</div>
                 </div>
-                <div className={styles.flair}>{getFlair(o)}</div>
               </div>
-            </div>
 
-            <div className={styles.divider} />
-          </>
-        ))}
+              <div className={styles.divider} />
+            </>
+          ))}
+        </div>
       </div>
     </SystemDisabledHandler>
   );

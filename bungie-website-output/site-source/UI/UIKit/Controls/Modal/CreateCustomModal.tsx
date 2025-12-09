@@ -1,4 +1,4 @@
-import { ModalProps, Modal, showModalInternal } from "./Modal";
+import { ModalProps, Modal } from "./Modal";
 import React from "react";
 import classNames from "classnames";
 
@@ -77,8 +77,7 @@ export const createCustomModal = <P extends CustomModalProps>(
       );
 
       // Pass the reference here. We need the reference to exist now because it has to go to the children
-      modalRef = showModalInternal(rendered, derivedBaseModalProps, modalRef);
-
+      modalRef = Modal.open(rendered, derivedBaseModalProps, modalRef);
       return modalRef;
     }
 

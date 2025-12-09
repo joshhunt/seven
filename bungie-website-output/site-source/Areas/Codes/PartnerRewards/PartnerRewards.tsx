@@ -9,8 +9,6 @@ import { Localizer } from "@bungie/localization";
 import { SystemNames } from "@Global/SystemNames";
 import { Platform, Tokens } from "@Platform";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
-import { BodyClasses, SpecialBodyClasses } from "@UI/HelmetUtils";
-import { BungieHelmet } from "@UI/Routing/BungieHelmet";
 import { Modal } from "@UI/UIKit/Controls/Modal/Modal";
 import { RequiresAuth } from "@UI/User/RequiresAuth";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
@@ -18,12 +16,13 @@ import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { usePrevious } from "@Utilities/ReactUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import { DateTime } from "luxon";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import styles from "./PartnerRewards.module.scss";
 import { FaTwitch } from "@react-icons/all-files/fa/FaTwitch";
 import { StringUtils } from "@Utilities/StringUtils";
-import { Button, Select } from "plxp-web-ui/components/base";
+import { Typography, Button, Select } from "plxp-web-ui/components/base";
+import { mockPartnerRewards } from "./PartnerRewardsMockData";
 
 interface IPartnerRewardsRouteParams {
   membershipId: string;
@@ -54,17 +53,38 @@ type MergedRewards =
       partnerId: number;
     } & Tokens.PartnerOfferSkuHistoryResponse);
 
+const MOCK_PARTNER_REWARDS_QUERY_PARAM = "mockPartnerRewards";
+
 export const PartnerRewards: React.FC = () => {
   const [rewardItems, setRewardItems] = useState<MergedRewards[]>([]);
   const [filteredRewardItems, setFilteredRewardItems] = useState<
     MergedRewards[]
   >([]);
   const [selectedPartnerId, setSelectedPartnerId] = useState(0);
+  const search = useLocation().search;
+  const usingMockRewards = useMemo(() => {
+    const params = new URLSearchParams(search);
+
+    return params.has(MOCK_PARTNER_REWARDS_QUERY_PARAM);
+  }, [search]);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
   const prevGlobalState = usePrevious(globalState);
   const { membershipId } = useParams<IPartnerRewardsRouteParams>();
 
   useEffect(() => {
+    if (!usingMockRewards) {
+      return;
+    }
+
+    setRewardItems(mockPartnerRewards);
+    setFilteredRewardItems(mockPartnerRewards);
+  }, [usingMockRewards]);
+
+  useEffect(() => {
+    if (usingMockRewards) {
+      return;
+    }
+
     const wasAuthed =
       prevGlobalState && UserUtils.isAuthenticated(prevGlobalState);
     const isNowAuthed = UserUtils.isAuthenticated(globalState);
@@ -73,7 +93,7 @@ export const PartnerRewards: React.FC = () => {
     if (!wasAuthed && isNowAuthed) {
       getRewardsHistory();
     }
-  }, [globalState]);
+  }, [globalState, usingMockRewards]);
 
   useEffect(() => {
     if (selectedPartnerId === 0) {
@@ -231,57 +251,83 @@ export const PartnerRewards: React.FC = () => {
 							label: p.partnerName
 						})).concat([ { value: 0, label: Localizer.CodeRedemption.AllPartners } ])}
 					/> */}
-          {filteredRewardItems.map((r) =>
-            r.type === "Twitch" ? (
-              <React.Fragment key={r.Title}>
-                <div className={styles.reward} key={r.Title}>
-                  <div>
-                    <div className={styles.title}>
-                      {StringUtils.decodeHtmlEntities(r.Title)}
-                    </div>
-                    <div className={styles.subTitle}>
-                      {StringUtils.decodeHtmlEntities(r.Description)}
-                    </div>
-                  </div>
-                  <div className={styles.flair}>
-                    {r.ClaimState === DropStateEnum.Fulfilled ? (
-                      <div>{makeDateString(r.CreatedAt)}</div>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-                <div className={styles.divider} />
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                <div className={styles.reward} key={r.SkuIdentifier}>
-                  <div>
-                    <div className={styles.title}>
-                      {StringUtils.decodeHtmlEntities(r.LocalizedName)}
-                    </div>
-                    <div className={styles.subTitle}>
-                      {StringUtils.decodeHtmlEntities(r.LocalizedDescription)}
-                    </div>
-                  </div>
-                  <div className={styles.flair}>
-                    {r.AllOffersApplied ? (
-                      <div>{makeDateString(r.ClaimDate)}</div>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => claimRewards()}
+          <div className={styles.rewardList}>
+            {filteredRewardItems.map((r) =>
+              r.type === "Twitch" ? (
+                <React.Fragment key={`twitch-${r.Title}`}>
+                  <div className={styles.reward}>
+                    <div className={styles.rewardContent}>
+                      <Typography
+                        className={styles.title}
+                        color="textPrimary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body1"
                       >
-                        {Localizer.PartnerOffers.Claim}
-                      </Button>
-                    )}
+                        {StringUtils.decodeHtmlEntities(r.Title)}
+                      </Typography>
+                      <Typography
+                        className={styles.subTitle}
+                        color="textSecondary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body2"
+                      >
+                        {StringUtils.decodeHtmlEntities(r.Description)}
+                      </Typography>
+                    </div>
+                    <div className={styles.flair}>
+                      {r.ClaimState === DropStateEnum.Fulfilled ? (
+                        <div>{makeDateString(r.CreatedAt)}</div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className={styles.divider} />
-              </React.Fragment>
-            )
-          )}
+                  <div className={styles.divider} />
+                </React.Fragment>
+              ) : (
+                <React.Fragment key={`partner-${r.SkuIdentifier}`}>
+                  <div className={styles.reward}>
+                    <div className={styles.rewardContent}>
+                      <Typography
+                        className={styles.title}
+                        color="textPrimary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body1"
+                      >
+                        {StringUtils.decodeHtmlEntities(r.LocalizedName)}
+                      </Typography>
+                      <Typography
+                        className={styles.subTitle}
+                        color="textSecondary"
+                        component="p"
+                        themeVariant="bungie-core"
+                        variant="body2"
+                      >
+                        {StringUtils.decodeHtmlEntities(r.LocalizedDescription)}
+                      </Typography>
+                    </div>
+                    <div className={styles.flair}>
+                      {r.AllOffersApplied ? (
+                        <div>{makeDateString(r.ClaimDate)}</div>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => claimRewards()}
+                        >
+                          {Localizer.PartnerOffers.Claim}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  <div className={styles.divider} />
+                </React.Fragment>
+              )
+            )}
+          </div>
           {rewardItems.length === 0 && (
             <div>
               <p className={styles.noResults}>

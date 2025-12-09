@@ -1,9 +1,7 @@
-import { StringUtils } from "@Utilities/StringUtils";
-import * as React from "react";
+import React from "react";
 import classNames from "classnames";
 import styles from "./Toast.module.scss";
 import { Icon } from "../Icon";
-import { GlobalElementDataStore } from "@Global/DataStore/GlobalElementDataStore";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import { IMultiSiteLink } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
@@ -59,46 +57,6 @@ interface IToastState {
 export type ToastProps = IToastProps & Partial<DefaultProps>;
 
 /**
- * Create a toast and show it via GlobalElementDataStore
- * @param children The stuff that goes in the toast
- * @param props The properties for the toast
- * @param existingRef If we want to preserve a reference instead of creating a new one, pass it here and it will be used
- */
-export const showToastInternal = (
-  children: React.ReactNode,
-  props?: ToastProps,
-  existingRef?: React.RefObject<ToastContent>
-): React.RefObject<ToastContent> => {
-  const toastRef = existingRef || React.createRef<ToastContent>();
-
-  const globalElementGuid = StringUtils.generateGuid();
-
-  const onClose = () => {
-    setTimeout(() => {
-      GlobalElementDataStore.actions.removeElementByGuid(globalElementGuid);
-
-      setTimeout(() => {
-        props && props.onClose && props.onClose();
-      }, 100);
-    }, 250);
-  };
-
-  const toast = (
-    <ToastContent ref={toastRef} visible={true} onClose={onClose} {...props}>
-      {children}
-    </ToastContent>
-  );
-
-  if (props && props.timeout) {
-    setTimeout(() => toastRef.current.close(), props.timeout);
-  }
-
-  GlobalElementDataStore.actions.addElement(globalElementGuid, toast);
-
-  return toastRef;
-};
-
-/**
  * Displays a toast over the rest of the page content
  *  *
  * @param {IToastProps} props
@@ -112,12 +70,13 @@ export class Toast {
    * @param props Optional props passed to the toast
    */
   public static show(children: React.ReactNode, props?: ToastProps) {
-    return showToastInternal(children, props);
+    // no op. Function gets defined by ToastProvider
   }
 }
 
 export class ToastContent extends React.Component<ToastProps, IToastState> {
   private readonly closeButtonRef = React.createRef<HTMLDivElement>();
+  private timeoutId?: number;
 
   public static defaultProps: DefaultProps = {
     onClose: () => {
@@ -154,6 +113,23 @@ export class ToastContent extends React.Component<ToastProps, IToastState> {
   public componentDidMount() {
     if (this.props.visible) {
       this.delayedVisible();
+    }
+
+    if (this.props.timeout) {
+      this.timeoutId = setTimeout(() => {
+        this.close();
+      }, this.props.timeout);
+    }
+  }
+
+  public componentDidUpdate(prevProps: Readonly<ToastProps>) {
+    if (prevProps.timeout !== this.props.timeout) {
+      clearTimeout(this.timeoutId);
+      if (this.props.timeout) {
+        this.timeoutId = setTimeout(() => {
+          this.close();
+        }, this.props.timeout);
+      }
     }
   }
 
