@@ -30,7 +30,7 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
   /* Snackbar Config + Settings */
   const [open, setOpen] = useState(false);
   const [snackbarKey, setSnackbarKey] = useState(undefined);
-  const [snackPack, setSnackPack] = useState<string[]>([]);
+  const [snackPack, setSnackPack] = useState<number[]>([]);
   const showMarathonControls = ConfigUtils.SystemStatus(
     "FeatureMarathonParentalControls"
   );
@@ -336,6 +336,14 @@ const SettingsPanel: FC<SettingsPanelProps> = ({
                 ChildPermissionEnum.IsReceiveBungieFriendRequestsAllowed
               )}
               variant={ChildPermissionEnum.IsReceiveBungieFriendRequestsAllowed}
+              isChild={isChild}
+              handleOnChange={onChange}
+            />
+            <UserSettingsCheckbox
+              userPermissionsAndPreferences={extractSettingsById(
+                ChildPermissionEnum.IsSendBungieFriendRequestsAllowed
+              )}
+              variant={ChildPermissionEnum.IsSendBungieFriendRequestsAllowed}
               isChild={isChild}
               handleOnChange={onChange}
             />

@@ -4579,6 +4579,7 @@ export enum ChildPermissionEnum {
   IsSendGroupInvitesAllowed = 10,
   IsReceiveBungieFriendRequestsAllowed = 11,
   IsSharePlatformIdAllowed = 12,
+  IsSendBungieFriendRequestsAllowed = 13,
 }
 
 /**
@@ -4598,6 +4599,7 @@ export enum ChildPreferenceEnum {
   SendGroupInvites = 10,
   ReceiveBungieFriendRequests = 11,
   SharePlatformId = 12,
+  SendBungieFriendRequests = 13,
 }
 
 /**
