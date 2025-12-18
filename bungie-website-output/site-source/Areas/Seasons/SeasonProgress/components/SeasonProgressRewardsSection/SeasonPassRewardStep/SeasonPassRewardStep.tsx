@@ -362,7 +362,10 @@ export class SeasonPassRewardStep extends React.Component<
             if (!item) {
               return;
             }
-            if (!this.props.character || !this.props.handleClaimingClick) {
+            if (
+              this.props.character === undefined ||
+              !this.props.handleClaimingClick
+            ) {
               this.openItemDetailModal(item.itemHash);
             } else {
               this.props.handleClaimingClick(
