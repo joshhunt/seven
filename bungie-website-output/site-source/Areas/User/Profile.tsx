@@ -390,6 +390,7 @@ const Profile: React.FC<ProfileProps> = (props) => {
               {!isSelf && bungieNetUser && bungieGlobalNameObject && (
                 <>
                   <BungieFriend
+                    bungieNetUser={bungieNetUser}
                     mId={membershipId}
                     isAuthed={UserUtils.isAuthenticated(globalState)}
                     bungieGlobalDisplaynameCode={

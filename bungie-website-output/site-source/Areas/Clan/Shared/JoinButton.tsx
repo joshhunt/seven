@@ -1,11 +1,8 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType, MembershipOption } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -38,13 +35,14 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
     "loggedInUser",
     "loggedInUserClans",
   ]);
-  const destinyMembership = useDataStore(ClanDestinyMembershipDataStore);
+  const destinyMemberships =
+    useGameData().destinyData.membershipData?.destinyMemberships ?? [];
   const clansLoc = Localizer.Clans;
 
   const isCrossSaved = !!globalState.crossSavePairingStatus
     ?.primaryMembershipType;
   const multiplePlatformsCanJoin =
-    !isCrossSaved && destinyMembership?.memberships?.length > 1;
+    !isCrossSaved && destinyMemberships.length > 1;
 
   const joinClan = (membershipType: BungieMembershipType) => {
     const applicationRequest: GroupsV2.GroupApplicationRequest = {
@@ -68,8 +66,6 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
   const signInToJoin = () => {
     //show the auth
     const signInModal = Modal.signIn(() => {
-      ClanDestinyMembershipDataStore.actions.loadUserData();
-
       signInModal.current.close();
     });
   };
@@ -88,7 +84,7 @@ export const JoinButton: React.FC<JoinButtonProps> = (props) => {
 
   return (
     <>
-      {destinyMembership.memberships.map((m) => {
+      {destinyMemberships.map((m) => {
         if (
           Object.values(props.potentialMemberMap).find(
             (pm) => pm.destinyUserInfo.membershipType === m.membershipType

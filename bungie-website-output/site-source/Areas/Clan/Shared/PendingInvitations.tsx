@@ -1,15 +1,9 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
-import { ConvertToPlatformError } from "@ApiIntermediary";
-import { ClanPendingInvitesDataStore } from "@Areas/Clan/DataStores/ClanPendingInvitesDataStore";
+import { ConvertToPlatformErrorSync } from "@ApiIntermediary";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
 import settingsStyles from "@Areas/Clan/Shared/ClanSettings.module.scss";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType } from "@Enum";
-import { Platform } from "@Platform";
+import { GroupsV2, Platform } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -18,7 +12,7 @@ import { BasicSize } from "@UIKit/UIKitUtils";
 import { EnumUtils } from "@Utilities/EnumUtils";
 import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 
 interface PendingInvitationsProps {
@@ -29,34 +23,40 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
   props
 ) => {
   const clansLoc = Localizer.Clans;
-  const pendingInvitesData = useDataStore(ClanPendingInvitesDataStore);
+  const [invites, setInvites] = useState<GroupsV2.GroupMemberApplication[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
-  const cancelInvite = (mtype: BungieMembershipType, mid: string) => {
-    Platform.GroupV2Service.IndividualGroupInviteCancel(
+  useEffect(() => {
+    getPendingInvitations(page);
+  }, [page]);
+
+  const getPendingInvitations = async (page: number) => {
+    const result = await Platform.GroupV2Service.GetInvitedIndividuals(
       props.clanId,
-      mtype,
-      mid
-    )
-      .then(() => {
-        ClanPendingInvitesDataStore.actions.getInvitationsAndFriends(
-          props.clanId
-        );
-      })
-      .catch(ConvertToPlatformError)
-      .catch((e: PlatformError) => {
-        Modal.error(e);
-      });
+      page
+    );
+    setInvites(result?.results ?? []);
+    setHasMore(!!result?.hasMore);
   };
 
-  if (
-    !pendingInvitesData ||
-    pendingInvitesData?.invitationsResponse?.results?.length === 0
-  ) {
+  const cancelInvite = async (mtype: BungieMembershipType, mid: string) => {
+    try {
+      await Platform.GroupV2Service.IndividualGroupInviteCancel(
+        props.clanId,
+        mtype,
+        mid
+      );
+      await getPendingInvitations(page);
+    } catch (ex) {
+      const err = ConvertToPlatformErrorSync(ex);
+      Modal.error(err);
+    }
+  };
+
+  if (invites.length === 0) {
     return null;
   }
-
-  const pagerPage =
-    (pendingInvitesData?.invitationsResponse?.query?.currentPage ?? 0) - 1;
 
   return (
     <>
@@ -71,7 +71,7 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
         )}
       >
         <ul className={styles.listCards}>
-          {pendingInvitesData?.invitationsResponse?.results?.map((b) => {
+          {invites.map((b) => {
             const profileLink = b.bungieNetUserInfo
               ? RouteHelper.NewProfile({
                   mid: b.bungieNetUserInfo.membershipId,
@@ -217,33 +217,24 @@ export const PendingInvitations: React.FC<PendingInvitationsProps> = (
             );
           })}
         </ul>
-        {!(
-          pagerPage === 0 && !pendingInvitesData?.invitationsResponse?.hasMore
-        ) && (
-          <ReactPaginate
-            pageCount={
-              pagerPage > 3 && pendingInvitesData?.invitationsResponse.hasMore
-                ? pagerPage + 5
-                : 5
-            }
-            onPageChange={(selectedPage) => {
-              ClanPendingInvitesDataStore.actions.getPendingInvitations(
-                pendingInvitesData.clanId,
-                selectedPage.selected + 1
-              );
-            }}
-            forcePage={pagerPage}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            previousLabel={Localizer.usertools.previousPage}
-            nextLabel={Localizer.usertools.nextPage}
-            containerClassName={styles.paginateInterface}
-            activeClassName={styles.active}
-            previousClassName={styles.prev}
-            nextClassName={styles.next}
-            disabledClassName={styles.disabled}
-          />
-        )}
+        {/* these results are not actually paged */}
+        {/* <ReactPaginate
+					pageCount={page > 3 && hasMore ? page + 5 : 5}
+					onPageChange={(selectedPage) => {
+						setPage(selectedPage.selected)
+					}}
+					
+					forcePage={page}
+					marginPagesDisplayed={2}
+					pageRangeDisplayed={5}
+					previousLabel={Localizer.usertools.previousPage}
+					nextLabel={Localizer.usertools.nextPage}
+					containerClassName={styles.paginateInterface}
+					activeClassName={styles.active}
+					previousClassName={styles.prev}
+					nextClassName={styles.next}
+					disabledClassName={styles.disabled}
+				/> */}
       </div>
     </>
   );

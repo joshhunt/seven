@@ -334,22 +334,6 @@ export declare namespace User {
     displayNamePrefix: string;
   }
 
-  export interface SetParentalControlFlagsRequest {
-    TargetChildBungieId?: string;
-
-    TargetChildMembershipId?: string;
-
-    TargetChildMembershipType?: Globals.BungieMembershipType;
-
-    UnsetParentalControls: boolean;
-
-    ParentalControlFlags: Globals.BungieAgeGateFeatures;
-  }
-
-  export interface ParentalControlsIdRequest {
-    InputIdentifier: string;
-  }
-
   /**
 	Very basic info about a user as returned by the Account server.
 	*/
@@ -2968,6 +2952,8 @@ export declare namespace Common {
 		*/
     icon: string;
 
+    iconHash: number;
+
     iconSequences: Common.DestinyIconSequenceDefinition[];
 
     /**
@@ -3774,188 +3760,6 @@ export declare namespace GroupsV2 {
     member: GroupsV2.GroupPotentialMember;
 
     group: GroupsV2.GroupV2;
-  }
-}
-
-export declare namespace ParentalControls {
-  /**
-	Response contract for linking a guardian in the context of parental controls.
-	*/
-  export interface ParentalControlsLinkGuardianResponse {
-    ErrorMessage: string;
-  }
-
-  /**
-	Response contract for unlinking a child-guardian relationship in the context of parental controls.
-	*/
-  export interface ParentalControlsUnlinkGuardianResponse {
-    ErrorMessage: string;
-  }
-
-  /**
-	Response contract for retrieving player info in the context of parental controls.
-	*/
-  export interface ParentalControlsGetPlayerContextResponse {
-    Player: ParentalControls.ParentalControlsPlayerContext;
-
-    Children: ParentalControls.ParentalControlsChildContext[];
-
-    Preferences: ParentalControls.ParentalControlsPreferenceContext[];
-  }
-
-  /**
-	Detailed class for player info in the context of parental controls.
-	*/
-  export interface ParentalControlsPlayerContext {
-    GuardianId: string;
-
-    Email: string;
-
-    DateOfBirth?: string;
-
-    Category: Globals.ParentalControlsCategoryType;
-
-    LinkStatus: Globals.ParentalControlsGuardianChildLinkStatus;
-
-    IsEmailVerified: boolean;
-
-    IsVerifiedAdult: boolean;
-
-    PlayerId: string;
-
-    UniqueName: string;
-
-    ProfilePicturePath: string;
-  }
-
-  /**
-	Detailed class for child info in the context of parental controls.
-	*/
-  export interface ParentalControlsChildContext {
-    Permissions: ParentalControls.ParentalControlsPermission[];
-
-    PlayerId: string;
-
-    UniqueName: string;
-
-    ProfilePicturePath: string;
-  }
-
-  /**
-	A data structure representing a permission for a player in the context of parental controls.
-	*/
-  export interface ParentalControlsPermission {
-    Name: string;
-
-    Value: boolean;
-  }
-
-  /**
-	Detailed class preference info, with an additional parameter representing mutability.
-	*/
-  export interface ParentalControlsPreferenceContext {
-    Preference: ParentalControls.ParentalControlsPreference;
-
-    IsEditable: boolean;
-  }
-
-  /**
-	A data structure representing a preference for a player in the context of parental controls.
-	*/
-  export interface ParentalControlsPreference {
-    Name: string;
-
-    Value: boolean;
-  }
-
-  /**
-	Response contract for updating a child's permissions in the context of parental controls.
-	*/
-  export interface ParentalControlsUpdatePermissionsForChildResponse {
-    ErrorMessage: string;
-
-    StatusCode: Globals.ParentalControlsResponseStatus;
-  }
-
-  /**
-	Request contract for updating a child's permissions in the context of parental controls.
-	*/
-  export interface ParentalControlsUpdatePermissionsForChildRequest {
-    Permissions: ParentalControls.ParentalControlsPermission[];
-  }
-
-  /**
-	Response contract for retrieving child preferences in the context of parental controls.
-	*/
-  export interface ParentalControlsGetPreferencesForChildResponse {
-    Preferences: ParentalControls.ParentalControlsPreference[];
-  }
-
-  /**
-	Response contract for updating a child's preferences in the context of parental controls.
-	*/
-  export interface ParentalControlsUpdatePreferencesForChildResponse {
-    ErrorMessage: string;
-
-    StatusCode: Globals.ParentalControlsResponseStatus;
-  }
-
-  export interface ParentalControlsUpdatePreferencesForChildRequest {
-    Preferences: ParentalControls.ParentalControlsPreference[];
-  }
-
-  /**
-	Response contract for a webhook with Kid's Web Services (KWS).
-	*/
-  export interface ParentalControlsKWSWebhookResponse {
-    Success: boolean;
-
-    ErrorMessage: string;
-  }
-
-  /**
-	Request contract for a webhook with Kid's Web Services (KWS).
-	*/
-  export interface ParentalControlsKWSWebhookRequest {
-    Payload: ParentalControls.ParentalControlsKWSWebHookPayload;
-  }
-
-  /**
-	Parental controls webhook payload for KWS.
-	*/
-  export interface ParentalControlsKWSWebHookPayload {
-    ParentEmail: string;
-
-    Status: ParentalControls.ParentalControlsKWSWebHookStatus;
-
-    ExternalPayload: string;
-  }
-
-  /**
-	Status for a KWS webhook payload.
-	*/
-  export interface ParentalControlsKWSWebHookStatus {
-    Verified: boolean;
-  }
-
-  /**
-	Response contract for retrieving a token in the context of parental controls.
-	*/
-  export interface ParentalControlsTokenResponse {
-    Token: string;
-
-    TokenExpiresIn: number;
-
-    RefreshToken: string;
-
-    RefreshTokenExpiresIn: number;
-  }
-
-  /**
-	Request contract for retrieving a token in the context of parental controls.
-	*/
-  export interface ParentalControlsTokenRequest {
-    Code: string;
   }
 }
 
@@ -5239,6 +5043,49 @@ export declare namespace World {
 		A filtered list of reward mappings with only the currently visible reward items.
 		*/
     visibleRewards: Definitions.DestinyActivityRewardMapping[];
+
+    /**
+		Whether or not this activity is currently in the "featured" carousel of the Portal
+		*/
+    isFocusedActivity: boolean;
+
+    /**
+		Indexes of failure if this activity is inaccessible as a fireteam leader
+		*/
+    leaderRequirementFailureIndices: number[];
+
+    /**
+		Indexes of failure if this activity is inaccessible as a fireteam member
+		*/
+    fireteamRequirementFailureIndices: number[];
+  }
+
+  export interface DestinyActivityDifficultyTierCollectionComponent {
+    difficultyTierCollectionHash: number;
+
+    difficultyTiers: World.DestinyActivityDifficultyTierComponent[];
+  }
+
+  export interface DestinyActivityDifficultyTierComponent {
+    difficultyTierIndex: number;
+
+    fixedActivitySkulls: World.DestinyActivitySkullComponent[];
+
+    isEnabled: boolean;
+  }
+
+  export interface DestinyActivitySkullComponent {
+    hash: number;
+
+    skullIdentifierHash: number;
+
+    isEnabled: boolean;
+  }
+
+  export interface DestinyActivitySelectableSkullCollectionComponent {
+    selectableSkullCollectionHash: number;
+
+    selectableSkulls: World.DestinyActivitySkullComponent[];
   }
 
   /**
@@ -5937,6 +5784,8 @@ export declare namespace Models {
 
     craftingRootNodeHash: number;
 
+    globalConstantsHash: number;
+
     loadoutConstantsHash: number;
 
     guardianRankConstantsHash: number;
@@ -5972,6 +5821,8 @@ export declare namespace Models {
     currentSeasonalArtifactHash: number;
 
     currentSeasonHash?: number;
+
+    currentSeasonPassHash?: number;
 
     seasonalChallengesPresentationNodeHash?: number;
 
@@ -9893,6 +9744,8 @@ export declare namespace Definitions {
 
     icon: string;
 
+    iconHash: number;
+
     iconSequences: Common.DestinyIconSequenceDefinition[];
 
     highResIcon: string;
@@ -10766,6 +10619,8 @@ export declare namespace Definitions {
 
     selectableSkullCollectionHashes: number[];
 
+    selectableSkullCollections: Definitions.DestinyActivitySelectableSkullCollections[];
+
     /**
 		Represents all of the possible activities that could be played in the Playlist, along with information
 		that we can use to determine if they are active at the present time.
@@ -10834,6 +10689,16 @@ export declare namespace Definitions {
 		for our/your lookup convenience.
 		*/
     activityLocationMappings: Constants.DestinyEnvironmentLocationMapping[];
+
+    /**
+		Additional data used for display in the in-game Portal screen
+		*/
+    curatorBlockDefinition: Definitions.DestinyActivityCuratorBlockDefinition;
+
+    /**
+		Optional estimated duration, shown on the Portal tiles
+		*/
+    durationEstimate: Definitions.DestinyActivityDurationEstimate;
 
     hash: number;
 
@@ -10924,6 +10789,14 @@ export declare namespace Definitions {
 
   export interface DestinyActivityRequirementLabel {
     displayString: string;
+  }
+
+  export interface DestinyActivitySelectableSkullCollections {
+    selectableSkullCollectionHash: number;
+
+    minimumTierRank: number;
+
+    maximumTierRank: number;
   }
 
   /**
@@ -11040,6 +10913,35 @@ export declare namespace Definitions {
 		comparing how different instances of Raids have phases in different orders!
 		*/
     phaseHash: number;
+  }
+
+  export interface DestinyActivityCuratorBlockDefinition {
+    /**
+		Sort order
+		*/
+    quickplaySortPriority: number;
+
+    /**
+		Whether this activity should be sorted to the front of the Portal category
+		*/
+    quickplaySortToFront: boolean;
+  }
+
+  export interface DestinyActivityDurationEstimate {
+    /**
+		The number of filled pips shown on the Portal tile
+		*/
+    durationPipsFilledCount: number;
+
+    /**
+		The total number of pips shown on the Portal tile
+		*/
+    durationPipsTotalCount: number;
+
+    /**
+		The text string showing the estimated time to complete this activity
+		*/
+    durationEstimateText: string;
   }
 
   /**
@@ -11714,6 +11616,8 @@ export declare namespace Definitions {
     name: string;
 
     icon: string;
+
+    iconHash: number;
 
     iconSequences: Common.DestinyIconSequenceDefinition[];
 
@@ -14199,6 +14103,11 @@ export declare namespace Profiles {
     currentSeasonHash?: number;
 
     /**
+		If populated, this is a reference to the season pass that is currently active.
+		*/
+    currentSeasonPassHash?: number;
+
+    /**
 		If populated, this is the reward power cap for the current season.
 		*/
     currentSeasonRewardPowerCap?: number;
@@ -14638,6 +14547,11 @@ export declare namespace Characters {
 		Data related to your progress on the current season's artifact that can vary per character.
 		*/
     seasonalArtifact: Artifacts.DestinyArtifactCharacterScoped;
+
+    /**
+		Unclaimed rewards earned by completing Orders.
+		*/
+    unclaimedOrderRewards: { [key: number]: number };
   }
 
   /**
@@ -14694,6 +14608,20 @@ export declare namespace Characters {
 		The list of activity interactables that the player can interact with.
 		*/
     availableActivityInteractables: FireteamFinder.DestinyActivityInteractableReference[];
+
+    /**
+		The activity difficulty tier states for this character.
+		*/
+    difficultyTierCollections: {
+      [key: number]: World.DestinyActivityDifficultyTierCollectionComponent;
+    };
+
+    /**
+		The selectable activity skulls states for this character.
+		*/
+    selectableSkullCollections: {
+      [key: number]: World.DestinyActivitySelectableSkullCollectionComponent;
+    };
 
     /**
 		If the user is in an activity, this will be the hash of the Activity being played.
@@ -19773,6 +19701,8 @@ export declare namespace Seasons {
 
     rewardProgressionHash?: number;
 
+    rewardProgressionHashList: number[];
+
     weeklyChallengesPresentationNodeHash?: number;
 
     hash: number;
@@ -20044,8 +19974,6 @@ export declare namespace Director {
     description: string;
 
     name: string;
-
-    unlockExpression: Definitions.DestinyUnlockExpressionDefinition;
 
     linkedGraphId: number;
 
@@ -20889,6 +20817,12 @@ export declare namespace PnP {
 		Note: This is a base 62 encoded sequence of characters representing the membership Id of the calling user.
 		*/
     encodedSequence: string;
+  }
+
+  export interface GenerateVerificationUrlResponse {
+    verificationUrl: string;
+
+    membershipId: string;
   }
 
   /**
@@ -22531,254 +22465,6 @@ class UserServiceInternal {
       optionalQueryAppend,
       "User",
       "SearchByGlobalNamePost",
-      input,
-      clientState
-    );
-
-  /**
-   * Sets the parental control attribute flags for the authenticated user.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static SetParentalControlFlags = (
-    input: User.SetParentalControlFlagsRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<boolean> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/SetFlags/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "SetParentalControlFlags",
-      input,
-      clientState
-    );
-
-  /**
-   * Returns the bungie id of a designated membership id for parental controls. Requires valid service auth context and User Pii Read scope.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetBungieIdFromMembershipIdForParentalControls = (
-    input: User.ParentalControlsIdRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<string> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/GetBungieId/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetBungieIdFromMembershipIdForParentalControls",
-      input,
-      clientState
-    );
-
-  /**
-   * Returns the list of all membership ids of a designated bungie id for parental controls.  Also returns Cross Save Information. Requires valid service auth context and User Pii Read scope.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetMembershipIdMappingFromBungieIdForParentalControls = (
-    input: User.ParentalControlsIdRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<User.UserInfoCard[]> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/GetMembershipIdMappingFromBungieId/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetMembershipIdMappingFromBungieIdForParentalControls",
-      input,
-      clientState
-    );
-
-  /**
-   * Links the calling account as the guardian of the requested child.
-   * @param childMembershipId The membership Id of the child to link.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static LinkParentalControlGuardian = (
-    childMembershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsLinkGuardianResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/${e(childMembershipId)}/LinkGuardian/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "LinkParentalControlGuardian",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Revokes the parental control guardian status of the calling account.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static UnlinkParentalControlGuardian = (
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsUnlinkGuardianResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/UnlinkGuardian/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "UnlinkParentalControlGuardian",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Returns a child account in the context of parental controls
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetPlayerContextForParentalControls = (
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsGetPlayerContextResponse> =>
-    ApiIntermediary.doGetRequest(
-      `/User/ParentalControls/Player/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetPlayerContextForParentalControls",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Updates child permissions in the context of parental controls.
-   * @param childMembershipId The membership Id of the child to update permissions for.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static UpdateParentalControlPermissionsForChild = (
-    input: ParentalControls.ParentalControlsUpdatePermissionsForChildRequest,
-    childMembershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<
-    ParentalControls.ParentalControlsUpdatePermissionsForChildResponse
-  > =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/${e(childMembershipId)}/Permissions/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "UpdateParentalControlPermissionsForChild",
-      input,
-      clientState
-    );
-
-  /**
-   * Retrieves the requested child's preferences.
-   * @param childMembershipId The membership Id of the child to get preferences for.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetParentalControlPreferencesForChild = (
-    childMembershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsGetPreferencesForChildResponse> =>
-    ApiIntermediary.doGetRequest(
-      `/User/ParentalControls/${e(childMembershipId)}/Preferences/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetParentalControlPreferencesForChild",
-      undefined,
-      clientState
-    );
-
-  /**
-   * Updates, or creates if they do not exist, preferences for the requested child.
-   * @param childMembershipId The membership Id of the child to update preferences for.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static UpdateParentalControlPreferencesForChild = (
-    input: ParentalControls.ParentalControlsUpdatePreferencesForChildRequest,
-    childMembershipId: string,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<
-    ParentalControls.ParentalControlsUpdatePreferencesForChildResponse
-  > =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/${e(childMembershipId)}/Preferences/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "UpdateParentalControlPreferencesForChild",
-      input,
-      clientState
-    );
-
-  /**
-   * Parental controls webhook for Kids Web Services (KWS).
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static ParentalControlKWSWebhook = (
-    input: ParentalControls.ParentalControlsKWSWebhookRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsKWSWebhookResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/KWSWebhook/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "ParentalControlKWSWebhook",
-      input,
-      clientState
-    );
-
-  /**
-   * Retrieves a temporary BungieNet token from BNet for parental controls.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetBungieNetTokenForParentalControls = (
-    input: ParentalControls.ParentalControlsTokenRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsTokenResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/BungieNetToken/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetBungieNetTokenForParentalControls",
-      input,
-      clientState
-    );
-
-  /**
-   * Retrieves a temporary refresh token from BNet for parental controls.
-   * @param optionalQueryAppend Segment to append to query string. May be null.
-   * @param clientState Object returned to the provided success and error callbacks.
-   */
-  public static GetBungieRefreshTokenForParentalControls = (
-    input: ParentalControls.ParentalControlsTokenRequest,
-    optionalQueryAppend?: string,
-    clientState?: any
-  ): Promise<ParentalControls.ParentalControlsTokenResponse> =>
-    ApiIntermediary.doPostRequest(
-      `/User/ParentalControls/BungieRefreshToken/`,
-      [],
-      optionalQueryAppend,
-      "User",
-      "GetBungieRefreshTokenForParentalControls",
       input,
       clientState
     );
@@ -31377,24 +31063,49 @@ class PnpServiceInternal {
   /**
    * Sends an email to the acting parent or guardian account to verify themselves as an adult through KWS (Kids Web Services) for their pending child account.
    * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
-   * @param encodedChildMembershipId The encoded child's membership Id.
+   * @param childMembershipId The child's membership Id.
    * @param optionalQueryAppend Segment to append to query string. May be null.
    * @param clientState Object returned to the provided success and error callbacks.
    */
   public static SendVerificationEmail = (
     parentOrGuardianMembershipId: string,
-    encodedChildMembershipId: string,
+    childMembershipId: string,
     optionalQueryAppend?: string,
     clientState?: any
   ): Promise<Globals.ResponseStatusEnum> =>
     ApiIntermediary.doPostRequest(
       `/PnP/KWS/Email/${e(parentOrGuardianMembershipId)}/For/${e(
-        encodedChildMembershipId
+        childMembershipId
       )}/`,
       [],
       optionalQueryAppend,
       "PnP",
       "SendVerificationEmail",
+      undefined,
+      clientState
+    );
+
+  /**
+   * Creates a link to KWS (Kids Web Services) that the user can use to verify that they are an adult.
+   * @param parentOrGuardianMembershipId The parent or guardian's membership Id.
+   * @param childMembershipId The child's membership Id.
+   * @param optionalQueryAppend Segment to append to query string. May be null.
+   * @param clientState Object returned to the provided success and error callbacks.
+   */
+  public static GenerateKwsVerificationUrl = (
+    parentOrGuardianMembershipId: string,
+    childMembershipId: string,
+    optionalQueryAppend?: string,
+    clientState?: any
+  ): Promise<PnP.GenerateVerificationUrlResponse> =>
+    ApiIntermediary.doPostRequest(
+      `/PnP/KWS/Link/${e(parentOrGuardianMembershipId)}/For/${e(
+        childMembershipId
+      )}/`,
+      [],
+      optionalQueryAppend,
+      "PnP",
+      "GenerateKwsVerificationUrl",
       undefined,
       clientState
     );

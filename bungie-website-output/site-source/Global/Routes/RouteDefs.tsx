@@ -399,22 +399,6 @@ export class RouteDefs {
           import("@Areas/Seasons/SeasonsArea" /* webpackChunkName: "Seasons" */)
       ),
       routes: [
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheUndying),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfDawn),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWorthy),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfArrivals),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheHunt),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheChosen),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheSplicer),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheLost),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheRisen),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheHaunted),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfPlunder),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheSeraph),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfDefiance),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheDeep),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWitch),
-        (area) => new ActionRoute(area, RouteActions.SeasonOfTheWish),
         (area) => new ActionRoute(area, RouteActions.Progress),
         (area) => new ActionRoute(area, RouteActions.PreviousPass),
         (area) => new ActionRoute(area, RouteActions.Events),
@@ -429,15 +413,6 @@ export class RouteDefs {
       ),
       routes: [(area) => new ActionRoute(area, RouteActions.Index)],
       webmasterSystem: SystemNames.SmsVerification,
-    }),
-    Static: new Area({
-      name: AreaNames.Static,
-      lazyComponent: createAsyncComponent(
-        () =>
-          import("@Areas/Static/StaticArea" /* webpackChunkName: "Static" */)
-      ),
-      indexParams: { path: ":page?" },
-      routes: [],
     }),
     Triumphs: new Area({
       name: AreaNames.Triumphs,

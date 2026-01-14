@@ -1,15 +1,10 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
-import { ClanPendingInvitesDataStore } from "@Areas/Clan/DataStores/ClanPendingInvitesDataStore";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
 import settingsStyles from "@Areas/Clan/Shared/ClanSettings.module.scss";
 import { InviteModal } from "@Areas/Clan/Shared/InviteModal";
 import { SearchInput } from "@Areas/Clan/Shared/SearchInput";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { BungieMembershipType } from "@Enum";
-import { GroupsV2, Platform, User } from "@Platform";
+import { Friends, GroupsV2, Platform, User } from "@Platform";
 import { OneLineItem } from "@UI/UIKit/Companion/OneLineItem";
 import { IconCoin } from "@UIKit/Companion/Coins/IconCoin";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -27,7 +22,8 @@ interface InviteFriendsProps {
 
 export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
   const clansLoc = Localizer.Clans;
-  const clanPendingInvitesData = useDataStore(ClanPendingInvitesDataStore);
+  const [invites, setInvites] = useState<GroupsV2.GroupMemberApplication[]>([]);
+  const [friends, setFriends] = useState<Friends.BungieFriend[]>([]);
 
   const [searchedDestinyUsers, setSearchedDestinyUsers] = useState<
     User.UserInfoCard[]
@@ -65,6 +61,25 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    getPendingInvitations();
+    getFriends();
+  }, []);
+
+  const getPendingInvitations = async () => {
+    // These results aren't actually paged
+    const result = await Platform.GroupV2Service.GetInvitedIndividuals(
+      props.clanId,
+      1
+    );
+    setInvites(result?.results ?? []);
+  };
+
+  const getFriends = async () => {
+    const result = await Platform.SocialService.GetFriendList();
+    setFriends(result?.friends ?? []);
+  };
 
   const searchForUsers = (value: string) => {
     setSearchedDestinyUsers(undefined);
@@ -119,9 +134,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
         inviteSent={() => {
           inviteModal.current.close();
 
-          ClanPendingInvitesDataStore.actions.getPendingInvitations(
-            props.clanId
-          );
+          getPendingInvitations();
         }}
       />,
       { className: modalStyles.inviteModal }
@@ -132,20 +145,20 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
     ?.filter((u) => u.destinyMemberships?.length > 0)
     ?.find(
       (u) =>
-        !clanPendingInvitesData?.invitationsResponse?.results?.find(
+        !invites.find(
           (iv) =>
             iv.bungieNetUserInfo?.membershipId === u?.bungieNetMembershipId
         )
     );
   const hasDestinyUsersNotPending = searchedDestinyUsers?.find(
     (u) =>
-      !clanPendingInvitesData?.invitationsResponse?.results?.find(
+      !invites.find(
         (iv) => iv.destinyUserInfo?.membershipId === u?.membershipId
       )
   );
-  const hasFriendsWithDestinyAccountsNotPending = clanPendingInvitesData.friendsListResponse?.friends?.find(
+  const hasFriendsWithDestinyAccountsNotPending = friends.find(
     (u) =>
-      !clanPendingInvitesData?.invitationsResponse?.results?.find(
+      !invites.find(
         (iv) =>
           iv.bungieNetUserInfo?.membershipId === u?.bungieNetUser?.membershipId
       )
@@ -172,20 +185,17 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
           styles.suggestedInvites
         )}
       >
-        {clanPendingInvitesData?.friendsListResponse &&
-          clanPendingInvitesData?.friendsListResponse?.friends?.length ===
-            0 && <p>{clansLoc.ThereWereNoResults}</p>}
+        {friends.length === 0 && <p>{clansLoc.ThereWereNoResults}</p>}
         {searchTerm === "" && hasFriendsWithDestinyAccountsNotPending && (
           <ul className={classNames(styles.listCards)}>
-            {clanPendingInvitesData?.friendsListResponse?.friends?.map((b) => {
+            {friends.map((b) => {
               if (!b.bungieNetUser) {
                 //doesn't have a bungieNet account, cannot invite
                 return null;
               }
 
               if (
-                clanPendingInvitesData?.invitationsResponse?.results?.length &&
-                clanPendingInvitesData?.invitationsResponse?.results?.find(
+                invites.find(
                   (iv) =>
                     b.bungieNetUser.membershipId ===
                     iv.bungieNetUserInfo?.membershipId
@@ -287,7 +297,7 @@ export const InviteFriends: React.FC<InviteFriendsProps> = (props) => {
             >
               {searchedDestinyUsers
                 ?.filter((u) => {
-                  return !clanPendingInvitesData?.invitationsResponse?.results?.find(
+                  return !invites.find(
                     (iv) => iv.destinyUserInfo?.membershipId === u?.membershipId
                   );
                 })

@@ -1,9 +1,4 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
-import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
 import { ClanMembersDataStore } from "@Areas/Clan/DataStores/ClanMembersDataStore";
-import { NonMemberClanSettingsDataStore } from "@Areas/Clan/DataStores/NonMemberClanSettingsDataStore";
 import { Breadcrumb } from "@Areas/Clan/Shared/Breadcrumb";
 import { ClanMembersList } from "@Areas/Clan/Shared/ClanMembersList";
 import { ClanProgressionBar } from "@Areas/Clan/Shared/ClanProgressionBar";
@@ -70,7 +65,6 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
   const getClanInfo = () => {
     if (ConfigUtils.SystemStatus(SystemNames.Clans)) {
       Platform.GroupV2Service.GetGroup(clanId).then((result) => {
-        NonMemberClanSettingsDataStore.actions.setClanResponse(result);
         setClanResponse(result);
       });
 
@@ -87,14 +81,6 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
   };
 
   useEffect(() => {
-    ClanDestinyMembershipDataStore.actions.loadUserData();
-
-    getClanInfo();
-  }, []);
-
-  useEffect(() => {
-    ClanDestinyMembershipDataStore.actions.loadUserData();
-
     getClanInfo();
 
     if (!isLoggedIn) {
@@ -198,7 +184,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = (props) => {
                       {ConfigUtils.SystemStatus("ClanFireteams") && (
                         <li className={styles.fireteamsLink}>
                           <Anchor
-                            url={RouteHelper.DeprecatedReactFireteams({
+                            url={RouteHelper.FireteamFinder({
                               groupId: clanId,
                             })}
                           >

@@ -1,8 +1,4 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
 import { ClanMembersDataStore } from "@Areas/Clan/DataStores/ClanMembersDataStore";
 import { BanButton } from "@Areas/Clan/Shared/BanButton";
 import styles from "@Areas/Clan/Shared/ClanMembers.module.scss";
@@ -12,7 +8,8 @@ import { SetAsFounderWarningModal } from "@Areas/Clan/Shared/SetAsFounderWarning
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
-import { AclEnum, BungieMembershipType, RuntimeGroupMemberType } from "@Enum";
+import { BungieMembershipType, RuntimeGroupMemberType } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -32,11 +29,10 @@ export const ClanMemberAdminButtons: React.FC<ClanMemberAdminButtonsProps> = (
     "loggedInUser",
     "loggedInUserClans",
   ]);
-  const destinyMembership = useDataStore(ClanDestinyMembershipDataStore);
-  const clanMembersData = useDataStore(ClanMembersDataStore);
+  const destinyMembership = useGameData().destinyData.membershipData;
   const clansLoc = Localizer.Clans;
 
-  const isViewerSelf = !!destinyMembership?.memberships?.find(
+  const isViewerSelf = !!destinyMembership?.destinyMemberships?.find(
     (m) => m.membershipId === props.clanMember.destinyUserInfo.membershipId
   );
   const isViewerFounder = !!globalState.loggedInUserClans?.results.find(

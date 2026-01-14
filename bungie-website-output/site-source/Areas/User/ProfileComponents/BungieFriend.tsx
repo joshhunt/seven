@@ -5,7 +5,7 @@ import { ConvertToPlatformError } from "@ApiIntermediary";
 import styles from "@Areas/User/Profile.module.scss";
 import { PlatformError } from "@CustomErrors";
 import { Localizer } from "@bungie/localization";
-import { Friends, Platform } from "@Platform";
+import { Friends, Platform, User } from "@Platform";
 import { Auth } from "@UI/User/Auth";
 import { Button } from "@UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -13,6 +13,7 @@ import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 
 interface BungieFriendProps {
+  bungieNetUser?: User.GeneralUser;
   isAuthed: boolean;
   mId: string;
   //bungieDisplayNameCode is used when users do not have a bungieNetUser defined on the BungieFriend
@@ -34,12 +35,13 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
   //only used to keep track of pushing the send friend request button if not logged in
   const [sendingFriendRequest, setSendingFriendRequest] = useState(false);
 
-  const userFound = (friends: Friends.BungieFriend[]) => {
-    return (
-      friends.find(
-        (value: Friends.BungieFriend) =>
-          value?.bungieNetUser?.membershipId === props.mId
-      ) !== undefined
+  const userFound = (friends?: Friends.BungieFriend[]) => {
+    if (!friends || !props.bungieNetUser.membershipId) {
+      return false;
+    }
+    return friends.some(
+      (value) =>
+        value.bungieNetUser?.membershipId === props.bungieNetUser.membershipId
     );
   };
 
@@ -47,9 +49,9 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
     setIsFriend(false);
 
     //get friends
-    Platform.SocialService.GetFriendList().then((response) => {
-      setIsFriend(userFound(response?.friends));
-    });
+    Platform.SocialService.GetFriendList().then((res) =>
+      setIsFriend(userFound(res?.friends))
+    );
   };
 
   const getPendingFriends = () => {
@@ -170,24 +172,17 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
 
   return (
     <>
-      {!isFriend && !isPendingIncomingRequest && !isPendingOutgoingRequest && (
-        //not a friend
+      {isFriend ? (
         <Button
           buttonType={"darkblue"}
           className={classNames(styles.button, styles.btnSendFriend)}
           onClick={() => {
-            if (props.isAuthed) {
-              sendFriendRequest();
-            } else {
-              setSendingFriendRequest(true);
-            }
+            removeFriend();
           }}
         >
-          {profileLoc.SendFriendRequest}
+          {profileLoc.RemoveFriend}
         </Button>
-      )}
-      {isPendingIncomingRequest && (
-        //friend incoming
+      ) : isPendingIncomingRequest ? (
         <>
           <Button
             buttonType={"darkblue"}
@@ -209,8 +204,7 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
             {profileLoc.DeclineFriendRequest}
           </Button>
         </>
-      )}
-      {isPendingOutgoingRequest && (
+      ) : isPendingOutgoingRequest ? (
         <Button
           buttonType={"darkblue"}
           className={classNames(styles.button, styles.btnSendFriend)}
@@ -220,16 +214,19 @@ export const BungieFriend: React.FC<BungieFriendProps> = (props) => {
         >
           {profileLoc.CancelFriendRequest}
         </Button>
-      )}
-      {isFriend && (
+      ) : (
         <Button
           buttonType={"darkblue"}
           className={classNames(styles.button, styles.btnSendFriend)}
           onClick={() => {
-            removeFriend();
+            if (props.isAuthed) {
+              sendFriendRequest();
+            } else {
+              setSendingFriendRequest(true);
+            }
           }}
         >
-          {profileLoc.RemoveFriend}
+          {profileLoc.SendFriendRequest}
         </Button>
       )}
     </>

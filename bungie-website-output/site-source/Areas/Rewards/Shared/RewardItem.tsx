@@ -1,25 +1,20 @@
-// Created by atseng, 2022
-// Copyright Bungie, Inc.
-
 import { RewardAvailability } from "@Areas/Rewards/Shared/RewardAvailability";
 import { RewardButtons } from "@Areas/Rewards/Shared/RewardButtons";
 import { RewardsCollectibleDisplay } from "@Areas/Rewards/Shared/RewardsCollectibleDisplay";
 import { RewardsTriumphsDisplay } from "@Areas/Rewards/Shared/RewardsTriumphsDisplay";
 import { Localizer } from "@bungie/localization/Localizer";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
-import { GridCol } from "@UIKit/Layout/Grid/Grid";
 import { LocalizerUtils } from "@Utilities/LocalizerUtils";
 import { StringUtils } from "@Utilities/StringUtils";
 import classNames from "classnames";
 import { DateTime } from "luxon";
 import React from "react";
 import { ImEnlarge2 } from "@react-icons/all-files/im/ImEnlarge2";
-import { ImEnlarge } from "@react-icons/all-files/im/ImEnlarge";
-import { IReward } from "../Rewards";
+import { Reward } from "../Rewards";
 import styles from "./RewardItem.module.scss";
 
 interface RewardItemProps {
-  reward: IReward;
+  reward: Reward;
 }
 
 export const RewardItem: React.FC<RewardItemProps> = (props) => {
@@ -29,8 +24,8 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
 
   const rewardLoc = Localizer.BungieRewards;
   const userAvailability =
-    props.reward?.bungieRewardDisplay?.UserRewardAvailabilityModel;
-  const bungieRewardDisplay = props.reward?.bungieRewardDisplay;
+    props.reward.rewardDisplay?.UserRewardAvailabilityModel;
+  const bungieRewardDisplay = props.reward.rewardDisplay;
 
   const gameEarnByDate =
     userAvailability.AvailabilityModel.GameEarnByDate &&
@@ -103,12 +98,12 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
             )}
           </div>
           <div className={styles.rewardContent}>
-            <RewardAvailability reward={props.reward.bungieRewardDisplay} />
+            <RewardAvailability reward={props.reward.rewardDisplay} />
             <RewardsTriumphsDisplay reward={bungieRewardDisplay} />
             <RewardsCollectibleDisplay reward={bungieRewardDisplay} />
             <h4 className={styles.sectionHeader}>
               {StringUtils.decodeHtmlEntities(
-                props.reward.bungieRewardDisplay.RewardDisplayProperties.Name
+                props.reward.rewardDisplay.RewardDisplayProperties.Name
               )}
             </h4>
             <p className={styles.rewardDescription}>
@@ -117,7 +112,7 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
               userAvailability.AvailabilityModel.HasOffer
                 ? rewardLoc.rewardAppliedText
                 : StringUtils.decodeHtmlEntities(
-                    props.reward.bungieRewardDisplay.RewardDisplayProperties
+                    props.reward.rewardDisplay.RewardDisplayProperties
                       .Description
                   )}
             </p>
@@ -135,7 +130,9 @@ export const RewardItem: React.FC<RewardItemProps> = (props) => {
                 </li>
               )}
             </ul>
-            <RewardButtons reward={props.reward} />
+            <div className={styles.rewardButtonContainer}>
+              <RewardButtons reward={props.reward} />
+            </div>
           </div>
         </div>
       </div>

@@ -78,6 +78,7 @@ export const SystemNames = {
   ProvingGroupsTrailer: "ProvingGroupsTrailer",
   FacebookUrlByLocale: "FacebookUrlByLocale",
   TwitterUrlByLocale: "TwitterUrlByLocale",
+  XUrlByLocale: "TwitterUrlByLocale",
   InstagramUrlByLocale: "InstagramUrlByLocale",
   ContentStack: "ContentStack",
   LegalContentStackPages: "LegalContentStackPages",

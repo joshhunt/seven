@@ -25,7 +25,6 @@ import KwsAcceptModal from "../../../KwsModals/KwsAcceptModal";
 import KwsConfirmModal from "../../../KwsModals/KwsConfirmModal";
 import styles from "./UserPanel.module.scss";
 import { Dialog } from "plxp-web-ui/components/base";
-import { Spinner } from "@UI/UIKit/Controls/Spinner";
 
 interface UserPanelProps {
   assignedAccount?: PnP.GetPlayerContextResponse["playerContext"];
@@ -58,55 +57,61 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   const [unlinkConfirmationOpen, setUnlinkConfirmationOpen] = useState(false);
 
   const {
-    playerContext,
     pendingChildId,
+    playerContext,
     refreshPlayerContext,
   } = usePlayerContext();
 
-  const history = useHistory();
-  const location = useLocation();
-
-  const clearParams = () => {
-    history.replace(location.pathname);
-  };
+  const hasNoAssignment = EnumUtils.looseEquals(
+    assignedAccount?.parentOrGuardianAssignmentStatus,
+    ParentOrGuardianAssignmentStatusEnum.None,
+    ParentOrGuardianAssignmentStatusEnum
+  );
 
   /* Controls what happens when a user clicks "Accept" in the KWS Acceptance Modal*/
   const onKWSAccept = async () => {
-    /* On accept, send KWS email - then set them as "pending", remove cookie - then refresh playerContext */
     try {
       setKwsLoading(true);
-      const emailResponse = await Platform.PnpService.SendVerificationEmail(
-        playerContext?.membershipId,
-        pendingChildId
+
+      if (
+        assignedAccount.parentOrGuardianAssignmentStatus ===
+        ParentOrGuardianAssignmentStatusEnum.None
+      ) {
+        const setPendingResponse = await Platform.PnpService.SetParentOrGuardianAsPendingForChild(
+          pendingChildId,
+          playerContext.membershipId
+        );
+        if (setPendingResponse !== ResponseStatusEnum.Success) {
+          Modal.error({
+            name: ResponseStatusEnum[setPendingResponse],
+            message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[setPendingResponse]}`,
+          });
+          return;
+        }
+      }
+
+      const urlResponse = await Platform.PnpService.GenerateKwsVerificationUrl(
+        playerContext.membershipId,
+        assignedAccount.membershipId
       );
-      if (emailResponse !== ResponseStatusEnum.Success) {
+      if (urlResponse.membershipId.toString() !== playerContext?.membershipId) {
         Modal.error({
-          name: ResponseStatusEnum[emailResponse],
-          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[emailResponse]}`,
+          name: EnumUtils.getStringValue(
+            ResponseStatusEnum.InvalidRequest,
+            ResponseStatusEnum
+          ),
+          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum.InvalidRequest}`,
         });
         return;
       }
-      const setPendingResponse = await Platform.PnpService.SetParentOrGuardianAsPendingForChild(
-        pendingChildId,
-        playerContext?.membershipId
-      );
-      if (setPendingResponse !== ResponseStatusEnum.Success) {
-        Modal.error({
-          name: ResponseStatusEnum[setPendingResponse],
-          message: `${Localizer.errors.UnhandledError} Error: ${ResponseStatusEnum[setPendingResponse]}`,
-        });
-        return;
-      }
-      setConfirmOpen(true);
+      removePendingChildCookie();
+      window.location.href = urlResponse.verificationUrl;
     } catch (e) {
       const platformResponse = ConvertToPlatformErrorSync(e);
       Modal.error(platformResponse);
     } finally {
       setKwsLoading(false);
       setKwsOpen(false);
-      clearParams();
-      removePendingChildCookie();
-      refreshPlayerContext();
     }
   };
 
@@ -121,11 +126,6 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   const userAvatar = isChild
     ? playerContext?.parentOrGuardianProfilePicturePath
     : assignedAccount?.profilePicturePath;
-  const hasNoAssignment = EnumUtils.looseEquals(
-    assignedAccount?.parentOrGuardianAssignmentStatus,
-    ParentOrGuardianAssignmentStatusEnum.None,
-    ParentOrGuardianAssignmentStatusEnum
-  );
 
   const panelUserLabel = hasNoAssignment ? requestsToJoin : displayName;
 
@@ -161,18 +161,17 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
   const BUTTON_STATES: ButtonStateMap = {
     [ParentOrGuardianAssignmentStatusEnum.None]: {
       // Shows for Cookie child
-      onClick: () => handleClick(),
+      onClick: handleClick,
       label: ParentalControlsLoc.AcceptLabel,
-      disabled: false as boolean,
+      disabled: false,
       variant: "contained",
     },
     [ParentOrGuardianAssignmentStatusEnum.Pending]: {
       // Shows for pending child
-      onClick: () => handleClick(),
-      label: ParentalControlsLoc.PendingLabel,
-      disabled: true as boolean,
+      onClick: handleClick,
+      label: ParentalControlsLoc.AcceptLabel,
+      disabled: false,
       variant: "contained",
-      sx: { pointerEvents: "none" },
     },
     [ParentOrGuardianAssignmentStatusEnum.Assigned]: {
       // Shows for assigned child
@@ -181,15 +180,15 @@ const UserPanel: FC<UserPanelProps> = ({ assignedAccount, asContainer }) => {
         setUnlinkConfirmationOpen(true);
       },
       label: ParentalControlsLoc.UnlinkLabel,
-      disabled: false as boolean,
+      disabled: false,
       variant: "outlined",
       color: "error",
     },
     [ParentOrGuardianAssignmentStatusEnum.Unassigned]: {
       // Shouldn't show
-      onClick: () => handleClick(),
+      onClick: () => 0,
       label: ParentalControlsLoc.AcceptLabel,
-      disabled: true as boolean,
+      disabled: true,
       variant: "contained",
     },
   };

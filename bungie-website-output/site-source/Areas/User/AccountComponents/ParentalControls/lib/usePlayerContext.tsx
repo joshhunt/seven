@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import { Localizer } from "@bungie/localization";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
@@ -68,11 +69,11 @@ export function usePlayerContext() {
 function useProvidePlayerContext(membershipId: string): PlayerContextValue {
   const search = useLocation().search;
   const [playerContext, setPlayerContext] = useState<
-    PnP.GetPlayerContextResponse["playerContext"] | null
-  >(null);
-  const [childrenById, setChildrenById] = useState<Child[] | null>(null);
+    PnP.GetPlayerContextResponse["playerContext"]
+  >();
+  const [childrenById, setChildrenById] = useState<Child[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+  const [error, setError] = useState<unknown>();
 
   const fetchContext = useCallback(async () => {
     setLoading(true);
@@ -88,7 +89,7 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
         });
       } else {
         setPlayerContext(res.playerContext);
-        setChildrenById(res.assignedChildren);
+        setChildrenById(res.assignedChildren ?? []);
       }
     } catch (err) {
       ConvertToPlatformError(err);
@@ -109,6 +110,15 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
   const statusFromKws = queryParams.get("status");
   const payloadFromKws = queryParams.get("externalPayload");
   const signatureFromKws = queryParams.get("signature");
+
+  const requestingChildId = queryParams.get("playerId");
+  const hasPendingChild =
+    requestingChildId &&
+    EnumUtils.looseEquals(
+      playerContext?.ageCategory,
+      AgeCategoriesEnum.Adult,
+      AgeCategoriesEnum
+    );
   useEffect(() => {
     const assignChild = async () => {
       await Platform.PnpService.SetParentOrGuardianAsAssignedForChild({
@@ -125,28 +135,15 @@ function useProvidePlayerContext(membershipId: string): PlayerContextValue {
     assignChild();
   }, [statusFromKws, payloadFromKws, signatureFromKws]);
 
-  /**
-   * pendingChildId
-   * The encoded ID that is being stored in the browser or in a cookie.
-   */
-  const requestingChildIdfromParam = queryParams.get("playerId");
-  const childIdCookie = cookie.get("playerId");
-  const requestingChildId = childIdCookie ?? requestingChildIdfromParam;
-  const hasPendingChild =
-    requestingChildId &&
-    EnumUtils.looseEquals(
-      playerContext?.ageCategory,
-      AgeCategoriesEnum.Adult,
-      AgeCategoriesEnum
-    );
-
+  const sortedAssignedChildren = [...childrenById];
+  sortedAssignedChildren.sort(
+    (a, b) =>
+      parseInt(a?.parentOrGuardianMembershipId || "0", 10) -
+      parseInt(b?.parentOrGuardianMembershipId || "0", 10)
+  );
   return {
     playerContext,
-    assignedChildren: childrenById?.sort(
-      (a, b) =>
-        parseInt(a?.parentOrGuardianMembershipId || "0", 10) -
-        parseInt(b?.parentOrGuardianMembershipId || "0", 10)
-    ),
+    assignedChildren: sortedAssignedChildren,
     loading,
     error,
     refreshPlayerContext: fetchContext,

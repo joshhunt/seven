@@ -27,7 +27,6 @@ export enum AreaNames {
   Rewards = "Rewards",
   Search = "Search",
   Seasons = "Seasons",
-  Static = "Static",
   Sms = "Sms",
   Triumphs = "Triumphs",
   User = "User",

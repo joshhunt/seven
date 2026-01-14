@@ -87,6 +87,7 @@ export declare namespace DestinyDefinitions {
     IronBannerRift = 90,
     IronBannerZoneControl = 91,
     Relic = 92,
+    LawlessFrontier = 93,
   }
 
   enum DestinyRewardSourceCategory {
@@ -571,6 +572,10 @@ export declare namespace DestinyDefinitions {
     Clan = 4,
     ItemOnly = 5,
     CharacterClass = 6,
+    ItemIntrinsic = 7,
+    ActivityIntrinsic = 8,
+    BubbleIntrinsic = 9,
+    CharacterCreationIntrinsic = 10,
   }
 
   enum UnlockValueAggregationType {
@@ -578,8 +583,9 @@ export declare namespace DestinyDefinitions {
     MinimumValue = 1,
     MaximumValue = 2,
     SumOfValues = 3,
-    None = 4,
-    ItemScopeOnlySumOfValues = 5,
+    NoneItemScopeOnly = 4,
+    NoneItemScopeOnlySumOfValues = 5,
+    NotApplicable = 6,
   }
 
   enum UnlockValueScope {
@@ -668,6 +674,7 @@ export declare namespace DestinyDefinitions {
     Savings = 4194304,
     Ineligible = 8388608,
     ArtifactPerkBoosted = 16777216,
+    SeasonalArchiveFree = 33554432,
   }
 
   enum DestinySocketCategoryStyle {
@@ -1019,6 +1026,8 @@ export declare namespace DestinyDefinitions {
 
     selectableSkullCollectionHashes: number[];
 
+    selectableSkullCollections: DestinyActivitySelectableSkullCollections[];
+
     playlistItems: DestinyActivityPlaylistItemDefinition[];
 
     activityGraphList: DestinyActivityGraphListEntryDefinition[];
@@ -1046,6 +1055,10 @@ export declare namespace DestinyDefinitions {
     intrinsicUnlocks: DestinyActivityIntrinsicUnlockDefinition[];
 
     activityLocationMappings: DestinyEnvironmentLocationMapping[];
+
+    curatorBlockDefinition: DestinyActivityCuratorBlockDefinition;
+
+    durationEstimate: DestinyActivityDurationEstimate;
 
     boundToRelease: string;
 
@@ -1232,6 +1245,14 @@ export declare namespace DestinyDefinitions {
     displayString: string;
   }
 
+  export interface DestinyActivitySelectableSkullCollections {
+    selectableSkullCollectionHash: number;
+
+    minimumTierRank: number;
+
+    maximumTierRank: number;
+  }
+
   export interface DestinyActivityPlaylistItemDefinition {
     activityHash: number;
 
@@ -1306,6 +1327,24 @@ export declare namespace DestinyDefinitions {
     unlockHash: number;
 
     value: DestinyUnlockState;
+  }
+
+  export interface DestinyActivityCuratorBlockDefinition {
+    quickplaySortPriority: number;
+
+    quickplaySortToFront: boolean;
+
+    isFocusedActivity: DestinyUnlockExpressionDefinition;
+
+    vendorHash?: number;
+  }
+
+  export interface DestinyActivityDurationEstimate {
+    durationPipsFilledCount: number;
+
+    durationPipsTotalCount: number;
+
+    durationEstimateText: string;
   }
 
   export interface DestinyActivityModeDefinition {
@@ -2260,6 +2299,8 @@ export declare namespace DestinyDefinitions {
     storedUnlockValues: DestinyItemUnlockStoredValueDefinition[];
 
     intrinsicUnlockValues: DestinyIntrinsicUnlockValueDefinition[];
+
+    itemOnlyUnlockFlagHashes: number[];
   }
 
   export interface DestinyItemUnlockStoredValueDefinition {
@@ -2692,6 +2733,8 @@ export declare namespace DestinyDefinitions {
     name: string;
 
     icon: string;
+
+    iconHash: number;
 
     iconSequences: DestinyIconSequenceDefinition[];
 
@@ -3673,6 +3716,8 @@ export declare namespace DestinyDefinitions {
 
     icon: string;
 
+    iconHash: number;
+
     iconSequences: DestinyIconSequenceDefinition[];
 
     highResIcon: string;
@@ -4023,6 +4068,8 @@ export declare namespace DestinyDefinitions {
 
     icon: string;
 
+    iconHash: number;
+
     iconSequences: DestinyIconSequenceDefinition[];
 
     highResIcon: string;
@@ -4100,6 +4147,14 @@ export declare namespace DestinyDefinitions {
     armorArchetypePlugSetHash: number;
 
     featuredItemsListHash: number;
+
+    portalActivityGraphRootNodesWithIcons: { [key: number]: string };
+
+    orderRewardsUnlockValueHashesToRewardItemHashes: { [key: number]: number };
+
+    questItemTraitToFeaturedQuestImagePath: { [key: number]: string };
+
+    currentReleaseTraitHash: number;
 
     boundToRelease: string;
 
@@ -4362,6 +4417,36 @@ export declare namespace DestinyDefinitions {
 
   export interface DestinyInventoryItemConstantsDefinition {
     gearTierOverlayImagePaths: string[];
+
+    watermarkDropShadowPath: string;
+
+    craftedBackgroundPath: string;
+
+    featuredItemFlagPath: string;
+
+    masterworkOverlayPath: string;
+
+    masterworkExoticOverlayPath: string;
+
+    masterworkBorderedOverlayPath: string;
+
+    masterworkExoticBorderedOverlayPath: string;
+
+    craftedOverlayPath: string;
+
+    enhancedItemOverlayPath: string;
+
+    holofoilBackgroundOverlayPath: string;
+
+    holofoil900BackgroundOverlayPath: string;
+
+    holofoil900AnimatedBackgroundOverlayPath: string;
+
+    universalOrnamentBackgroundOverlayPath: string;
+
+    universalOrnamentLegendaryBackgroundOverlayPath: string;
+
+    universalOrnamentExoticBackgroundOverlayPath: string;
 
     boundToRelease: string;
 
@@ -5120,6 +5205,8 @@ export declare namespace DestinyDefinitions {
     upsellDialogList: number[];
 
     rewardProgressionHash?: number;
+
+    rewardProgressionHashList: number[];
 
     weeklyChallengesPresentationNodeHash?: number;
 
@@ -6056,6 +6143,30 @@ export declare namespace DestinyDefinitions {
     blacklisted: boolean;
   }
 
+  export interface DestinyIconDefinition {
+    foreground: string;
+
+    background: string;
+
+    secondaryBackground: string;
+
+    specialBackground: string;
+
+    highResForeground: string;
+
+    boundToRelease: string;
+
+    hash: number;
+
+    index: number;
+
+    contentIdentifier: string;
+
+    redacted: boolean;
+
+    blacklisted: boolean;
+  }
+
   export interface DestinyItemFilterDefinition {
     allowedItems: number[];
 
@@ -6939,7 +7050,9 @@ export declare namespace DestinyDefinitions {
   export interface DestinyActivitySkull {
     hash: number;
 
-    contentIdentifier: number;
+    contentIdentifier: string;
+
+    skullIdentifier: string;
 
     skullIdentifierHash: number;
 
@@ -7353,6 +7466,9 @@ export interface DestinyWorldDefinitionsGenerated {
   DestinyGuardianRankDefinition?: {
     [key: string]: DestinyDefinitions.DestinyGuardianRankDefinition;
   };
+  DestinyIconDefinition?: {
+    [key: string]: DestinyDefinitions.DestinyIconDefinition;
+  };
   DestinyInventoryBucketDefinition?: {
     [key: string]: DestinyDefinitions.DestinyInventoryBucketDefinition;
   };
@@ -7597,6 +7713,7 @@ export interface DestinyWorldDefinitionsTypeMap {
   DestinyInventoryItemConstantsDefinition?: DestinyDefinitions.DestinyInventoryItemConstantsDefinition;
   DestinyInventoryItemLiteDefinition?: DestinyDefinitions.DestinyInventoryItemLiteDefinition;
   DestinyItemTierTypeDefinition?: DestinyDefinitions.DestinyItemTierTypeDefinition;
+  DestinyIconDefinition?: DestinyDefinitions.DestinyIconDefinition;
   DestinyItemFilterDefinition?: DestinyDefinitions.DestinyItemFilterDefinition;
   DestinyGuardianRankConstantsDefinition?: DestinyDefinitions.DestinyGuardianRankConstantsDefinition;
   DestinyGuardianRankDefinition?: DestinyDefinitions.DestinyGuardianRankDefinition;
@@ -7699,6 +7816,7 @@ export const DestinyWorldDefinitionsTypeNameList = [
   "DestinyInventoryItemConstantsDefinition",
   "DestinyInventoryItemLiteDefinition",
   "DestinyItemTierTypeDefinition",
+  "DestinyIconDefinition",
   "DestinyItemFilterDefinition",
   "DestinyGuardianRankConstantsDefinition",
   "DestinyGuardianRankDefinition",

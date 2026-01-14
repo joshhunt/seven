@@ -1,8 +1,4 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
 import styles from "@Areas/Clan/ClanProfile.module.scss";
-import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
 import { ClanMembersDataStore } from "@Areas/Clan/DataStores/ClanMembersDataStore";
 import { Breadcrumb } from "@Areas/Clan/Shared/Breadcrumb";
 import { ClanFeaturesList } from "@Areas/Clan/Shared/ClanFeaturesList";
@@ -10,10 +6,8 @@ import { ClanMembersList } from "@Areas/Clan/Shared/ClanMembersList";
 import { ClanProgression } from "@Areas/Clan/Shared/ClanProgression";
 import { ClanWithSideBannerView } from "@Areas/Clan/Shared/ClanWithSideBannerView";
 import { ProfileClanMembershipButtons } from "@Areas/Clan/Shared/ProfileClanMembershipButtons";
-import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { IgnoredItemType, RuntimeGroupMemberType } from "@Enum";
-import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
 import { GroupsV2, Platform } from "@Platform";
 import { IClanParams } from "@Routes/Definitions/RouteParams";
@@ -25,15 +19,12 @@ import { Button } from "@UI/UIKit/Controls/Button/Button";
 import { Modal } from "@UIKit/Controls/Modal/Modal";
 import { BasicSize } from "@UIKit/UIKitUtils";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
 export const Profile: React.FC = () => {
   const params = useParams<IClanParams>();
   const clansLoc = Localizer.Clans;
-  const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const clanMembersData = useDataStore(ClanMembersDataStore);
 
   const clanId = params?.clanId ?? "0";
   const [clanResponse, setClanResponse] = useState<GroupsV2.GroupResponse>();
@@ -47,15 +38,9 @@ export const Profile: React.FC = () => {
   };
 
   useEffect(() => {
-    ClanDestinyMembershipDataStore.actions.loadUserData();
     getClan();
     ClanMembersDataStore.actions.getAllClanMembers(clanId);
   }, []);
-
-  useEffect(() => {
-    ClanDestinyMembershipDataStore.actions.loadUserData();
-    getClan();
-  }, [UserUtils.isAuthenticated(globalState)]);
 
   const reportClan = () => {
     //report

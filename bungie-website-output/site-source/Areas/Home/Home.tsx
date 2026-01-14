@@ -25,7 +25,7 @@ import {
   InstagramIcon,
   LinkedInIcon,
   TwitchIcon,
-  TwitterIcon,
+  XIcon,
   YouTubeIcon,
 } from "./Components/SocialIcons";
 
@@ -96,9 +96,9 @@ const Home = () => {
   const FOOTER_DATA = {
     socialLinks: [
       {
-        href: "https://twitter.com/bungie",
-        alt: communityLoc.BungieTwitter,
-        node: <TwitterIcon title={communityLoc.BungieTwitter} />,
+        href: "https://x.com/bungie",
+        alt: communityLoc.BungieX,
+        node: <XIcon title={communityLoc.BungieX} />,
       },
       {
         href: "https://www.youtube.com/user/Bungie",

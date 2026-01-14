@@ -67,10 +67,10 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
       userLanguage,
       "https://www.facebook.com/DestinyTheGame"
     );
-    const twitterUrl = ConfigUtils.GetParameter(
-      SystemNames.TwitterUrlByLocale,
+    const xUrl = ConfigUtils.GetParameter(
+      SystemNames.XUrlByLocale,
       userLanguage,
-      "https://twitter.com/DestinyTheGame"
+      "https://x.com/DestinyTheGame"
     );
     const instagramUrl = ConfigUtils.GetParameter(
       SystemNames.InstagramUrlByLocale,
@@ -107,21 +107,40 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
         <div className={styles.navBottom}>
           <div className={styles.column}>
             <ul>
+              <FooterLink
+                url={"https://www.marathonthegame.com"}
+                label={navLoc.Marathon}
+              />
+              <FooterLink
+                url={RouteHelper.MarathonNewsCategory.url}
+                label={navLoc.News}
+              />
+              <FooterLink
+                url={"https://www.discord.gg/marathonthegame"}
+                label={navLoc.TopNavDiscord}
+              />
+              <FooterLink
+                url={"https://www.marathonthegame.com"}
+                label={navLoc.TopNavLearnMore}
+              />
+            </ul>
+          </div>
+          <div className={styles.column}>
+            <ul>
               {this.renderLink(
                 RouteHelper.NewLight(),
                 navLoc.NavTopGameCollapse
               )}
               {this.renderLink(RouteHelper.News(), navLoc.news)}
+              <FooterLink
+                url={"https://www.discord.gg/destinygame"}
+                label={navLoc.TopNavDiscord}
+              />
               {this.renderLink(
                 RouteHelper.DestinyBuy(),
                 navLoc.TopNavBuyDestiny2
               )}
-              {this.renderLink(
-                RouteHelper.DestinyBuy({ version: "Promo" }),
-                navLoc.Expansions
-              )}
-              {this.renderLink("/episoderevenant", navLoc.TopNavEpisodes)}
-              {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavCommunity)}
+              {this.renderLink(RouteHelper.MyClan(), navLoc.TopNavClans)}
               {this.renderLink(
                 ConfigUtils.SystemStatus(SystemNames.FireteamFinderWebUI)
                   ? //game integrated fireteam finder
@@ -131,7 +150,39 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                     RouteHelper.DeprecatedReactFireteams()
                   : //bnet only fireteam finder razor
                     RouteHelper.Fireteams(),
-                navLoc.ClanFireteams
+                navLoc.FireteamFinder
+              )}
+              {this.renderLink(
+                RouteHelper.SeasonsProgress(),
+                navLoc.TopNavRewardsPassProgress
+              )}
+              {this.renderLink(RouteHelper.CrossSave(), navLoc.CrossSave)}
+            </ul>
+          </div>
+          <div className={styles.column}>
+            <ul>
+              <FooterLink
+                url={RouteHelper.Careers().concat(
+                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
+                )}
+                label={navLoc.Bungie}
+              />
+              {this.renderLink(RouteHelper.News(), navLoc.news)}
+              <FooterLink
+                url={RouteHelper.Careers("jobs")}
+                label={navLoc.Careers}
+              />
+              <FooterLink
+                url={RouteHelper.BungieTechBlog()}
+                label={navLoc.TechBlog}
+              />
+              <FooterLink
+                url={RouteHelper.PressKits()}
+                label={navLoc.PressKit}
+              />
+              {this.renderLink(
+                RouteHelper.CodeRedemptionReact(),
+                navLoc.UserFlyout_RedeemCodes
               )}
               {appsEnabled &&
                 this.renderLink(
@@ -140,32 +191,6 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                     : RouteHelper.Applications(),
                   navLoc.DeveloperPortal
                 )}
-            </ul>
-          </div>
-          <div className={styles.column}>
-            <ul>
-              {this.renderLink(RouteHelper.Companion(), navLoc.topnavcompanion)}
-              {this.renderLink(
-                RouteHelper.SignIn(null, window.location.pathname),
-                navLoc.SignUpSignIn
-              )}
-              {this.renderLink(
-                RouteHelper.SeasonsProgress(),
-                navLoc.TopNavRewardsPassProgress
-              )}
-              {this.renderLink(
-                RouteHelper.NewTriumphs(),
-                navLoc.TopNavTriumphs
-              )}
-              {this.renderLink(RouteHelper.CrossSave(), navLoc.CrossSave)}
-              {this.renderLink(
-                RouteHelper.Rewards(),
-                navLoc.UserFlyout_Rewards
-              )}
-              {this.renderLink(
-                RouteHelper.CodeRedemptionReact(),
-                navLoc.UserFlyout_RedeemCodes
-              )}
             </ul>
           </div>
           <div className={styles.column}>
@@ -205,28 +230,7 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
               />
             </ul>
           </div>
-          <div className={styles.column}>
-            <ul>
-              <FooterLink
-                url={RouteHelper.Careers().concat(
-                  "?utm_source=BungieNet&utm_medium=footerlink&utm_campaign=BNET_2020"
-                )}
-                label={navLoc.Bungie}
-              />
-              <FooterLink
-                url={RouteHelper.Careers("jobs")}
-                label={navLoc.Careers}
-              />
-              <FooterLink
-                url={RouteHelper.BungieTechBlog()}
-                label={navLoc.TechBlog}
-              />
-              <FooterLink
-                url={RouteHelper.PressKits()}
-                label={navLoc.PressKit}
-              />
-            </ul>
-          </div>
+
           <div className={styles.column}>
             <ul>
               <FooterLink
@@ -307,11 +311,11 @@ export class Footer extends React.Component<IFooterProps, IFooterState> {
                   title={Localizer.Community.DestinyInstagram}
                 />
               </li>
-              <li className={styles.twitter}>
+              <li className={styles.x}>
                 <a
-                  href={twitterUrl}
+                  href={xUrl}
                   className="ir"
-                  title={Localizer.Community.DestinyTwitter}
+                  title={Localizer.Community.DestinyX}
                 />
               </li>
               <li className={styles.youtube}>

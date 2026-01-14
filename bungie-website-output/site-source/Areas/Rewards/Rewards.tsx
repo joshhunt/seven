@@ -1,22 +1,13 @@
-// Created by atseng, 2022
-// Copyright Bungie, Inc.
-
-import { RewardsDataStore } from "@Areas/Rewards/DataStores/RewardsDataStore";
-import { RewardsDestinyMembershipDataStore } from "@Areas/Rewards/DataStores/RewardsDestinyMembershipDataStore";
 import stylesContainer from "@Areas/Rewards/Rewards.module.scss";
 import styles from "@Areas/Rewards/Shared/RewardItem.module.scss";
-import { RewardsListSection } from "@Areas/Rewards/Shared/RewardsListSection";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
-import { BungieMembershipType } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { SystemNames } from "@Global/SystemNames";
-import { Tokens } from "@Platform";
+import { Platform, Tokens } from "@Platform";
 import { RouteHelper } from "@Routes/RouteHelper";
-import {
-  DestinyAccountWrapper,
-  IAccountFeatures,
-} from "@UI/Destiny/DestinyAccountWrapper";
+import { DestinyAccountComponent } from "@UI/Destiny/DestinyAccountComponent";
 import { SystemDisabledHandler } from "@UI/Errors/SystemDisabledHandler";
 import { Anchor } from "@UI/Navigation/Anchor";
 import { BungieHelmet } from "@UI/Routing/BungieHelmet";
@@ -24,78 +15,121 @@ import { SpinnerContainer } from "@UIKit/Controls/Spinner";
 import { Grid, GridCol } from "@UIKit/Layout/Grid/Grid";
 import { ParallaxContainer } from "@UIKit/Layout/ParallaxContainer";
 import { ConfigUtils } from "@Utilities/ConfigUtils";
-import { EnumUtils } from "@Utilities/EnumUtils";
-import { UserUtils } from "@Utilities/UserUtils";
 import classNames from "classnames";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { RewardItem } from "./Shared/RewardItem";
 
-export interface IReward {
+export interface Reward {
   rewardId: string;
-  bungieRewardDisplay: Tokens.BungieRewardDisplay;
+  rewardDisplay: Tokens.BungieRewardDisplay;
 }
 
-interface RewardsProps {}
-
-export const Rewards: React.FC<RewardsProps> = (props) => {
+export const Rewards: React.FC = () => {
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUser"]);
-  const rewardsData = useDataStore(RewardsDataStore);
-  const destinyUser = useDataStore(RewardsDestinyMembershipDataStore);
+
+  const { destinyData } = useGameData();
+  const [rewards, setRewards] = useState<
+    Record<string, Tokens.BungieRewardDisplay>
+  >({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const rewardLoc = Localizer.Bungierewards;
 
-  const resetRewards = () => {
-    RewardsDestinyMembershipDataStore.actions.loadUserData();
-    RewardsDataStore.actions.reset();
-  };
-
   useEffect(() => {
-    resetRewards();
+    (async () => {
+      setIsLoading(true);
+      try {
+        if (destinyData.selectedMembership) {
+          //there is a selectedMembership available; use that membershipType
+          const rewards = await Platform.TokensService.GetBungieRewardsForPlatformUser(
+            destinyData.selectedMembership.membershipId,
+            destinyData.selectedMembership.membershipType
+          );
+          setRewards(rewards);
+        } else {
+          //there is no selectedMembership available; use their bungienext membershipType and membershipId
+          const rewards = globalState.loggedInUser?.user.membershipId
+            ? await Platform.TokensService.GetBungieRewardsForUser(
+                globalState.loggedInUser?.user.membershipId
+              )
+            : await Platform.TokensService.GetBungieRewardsList();
+          setRewards(rewards);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [destinyData.selectedMembership]);
 
-    if (!UserUtils.isAuthenticated(globalState)) {
-      RewardsDataStore.actions.getRewardsList();
-    }
-  }, [globalState.loggedInUser]);
-
-  useEffect(() => {
-    if (UserUtils.isAuthenticated(globalState) && destinyUser.loaded) {
+  const parsedRewards = useMemo(() => {
+    const claimedRewards: Reward[] = [];
+    const lockedBungieRewards: Reward[] = [];
+    const unclaimedBungieRewards: Reward[] = [];
+    const unclaimedLoyaltyRewards: Reward[] = [];
+    for (const [rewardId, rewardDisplay] of Object.entries(rewards)) {
       if (
-        destinyUser.membershipData?.destinyMemberships &&
-        destinyUser?.selectedMembership
+        rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .IsLoyaltyReward &&
+        !rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .OfferApplied
       ) {
-        //there is a selectedMembership available; use that membershipType
-        RewardsDataStore.actions.getPlatformRewardsList(
-          destinyUser.selectedMembership.membershipId,
-          destinyUser.selectedMembership.membershipType
-        );
-      } else {
-        //there is no selectedMembership available; use their bungienext membershipType and membershipId
-        RewardsDataStore.actions.getRewardsList(
-          globalState.loggedInUser?.user.membershipId
-        );
+        unclaimedLoyaltyRewards.push({
+          rewardId,
+          rewardDisplay,
+        });
+      } else if (
+        !rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .IsLoyaltyReward &&
+        !rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .OfferApplied &&
+        rewardDisplay.UserRewardAvailabilityModel.IsUnlockedForUser
+      ) {
+        unclaimedBungieRewards.push({
+          rewardId,
+          rewardDisplay,
+        });
+      } else if (
+        !rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .IsLoyaltyReward &&
+        rewardDisplay.UserRewardAvailabilityModel.IsAvailableForUser
+      ) {
+        lockedBungieRewards.push({
+          rewardId,
+          rewardDisplay,
+        });
+      } else if (
+        rewardDisplay.UserRewardAvailabilityModel.IsUnlockedForUser &&
+        rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel.OfferApplied
+      ) {
+        claimedRewards.push({
+          rewardId,
+          rewardDisplay,
+        });
       }
     }
-  }, [destinyUser.selectedMembership, destinyUser.loaded]);
 
-  useEffect(() => {
-    if (
-      rewardsData?.membershipType !== BungieMembershipType.None &&
-      destinyUser?.selectedMembership &&
-      !EnumUtils.looseEquals(
-        rewardsData.membershipType,
-        destinyUser.selectedMembership.membershipType,
-        BungieMembershipType
-      )
-    ) {
-      //there is a miss-match between membershipType of the rewards data and the selected membershipType
-      //RewardsDataStore.actions.getPlatformRewardsList(destinyUser.selectedMembership.membershipId, destinyUser.selectedMembership.membershipType);
-      RewardsDestinyMembershipDataStore.actions.updatePlatform(
-        EnumUtils.getStringValue(
-          rewardsData.membershipType,
-          BungieMembershipType
-        )
-      );
-    }
-  }, [rewardsData.membershipType]);
+    claimedRewards.sort((a, b) => {
+      const aIsLoyalty =
+        a.rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .IsLoyaltyReward;
+      const bIsLoyalty =
+        b.rewardDisplay.UserRewardAvailabilityModel.AvailabilityModel
+          .IsLoyaltyReward;
+      if (aIsLoyalty && !bIsLoyalty) {
+        return -1;
+      } else if (!aIsLoyalty && bIsLoyalty) {
+        return 1;
+      }
+      return 0;
+    });
+
+    return {
+      claimedRewards,
+      lockedBungieRewards,
+      unclaimedBungieRewards,
+      unclaimedLoyaltyRewards,
+    };
+  }, [rewards]);
 
   if (!ConfigUtils.SystemStatus(SystemNames.D2RewardsReact)) {
     return null;
@@ -131,60 +165,36 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
           <h1 className={stylesContainer.claimRewardsTitle}>
             {rewardLoc.ClaimRewardsPageTitleMagento}
           </h1>
-          {destinyUser?.membershipData?.destinyMemberships &&
-            destinyUser.membershipData.destinyMemberships.length > 1 &&
-            !destinyUser.isCrossSaved && (
-              <div className={stylesContainer.platformSelector}>
-                <DestinyAccountWrapper
-                  membershipDataStore={RewardsDestinyMembershipDataStore}
-                >
-                  {({ platformSelector }: IAccountFeatures) => (
-                    <div className={styles.dropdownFlexWrapper}>
-                      {platformSelector}
-                    </div>
-                  )}
-                </DestinyAccountWrapper>
-              </div>
+          {destinyData.membershipData?.destinyMemberships?.length > 1 &&
+            !destinyData.membershipData.primaryMembershipId && (
+              <DestinyAccountComponent
+                showCrossSaveBanner={false}
+                showAllPlatformCharacters={false}
+              >
+                {({ platformSelector }) => (
+                  <div className={styles.dropdownFlexWrapper}>
+                    {platformSelector}
+                  </div>
+                )}
+              </DestinyAccountComponent>
             )}
           <div className={styles.containerRewards}>
-            <SpinnerContainer
-              loading={!rewardsData.loaded}
-              className={styles.spinner}
-            >
+            <SpinnerContainer loading={isLoading} className={styles.spinner}>
               <RewardsListSection
-                rewardsList={rewardsData.unclaimedLoyaltyRewards}
+                rewardsList={parsedRewards.unclaimedLoyaltyRewards}
                 title={rewardLoc.NewPlayerRewardsHeader}
-                keyString={"rewardItemUCL"}
               />
               <RewardsListSection
-                rewardsList={rewardsData.unclaimedBungieRewards}
+                rewardsList={parsedRewards.unclaimedBungieRewards}
                 title={rewardLoc.DigitalRewardsUnlockedHeader}
-                keyString={"rewardItemUCB"}
               />
               <RewardsListSection
-                rewardsList={rewardsData.lockedBungieRewards}
+                rewardsList={parsedRewards.lockedBungieRewards}
                 title={rewardLoc.AvailableRewardsHeader}
-                keyString={"rewardItemLR"}
               />
               <RewardsListSection
-                rewardsList={rewardsData.claimedRewards.sort((a, b) => {
-                  const aIsLoyalty =
-                    a.bungieRewardDisplay.UserRewardAvailabilityModel
-                      .AvailabilityModel.IsLoyaltyReward;
-                  const bIsLoyalty =
-                    b.bungieRewardDisplay.UserRewardAvailabilityModel
-                      .AvailabilityModel.IsLoyaltyReward;
-
-                  if (aIsLoyalty && !bIsLoyalty) {
-                    return -1;
-                  } else if (!aIsLoyalty && bIsLoyalty) {
-                    return 1;
-                  }
-
-                  return 0;
-                })}
+                rewardsList={parsedRewards.claimedRewards}
                 title={rewardLoc.ClaimedRewards}
-                keyString={"rewardItemCR"}
               />
             </SpinnerContainer>
           </div>
@@ -193,3 +203,24 @@ export const Rewards: React.FC<RewardsProps> = (props) => {
     </SystemDisabledHandler>
   );
 };
+
+interface RewardsListSectionProps {
+  rewardsList: Reward[];
+  title: string;
+}
+
+function RewardsListSection({ rewardsList, title }: RewardsListSectionProps) {
+  if (rewardsList.length == 0) {
+    return null;
+  }
+  return (
+    <GridCol cols={12}>
+      <h3 className={styles.sectionHeader}>{title}</h3>
+      <ul>
+        {rewardsList.map((reward) => (
+          <RewardItem key={reward.rewardId} reward={reward} />
+        ))}
+      </ul>
+    </GridCol>
+  );
+}

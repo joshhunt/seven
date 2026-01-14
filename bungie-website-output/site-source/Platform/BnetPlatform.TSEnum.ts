@@ -1458,6 +1458,14 @@ export enum PlatformErrorCodes {
   ErrorEgsJwksMissing = 4007,
   ErrorEgsJwtMalformedHeader = 4008,
   ErrorEgsJwtMalformedPayload = 4009,
+  MarathonInternalError = 5000,
+  MarathonBabelConnectionTimeout = 5001,
+  MarathonServiceFailure = 5002,
+  MarathonInvalidRequest = 5003,
+  MarathonUnexpectedError = 5004,
+  MarathonAccountNotFound = 5005,
+  MarathonThrottledByGameServer = 5006,
+  MarathonErrorDeserializationFailure = 5007,
 }
 
 export enum PhoneValidationStatusEnum {
@@ -1467,30 +1475,6 @@ export enum PhoneValidationStatusEnum {
   Validated = 3,
   Invalidated = 4,
   Banned = 5,
-}
-
-/**
-	This is the Bungie.net version Bungie.SharedDefinitions.Network.AgeGateFeatures.
-	It should match it exactly.  It exists to make sure we're not exposing SharedDefinition internals to the outside world.
-	*/
-export enum BungieAgeGateFeatures {
-  None = 0,
-  EververseRecommendations = 1,
-  RankPurchasing = 2,
-  CommerceDialogsAndUpsells = 4,
-  CommerceBuySilver = 8,
-  AccessTextChat = 16,
-  AccessVoiceChat = 32,
-  CharacterSelectOffers = 64,
-  TextChatEnabledByDefault = 128,
-  VoiceChatEnabledByDefault = 256,
-  CrewVisible = 512,
-  CrewInvitesReceive = 1024,
-  CrewInvitesSend = 2048,
-  FriendRequestsReceive = 4096,
-  FriendRequestsSend = 8192,
-  PlatformNamesVisible = 16384,
-  InviteNotifications = 32768,
 }
 
 export enum GlobalAcknowledgementItem {
@@ -1519,57 +1503,27 @@ export enum AnonymousIdentifierSource {
 }
 
 /**
-	The parental controls category for a which an account belongs to.
+	This is the Bungie.net version Bungie.SharedDefinitions.Network.AgeGateFeatures.
+	It should match it exactly.  It exists to make sure we're not exposing SharedDefinition internals to the outside world.
 	*/
-export enum ParentalControlsCategoryType {
+export enum BungieAgeGateFeatures {
   None = 0,
-  Child = 1,
-  Teen = 2,
-  Adult = 3,
-}
-
-/**
-	The guardian link status of a player in the context of parental controls. Applies to both children and guardians.
-	*/
-export enum ParentalControlsGuardianChildLinkStatus {
-  None = 0,
-  Pending = 1,
-  Linked = 2,
-  Unlinked = 3,
-}
-
-/**
-	Response status types for parental controls operations.
-	*/
-export enum ParentalControlsResponseStatus {
-  None = 0,
-  Success = 20,
-  SuccessfullyLinked = 22,
-  RequiresAdultVerification = 23,
-  Unauthorized = 30,
-  BungieUserNotFound = 40,
-  PlayerProfileNotFound = 41,
-  PreferenceNotFound = 42,
-  PermissionNotFound = 43,
-  PreferencesUpdateFailed = 50,
-  PermissionsUpdateFailed = 51,
-  BungieApiCallFailed = 52,
-  KwsApiCallFailed = 53,
-  InternalServerError = 54,
-  TokenIsEmpty = 60,
-  SignatureIsEmpty = 61,
-  RequestIsEmpty = 62,
-  ChildIdIsEmpty = 63,
-  AuthorizationCodeIsEmpty = 64,
-  GuardianIsNotAdult = 65,
-  PlayerIsNotChild = 66,
-  ChildAlreadyHasGuardian = 67,
-  GuardianIsNotLinked = 68,
-  ValidationError = 69,
-  PreferenceUpdateForbidden = 70,
-  RefreshTokenIsEmpty = 71,
-  AuthorizationCodeAlredyUsed = 72,
-  GuardianEmailIsNotVerified = 73,
+  EververseRecommendations = 1,
+  RankPurchasing = 2,
+  CommerceDialogsAndUpsells = 4,
+  CommerceBuySilver = 8,
+  AccessTextChat = 16,
+  AccessVoiceChat = 32,
+  CharacterSelectOffers = 64,
+  TextChatEnabledByDefault = 128,
+  VoiceChatEnabledByDefault = 256,
+  CrewVisible = 512,
+  CrewInvitesReceive = 1024,
+  CrewInvitesSend = 2048,
+  FriendRequestsReceive = 4096,
+  FriendRequestsSend = 8192,
+  PlatformNamesVisible = 16384,
+  InviteNotifications = 32768,
 }
 
 export enum TemplateFormat {
@@ -1833,6 +1787,10 @@ export enum ItemState {
 		You may want to represent this with an orange-red icon border color.
 		*/
   HighlightedObjective = 16,
+  /**
+		If this bit is set, the item has been 'enhanced' by the player.
+		*/
+  Enhanced = 32,
 }
 
 /**
@@ -2815,6 +2773,9 @@ export enum VendorItemStatus {
   AlreadySelling = 512,
   Unsellable = 1024,
   SellingInhibited = 2048,
+  /**
+		DEPRECATED - Owned items use the NoUnlock state and a failure string indicating the proper display state.
+		*/
   AlreadyOwned = 4096,
   DisplayOnly = 8192,
 }
@@ -2917,6 +2878,7 @@ export enum DestinyVendorItemState {
   Savings = 4194304,
   Ineligible = 8388608,
   ArtifactPerkBoosted = 16777216,
+  SeasonalArchiveFree = 33554432,
 }
 
 /**
@@ -3844,6 +3806,7 @@ export enum DestinyActivityModeType {
   IronBannerRift = 90,
   IronBannerZoneControl = 91,
   Relic = 92,
+  LawlessFrontier = 93,
 }
 
 /**

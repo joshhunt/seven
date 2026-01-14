@@ -1,12 +1,9 @@
-// Created by atseng, 2023
-// Copyright Bungie, Inc.
-
 import { ConvertToPlatformError } from "@ApiIntermediary";
-import { ClanDestinyMembershipDataStore } from "@Areas/Clan/DataStores/ClanDestinyMembershipStore";
 import { useDataStore } from "@bungie/datastore/DataStoreHooks";
 import { Localizer } from "@bungie/localization/Localizer";
 import { PlatformError } from "@CustomErrors";
 import { BungieMembershipType, GroupPotentialMemberStatus } from "@Enum";
+import { useGameData } from "@Global/Context/hooks/gameDataHooks";
 import { GlobalStateDataStore } from "@Global/DataStore/GlobalStateDataStore";
 import { GroupsV2, Platform } from "@Platform";
 import { Button } from "@UIKit/Controls/Button/Button";
@@ -28,9 +25,9 @@ interface InvitationActionButtonProps {
 export const InvitationActionButton: React.FC<InvitationActionButtonProps> = (
   props
 ) => {
-  const destinyMembership = useDataStore(ClanDestinyMembershipDataStore);
   const globalState = useDataStore(GlobalStateDataStore, ["loggedInUserClans"]);
-  const isCrossSaved = destinyMembership?.isCrossSaved;
+  const isCrossSaved = !!useGameData().destinyData?.membershipData
+    ?.primaryMembershipId;
   const applicationOnMultiplePlatforms =
     !isCrossSaved && Object.values(props.potentialClanMemberMap)?.length > 1;
 

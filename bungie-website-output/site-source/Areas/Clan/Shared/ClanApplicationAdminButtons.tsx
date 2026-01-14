@@ -24,7 +24,6 @@ interface ClanApplicationAdminButtonsProps {
 export const ClanApplicationAdminButtons: React.FC<ClanApplicationAdminButtonsProps> = (
   props
 ) => {
-  const clanMembersData = useDataStore(ClanMembersDataStore);
   const clansLoc = Localizer.Clans;
 
   const denyApplicant = () => {

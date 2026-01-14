@@ -7,7 +7,7 @@ import {
   ParentOrGuardianAssignmentStatusEnum,
   ResponseStatusEnum,
 } from "@Enum";
-import { Platform } from "@Platform";
+import { Platform, PnP } from "@Platform";
 import { WarningRounded } from "@mui/icons-material";
 import { Localizer } from "@bungie/localization";
 import { usePlayerContext } from "@Areas/User/AccountComponents/ParentalControls/lib";
@@ -24,7 +24,9 @@ const ParentView: FC<ParentViewProps> = () => {
     EmailVerificationRequired,
     VerifyEmailMessage,
   } = Localizer.parentalcontrols;
-  const [pendingChildData, setPendingChildData] = useState(null);
+  const [pendingChildData, setPendingChildData] = useState<
+    PnP.PlayerContextData
+  >();
   const {
     pendingChildId,
     assignedChildren,
@@ -39,41 +41,45 @@ const ParentView: FC<ParentViewProps> = () => {
   };
 
   useEffect(() => {
-    if (pendingChildId) {
-      Platform.PnpService.GetPlayerContextWithEncodedMembershipId(
-        pendingChildId
-      )
-        .then((r) => {
-          if (r?.responseStatus !== ResponseStatusEnum.Success) {
-            Modal.error({
-              name: ResponseStatusEnum[r?.responseStatus],
-              message: `${Localizer.errors.UnhandledError} Error: ${
-                ResponseStatusEnum[r?.responseStatus]
-              }`,
-            });
-          } else {
-            if (r?.playerContext?.profilePicturePath) {
-              setPendingChildData(r?.playerContext);
-            } else {
-              /* if the call fails silently because it couldn't decode the param
-               * remove the cookie, clear the params, ask user to ask child to redo the invite :)
-               * */
-              removePendingChildCookie();
-              clearParams();
-              setPendingChildData(null);
-            }
-          }
-        })
-        .catch(ConvertToPlatformError)
-        .catch((e) => {
-          Modal.error(e);
-          console.log(e);
-        });
+    if (!pendingChildId) {
+      return;
     }
+    Platform.PnpService.GetPlayerContextWithEncodedMembershipId(pendingChildId)
+      .then((r) => {
+        if (r?.responseStatus !== ResponseStatusEnum.Success) {
+          Modal.error({
+            name: ResponseStatusEnum[r?.responseStatus],
+            message: `${Localizer.errors.UnhandledError} Error: ${
+              ResponseStatusEnum[r?.responseStatus]
+            }`,
+          });
+        } else {
+          if (r?.playerContext?.profilePicturePath) {
+            setPendingChildData(r?.playerContext);
+          } else {
+            /* if the call fails silently because it couldn't decode the param
+             * remove the cookie, clear the params, ask user to ask child to redo the invite :)
+             * */
+            removePendingChildCookie();
+            clearParams();
+            setPendingChildData(null);
+          }
+        }
+      })
+      .catch(ConvertToPlatformError)
+      .catch((e) => {
+        Modal.error(e);
+        console.log(e);
+      });
   }, [pendingChildId]);
 
-  const hasLinkedChildAccounts =
-    Array.isArray(assignedChildren) && assignedChildren?.length > 0;
+  const assignedAndPendingChildAccounts = assignedChildren.filter(
+    (c) =>
+      c.parentOrGuardianAssignmentStatus ===
+        ParentOrGuardianAssignmentStatusEnum.Assigned ||
+      c.parentOrGuardianAssignmentStatus ===
+        ParentOrGuardianAssignmentStatusEnum.Pending
+  );
 
   return playerContext?.membershipId ? (
     <>
@@ -86,31 +92,36 @@ const ParentView: FC<ParentViewProps> = () => {
         />
       )}
       <PageTemplate faqEntryId={"blte68395781113b3b8"}>
-        {(hasLinkedChildAccounts || pendingChildData) && (
+        {(assignedAndPendingChildAccounts.length > 0 || pendingChildData) && (
           <Typography component={"h2"} variant={"h6"}>
             {MyFamilyMembers}
           </Typography>
         )}
         <div>
-          {pendingChildData && (
-            <LinkedUser assignedAccount={pendingChildData} />
-          )}
-          {hasLinkedChildAccounts &&
-            assignedChildren?.map((child, i) => (
-              <Fragment key={`${i}-${child?.membershipId}`}>
-                {child?.parentOrGuardianAssignmentStatus ===
-                  ParentOrGuardianAssignmentStatusEnum.Pending && (
-                  <LinkedUser assignedAccount={child} />
-                )}
-                {child?.parentOrGuardianAssignmentStatus ===
-                  ParentOrGuardianAssignmentStatusEnum.Assigned && (
-                  <LinkedUserAccordion assignedAccount={child} />
-                )}
-              </Fragment>
-            ))}
+          {pendingChildData &&
+            !assignedAndPendingChildAccounts.some(
+              (c) => c.membershipId === pendingChildData.membershipId
+            ) && <LinkedUser assignedAccount={pendingChildData} />}
+          {assignedAndPendingChildAccounts.map((child) => {
+            if (
+              child.parentOrGuardianAssignmentStatus ===
+              ParentOrGuardianAssignmentStatusEnum.Assigned
+            ) {
+              return (
+                <LinkedUserAccordion
+                  key={child.membershipId}
+                  assignedAccount={child}
+                />
+              );
+            } else {
+              return (
+                <LinkedUser key={child.membershipId} assignedAccount={child} />
+              );
+            }
+          })}
         </div>
 
-        {!hasLinkedChildAccounts && !pendingChildId && (
+        {assignedAndPendingChildAccounts.length === 0 && !pendingChildId && (
           <CopyBlock heading={MyFamilyMembers} subheading={RequestInvite} />
         )}
       </PageTemplate>

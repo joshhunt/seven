@@ -179,6 +179,7 @@ export class RouteHelper {
   public static NewsArticle = BasicReactPath<NewsParams>(
     RouteDefs.Areas.News.getAction("Article")
   );
+  public static MarathonNewsCategory = LegacyPath("/News/Marathon");
   public static AboutDestiny = LegacyPathWithQuery("/pub/AboutDestiny");
   public static Companion = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("Companion")
@@ -263,10 +264,10 @@ export class RouteHelper {
   public static NewLight = BasicReactPath(
     RouteDefs.Areas.Destiny.getAction("NewLight")
   );
-  public static DestinyNextChapter = {
-    url: "/Destiny2NextChapter",
-    legacy: true,
-  };
+  public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
+  public static SeasonsProgress = BasicReactPath(
+    RouteDefs.Areas.Seasons.getAction("Progress")
+  );
   public static CurrentPass = BasicReactPath(
     RouteDefs.Areas.Seasons.getAction("Progress")
   );
@@ -290,62 +291,6 @@ export class RouteHelper {
   );
   public static ApplicationHistory = LegacyPathWithQuery(
     "/Profile/ApplicationHistory"
-  );
-  //Seasons
-  public static SeasonOfTheUndying = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheUndying")
-  );
-  public static SeasonOfDawn = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfDawn")
-  );
-  public static SeasonOfTheWorthy = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheWorthy")
-  );
-  public static Season11 = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfArrivals")
-  );
-  public static Season12 = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheHunt")
-  );
-  public static SeasonOfTheChosen = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheChosen")
-  );
-  public static SeasonOfTheSplicer = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheSplicer")
-  );
-  public static SeasonOfTheLost = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheLost")
-  );
-  public static SeasonOfTheRisen = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheRisen")
-  );
-  public static SeasonOfTheHaunted = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheHaunted")
-  );
-  public static SeasonOfPlunder = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfPlunder")
-  );
-  public static SeasonOfTheSeraph = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheSeraph")
-  );
-  public static SeasonOfDefiance = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfDefiance")
-  );
-  public static SeasonOfTheDeep = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheDeep")
-  );
-  public static SeasonOfTheWitch = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheWitch")
-  );
-  public static SeasonOfTheWish = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("SeasonOfTheWish")
-  );
-  public static Seasons = BasicReactPath(RouteDefs.Areas.Seasons.getAction());
-  public static SeasonsProgress = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("Progress")
-  );
-  public static SeasonsPreviousSeason = BasicReactPath(
-    RouteDefs.Areas.Seasons.getAction("PreviousPass")
   );
   //Codes & Partner Rewards
   public static CodeRedemption = BasicReactPath(
@@ -376,7 +321,7 @@ export class RouteHelper {
     RouteDefs.Areas.UserResearch.getAction()
   );
   public static BungieNewsRoom = BasicReactPath(
-    RouteDefs.Areas.Newsroom.getAction("Index")
+    RouteDefs.Areas.News.getAction("Index")
   );
   public static BungieTechBlog = BasicReactPath(
     RouteDefs.Areas.BungieTech.getAction("Index")
